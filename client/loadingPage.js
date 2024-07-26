@@ -59,7 +59,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
   // Render Share Button on topic
   renderShare();
 
-
   if (state.path === "/") {
     $("main-content-wrapper[active] main-content").replaceChildren(
       $(
@@ -71,26 +70,27 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             ul
               li Never escalate
               li Never judge
-              li Never name call
+              li Never name-call
             p Then, please join us in this Truce.
             p
               a[big][href=/topics] Join the Discussion
-        `
-      )
+        `,
+      ),
     );
     $("main-content-wrapper[active] main-content-2").replaceChildren(
       $(
         `
         topics
-            h2 Our approach to moderation
+            h2 Our Approach to Moderation
             p If you post:
             ul
               li An escalation
-              li A judgement
-              li Name calling
+              li A judgment
+              li Name-calling
             p Then:
             ul
               li A label will be applied
+              li The label will be explained
               li Nothing is banned
               li Nothing is muted
               li Nothing is blocked
@@ -99,19 +99,22 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                 p Example
               comment
                 h3 John Doe:
-                p You are a fascist, that attended a fascist rally, and supported a fascist leader.
+                p You are a fascist, who attended a fascist rally and supported a fascist leader.
                 info-wrapper
                   info
-                    b Name calling
-                    p If someone does not identify themselves as a fascist, then calling them one is an example of name calling. This does not foster constructive dialogue.
-        `
-      )
+                    b Name-calling
+                    p If someone does not identify themselves as a fascist, calling them one is an example of name-calling. This type of labeling hinders constructive and respectful dialogue.
+        `,
+      ),
     );
-    $("main-content-wrapper[active] main-content").$("[href]").forEach(($el) => {
-      $el.on("click", ($event) => {
-        $event.preventDefault();
-        goToPath($el.getAttribute("href"));
+
+    $("main-content-wrapper[active] main-content")
+      .$("[href]")
+      .forEach(($el) => {
+        $el.on("click", ($event) => {
+          $event.preventDefault();
+          goToPath($el.getAttribute("href"));
+        });
       });
-    });
   }
 };
