@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <!--#include file="client/meta.html" -->
+    <style>
+      /* <!--#include file="client/style.css" --> */
+    </style>
+    <title>Truce</title>
+  </head>
+  <!--#include file="client/body.html" -->
+  <script>
+    // Global state
+    const state = {
+      path: "/",
+      path_history: [],
+      path_index: 0,
+      display_name: "",
+      email: "",
+      expanded_comment_ids: localStorage.getItem("expanded_comment_ids")
+        ? JSON.parse(localStorage.getItem("expanded_comment_ids"))
+        : [],
+      reset_token_uuid: "",
+      cache: {},
+      loading_path: false,
+      unread_count: 0,
+      unseen_count: 0,
+      window_recently_focused: false,
+      window_recently_loaded: false,
+    };
+
+
+    // Global elements
+    const $body = document.scrollingElement || document.documentElement;
+
+    // Global variables
+    const note_keywords = {
+      ESCALATING: "Escalation",
+      JUDGMENTAL: "Judgmental",
+      MISUNDERSTANDING: "Misunderstanding",
+      OFFTOPIC: "Off topic",
+      RESPONSE: "Response",
+    };
+
+    // Libraries
+    // <!--#include file="client/flint.js" -->
+    // <!--#include file="client/debug.js" -->
+    // <!--#include file="client/markdownToElements.js" -->
+    // <!--#include file="client/imageToPng.js" -->
+
+    // Navigation
+    // <!--#include file="client/menu.js" -->
+    // <!--#include file="client/resetPassword.js" -->
+    // <!--#include file="client/modals.js" -->
+    // <!--#include file="client/path.js" -->
+    // <!--#include file="client/goToPath.js" -->
+
+    // Render
+    // <!--#include file="client/loadingPage.js" -->
+    // <!--#include file="client/renderPage.js" -->
+    // <!--#include file="client/renderName.js" -->
+    // <!--#include file="client/renderTopic.js" -->
+    // <!--#include file="client/renderComment.js" -->
+    // <!--#include file="client/renderTopics.js" -->
+    // <!--#include file="client/renderComments.js" -->
+    // <!--#include file="client/renderActivities.js" -->
+    // <!--#include file="client/renderNotifications.js" -->
+    // <!--#include file="client/renderImages.js" -->
+    // <!--#include file="client/renderBack.js" -->
+    // <!--#include file="client/renderForward.js" -->
+    // <!--#include file="client/renderShare.js" -->
+
+    // Add new
+    // <!--#include file="client/showAddNewComment.js" -->
+    // <!--#include file="client/showAddNewTopic.js" -->
+
+    // Global events
+    // <!--#include file="client/onScroll.js" -->
+    // <!--#include file="client/beforeAfterDomUpdate.js" -->
+
+    // Init
+    // <!--#include file="client/startSession.js" -->
+
+    // Optional tests
+    // <!--#include file="tests/setup.js" -->
+    // <!--#include file="tests/expect.js" -->
+    // <!--#include file="tests/fetch.js" -->
+    // <!--#include file="tests/fetch_cache.js" -->
+
+    loadingPage(true, true);
+    startSession();
+
+    // Create WebSocket connection.
+    // <!--#include file="client/websocket.js" -->
+    // <!--#include file="client/push.js" --->
+  </script>
+</html>

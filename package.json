@@ -1,0 +1,24 @@
+{
+  "name": "nodejs",
+  "version": "22.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.617.0",
+    "@replit/object-storage": "^1.0.0",
+    "@types/node": "^18.0.6",
+    "bcrypt": "^5.1.1",
+    "firebase-admin": "^12.2.0",
+    "nodemailer": "^6.9.14",
+    "openai": "^4.52.0",
+    "pg": "^8.12.0",
+    "web-push": "^3.6.7",
+    "ws": "^8.18.0"
+  }
+}

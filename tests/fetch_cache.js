@@ -1,0 +1,1 @@
+const fetch_cache = {};
