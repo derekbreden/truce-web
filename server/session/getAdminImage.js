@@ -7,7 +7,7 @@ const object_client = new S3Client({
 
 module.exports = async (req, res) => {
   if (
-    !req.writeableEnded &&
+    !res.writableEnded &&
     req.session.user_id &&
     req.session.admin &&
     req.body.path &&

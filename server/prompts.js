@@ -57,3 +57,5 @@ For example “Lying is bad” gets a response of “JUDGMENTAL The use of the w
 
 For example “Don’t lie” gets a response of “JUDGMENTAL Lying makes trust and communication difficult.”
 };
+`,
+};

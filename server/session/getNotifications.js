@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.session.user_id) {
+  if (!res.writableEnded && req.session.user_id) {
     // Updating an array of notification_ids that are read and seen
     if (req.body.mark_as_read) {
       await req.client.query(

@@ -27,7 +27,7 @@ const fcm_messaging = getMessaging(fcm_app);
 
 module.exports = async (req, res) => {
   if (
-    !req.writeableEnded &&
+    !res.writableEnded &&
     req.session.user_id &&
     req.body.display_name &&
     req.body.body &&

@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.body.path === "/topics") {
+  if (!res.writableEnded && req.body.path === "/topics") {
     if (!req.body.max_comment_create_date) {
       const topic_results = await req.client.query(
         `

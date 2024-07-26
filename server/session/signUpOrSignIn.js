@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 module.exports = async (req, res) => {
   if (
-    !req.writableEnded &&
+    !res.writableEnded &&
     req.session.session_id &&
     req.body.email &&
     req.body.password
@@ -31,12 +31,14 @@ module.exports = async (req, res) => {
           `,
           [user_found.rows[0].user_id, req.session.session_id],
         );
+        console.log("SENDING RESPONSE FOR SIGN IN")
         res.end(
           JSON.stringify({
             success: true,
             signed_in: true,
           }),
         );
+        console.log("WRITEABLE ENDED", res.writableEnded)
       } else {
         res.end(
           JSON.stringify({

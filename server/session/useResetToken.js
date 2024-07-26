@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 module.exports = async (req, res) => {
   if (
-    !req.writeableEnded &&
+    !res.writableEnded &&
     req.session.session_id &&
     req.body.password &&
     req.body.reset_token_uuid

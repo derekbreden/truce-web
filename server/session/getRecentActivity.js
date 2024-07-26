@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.body.path === "/recent") {
+  if (!res.writableEnded && req.body.path === "/recent") {
     req.results.path = req.body.path;
     const activity_results = await req.client.query(
       `

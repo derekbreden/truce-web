@@ -1,7 +1,7 @@
 const ai = require("../ai");
 
 module.exports = async (req, res) => {
-  if (!req.writeableEnded && req.session.user_id && req.body.display_name) {
+  if (!res.writableEnded && req.session.user_id && req.body.display_name) {
     const ai_response_text = await ai.ask(
       [
         {

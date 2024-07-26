@@ -1,6 +1,6 @@
 module.exports = async (req, res) => {
   if (
-    !req.writableEnded &&
+    !res.writableEnded &&
     req.body.path &&
     req.body.path.substr(0, 7) === "/topic/"
   ) {

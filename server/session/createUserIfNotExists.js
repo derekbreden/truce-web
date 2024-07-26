@@ -1,6 +1,6 @@
 module.exports = async (req, res) => {
   if (
-    !req.writableEnded &&
+    !res.writableEnded &&
     req.session.session_id &&
     !req.session.user_id &&
     (req.body.display_name || req.body.title)

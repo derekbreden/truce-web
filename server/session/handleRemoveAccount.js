@@ -8,7 +8,7 @@ const object_client = new S3Client({
 });
 
 module.exports = async (req, res) => {
-  if (!req.writeableEnded && req.session.user_id && req.body.remove_account) {
+  if (!res.writableEnded && req.session.user_id && req.body.remove_account) {
 
     // Delete images
     const images = await req.client.query(

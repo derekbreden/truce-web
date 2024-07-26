@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.session.user_id && req.body.subscription) {
+  if (!res.writableEnded && req.session.user_id && req.body.subscription) {
     if (req.body.remove) {
       await req.client.query(
         `
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
       }),
     );
   }
-  if (!req.writableEnded && req.session.user_id && req.body.fcm_subscription) {
+  if (!res.writableEnded && req.session.user_id && req.body.fcm_subscription) {
     if (req.body.deactivate) {
       const update_result = await req.client.query(
         `

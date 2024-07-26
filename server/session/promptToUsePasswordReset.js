@@ -1,5 +1,5 @@
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.body.reset_token_uuid) {
+  if (!res.writableEnded && req.body.reset_token_uuid) {
     const user_found = await req.client.query(
       `
       SELECT reset_tokens.user_id, users.email, user_sessions.session_id

@@ -2,7 +2,7 @@ const email = require("../email");
 const crypto = require("node:crypto");
 
 module.exports = async (req, res) => {
-  if (!req.writableEnded && req.session.session_id && req.body.email && !req.body.password) {
+  if (!res.writableEnded && req.session.session_id && req.body.email && !req.body.password) {
     const user_found = await req.client.query(
       `
       SELECT user_id

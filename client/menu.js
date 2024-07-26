@@ -200,7 +200,7 @@ const showMenu = () => {
               userVisibleOnly: true,
               applicationServerKey: (function () {
                 const raw = window.atob(
-                  "BNu3qAqkBwD0A5AbY1XP/mPlbGXkI6qdL57O+tchgT3Wl4YWAQt5w+/eQTgGBctvoTmFGJlRQkRnYYiX+NyCH04=",
+                  "BP8IxEorl8eTn6QkMCyfKCo5sDdx/AQruapRiq3wWaretKdIegWr3oMXUu2WXIiQvP46DcuoZxdKRHpGNMp+UNc=",
                 );
                 const array = new Uint8Array(new ArrayBuffer(raw.length));
                 for (let i = 0; i < raw.length; i++) {
