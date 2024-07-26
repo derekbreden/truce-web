@@ -4,6 +4,9 @@
   font-weight: 100 900;
   src: url("/OpenSans-VariableFont_wdth_wght.ttf") format("truetype");
 }
+:root {
+  color-scheme: light dark;
+}
 * {
   font-family: Open Sans, Arial;
   margin: 0;
@@ -23,8 +26,8 @@ html {
 body {
   min-height: 100%;
   font-size: 1rem;
-  background: #fff;
-  color: #26323e;
+  background: light-dark(#fff, #000);
+  color: light-dark(#000, #f5f5f5);
   overflow: hidden;
 }
 main-content-wrapper {
@@ -39,7 +42,7 @@ main-content-wrapper {
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
-  background: #bbc8d7;
+  background: light-dark(#f5f5f5, #393939);
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
 }
@@ -94,7 +97,7 @@ main-content,
 main-content-2 {
   flex: 1;
   display: flex;
-  background: #fff;
+  background: light-dark(#fff, #393939);
   flex-direction: column;
   padding: 0 20px 20px 20px;
   max-width: 480px;
@@ -119,11 +122,11 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: light-dark(#fff, #000);
   height: calc(54px + env(safe-area-inset-bottom));
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0px 0px 5px #26323e;
+  box-shadow: 0px 0px 5px light-dark(#000, #fff);
   z-index: 1;
   padding: 0 0 env(safe-area-inset-bottom) 0;
 }
@@ -187,7 +190,7 @@ body[app] main-content add-new:first-child {
 a,
 a:visited,
 a:active {
-  color: #26323e;
+  color: light-dark(#000, #f5f5f5);
   font-weight: 500;
 }
 h2 {
@@ -235,8 +238,8 @@ topic[trimmed] p[img] + p[img] {
 }
 p[quote] {
   padding: 10px;
-  border-left: 2px solid #999;
-  background: #f5f5f5;
+  border-left: 2px solid light-dark(#999, #333);
+  background: light-dark(#f5f5f5, #0c0c0c);
 }
 p[quote] + p[quote] {
   margin-top: 0;
@@ -260,14 +263,20 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  background: #fff;
+  background: light-dark(#fff, #191919);
   right: 0;
   height: 44px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0px 0px 5px #26323e;
+  box-shadow: 0px 0px 5px #000;
   z-index: 2;
+}
+@media (prefers-color-scheme: dark) {
+  header {
+    box-shadow: none;
+    border-bottom: 1px solid #333;
+  }
 }
 header h1 {
   cursor: pointer;
@@ -297,7 +306,7 @@ hamburger {
   position: relative;
 }
 hamburger line {
-  border: 1.5px solid #27323e;
+  border: 1.5px solid light-dark(#000, #f5f5f5);
   border-bottom-width: 1px;
   border-radius: 2px;
   width: 100%;
@@ -307,7 +316,7 @@ hamburger line {
   position: absolute;
   top: calc(50% - 4px);
   left: -14px;
-  background: #48c;
+  background: light-dark(#48c, #e0f0ff);
   border-radius: 50%;
   height: 8px;
   width: 8px;
@@ -326,11 +335,19 @@ menu {
   position: absolute;
   top: 0;
   right: 0;
-  background: #fff;
-  box-shadow: 0px 0px 5px #26323e;
+  background: light-dark(#fff, #191919);
+  box-shadow: 0px 0px 5px #000;
   border-radius: 0 0 0 2px;
   z-index: 6;
-  border-top: 1px solid #999;
+  border-top: 1px solid light-dark(#999, #333);
+}
+@media (prefers-color-scheme: dark) {
+  menu {
+    box-shadow: none;
+    border-top: 0;
+    border-left: 1px solid #333;
+    border-bottom: 1px solid #333;
+  }
 }
 menu::before {
   content: "";
@@ -339,7 +356,12 @@ menu::before {
   right: 0;
   top: -8px;
   height: 7px;
-  background: #fff;
+  background: light-dark(#fff, #000);
+}
+@media (prefers-color-scheme: dark) {
+  menu::before {
+    display: none;
+  }
 }
 menu signed-in,
 menu sign-in,
@@ -369,7 +391,7 @@ menu links a {
   display: flex;
   align-items: center;
   padding: 10px 20px;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
 menu links a[unread]::before {
@@ -389,14 +411,14 @@ menu toggle-wrapper toggle-button {
   height: 30px;
   width: 50px;
   border-radius: 16px;
-  background: #ddd;
+  background: light-dark(#ddd, #666);
   position: relative;
   transition: background .2s ease-in-out;
 }
 menu toggle-wrapper toggle-button toggle-circle {
   height: 28px;
   width: 28px;
-  background: #fff;
+  background: light-dark(#fff, #000);
   border-radius: 50%;
   position: absolute;
   top: 1px;
@@ -427,7 +449,7 @@ a[big] {
   text-decoration: none;
   border-radius: 2px;
   border: 1px solid #4a5;
-  color: #fff;
+  color: light-dark(#fff, #000);
   background: #4a5;
   padding: 10px;
   font-weight: 700;
@@ -435,7 +457,7 @@ a[big] {
 }
 modal-bg {
   display: flex;
-  background: #00000077;
+  background: light-dark(#00000077, #ffffff55);
   position: absolute;
   top: 0;
   left: 0;
@@ -448,7 +470,8 @@ textarea {
   font-size: 1rem;
   width: 240px;
   border-radius: 2px;
-  border: 1px solid #26323e;
+  border: 1px solid light-dark(#000, #333);
+  background: light-dark(#fff, #191919);
   padding: 10px;
 }
 button {
@@ -456,18 +479,17 @@ button {
   font-size: 1rem;
   -webkit-appearance: none;
   border-radius: 2px;
-  border: 0;
-  background: #26323e;
-  border: 1px solid #26323e;
-  color: #fff;
+  background: light-dark(#000, #f5f5f5);
+  border: 1px solid light-dark(#000, #f5f5f5);
+  color: light-dark(#fff, #000);
   padding: 10px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 button[alt] {
-  background: #f5f5f5;
-  color: #26323e;
-  border: 1px solid #999;
+  background: light-dark(#f5f5f5, #191919);
+  color: light-dark(#000, #f5f5f5);
+  border: 1px solid light-dark(#999, #333);
 }
 button[small] {
   padding: 2px 10px;
@@ -481,9 +503,9 @@ info,
 error {
   padding: 10px 10px 10px 36px;
   position: relative;
-  background: #ffeeee;
-  border: 1px solid #b66;
-  color: #b66;
+  background: light-dark(#fee, #b66);
+  border: 1px solid light-dark(#b66, #b66);
+  color: light-dark(#b66, #fee);
   border-radius: 2px;
   max-width: 100%;
   display: flex;
@@ -509,8 +531,8 @@ error::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: #b66;
-  color: #ffeeee;
+  background: light-dark(#b66, #fee);
+  color: light-dark(#fee, #b66);
   font-size: 14px;
   font-weight: 700;
   height: 17px;
@@ -531,33 +553,33 @@ info[tiny]::before {
   font-size: 9px;
 }
 info {
-  border-color: #48c;
-  background: #e0f0ff;
-  color: #48c;
+  border-color: light-dark(#48c, #48c);
+  background: light-dark(#e0f0ff, #48c);
+  color: light-dark(#48c, #e0f0ff);
 }
 info::before {
   content: "i";
-  background: #48c;
-  color: #e0f0ff;
+  background: light-dark(#48c, #e0f0ff);
+  color: light-dark(#e0f0ff, #48c);
 }
 info[response] {
-  border-color: #555;
-  background: #f5f5f5;
-  color: #555;
+  border-color: light-dark(#555, #555);
+  background: light-dark(#f5f5f5, #555);
+  color: light-dark(#555, #f5f5f5);
 }
 info[response]::before {
-  background: #555;
-  color: #f5f5f5
+  background: light-dark(#555, #f5f5f5);
+  color: light-dark(#f5f5f5, #555);
 }
 pass {
-  border-color: #4a5;
-  background: #f0fff0;
-  color: #4a5;
+  border-color: light-dark(#4a5, #4a5);
+  background: light-dark(#f0fff0, #4a5);
+  color: light-dark(#4a5, #f0fff0);
 }
 pass::before {
   content: "✓";
-  background: #4a5;
-  color: #f0fff0;
+  background: light-dark(#4a5, #f0fff0);
+  color: light-dark(#f0fff0, #4a5);
 }
 error p {
   margin-top: 5px;
@@ -604,8 +626,8 @@ password-help::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: #48c;
-  color: #e0f0ff;
+  background: light-dark(#48c, #e0f0ff);
+  color: light-dark(#e0f0ff, #48c);
   font-weight: 600;
   height: 17px;
   width: 17px;
@@ -617,11 +639,17 @@ modal {
   top: 44px;
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
+  background: light-dark(#fff, #191919);
   border-radius: 2px;
-  box-shadow: 0px 0px 5px #26323e;
+  box-shadow: 0px 0px 5px #000;
   max-width: 480px;
   width: calc(100% - 20px);
+}
+@media (prefers-color-scheme: dark) {
+  modal {
+    box-shadow: none;
+    border: 1px solid #333;
+  }
 }
 add-new {
   display: flex;
@@ -671,7 +699,7 @@ title-wrapper {
 }
 [img-icon] {
   display: flex;
-  border: 2px solid #26323e;
+  border: 2px solid light-dark(#000, #f5f5f5);
   border-radius: 4px;
   height: 25px;
   width: 30px;
@@ -682,8 +710,8 @@ title-wrapper {
 [img-icon]::before {
   display: flex;
   content: "";
-  border-top: 2px solid #26323e;
-  border-left: 2px solid #26323e;
+  border-top: 2px solid light-dark(#000, #f5f5f5);
+  border-left: 2px solid light-dark(#000, #f5f5f5);
   border-right: 2px solid transparent;
   border-bottom: 2px solid transparent;
   border-radius: 4px;
@@ -697,7 +725,7 @@ title-wrapper {
 [img-icon]::after {
   display: flex;
   content: "";
-  border: 2px solid #26323e;
+  border: 2px solid light-dark(#000, #fff);
   border-radius: 50%;
   height: 3px;
   width: 3px;
@@ -712,7 +740,7 @@ image-previews {
   position: relative;
 }
 image-previews preview {
-  border: 1px solid #26323e;
+  border: 1px solid light-dark(#000, #fff);
   border-radius: 2px;
   display: flex;
   justify-content: center;
@@ -731,7 +759,7 @@ image-previews preview remove-icon {
   right: 1px;
   display: flex;
   border-radius: 50%;
-  background: #26323e;
+  background: light-dark(#000, #fff);
   font-weight: 600;
   height: 25px;
   width: 25px;
@@ -741,7 +769,7 @@ image-previews preview remove-icon::after {
   content: "";
   position: absolute;
   width: 15px;
-  border: 1px solid #fff;
+  border: 1px solid light-dark(#fff, #000);
   border-radius: 4px;
   transform: rotate(45deg);
   top: 11px;
@@ -770,7 +798,7 @@ comments[thread] {
 comment {
   display: flex;
   flex-direction: column;
-  border: 1px solid #ddd;
+  border: 1px solid light-dark(#ddd, #666);
   border-radius: 2px;
   padding: 10px;
 }
@@ -795,12 +823,12 @@ comment info b {
 }
 comments > add-new:first-child {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid light-dark(#ddd, #666);
   margin: 20px 0 10px 0;
 }
 comments > add-new:not(:first-child) {
   margin: 0 0 20px 0;
-  border: 1px solid #ddd;
+  border: 1px solid light-dark(#ddd, #666);
   border-radius: 2px;
   margin-bottom: 20px;
   padding: 10px;
@@ -872,8 +900,8 @@ share-wrapper button,
 forward-wrapper button,
 back-wrapper button,
 expand-wrapper button {
-  background: #fff;
-  border-color: #fff;
+  background: light-dark(#fff, #191919);
+  border-color: light-dark(#fff, #191919);
   position: relative;
   padding: 6px;
 }
@@ -882,7 +910,7 @@ share-wrapper button {
 }
 share-wrapper button::before {
   content: "";
-  border: 1.5px solid #26323e;
+  border: 1.5px solid light-dark(#000, #fff);
   border-top: 1.5px solid transparent;
   border-radius: 2px;
   height: 4px;
@@ -895,7 +923,7 @@ share-wrapper button::before {
 share-wrapper button::after {
   content: "↑";
   position: absolute;
-  color: #26323e;
+  color: light-dark(#000, #f5f5f5);
   opacity: .5;
   font-size: 21px;
   font-weight: 400;
@@ -922,8 +950,8 @@ back-wrapper button::before,
 [expand-down]::before,
 [expand-up]::before {
   content: "";
-  border-top: 1.5px solid #26323e;
-  border-left: 1.5px solid #26323e;
+  border-top: 1.5px solid light-dark(#000, #fff);
+  border-left: 1.5px solid light-dark(#000, #fff);
   border-right: 1.5px solid transparent;
   border-bottom: 1.5px solid transparent;
   height: 16px;
@@ -1067,7 +1095,7 @@ topics topic::before {
   bottom: 0;
   left: 0;
   right: 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid light-dark(#ddd, #666);
 }
 notifications notification::after {
   bottom: -10px;
@@ -1083,7 +1111,7 @@ topics-loading {
   animation: loading 1.5s ease-in-out infinite 1s;
 }
 topics-loading h2 {
-  background: #ddd;
+  background: light-dark(#ddd, #333);
   width: 80%;
   height: 32px;
 }
@@ -1097,8 +1125,8 @@ topics-loading p::after {
   content: "";
   display: block;
   width: 100%;
-  border-top: 16px solid #ddd;
-  border-bottom: 16px solid #ddd;
+  border-top: 16px solid light-dark(#ddd, #333);
+  border-bottom: 16px solid light-dark(#ddd, #333);
   height: 10px;
 }
 topics-loading p::after {
@@ -1118,10 +1146,10 @@ activity > topic h2 {
   margin-top: 0;
 }
 activity > [parent-comment] {
-  background: #f5f5f5;
+  background: light-dark(#f5f5f5, #0c0c0c)
 }
 activity > [parent-comment] comment {
-  background: #fff;
+  background: light-dark(#fff, #000);
 }
 @keyframes loading {
   0% {
