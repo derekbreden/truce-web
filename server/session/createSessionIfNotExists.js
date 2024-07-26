@@ -3,7 +3,6 @@ const crypto = require("node:crypto");
 module.exports = async (req, res) => {
   if (!res.writableEnded && (!req.session.session_uuid || req.body.logout)) {
     req.session.session_uuid = crypto.randomUUID();
-    console.log("New Session", req.session.session_uuid);
     const insert_session = await req.client.query(
       `
       INSERT INTO sessions (session_uuid)

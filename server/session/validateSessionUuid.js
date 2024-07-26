@@ -8,13 +8,10 @@ module.exports = async (req, res) => {
     return acc;
   }, {});
 
-  console.log(`Cookie session_uuid`, cookies.session_uuid);
-
   // Workaround for replit Webview not supporting Set-Cookie
   const authorization_header = req.headers.authorization || "";
   if (authorization_header.startsWith("Bearer ")) {
     cookies.session_uuid = authorization_header.substr(7);
-    console.log("Bearer session_uuid", cookies.session_uuid);
   }
   // END Workaround
 
