@@ -65,7 +65,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         `
         topics
           topic
-            h2 Welcome to Truce
+            h2 Welcome
             p If you agree to:
             ul
               li Never escalate
