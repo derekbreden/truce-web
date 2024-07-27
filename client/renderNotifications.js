@@ -17,7 +17,10 @@ const renderNotification = (notification) => {
 
   const note = notification.note || "";
   const note_keyword = note.split(" ")[0];
-  const note_title = (note_keywords[note_keyword] || note_keyword).replace(/[^a-z\-]/ig, "");
+  const note_title = (note_keywords[note_keyword] || note_keyword).replace(
+    /[^a-z\-]/gi,
+    "",
+  );
   const $notification = $(
     `
     notification[unread=$1]
@@ -126,7 +129,9 @@ const renderNotifications = (notifications) => {
     ...$unread_allclear,
     ...unread_notifications.map(renderNotification),
   );
-  $("main-content-wrapper[active] main-content-2 notifications").replaceChildren(
+  $(
+    "main-content-wrapper[active] main-content-2 notifications",
+  ).replaceChildren(
     ...[$read_header],
     ...$read_allclear,
     ...read_notifications.map(renderNotification),
@@ -166,8 +171,12 @@ const renderMarkAllAsRead = () => {
       `,
       [!Boolean(state.unread_count)],
     );
-    $("main-content-wrapper[active] back-forward-wrapper").$("mark-all-as-read-wrapper")?.remove();
-    $("main-content-wrapper[active] back-forward-wrapper").appendChild($mark_all_as_read);
+    $("main-content-wrapper[active] back-forward-wrapper")
+      .$("mark-all-as-read-wrapper")
+      ?.remove();
+    $("main-content-wrapper[active] back-forward-wrapper").appendChild(
+      $mark_all_as_read,
+    );
     $mark_all_as_read.on("click", () => {
       $mark_all_as_read.$("button").setAttribute("alt", "");
       $mark_all_as_read.$("button").setAttribute("faint", "");
@@ -312,3 +321,20 @@ window.addEventListener("load", () => {
     state.window_recently_loaded = false;
   }, 5000);
 });
+
+if (window.webkit || window.matchMedia("(display-mode: standalone)").matches) {
+  $("body").setAttribute("app", "");
+  state.is_app = true;
+}
+const focusChange = () => {
+  if (
+    document.activeElement?.tagName === "INPUT" ||
+    document.activeElement?.tagName === "TEXTAREA"
+  ) {
+    $("body").removeAttribute("app");
+  } else if (state.is_app) {
+    $("body").setAttribute("app", "");
+  }
+};
+window.addEventListener("focusin", focusChange);
+window.addEventListener("focusout", focusChange);

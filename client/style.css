@@ -179,17 +179,6 @@ footer a:nth-child(4) svg {
 footer a[unread]::before {
   top: calc(50% - 10px);
 }
-@media (display-mode: standalone) {
-  main-content-wrapper {
-    bottom: calc(54px + env(safe-area-inset-bottom));
-  }
-  footer {
-    display: flex;
-  }
-  body main-content add-new:first-child {
-    bottom: calc(74px + env(safe-area-inset-bottom));
-  }
-}
 body[app] main-content-wrapper {
   bottom: calc(54px + env(safe-area-inset-bottom));
 }

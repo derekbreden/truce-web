@@ -41,7 +41,3 @@ window.addEventListener("popstate", () => {
     goToPath(new_path, true);
   }
 });
-
-if (window.webkit) {
-  $("body").setAttribute("app", "");
-}
