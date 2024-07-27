@@ -71,11 +71,11 @@ main-content-wrapper[inactive][clicked-back] {
 main-content-wrapper[active] {
   animation: slide-in-left 0.2s ease-in-out;
 }
-main-content-wrapper[active][skip-state] {
-  animation: none;
-}
 main-content-wrapper[active][clicked-back] {
   animation: slide-in-right 0.2s ease-in-out;
+}
+main-content-wrapper[active][skip-state] {
+  animation: none;
 }
 @keyframes slide-in-left {
   0% {
