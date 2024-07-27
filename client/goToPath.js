@@ -13,9 +13,15 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     // Slide from left to right as if clicking back in several more scenarios
     if (
       (state.path === "/topics" && new_path === "/")
+      || (state.path === "/recent" && new_path === "/")
       || (state.path === "/recent" && new_path === "/topics")
+      || (state.path === "/votes" && new_path === "/")
+      || (state.path === "/votes" && new_path === "/topics")
+      || (state.path === "/votes" && new_path === "/recent")
+      || (state.path === "/notifications" && new_path === "/")
       || (state.path === "/notifications" && new_path === "/topics")
       || (state.path === "/notifications" && new_path === "/recent")
+      || (state.path === "/notifications" && new_path === "/votes")
     ) {
       clicked_back = true;
     }

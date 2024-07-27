@@ -394,13 +394,13 @@ menu links a {
   font-weight: 600;
   display: flex;
   align-items: center;
-  padding: 5px 20px 5px 14px;
+  padding: 5px 20px 5px 11px;
   border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
 menu links a icon {
-  height: 26px;
-  width: 26px;
+  height: 36px;
+  width: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -409,13 +409,16 @@ menu links a icon svg {
   fill: light-dark(#000, #fff);
 }
 menu links a icon[recent] svg {
-  width: 20px;
+  width: 28px;
+}
+menu links a icon[settings] svg {
+  width: 30px;
 }
 menu links a icon[notifications] svg {
-  width: 24px;
+  width: 32px;
 }
 menu links a p {
-  margin: 0 0 0 10px;
+  margin: 0 0 0 5px;
 }
 menu links a[unread]::before {
   left: 6px;
