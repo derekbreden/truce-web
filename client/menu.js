@@ -14,9 +14,9 @@ const showMenu = () => {
           a[href=/recent]
             icon[recent]
             p Recent
-          a[href=/votes]
-            icon[votes]
-            p Votes
+          a[href=/favorites]
+            icon[favorites]
+            p Favorites
           a[href=/notifications][unread=$1]
             icon[notifications]
             p Notifications
@@ -32,8 +32,8 @@ const showMenu = () => {
   $menu.$("icon[recent]").appendChild(
     $("footer icon[recent] svg").cloneNode(true),
   );
-  $menu.$("icon[votes]").appendChild(
-    $("footer icon[votes] svg").cloneNode(true),
+  $menu.$("icon[favorites]").appendChild(
+    $("footer icon[favorites] svg").cloneNode(true),
   );
   $menu.$("icon[notifications]").appendChild(
     $("footer icon[notifications] svg").cloneNode(true),

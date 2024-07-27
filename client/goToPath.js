@@ -15,13 +15,13 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       (state.path === "/topics" && new_path === "/")
       || (state.path === "/recent" && new_path === "/")
       || (state.path === "/recent" && new_path === "/topics")
-      || (state.path === "/votes" && new_path === "/")
-      || (state.path === "/votes" && new_path === "/topics")
-      || (state.path === "/votes" && new_path === "/recent")
+      || (state.path === "/favorites" && new_path === "/")
+      || (state.path === "/favorites" && new_path === "/topics")
+      || (state.path === "/favorites" && new_path === "/recent")
       || (state.path === "/notifications" && new_path === "/")
       || (state.path === "/notifications" && new_path === "/topics")
       || (state.path === "/notifications" && new_path === "/recent")
-      || (state.path === "/notifications" && new_path === "/votes")
+      || (state.path === "/notifications" && new_path === "/favorites")
     ) {
       clicked_back = true;
     }

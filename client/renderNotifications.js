@@ -320,7 +320,6 @@ window.addEventListener("load", () => {
     state.window_recently_loaded = false;
   }, 5000);
 });
-$("body").setAttribute("app", "");
 if (window.webkit || window.matchMedia("(display-mode: standalone)").matches) {
   $("body").setAttribute("app", "");
   state.is_app = true;
