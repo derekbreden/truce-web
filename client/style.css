@@ -313,17 +313,18 @@ hamburger {
   cursor: pointer;
   position: relative;
 }
-hamburger img {
-}
 [unread]::before {
   content: "";
   position: absolute;
   top: calc(50% - 4px);
   left: -14px;
-  background: light-dark(#48c, #e0f0ff);
+  background: light-dark(#48c, #04f);
   border-radius: 50%;
   height: 8px;
   width: 8px;
+}
+hamburger[unread]::before {
+  left: -8px;
 }
 menu-wrapper {
   position: fixed;

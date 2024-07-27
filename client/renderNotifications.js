@@ -74,10 +74,9 @@ const renderNotifications = (notifications) => {
   const read_notifications = notifications.filter((n) => n.read);
   const $unread_header = $(
     `
-    h3[unread=$1] $2
+    h3 $1
     `,
     [
-      Boolean(state.unread_count),
       state.unread_count ? `Unread (${state.unread_count})` : "Unread",
     ],
   );
@@ -321,7 +320,7 @@ window.addEventListener("load", () => {
     state.window_recently_loaded = false;
   }, 5000);
 });
-
+$("body").setAttribute("app", "");
 if (window.webkit || window.matchMedia("(display-mode: standalone)").matches) {
   $("body").setAttribute("app", "");
   state.is_app = true;

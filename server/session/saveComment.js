@@ -536,8 +536,23 @@ module.exports = async (req, res) => {
           },
           token: JSON.parse(subscription.fcm_token),
         };
-        const result = await fcm_messaging.send(message);
-        console.log(result);
+        try {
+          const result = await fcm_messaging.send(message);
+          console.log(result);
+        } catch (e) {
+          console.log(e.message);
+          console.log(e.code);
+          if (e.code === "messaging/registration-token-not-registered") {
+            console.log("Unsubscribing", subscription.fcm_token);
+            await req.client.query(
+              `
+              DELETE FROM subscriptions
+              WHERE fcm_token = $1
+              `,
+              [ subscription.fcm_token ]
+            );
+          }
+        }
 
         // Web Push version
       } else {
