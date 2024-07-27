@@ -9,7 +9,7 @@ const renderTopic = (topic) => {
     topic.edit = false;
     $topic_body = $topic_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
-      if (characters_used < 280) {
+      if (characters_used < 500) {
 
         // Exclude audio from summaries
         if (child.tagName !== "AUDIO") {
