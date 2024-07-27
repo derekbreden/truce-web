@@ -832,7 +832,8 @@ comment pass,
 comment info {
   margin-top: 10px;
 }
-comment info b {
+info b {
+  margin-top: -1.5px;
   margin-bottom: 5px;
 }
 comments > add-new:first-child {

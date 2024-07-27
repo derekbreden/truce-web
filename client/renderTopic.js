@@ -58,9 +58,9 @@ const renderTopic = (topic) => {
         ? $(
             `
             info-wrapper
-              info[show][$1]
-                b $2
-                span $3
+              info[show]
+                b $1
+                span $2
             `,
             [note_title, note_body],
           )
