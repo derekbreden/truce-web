@@ -1101,7 +1101,6 @@ topics topic {
   position: relative;
 }
 notifications notification::after,
-activities activity::before,
 topics topic::before {
   content: "";
   display: flex;
