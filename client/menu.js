@@ -5,26 +5,39 @@ const showMenu = () => {
       modal-bg
       menu
         links
-          a[href=/] Introduction
-          a[href=/topics] Topics
-          a[href=/recent] Recent
+          a[href=/]
+            icon[welcome]
+            p Welcome
+          a[href=/topics]
+            icon[topics]
+            p Topics
+          a[href=/recent]
+            icon[recent]
+            p Recent
+          a[href=/votes]
+            icon[votes]
+            p Votes
+          a[href=/notifications][unread=$1]
+            icon[notifications]
+            p Notifications
     `,
+    [ Boolean(state.unread_count) ]
   );
-  if (state.push_active || state.fcm_push_active) {
-    $menu.$("links").appendChild(
-      $(
-        `
-        a[href=/notifications][unread=$1] $2
-        `,
-        [
-          Boolean(state.unread_count),
-          state.unread_count
-            ? `Notifications (${state.unread_count})`
-            : "Notifications",
-        ],
-      ),
-    );
-  }
+  $menu.$("icon[welcome]").appendChild(
+    $("icons icon[welcome] svg").cloneNode(true),
+  );
+  $menu.$("icon[topics]").appendChild(
+    $("footer icon[topics] svg").cloneNode(true),
+  );
+  $menu.$("icon[recent]").appendChild(
+    $("footer icon[recent] svg").cloneNode(true),
+  );
+  $menu.$("icon[votes]").appendChild(
+    $("footer icon[votes] svg").cloneNode(true),
+  );
+  $menu.$("icon[notifications]").appendChild(
+    $("footer icon[notifications] svg").cloneNode(true),
+  );
   const menuCancel = () => {
     $menu.remove();
   };
@@ -38,70 +51,124 @@ const showMenu = () => {
     });
   });
   if (state.email) {
-    const $remove_account = $(
+    const $settings = $(
       `
-        a[href=/] Remove account
+        a[href=/]
+          icon[settings]
+          p Account Settings
       `,
     );
-    $remove_account.on("click", ($event) => {
-      $event.preventDefault();
-      menuCancel();
-      const $modal = $(
-        `
-        modal-wrapper
-          modal[info]
-            error
-              b Warning
-              p This will permanently remove your account. This action cannot be undone.
-            p Everything you posted will be deleted:
-            ul
-              li Comments
-              li Topics
-              li Images
-              li Display name
-            p Tap remove to confirm.
-            button-wrapper
-              button[remove] Remove
-              button[alt][cancel] Cancel
-          modal-bg
-        `,
-      );
-      const modalCancel = () => {
-        $modal.remove();
-      };
-      $modal.$("[remove]").on("click", () => {
-        modalCancel();
-        modalInfo("Removing account...");
-        fetch("/session", {
-          method: "POST",
-          body: JSON.stringify({
-            remove_account: true,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (!data || !data.success) {
-              modalError("Server error removing account");
-            } else {
-              $("modal-wrapper")?.remove();
-              modalInfo("Account removed");
-              state.email = "";
-              state.reset_token_uuid = "";
-              localStorage.removeItem("session_uuid");
-              state.cache = {};
-              goToPath("/");
-            }
+    $settings.$("icon[settings]").appendChild(
+      $("icons icon[settings] svg").cloneNode(true),
+    );
+    $settings.on("click", ($event) => {
+        $event.preventDefault();
+        menuCancel();
+        const $settings_modal = $(
+          `
+          modal-wrapper
+            modal[info]
+              p You may change your display name here.
+              input[type=text][display-name][value=$1]
+              button-wrapper
+                button[alt][cancel] Cancel
+                button[save] Save Changes
+              p You may also remove your account.
+              button[remove][alt] Remove Account
+            modal-bg
+          `,
+          [ state.display_name ]
+        );
+        const settingsModalCancel = () => {
+          $settings_modal.remove();
+        };
+        $settings_modal.$("[save]").on("click", () => {
+          settingsModalCancel();
+          modalInfo("Saving display name...");
+          const new_display_name = $settings_modal.$("[display-name]").value;
+          fetch("/session", {
+            method: "POST",
+            body: JSON.stringify({
+              display_name: new_display_name,
+            }),
           })
-          .catch((error) => {
-            modalError("Network error removing account");
-          });
-      });
-      $modal.$("[cancel]").on("click", modalCancel);
-      $modal.$("modal-bg").on("click", modalCancel);
-      $("modal-wrapper")?.remove();
-      $("body").appendChild($modal);
+            .then((response) => response.json())
+            .then(function (data) {
+              if (data.error || !data.success) {
+                modalError(data.error || "Server error");
+              } else {
+                state.display_name = new_display_name;
+                modalInfo("Display name saved.")
+              }
+            })
+            .catch(function () {
+              modalError("Network error");
+            });
+        });
+        $settings_modal.$("[remove]").on("click", () => {
+          $event.preventDefault();
+          menuCancel();
+          const $remove_modal = $(
+            `
+            modal-wrapper
+              modal[info]
+                error
+                  b Warning
+                  p This will permanently remove your account. This action cannot be undone.
+                p Everything you posted will be deleted:
+                ul
+                  li Comments
+                  li Topics
+                  li Images
+                  li Display name
+                p Tap remove to confirm.
+                button-wrapper
+                  button[remove] Remove
+                  button[alt][cancel] Cancel
+              modal-bg
+            `,
+          );
+          const removeModalCancel = () => {
+            $remove_modal.remove();
+          };
+          $remove_modal.$("[remove]").on("click", () => {
+            removeModalCancel();
+            modalInfo("Removing account...");
+            fetch("/session", {
+              method: "POST",
+              body: JSON.stringify({
+                remove_account: true,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data || !data.success) {
+                  modalError("Server error removing account");
+                } else {
+                  $("modal-wrapper")?.remove();
+                  modalInfo("Account removed");
+                  state.email = "";
+                  state.reset_token_uuid = "";
+                  localStorage.removeItem("session_uuid");
+                  state.cache = {};
+                  goToPath("/");
+                }
+              })
+              .catch((error) => {
+                modalError("Network error removing account");
+              });
+            });
+            $remove_modal.$("[cancel]").on("click", removeModalCancel);
+            $remove_modal.$("modal-bg").on("click", removeModalCancel);
+            $("modal-wrapper")?.remove();
+            $("body").appendChild($remove_modal);
+        });
+        $settings_modal.$("[cancel]").on("click", settingsModalCancel);
+        $settings_modal.$("modal-bg").on("click", settingsModalCancel);
+        $("modal-wrapper")?.remove();
+        $("body").appendChild($settings_modal);
     });
-    $menu.$("links").appendChild($remove_account);
+    $menu.$("links").appendChild($settings);
     const $signed_in = $(
       `
       signed-in
