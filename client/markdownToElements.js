@@ -23,7 +23,7 @@ const markdownToElements = (text) => {
     // Support for #
     if (p_content.substr(0, 2) === "# " || p_content.substr(0,2) === "##") {
       p_element.setAttribute("bold", "");
-      p_content = p_content.replace(/#* /g, "");
+      p_content = p_content.replace(/#{1,} /g, "");
     }
 
     // Support for -
