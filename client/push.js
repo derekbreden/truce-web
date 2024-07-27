@@ -136,6 +136,7 @@ if (
                 } else if (data.deactivated) {
                   state.fcm_push_active = false;
                 } else {
+                  state.fcm_push_active = true;
                   getUnreadCountUnseenCount();
                 }
               })
