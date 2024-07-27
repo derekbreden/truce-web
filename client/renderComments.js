@@ -139,7 +139,9 @@ const renderComments = (comments) => {
         // When they click down, keep scroll on the last comment
         if ($event.target?.hasAttribute("expand-down")) {
           const final_rect = $last_comment.getBoundingClientRect();
-          $("main-content-wrapper[active]").scrollTop = $("main-content-wrapper[active]").scrollTop + (final_rect.y - original_rect.y);
+          $("main-content-wrapper[active]").scrollTop =
+            $("main-content-wrapper[active]").scrollTop +
+            (final_rect.y - original_rect.y);
         }
       });
       if (state.expanded_comment_ids.includes($root_comment.comment_id)) {
@@ -162,7 +164,7 @@ const renderComments = (comments) => {
     state.path !== "/notifications";
   if (!$("main-content-wrapper[active] comments")) {
     const target =
-      state.path.substr(0,9) === "/comment/"
+      state.path.substr(0, 9) === "/comment/"
         ? "main-content-wrapper[active] main-content"
         : "main-content-wrapper[active] main-content-2";
     $(target).appendChild(
@@ -229,7 +231,10 @@ const renderComments = (comments) => {
       );
     }
     comment.$comment.setAttribute("flash-long-focus", "");
-    comment.$comment.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // Wait for slide in animation before scrolling
+    setTimeout(() => {
+      comment.$comment.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 250);
     setTimeout(() => {
       comment.$comment.removeAttribute("flash-long-focus");
     }, 2500);
