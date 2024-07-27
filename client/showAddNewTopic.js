@@ -6,7 +6,7 @@ const showAddNewTopic = (topic) => {
         input[title][placeholder=Title][maxlength=140][value=$1]
         label[img-icon]
           input[img][type=file][multiple][accept=image/*]
-      textarea[body][placeholder=Content][rows=10][maxlength=4000] $2
+      textarea[body][placeholder=Content][rows=10][maxlength=8000] $2
       button[submit] $3
       button[alt][cancel] Cancel
     `,
