@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   try {
     const response = await object_client.send(
       new GetObjectCommand({
-        Bucket: "truce",
+        Bucket: "truce.net",
         Key: `${image_uuid}.png`,
       }),
     );

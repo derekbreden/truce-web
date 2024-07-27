@@ -39,10 +39,20 @@ module.exports = async (req, res) => {
       ],
     });
     const ai_response_text = await ai.ask(messages, "common");
-    if (ai_response_text === "OK") {
-      const slug = req.body.title
+    if (ai_response_text !== "Spam") {
+      let slug = req.body.title
         .replace(/[^a-z0-9 ]/gi, "")
         .replace(/ {1,}/g, "_");
+      // If slug exists, add a uuid to it
+      const slug_exists = await req.client.query(
+        `
+        SELECT slug FROM topics WHERE slug = $1
+        `,
+        [ slug ]
+      );
+      if (slug_exists.rows.length > 0) {
+        slug = (slug + "-" + crypto.randomUUID()).replace(/\-/g, "_");
+      }
       let topic_id = 0;
       // Update existing
       if (req.body.topic_id) {
@@ -53,15 +63,17 @@ module.exports = async (req, res) => {
             title = $1,
             slug = $2,
             body = $3,
+            note = $4,
             create_date = NOW()
           WHERE
-            topic_id = $4
-            AND user_id = $5
+            topic_id = $5
+            AND user_id = $6
           `,
           [
             req.body.title,
             slug,
             req.body.body,
+            ai_response_text.replace(/[^a-z\-]/ig, "") === "OK" ? null : ai_response_text,
             req.body.topic_id,
             req.session.user_id,
           ],
@@ -73,15 +85,16 @@ module.exports = async (req, res) => {
         const topic_result = await req.client.query(
           `
           INSERT INTO topics
-            (title, slug, body, user_id)
+            (title, slug, body, note, user_id)
           VALUES
-            ($1, $2, $3, $4)
+            ($1, $2, $3, $4, $5)
           RETURNING topic_id;
           `,
           [
             req.body.title,
             slug,
             req.body.body,
+            ai_response_text.replace(/[^a-z\-]/ig, "") === "OK" ? null : ai_response_text,
             req.session.user_id,
           ],
         );

@@ -16,6 +16,7 @@ module.exports = async (req, res) => {
           a.title,
           a.slug,
           a.body,
+          a.note,
           CASE WHEN a.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(i.image_uuid, ',') AS image_uuids
         FROM topics a

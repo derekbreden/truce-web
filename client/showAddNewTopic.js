@@ -137,34 +137,14 @@ const showAddNewTopic = (topic) => {
           $add_new.$("[body]").removeAttribute("disabled");
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]")?.removeAttribute("disabled");
-          if (data.error) {
-            const first_word = data.error.slice(0, data.error.indexOf(" "));
-            const title = {
-              ESCALATING: "Escalation",
-              JUDGMENTAL: "Judgmental",
-              MISUNDERSTANDING: "Misunderstanding",
-              OFFTOPIC: "Off topic",
-            }[first_word];
-            if (title) {
-              addTopicError(
-                $(
-                  `
-                  b $1
-                  p $2
-                  `,
-                  [title, data.error.slice(data.error.indexOf(" ") + 1)],
-                ),
-              );
-            } else {
-              addTopicError(data.error);
-            }
-          } else {
-            addTopicError("Server error");
-          }
+          addTopicError(data.error || "Server error");
           return;
         }
         if (!topic) {
           $add_new.$("[body]").value = "";
+          $add_new.$("[title]").value = "";
+          pngs.splice(0, pngs.length);
+          previewPngs();
           $add_new.$("info")?.remove();
           $add_new.$("[title]").removeAttribute("disabled");
           $add_new.$("[body]").removeAttribute("disabled");

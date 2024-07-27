@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
           a.title,
           a.slug,
           LEFT(a.body, 1000) as body,
+          a.note,
           a.comment_count,
           a.comment_count_max_create_date,
           CASE WHEN a.user_id = $1 THEN true ELSE false END AS edit,
@@ -24,6 +25,7 @@ module.exports = async (req, res) => {
           a.title,
           a.slug,
           LEFT(a.body, 1000),
+          a.note,
           a.comment_count,
           a.comment_count_max_create_date,
           CASE WHEN a.user_id = $1 THEN true ELSE false END

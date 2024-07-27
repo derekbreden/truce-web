@@ -17,7 +17,7 @@ const renderNotification = (notification) => {
 
   const note = notification.note || "";
   const note_keyword = note.split(" ")[0];
-  const note_title = note_keywords[note_keyword] || note_keyword;
+  const note_title = (note_keywords[note_keyword] || note_keyword).replace(/[^a-z\-]/ig, "");
   const $notification = $(
     `
     notification[unread=$1]

@@ -84,6 +84,7 @@ module.exports = async (req, res) => {
       SELECT
         a.title,
         a.body,
+        a.note,
         u.display_name,
         STRING_AGG(i.image_uuid, ',') AS image_uuids
       FROM topics a
@@ -93,6 +94,7 @@ module.exports = async (req, res) => {
       GROUP BY
         a.title,
         a.body,
+        a.note,
         u.display_name,
         a.create_date
       ORDER BY a.create_date ASC
@@ -139,11 +141,18 @@ module.exports = async (req, res) => {
         ],
       });
 
-      // Topics do not have notes at the moment
-      messages.push({
-        role: "system",
-        content: "OK",
-      });
+      // Add a message for the system response of a note or OK
+      if (topic.note) {
+        messages.push({
+          role: "system",
+          content: topic.note,
+        });
+      } else {
+        messages.push({
+          role: "system",
+          content: "OK",
+        });
+      }
     }
     const ancestor_ids = [];
     if (req.body.parent_comment_id) {
@@ -257,7 +266,7 @@ module.exports = async (req, res) => {
       ],
     });
     const ai_response_text = await ai.ask(messages, "common");
-    if (ai_response_text === "SPAM") {
+    if (ai_response_text === "Spam") {
       res.end(
         JSON.stringify({
           error: ai_response_text,
@@ -266,7 +275,7 @@ module.exports = async (req, res) => {
       return;
     }
     let comment_id = req.body.comment_id;
-    if (ai_response_text === "OK") {
+    if (ai_response_text.replace(/[^a-z\-]/ig, "") === "OK") {
       if (req.body.comment_id) {
         await req.client.query(
           `

@@ -1,4 +1,7 @@
 const renderTopic = (topic) => {
+  const note = topic.note || "";
+  const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/ig, "");
+  const note_body = note.slice(note.indexOf(" ") + 1);
   let $topic_body = markdownToElements(topic.body);
   let characters_used = 0;
   let trimmed = false;
@@ -39,6 +42,7 @@ const renderTopic = (topic) => {
         $1
         $2
       $3
+      $4
     `,
     [
       topic.title,
@@ -48,6 +52,17 @@ const renderTopic = (topic) => {
             button[edit][small][alt][faint] Edit
             `,
             [],
+          )
+        : [],
+      topic.note
+        ? $(
+            `
+            info-wrapper
+              info[show][$1]
+                b $2
+                span $3
+            `,
+            [note_title, note_body],
           )
         : [],
       $topic_body,

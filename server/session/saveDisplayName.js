@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
       ],
       "display_name",
     );
-    if (ai_response_text === "OK") {
+    if (ai_response_text.replace(/[^a-z\-]/ig, "") === "OK") {
       await require("./updateDisplayName")(req, res);
       res.end(
         JSON.stringify({
