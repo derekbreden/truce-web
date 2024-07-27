@@ -42,7 +42,7 @@ main-content-wrapper {
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
-  background: light-dark(#f5f5f5, #393939);
+  background: light-dark(#f5f5f5, #000);
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
 }
@@ -97,7 +97,7 @@ main-content,
 main-content-2 {
   flex: 1;
   display: flex;
-  background: light-dark(#fff, #393939);
+  background: light-dark(#fff, #000);
   flex-direction: column;
   padding: 0 20px 20px 20px;
   max-width: 480px;
@@ -122,19 +122,23 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
-  background: light-dark(#fff, #191919);
+  background: #fff;
   height: calc(54px + env(safe-area-inset-bottom));
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0px 0px 5px #000;
+  border-top: 1px solid light-dark(#000, #fff);
   z-index: 1;
   padding: 0 0 env(safe-area-inset-bottom) 0;
 }
-@media (prefers-color-scheme: dark) {
-  footer {
-    box-shadow: none;
-    border-top: 1px solid #333;
-  }
+footer::after {
+  content: "";
+  position: absolute;
+  background: #000;
+  z-index: 0;
+  left: 50%;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
 footer a {
   font-size: .786rem;
@@ -146,29 +150,28 @@ footer a {
   overflow: visible;
   align-items: center;
   position: relative;
+  z-index: 1;
 }
 footer a p {
   margin: 0;
   max-width: unset;
-  font-size-
+  font-size: .786rem;
+  color: #000;
+}
+footer a:nth-child(3) p,
+footer a:nth-child(4) p {
+  color: #fff;
 }
 footer a icon {
   height: 34px;
   width: 34px;
-  font-size: 34px;
-  line-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-footer a icon[topics] {
-  font-weight: 600;
-}
-footer a icon[recent] {
-  font-weight: 900;
-}
-footer a icon[recent] {
-  font-weight: 900;
+footer a:nth-child(3) svg,
+footer a:nth-child(4) svg {
+  fill: #fff;
 }
 footer a[unread]::before {
   top: calc(50% - 10px);
@@ -269,20 +272,14 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  background: light-dark(#fff, #191919);
+  background: #fff;
+  border-bottom: 1px solid light-dark(#000, #fff);
   right: 0;
   height: 44px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0px 0px 5px #000;
   z-index: 2;
-}
-@media (prefers-color-scheme: dark) {
-  header {
-    box-shadow: none;
-    border-bottom: 1px solid #333;
-  }
 }
 header h1 {
   cursor: pointer;
@@ -294,28 +291,37 @@ header h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #000;
 }
-header h1 img {
-  height: 24px;
-  width: 24px;
-  margin-right: 5px;
+header img {
+  position: absolute;
+  z-index: 1;
+  height: 43px;
+  width: 43px;
+  left: calc(50% - 21.5px);
+}
+header::after {
+  content: "";
+  position: absolute;
+  background: #000;
+  z-index: 0;
+  left: 50%;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
 hamburger {
   position: relative;
+  z-index: 1;
   height: 100%;
   width: 54px;
-  padding: 10px 20px 10px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
   position: relative;
 }
-hamburger line {
-  border: 1.5px solid light-dark(#000, #f5f5f5);
-  border-bottom-width: 1px;
-  border-radius: 2px;
-  width: 100%;
+hamburger img {
 }
 [unread]::before {
   content: "";
@@ -341,33 +347,11 @@ menu {
   position: absolute;
   top: 0;
   right: 0;
-  background: light-dark(#fff, #191919);
-  box-shadow: 0px 0px 5px #000;
+  background: light-dark(#fff, #000);
   border-radius: 0 0 0 2px;
   z-index: 6;
-  border-top: 1px solid light-dark(#999, #333);
-}
-@media (prefers-color-scheme: dark) {
-  menu {
-    box-shadow: none;
-    border-top: 0;
-    border-left: 1px solid #333;
-    border-bottom: 1px solid #333;
-  }
-}
-menu::before {
-  content: "";
-  position: absolute;
-  left: -20px;
-  right: 0;
-  top: -8px;
-  height: 7px;
-  background: light-dark(#fff, #000);
-}
-@media (prefers-color-scheme: dark) {
-  menu::before {
-    display: none;
-  }
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
 }
 menu signed-in,
 menu sign-in,
@@ -432,7 +416,7 @@ menu toggle-wrapper toggle-button toggle-circle {
   transition: left .2s ease-in-out;
 }
 menu toggle-wrapper[active] toggle-button {
-  background: #4a5;
+  background: light-dark(#4a5, #091);
 }
 menu toggle-wrapper[active] toggle-button toggle-circle {
   left: 21px;
@@ -454,16 +438,16 @@ a[big] {
   width: 100%;
   text-decoration: none;
   border-radius: 2px;
-  border: 1px solid #4a5;
-  color: light-dark(#fff, #000);
-  background: #4a5;
+  border: 1px solid light-dark(#4a5, #091);
+  color: light-dark(#fff, #f0fff0);
+  background: light-dark(#4a5, #091);
   padding: 10px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 modal-bg {
   display: flex;
-  background: light-dark(#00000077, #ffffff55);
+  background: light-dark(#00000077, #000000cc);
   position: absolute;
   top: 0;
   left: 0;
@@ -477,7 +461,7 @@ textarea {
   width: 240px;
   border-radius: 2px;
   border: 1px solid light-dark(#000, #333);
-  background: light-dark(#fff, #191919);
+  background: light-dark(#fff, #000);
   padding: 10px;
 }
 button {
@@ -486,15 +470,15 @@ button {
   -webkit-appearance: none;
   border-radius: 2px;
   background: light-dark(#000, #f5f5f5);
-  border: 1px solid light-dark(#000, #f5f5f5);
+  border: 1px solid light-dark(#000, #fff);
   color: light-dark(#fff, #000);
   padding: 10px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 button[alt] {
-  background: light-dark(#f5f5f5, #191919);
-  color: light-dark(#000, #f5f5f5);
+  background: light-dark(#f5f5f5, #000);
+  color: light-dark(#000, #fff);
   border: 1px solid light-dark(#999, #333);
 }
 button[small] {
@@ -559,33 +543,33 @@ info[tiny]::before {
   font-size: 9px;
 }
 info {
-  border-color: light-dark(#48c, #48c);
-  background: light-dark(#e0f0ff, #48c);
+  border-color: light-dark(#48c, #04a);
+  background: light-dark(#e0f0ff, #04a);
   color: light-dark(#48c, #e0f0ff);
 }
 info::before {
   content: "i";
   background: light-dark(#48c, #e0f0ff);
-  color: light-dark(#e0f0ff, #48c);
+  color: light-dark(#e0f0ff, #04a);
 }
 info[response] {
-  border-color: light-dark(#555, #555);
-  background: light-dark(#f5f5f5, #555);
+  border-color: light-dark(#555, #333);
+  background: light-dark(#f5f5f5, #333);
   color: light-dark(#555, #f5f5f5);
 }
 info[response]::before {
   background: light-dark(#555, #f5f5f5);
-  color: light-dark(#f5f5f5, #555);
+  color: light-dark(#f5f5f5, #333);
 }
 pass {
-  border-color: light-dark(#4a5, #4a5);
-  background: light-dark(#f0fff0, #4a5);
+  border-color: light-dark(#4a5, #091);
+  background: light-dark(#f0fff0, #091);
   color: light-dark(#4a5, #f0fff0);
 }
 pass::before {
   content: "✓";
   background: light-dark(#4a5, #f0fff0);
-  color: light-dark(#f0fff0, #4a5);
+  color: light-dark(#f0fff0, #091);
 }
 error p {
   margin-top: 5px;
@@ -632,8 +616,8 @@ password-help::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: light-dark(#48c, #e0f0ff);
-  color: light-dark(#e0f0ff, #48c);
+  background: light-dark(#48c, #04a);
+  color: light-dark(#e0f0ff, #e0f0ff);
   font-weight: 600;
   height: 17px;
   width: 17px;
@@ -645,7 +629,7 @@ modal {
   top: 44px;
   left: 50%;
   transform: translateX(-50%);
-  background: light-dark(#fff, #191919);
+  background: light-dark(#fff, #000);
   border-radius: 2px;
   box-shadow: 0px 0px 5px #000;
   max-width: 480px;
@@ -906,8 +890,8 @@ share-wrapper button,
 forward-wrapper button,
 back-wrapper button,
 expand-wrapper button {
-  background: light-dark(#fff, #191919);
-  border-color: light-dark(#fff, #191919);
+  background: light-dark(#fff, #000);
+  border-color: light-dark(#fff, #000);
   position: relative;
   padding: 6px;
 }

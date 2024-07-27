@@ -262,20 +262,6 @@ const getUnreadCountUnseenCount = () => {
       modalError("Network error");
       console.error(error);
     });
-  if (!$("footer a[notifications]")) {
-    $notification_link = $(
-      `
-      a[href=/notifications][notifications]
-        icon[notifications] ⍾
-        p Notifications
-      `,
-    )
-    $notification_link.on("click", ($event) => {
-      $event.preventDefault();
-      goToPath($notification_link.getAttribute("href"));
-    });
-    $("footer").appendChild($notification_link);
-  }
 };
 
 const markAsRead = (notification_id) => {

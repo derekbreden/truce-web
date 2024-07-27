@@ -48,7 +48,7 @@ module.exports = {
         if (this.resources.indexOf(req.path) > -1) {
           filename = "resources/" + req.path;
           if (!req.path.endsWith(".js")) {
-            res.setHeader("Cache-Control", "public, max-age=31536000");
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
           }
         }
         const extension = filename.split(".").pop();
@@ -80,23 +80,26 @@ module.exports = {
 
         // Handle Server Side Includes for .html files
         if (extension === "html") {
-          const lines = data.split("\n");
-          for (const line of lines) {
-            if (line.indexOf('<!--#include file="') > -1) {
-              const file = line.split('"')[1];
+          const parseData = async (data) => {
+            const lines = data.split("\n");
+            for (const line of lines) {
+              if (line.indexOf('<!--#include file="') > -1) {
+                const file = line.split('"')[1];
 
-              // Tests are skipped when not on the test path
-              const dir = file.split("/")[0];
-              if (dir === "tests" && req.path !== "test") {
-                continue;
+                // Tests are skipped when not on the test path
+                const dir = file.split("/")[0];
+                if (dir === "tests" && req.path !== "test") {
+                  continue;
+                }
+
+                const file_content = await fs.readFile(file, encoding);
+                await parseData(file_content);
+              } else {
+                res.write(line + "\n", encoding);
               }
-
-              const file_content = await fs.readFile(file, encoding);
-              res.write(file_content + "\n", encoding);
-            } else {
-              res.write(line + "\n", encoding);
             }
-          }
+          };
+          await parseData(data);
           res.end("", encoding);
 
           // Return any other file as is
