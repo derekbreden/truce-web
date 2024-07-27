@@ -5,31 +5,6 @@ module.exports = async (req, res) => {
       `
       WITH combined AS (
         SELECT 
-          a.topic_id AS id,
-          a.create_date,
-          a.title,
-          LEFT(a.body, 1000) as body,
-          a.note,
-          a.slug,
-          a.comment_count,
-          a.comment_count_max_create_date,
-          a.user_id,
-          NULL AS parent_comment_id,
-          NULL AS parent_topic_id,
-          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
-          'topic' AS type
-        FROM topics a
-        LEFT JOIN topic_images i ON a.topic_id = i.topic_id
-        GROUP BY
-          a.topic_id,
-          a.create_date,
-          a.title,
-          LEFT(a.body, 1000),
-          a.note,
-          a.slug,
-          a.user_id
-        UNION ALL
-        SELECT 
           c.comment_id AS id,
           c.create_date,
           NULL AS title,

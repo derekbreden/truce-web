@@ -20,7 +20,7 @@ const renderBack = () => {
         previous_path === "/topics"
           ? "Back to topics"
           : previous_path === "/recent"
-            ? "Back to recent"
+            ? "Back to comments"
             : previous_path?.substr(0, 8) === "/comment"
               ? "Back to comment thread"
               : previous_path?.substr(0, 7) === "/topic/"

@@ -13,7 +13,7 @@ const showMenu = () => {
             p Topics
           a[href=/recent]
             icon[recent]
-            p Recent
+            p Comments
           a[href=/favorites]
             icon[favorites]
             p Favorites
