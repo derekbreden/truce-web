@@ -19,9 +19,9 @@ const renderActivities = (activities) => {
     if (activity.type === "comment") {
       const $comment = renderComment(activity);
       $comment.$("reply-wrapper")?.remove();
-      let preamble = `${renderName(activity.display_name, activity.display_name_index)} commented on ${activity.parent_topic_title}`;
+      let preamble = `Comment:`;
       if (activity.parent_comment_display_name) {
-        preamble = `${renderName(activity.display_name, activity.display_name_index)} replied to ${renderName(activity.parent_comment_display_name, activity.parent_comment_display_name_index)} on ${activity.parent_topic_title}`;
+        preamble = `Reply:`;
       }
       let $comment_wrapper = $comment;
       if (activity.parent_comment_body) {
@@ -39,10 +39,12 @@ const renderActivities = (activities) => {
       const $activity = $(
         `
             activity
-              h2 $1
-              $2
+              h2
+                span $1
+                span $2
+              $3
           `,
-        [preamble, $comment_wrapper],
+        [preamble, activity.parent_topic_title, $comment_wrapper],
       );
       $activity.on("click", ($event) => {
         $event.preventDefault();
@@ -51,7 +53,7 @@ const renderActivities = (activities) => {
       return $activity;
     } else {
       const $topic = renderTopic(activity);
-      let preamble = `A new topic was posted`;
+      let preamble = `Topic:`;
       const $activity = $(
         `
             activity
@@ -64,11 +66,17 @@ const renderActivities = (activities) => {
     }
   });
   if (window.innerWidth > 1000) {
-    const $activities_1 = $activities.filter((x, i) => i % 2 === 1)
-    const $activities_2 = $activities.filter((x, i) => i % 2 === 0)
-    $("main-content-wrapper[active] main-content activities").replaceChildren(...$activities_1);
-    $("main-content-wrapper[active] main-content-2 activities").replaceChildren(...$activities_2);
+    const $activities_1 = $activities.filter((x, i) => i % 2 === 1);
+    const $activities_2 = $activities.filter((x, i) => i % 2 === 0);
+    $("main-content-wrapper[active] main-content activities").replaceChildren(
+      ...$activities_1,
+    );
+    $("main-content-wrapper[active] main-content-2 activities").replaceChildren(
+      ...$activities_2,
+    );
   } else {
-    $("main-content-wrapper[active] main-content activities").replaceChildren(...$activities);
+    $("main-content-wrapper[active] main-content activities").replaceChildren(
+      ...$activities,
+    );
   }
 };

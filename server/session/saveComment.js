@@ -412,17 +412,17 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Update the topic comment_count and comment_count_max_create_date
+    // Update the topic comment_count and counts_max_create_date
     await req.client.query(
       `
       UPDATE topics
       SET
         comment_count = subquery.comment_count,
-        comment_count_max_create_date = subquery.comment_count_max_create_date
+        counts_max_create_date = subquery.counts_max_create_date
       FROM (
         SELECT
           COUNT(*) AS comment_count,
-          MAX(create_date) AS comment_count_max_create_date
+          MAX(create_date) AS counts_max_create_date
         FROM comments
         WHERE parent_topic_id = $1
       ) AS subquery

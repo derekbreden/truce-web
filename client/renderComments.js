@@ -156,12 +156,7 @@ const renderComments = (comments) => {
 
   // Add each thread to the DOM
   beforeDomUpdate();
-  const showCommentList =
-    state.path.substr(0, 8) !== "/comment" &&
-    state.path !== "/topics" &&
-    state.path !== "/recent" &&
-    state.path !== "/image" &&
-    state.path !== "/notifications";
+  const showCommentList = state.path.substr(0, 7) === "/topic/";
   if (!$("main-content-wrapper[active] comments")) {
     const target =
       state.path.substr(0, 9) === "/comment/"

@@ -3,12 +3,23 @@ const renderShare = () => {
     const $share = $(
       `
       share-wrapper
+        icon[share]
+          $1
         p Share
-        button[share]
         info[small] Link copied to clipboard!
       `,
+      [
+        $("icons icon[share] svg").cloneNode(true),
+      ]
     );
     $("main-content-wrapper[active] back-forward-wrapper").$("share-wrapper")?.remove();
+    $("main-content-wrapper[active] back-forward-wrapper").appendChild(
+      $(
+        `
+        p
+        `
+      )
+    );
     $("main-content-wrapper[active] back-forward-wrapper").appendChild($share);
     $share.on("click", () => {
       navigator.clipboard.writeText(window.location.href);

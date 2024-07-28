@@ -10,8 +10,9 @@ module.exports = async (req, res) => {
           a.slug,
           LEFT(a.body, 1000) as body,
           a.note,
+          a.favorite_count,
           a.comment_count,
-          a.comment_count_max_create_date,
+          a.counts_max_create_date,
           CASE WHEN a.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids
         FROM topics a
@@ -26,8 +27,9 @@ module.exports = async (req, res) => {
           a.slug,
           LEFT(a.body, 1000),
           a.note,
+          a.favorite_count,
           a.comment_count,
-          a.comment_count_max_create_date,
+          a.counts_max_create_date,
           CASE WHEN a.user_id = $1 THEN true ELSE false END
         ORDER BY a.create_date DESC
         LIMIT 20
@@ -41,24 +43,25 @@ module.exports = async (req, res) => {
       req.results.topics.push(...topic_results.rows);
     }
   
-    // Get updated comment counts when requested
+    // Get updated counts when requested
     if (
-      req.body.min_topic_create_date_for_comment_count
-      && req.body.min_comment_count_create_date
+      req.body.min_create_date_for_counts
+      && req.body.min_counts_create_date
     ) {
-      const topic_comment_counts = await req.client.query(
+      const topic_counts = await req.client.query(
         `
         SELECT
           topic_id,
+          favorite_count,
           comment_count
         FROM topics
         WHERE
           create_date > $1
-          AND comment_count_max_create_date > $2
+          AND counts_max_create_date > $2
         `,
-        [req.body.min_topic_create_date_for_comment_count, req.body.min_comment_count_create_date ]
+        [req.body.min_create_date_for_counts, req.body.min_counts_create_date ]
       );
-      req.results.topic_comment_counts = topic_comment_counts.rows;
+      req.results.topic_counts = topic_counts.rows;
     }
   }
 };

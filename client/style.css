@@ -905,13 +905,11 @@ read-more-wrapper {
   margin: 0;
   white-space: nowrap;
 }
-share-wrapper:only-child,
 forward-wrapper:only-child {
   justify-content: flex-end;
   flex: 1;
 }
 read-more-wrapper button,
-share-wrapper button,
 forward-wrapper button,
 back-wrapper button,
 expand-wrapper button {
@@ -920,35 +918,10 @@ expand-wrapper button {
   position: relative;
   padding: 6px;
 }
-share-wrapper button {
-  padding: 7px 9px;
-}
-share-wrapper button::before {
-  content: "";
-  border: 1.5px solid light-dark(#000, #fff);
-  border-top: 1.5px solid transparent;
-  border-radius: 2px;
-  height: 4px;
-  width: 16px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  opacity: .5;
-}
-share-wrapper button::after {
-  content: "↑";
-  position: absolute;
-  color: light-dark(#000, #f5f5f5);
-  opacity: .5;
-  font-size: 15px;
-  font-weight: 400;
-  top: -10px;
-  right: 4px;
-}
 share-wrapper info {
   position: absolute;
-  top: 23px;
-  right: 0;
+  top: calc(50% - 13px);
+  right: 40px;
   display: none;
   max-width: unset;
   white-space: nowrap;
@@ -1027,11 +1000,6 @@ all-clear-wrapper p {
 }
 read-more-wrapper p {
   margin: 0;
-}
-expand-wrapper p[comments] {
-  position: absolute;
-  right: 0;
-  top: 10px;
 }
 expand-wrapper[above-comments] p {
   text-align: left;
@@ -1155,6 +1123,9 @@ activities {
 activity > h2 {
   font-size: .786rem;
   margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 }
 activity > topic h2 {
   margin-top: 0;
@@ -1209,4 +1180,70 @@ activity > [parent-comment] comment {
   100% {
     opacity: 0;
   }
+}
+
+topic-details {
+  margin-top: 16px;
+  font-size: .786rem;
+  display: flex;
+}
+topic-details detail {
+  display: flex;
+  align-items: center;
+}
+topic-details detail[comments] {
+  flex: 1;
+}
+topic-details icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+topic-details svg {
+  fill: light-dark(#000, #fff);
+  width: 30px;
+  height: 30px;
+}
+topic-details p {
+  margin-top: -1.5px;
+}
+detail[favorites] icon {
+  margin: 0 0 0 -7px;
+}
+detail[comments] icon {
+  margin: 0 3px 0 15px;
+}
+detail[comments] svg {
+  height: 26px;
+  width: 26px;
+}
+detail[more] icon {
+  margin: 0 -6px 0 -1px;
+}
+detail[more] svg {
+  height: 26px;
+  width: 26px;
+}
+topic:not([trimmed]) detail[more] {
+  display: none;
+}
+share-wrapper {
+  flex-direction: column;
+}
+share-wrapper:only-child {
+  justify-self: flex-end;
+}
+share-wrapper p {
+  margin: 2px 0 0 0;
+}
+icon[share] {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+icon[share] svg {
+  opacity: .5;
+  fill: light-dark(#000, #fff);
+  height: 26px;
+  width: 26px;
 }

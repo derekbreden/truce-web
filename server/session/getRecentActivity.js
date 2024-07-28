@@ -11,8 +11,9 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           NULL as slug,
+          c.favorite_count,
           NULL as comment_count,
-          NULL as comment_count_max_create_date,
+          c.counts_max_create_date,
           c.user_id,
           c.parent_comment_id,
           c.parent_topic_id,
@@ -36,8 +37,9 @@ module.exports = async (req, res) => {
         combined.body,
         combined.note,
         combined.slug,
+        combined.favorite_count,
         combined.comment_count,
-        combined.comment_count_max_create_date,
+        combined.counts_max_create_date,
         combined.type,
         combined.image_uuids,
         u.display_name,
@@ -63,25 +65,5 @@ module.exports = async (req, res) => {
       [req.body.max_create_date || null, req.body.min_create_date || null],
     );
     req.results.activities.push(...activity_results.rows);
-
-    // Get updated comment counts when requested
-    if (
-      req.body.min_topic_create_date_for_comment_count
-      && req.body.min_comment_count_create_date
-    ) {
-      const topic_comment_counts = await req.client.query(
-        `
-        SELECT
-          topic_id,
-          comment_count
-        FROM topics
-        WHERE
-          create_date > $1
-          AND comment_count_max_create_date > $2
-        `,
-        [req.body.min_topic_create_date_for_comment_count, req.body.min_comment_count_create_date ]
-      );
-      req.results.topic_comment_counts = topic_comment_counts.rows;
-    }
   }
 };

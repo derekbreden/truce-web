@@ -29,7 +29,9 @@ const renderBack = () => {
                   ? "Back to home"
                   : previous_path === "/notifications"
                     ? "Back to notifications"
-                    : "Back",
+                    : previous_path === "/favorites"
+                      ? "Back to favorites"
+                      : "Back",
       ],
     );
     $("main-content-wrapper[active] main-content").prepend($back_forward);

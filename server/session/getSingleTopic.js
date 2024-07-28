@@ -11,26 +11,32 @@ module.exports = async (req, res) => {
       const topic_results = await req.client.query(
         `
         SELECT
-          a.create_date,
-          a.topic_id,
-          a.title,
-          a.slug,
-          a.body,
-          a.note,
-          CASE WHEN a.user_id = $1 THEN true ELSE false END AS edit,
+          t.create_date,
+          t.topic_id,
+          t.title,
+          t.slug,
+          t.body,
+          t.note,
+          t.favorite_count,
+          t.comment_count,
+          t.counts_max_create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(i.image_uuid, ',') AS image_uuids
-        FROM topics a
-        LEFT JOIN topic_images i ON a.topic_id = i.topic_id
+        FROM topics t
+        LEFT JOIN topic_images i ON t.topic_id = i.topic_id
         WHERE
-          a.slug = $2
-          AND (a.create_date > $3 OR $3 IS NULL)
+          t.slug = $2
+          AND (t.create_date > $3 OR $3 IS NULL)
         GROUP BY
-          a.create_date,
-          a.topic_id,
-          a.title,
-          a.slug,
-          a.body,
-          CASE WHEN a.user_id = $1 THEN true ELSE false END
+          t.create_date,
+          t.topic_id,
+          t.title,
+          t.slug,
+          t.body,
+          t.favorite_count,
+          t.comment_count,
+          t.counts_max_create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END
         `,
         [
           req.session.user_id || 0,
@@ -73,6 +79,8 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.parent_comment_id,
+          c.favorite_count,
+          c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
@@ -91,6 +99,8 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.parent_comment_id,
+          c.favorite_count,
+          c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END

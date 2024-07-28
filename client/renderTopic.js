@@ -1,39 +1,24 @@
 const renderTopic = (topic) => {
   const note = topic.note || "";
-  const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/ig, "");
+  const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/gi, "");
   const note_body = note.slice(note.indexOf(" ") + 1);
   let $topic_body = markdownToElements(topic.body);
   let characters_used = 0;
   let trimmed = false;
-  if (state.path === "/topics" || state.path === "/recent") {
+  if (
+    state.path === "/topics" ||
+    state.path === "/recent" ||
+    state.path === "/favorites"
+  ) {
+    trimmed = true;
     topic.edit = false;
     $topic_body = $topic_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
       if (characters_used < 500) {
-
-        // Exclude audio from summaries
-        if (child.tagName !== "AUDIO") {
-          acc.push(child);
-        }
-      } else {
-        trimmed = true;
+        acc.push(child);
       }
       return acc;
     }, []);
-    $topic_body.push(
-      $(
-        `
-        expand-wrapper
-          p[comments] $1
-          p Read more
-          button[expand-down]
-        `,
-        [
-          topic.comment_count +
-            (topic.comment_count === "1" ? " comment" : " comments"),
-        ],
-      ),
-    );
   }
   const $topic = $(
     `
@@ -43,6 +28,7 @@ const renderTopic = (topic) => {
         $2
       $3
       $4
+      $5
     `,
     [
       topic.title,
@@ -66,6 +52,32 @@ const renderTopic = (topic) => {
           )
         : [],
       $topic_body,
+      $(
+        `
+        topic-details
+          detail[favorites]
+            icon
+              $1
+            p $2
+          detail[comments]
+            icon
+              $3
+            p $4
+          detail[more]
+            p Read more
+            icon
+              $5
+        `,
+        [
+          $("footer icon[favorites] svg").cloneNode(true),
+          topic.favorite_count +
+            (topic.favorite_count === "1" ? " favorite" : " favorites"),
+          $("footer icon[recent] svg").cloneNode(true),
+          topic.comment_count +
+            (topic.comment_count === "1" ? " comment" : " comments"),
+          $("icons icon[forward] svg").cloneNode(true)
+        ],
+      ),
     ],
   );
   if (topic.edit) {
@@ -88,7 +100,11 @@ const renderTopic = (topic) => {
       $topic.$("h2").after($image);
     }
   }
-  if (state.path === "/topics" || state.path === "/recent") {
+  if (
+    state.path === "/topics" ||
+    state.path === "/recent" ||
+    state.path === "/favorites"
+  ) {
     $topic.setAttribute("trimmed", "");
     $topic.on("click", ($event) => {
       $event.preventDefault();
