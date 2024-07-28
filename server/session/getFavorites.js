@@ -1,5 +1,9 @@
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.body.path === "/favorites") {
+  if (
+    !res.writableEnded &&
+    req.body.path === "/favorites" &&
+    req.session.user_id
+  ) {
     req.results.path = req.body.path;
     const activity_results = await req.client.query(
       `

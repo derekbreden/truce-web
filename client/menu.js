@@ -120,7 +120,7 @@ const showMenu = () => {
                   li Comments
                   li Topics
                   li Images
-                  li Display name
+                  li Favorites
                 p Tap remove to confirm.
                 button-wrapper
                   button[remove] Remove
