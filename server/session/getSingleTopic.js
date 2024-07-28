@@ -21,9 +21,13 @@ module.exports = async (req, res) => {
           t.comment_count,
           t.counts_max_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids
+          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
+          CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented
         FROM topics t
         LEFT JOIN topic_images i ON t.topic_id = i.topic_id
+        LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
+        LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
         WHERE
           t.slug = $2
           AND (t.create_date > $3 OR $3 IS NULL)
@@ -84,10 +88,12 @@ module.exports = async (req, res) => {
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids
+          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
         LEFT JOIN comment_images i ON c.comment_id = i.comment_id
+        LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         WHERE
           c.parent_topic_id = $2
           AND c.parent_comment_id IS NULL
@@ -122,13 +128,17 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.parent_comment_id,
+          c.favorite_count,
+          c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids
+          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
         LEFT JOIN comment_images i ON c.comment_id = i.comment_id
+        LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         WHERE
           c.parent_topic_id = $2
           AND (
@@ -147,6 +157,8 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.parent_comment_id,
+          c.favorite_count,
+          c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END

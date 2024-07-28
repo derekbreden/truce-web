@@ -37,8 +37,19 @@ const renderComment = (comment) => {
       $(
         `
         reply-wrapper
+          detail[favorites]
+            icon
+              $1
+            p $2
           button[small][reply] Reply
         `,
+        [
+          comment.favorited
+            ? $("icons icon[favorited] svg").cloneNode(true)
+            : $("footer icon[favorites] svg").cloneNode(true),
+          comment.favorite_count +
+            (comment.favorite_count === "1" ? " favorite" : " favorites"),
+        ],
       ),
     ],
   );

@@ -23,6 +23,7 @@ module.exports = async (req, res) => {
           c.parent_topic_id,
           fc.user_id as favorite_user_id,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
+          FALSE as commented,
           'comment' AS type
         FROM comments c
         INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
@@ -54,10 +55,12 @@ module.exports = async (req, res) => {
           NULL as parent_topic_id,
           ft.user_id as favorite_user_id,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
+          CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented,
           'topic' AS type
         FROM topics t
         INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
         LEFT JOIN topic_images i ON t.topic_id = i.topic_id
+        LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
         GROUP BY
           t.topic_id,
           t.create_date,
@@ -83,6 +86,8 @@ module.exports = async (req, res) => {
         combined.counts_max_create_date,
         combined.type,
         combined.image_uuids,
+        TRUE as favorited,
+        combined.commented,
         u.display_name,
         u.display_name_index,
         pt.title AS parent_topic_title,

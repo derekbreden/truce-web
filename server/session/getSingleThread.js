@@ -25,14 +25,17 @@ module.exports = async (req, res) => {
         c.comment_id,
         c.body,
         c.note,
+        c.favorite_count,
         c.parent_comment_id,
         u.display_name,
         u.display_name_index,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
-        STRING_AGG(i.image_uuid, ',') AS image_uuids
+        STRING_AGG(i.image_uuid, ',') AS image_uuids,
+        CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
       FROM comments c
       INNER JOIN users u ON c.user_id = u.user_id
       LEFT JOIN comment_images i ON c.comment_id = i.comment_id
+      LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $2
       WHERE
         (
           c.comment_id IN (
@@ -52,6 +55,7 @@ module.exports = async (req, res) => {
         c.comment_id,
         c.body,
         c.note,
+        c.favorite_count,
         c.parent_comment_id,
         u.display_name,
         u.display_name_index,

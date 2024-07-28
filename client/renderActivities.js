@@ -18,7 +18,7 @@ const renderActivities = (activities) => {
   const $activities = activities.map((activity) => {
     if (activity.type === "comment") {
       const $comment = renderComment(activity);
-      $comment.$("reply-wrapper")?.remove();
+      $comment.$("reply-wrapper button")?.remove();
       let preamble = `Comment:`;
       if (activity.parent_comment_display_name) {
         preamble = `Reply:`;

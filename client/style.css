@@ -1183,42 +1183,48 @@ activity > [parent-comment] comment {
 }
 
 topic-details {
-  margin-top: 16px;
-  font-size: .786rem;
+  margin-top: 10px;
   display: flex;
 }
+reply-wrapper detail,
 topic-details detail {
+  font-size: .786rem;
   display: flex;
   align-items: center;
+  opacity: .5;
 }
 topic-details detail[comments] {
   flex: 1;
 }
+reply-wrapper detail icon,
 topic-details icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+reply-wrapper svg,
 topic-details svg {
   fill: light-dark(#000, #fff);
   width: 30px;
   height: 30px;
 }
+reply-wrapper p,
 topic-details p {
   margin-top: -1.5px;
+  font-weight: 600;
 }
 detail[favorites] icon {
-  margin: 0 0 0 -7px;
+  margin: -3px 0 -4px -7px;
 }
 detail[comments] icon {
-  margin: 0 3px 0 15px;
+  margin: -3px 3px -4px 15px;
 }
 detail[comments] svg {
   height: 26px;
   width: 26px;
 }
 detail[more] icon {
-  margin: 0 -6px 0 -1px;
+  margin: -3px -6px -4px -1px;
 }
 detail[more] svg {
   height: 26px;

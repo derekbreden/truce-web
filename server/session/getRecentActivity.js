@@ -18,9 +18,11 @@ module.exports = async (req, res) => {
           c.parent_comment_id,
           c.parent_topic_id,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
+          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           'comment' AS type
         FROM comments c
         LEFT JOIN comment_images i ON c.comment_id = i.comment_id
+        LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         GROUP BY
           c.comment_id,
           c.create_date,
@@ -42,6 +44,7 @@ module.exports = async (req, res) => {
         combined.counts_max_create_date,
         combined.type,
         combined.image_uuids,
+        combined.favorited,
         u.display_name,
         u.display_name_index,
         pa.title AS parent_topic_title,
@@ -57,12 +60,12 @@ module.exports = async (req, res) => {
       LEFT JOIN comments pc ON combined.parent_comment_id = pc.comment_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
       WHERE
-        (combined.create_date < $1 OR $1 IS NULL)
-        AND (combined.create_date > $2 OR $2 IS NULL)
+        (combined.create_date < $2 OR $2 IS NULL)
+        AND (combined.create_date > $3 OR $3 IS NULL)
       ORDER BY combined.create_date DESC
       LIMIT 30;
       `,
-      [req.body.max_create_date || null, req.body.min_create_date || null],
+      [req.session.user_id || 0, req.body.max_create_date || null, req.body.min_create_date || null],
     );
     req.results.activities.push(...activity_results.rows);
   }
