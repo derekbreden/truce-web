@@ -147,7 +147,7 @@ const renderNotifications = (notifications) => {
       .then((response) => response.json())
       .then(function (data) {
         if (!data || !data.success) {
-          modalError("Server error");
+          alertError("Server error");
           console.error(data);
         } else {
           state.unseen_count = 0;
@@ -155,7 +155,7 @@ const renderNotifications = (notifications) => {
         }
       })
       .catch(function (error) {
-        modalError("Network error");
+        alertError("Network error");
         console.error(error);
       });
   }
@@ -188,7 +188,7 @@ const renderMarkAllAsRead = () => {
         .then((response) => response.json())
         .then(function (data) {
           if (!data || !data.success) {
-            modalError("Server error");
+            alertError("Server error");
             console.error(data);
           } else {
             state.unread_count = 0;
@@ -201,7 +201,7 @@ const renderMarkAllAsRead = () => {
           }
         })
         .catch(function (error) {
-          modalError("Network error");
+          alertError("Network error");
           console.error(error);
         });
     });
@@ -218,7 +218,7 @@ const getUnreadCountUnseenCount = () => {
     .then((response) => response.json())
     .then(function (data) {
       if (!data) {
-        modalError("Server error");
+        alertError("Server error");
         console.error(data);
       } else {
         state.unread_count = Number(data.unread_count);
@@ -267,7 +267,7 @@ const getUnreadCountUnseenCount = () => {
       }
     })
     .catch(function (error) {
-      modalError("Network error");
+      alertError("Network error");
       console.error(error);
     });
 };
@@ -282,7 +282,7 @@ const markAsRead = (notification_id) => {
     .then((response) => response.json())
     .then(function (data) {
       if (!data || !data.success) {
-        modalError("Server error");
+        alertError("Server error");
         console.error(data);
       } else {
         // Update cache for this item
@@ -299,7 +299,7 @@ const markAsRead = (notification_id) => {
       }
     })
     .catch(function (error) {
-      modalError("Network error");
+      alertError("Network error");
       console.error(error);
     });
 };

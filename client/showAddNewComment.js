@@ -54,7 +54,7 @@ const showAddNewComment = (
     $add_new.appendChild(
       $(
         `
-        error[show] $1
+        error $1
         `,
         [error],
       ),
@@ -144,7 +144,7 @@ const showAddNewComment = (
     $add_new.appendChild(
       $(
         `
-          info[show] Validating...
+          info Validating...
         `,
       ),
     );
@@ -189,7 +189,7 @@ const showAddNewComment = (
     $add_new.appendChild(
       $(
         `
-          info[show] Validating...
+          info Validating...
         `,
       ),
     );

@@ -3,7 +3,10 @@ module.exports = async (req, res) => {
     !res.writableEnded &&
     req.session.session_id &&
     !req.session.user_id &&
-    (req.body.display_name || req.body.title)
+    (req.body.display_name ||
+      req.body.title ||
+      req.body.topic_id_to_favorite ||
+      req.body.comment_id_to_favorite)
   ) {
     const user_inserted = await req.client.query(
       `

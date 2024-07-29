@@ -4,9 +4,11 @@
   font-weight: 100 900;
   src: url("/OpenSans-VariableFont_wdth_wght.ttf") format("truetype");
 }
+
 :root {
   color-scheme: light dark;
 }
+
 * {
   font-family: Open Sans, Arial;
   margin: 0;
@@ -14,15 +16,18 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
 html {
   font: 14px Open Sans, Arial;
   height: 100%;
 }
+
 @supports (font: -apple-system-body) {
   html {
     font: -apple-system-body;
   }
 }
+
 body {
   min-height: 100%;
   font-size: 1rem;
@@ -30,6 +35,7 @@ body {
   color: light-dark(#000, #f5f5f5);
   overflow: hidden;
 }
+
 main-content-wrapper {
   position: absolute;
   left: 0;
@@ -46,53 +52,67 @@ main-content-wrapper {
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
 }
+
 main-content-wrapper[inactive] {
   animation: slide-out-left 0.2s ease-in-out;
 }
+
 main-content-wrapper[inactive][clicked-back] {
   animation: slide-out-right 0.2s ease-in-out;
 }
+
 @keyframes slide-out-left {
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(-100%);
   }
 }
+
 @keyframes slide-out-right {
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(100%);
   }
 }
+
 main-content-wrapper[active] {
   animation: slide-in-left 0.2s ease-in-out;
 }
+
 main-content-wrapper[active][clicked-back] {
   animation: slide-in-right 0.2s ease-in-out;
 }
+
 main-content-wrapper[active][skip-state] {
   animation: none;
 }
+
 @keyframes slide-in-left {
   0% {
     transform: translateX(100%);
   }
+
   100% {
     transform: translateX(0%);
   }
 }
+
 @keyframes slide-in-right {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(0%);
   }
 }
+
 main-content,
 main-content-2 {
   flex: 1;
@@ -104,6 +124,7 @@ main-content-2 {
   width: 100%;
   position: relative;
 }
+
 @media (max-width: 1000px) {
   main-content-wrapper {
     flex-wrap: nowrap;
@@ -112,13 +133,16 @@ main-content-2 {
     align-items: center;
     gap: 0;
   }
+
   main-content {
     padding: 0 20px 0 20px;
   }
 }
+
 icons {
   display: none;
 }
+
 footer {
   display: none;
   position: fixed;
@@ -133,6 +157,7 @@ footer {
   z-index: 1;
   padding: 0 0 env(safe-area-inset-bottom) 0;
 }
+
 footer::after {
   content: "";
   position: absolute;
@@ -143,6 +168,7 @@ footer::after {
   right: 0;
   bottom: 0;
 }
+
 footer a {
   font-size: .786rem;
   text-decoration: none;
@@ -155,16 +181,19 @@ footer a {
   position: relative;
   z-index: 1;
 }
+
 footer a p {
   margin: 0;
   max-width: unset;
   font-size: .786rem;
   color: #000;
 }
+
 footer a:nth-child(3) p,
 footer a:nth-child(4) p {
   color: #fff;
 }
+
 footer a icon {
   height: 34px;
   width: 34px;
@@ -172,28 +201,35 @@ footer a icon {
   align-items: center;
   justify-content: center;
 }
+
 footer a:nth-child(3) svg,
 footer a:nth-child(4) svg {
   fill: #fff;
 }
+
 footer a[unread]::before {
   top: calc(50% - 10px);
 }
+
 body[app] main-content-wrapper {
   bottom: calc(54px + env(safe-area-inset-bottom));
 }
+
 body[app] footer {
   display: flex;
 }
+
 body[app] main-content add-new:first-child {
   bottom: calc(74px + env(safe-area-inset-bottom));
 }
+
 a,
 a:visited,
 a:active {
   color: light-dark(#000, #f5f5f5);
   font-weight: 500;
 }
+
 h2 {
   margin-top: 20px;
   font-size: 1.286rem;
@@ -202,9 +238,11 @@ h2 {
   justify-content: space-between;
   align-items: flex-start;
 }
+
 h2 button {
   margin-left: 5px;
 }
+
 h3 {
   font-size: 1rem;
   font-weight: 600;
@@ -212,54 +250,68 @@ h3 {
   justify-content: space-between;
   align-items: center;
 }
+
 audio,
 p {
   margin-top: 10px;
 }
+
 p {
   max-width: 100%;
   overflow: hidden;
 }
+
 p img {
   max-width: 100%;
   border-radius: 10px;
 }
+
 comment p img,
 topic[trimmed] p img {
   cursor: pointer;
   height: 100px;
 }
+
 comment p[img],
 topic[trimmed] p[img] {
   display: inline-flex;
 }
-comment p[img] + p[img],
-topic[trimmed] p[img] + p[img] {
+
+comment p[img]+p[img],
+topic[trimmed] p[img]+p[img] {
   margin-left: 10px;
 }
+
 p[quote] {
   padding: 10px;
   border-left: 2px solid light-dark(#999, #333);
   background: light-dark(#f5f5f5, #0c0c0c);
 }
-p[quote] + p[quote] {
+
+p[quote]+p[quote] {
   margin-top: 0;
 }
+
 p[bold] {
   font-weight: 600;
 }
-p[ellipsis] + button {
+
+p[ellipsis]+button {
   margin-top: 10px;
 }
+
 audio {
   width: 100%;
 }
+
 ul {
   margin: 10px 0 0 17px;
 }
+
 debug {
   white-space: pre;
 }
+
 header {
   position: fixed;
   top: 0;
@@ -273,6 +325,7 @@ header {
   align-items: center;
   z-index: 2;
 }
+
 header h1 {
   cursor: pointer;
   font-size: 1.286rem;
@@ -285,6 +338,7 @@ header h1 {
   text-overflow: ellipsis;
   color: #000;
 }
+
 header img {
   position: absolute;
   z-index: 1;
@@ -292,6 +346,7 @@ header img {
   width: 43px;
   left: calc(50% - 21.5px);
 }
+
 header::after {
   content: "";
   position: absolute;
@@ -302,6 +357,7 @@ header::after {
   right: 0;
   bottom: 0;
 }
+
 hamburger {
   position: relative;
   z-index: 1;
@@ -313,6 +369,7 @@ hamburger {
   cursor: pointer;
   position: relative;
 }
+
 [unread]::before {
   content: "";
   position: absolute;
@@ -323,9 +380,11 @@ hamburger {
   height: 8px;
   width: 8px;
 }
+
 hamburger[unread]::before {
   left: -8px;
 }
+
 menu-wrapper {
   position: fixed;
   top: 44px;
@@ -335,10 +394,12 @@ menu-wrapper {
   z-index: 3;
   overflow-y: scroll;
 }
+
 menu-wrapper modal-bg {
   position: fixed;
   top: 44px;
 }
+
 menu {
   display: flex;
   flex-direction: column;
@@ -351,6 +412,7 @@ menu {
   border-left: 1px solid #333;
   border-bottom: 1px solid #333;
 }
+
 menu signed-in,
 menu sign-in,
 modal {
@@ -360,25 +422,31 @@ modal {
   position: relative;
   width: 280px;
 }
+
 modal[image] {
   width: 100%;
   max-width: 480px;
 }
-menu signed-in > *,
-menu sign-in > *,
-modal > * {
+
+menu signed-in>*,
+menu sign-in>*,
+modal>* {
   margin-bottom: 5px;
 }
+
 modal input {
   width: 100%;
 }
+
 modal p:first-child {
   margin-top: 0;
 }
+
 menu links {
   display: flex;
   flex-direction: column;
 }
+
 menu links a {
   text-decoration: none;
   font-weight: 600;
@@ -388,6 +456,7 @@ menu links a {
   border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
+
 menu links a icon {
   height: 36px;
   width: 36px;
@@ -395,33 +464,42 @@ menu links a icon {
   align-items: center;
   justify-content: center;
 }
+
 menu links a icon svg {
   fill: light-dark(#000, #fff);
 }
+
 menu links a icon[recent] svg {
   width: 28px;
 }
+
 menu links a icon[settings] svg {
   width: 30px;
 }
+
 menu links a icon[notifications] svg {
   width: 32px;
 }
+
 menu links a p {
   margin: 0 0 0 5px;
 }
+
 menu links a[unread]::before {
   left: 6px;
 }
+
 menu toggle-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
+
 menu toggle-wrapper[disabled] {
   opacity: .5;
 }
+
 menu toggle-wrapper toggle-button {
   display: flex;
   height: 30px;
@@ -431,6 +509,7 @@ menu toggle-wrapper toggle-button {
   position: relative;
   transition: background .2s ease-in-out;
 }
+
 menu toggle-wrapper toggle-button toggle-circle {
   height: 28px;
   width: 28px;
@@ -441,20 +520,25 @@ menu toggle-wrapper toggle-button toggle-circle {
   left: 1px;
   transition: left .2s ease-in-out;
 }
+
 menu toggle-wrapper[active] toggle-button {
   background: light-dark(#4a5, #091);
 }
+
 menu toggle-wrapper[active] toggle-button toggle-circle {
   left: 21px;
 }
+
 button-wrapper {
   display: flex;
   justify-content: space-between;
   gap: 5px;
 }
+
 button-wrapper button {
   flex: 1;
 }
+
 a[big] {
   display: flex;
   align-items: center;
@@ -469,6 +553,7 @@ a[big] {
   font-weight: 700;
   letter-spacing: 1px;
 }
+
 modal-bg {
   display: flex;
   background: light-dark(#00000077, #000000cc);
@@ -479,6 +564,7 @@ modal-bg {
   bottom: 0;
   z-index: 4;
 }
+
 input,
 textarea {
   font-size: 1rem;
@@ -488,6 +574,7 @@ textarea {
   background: light-dark(#fff, #000);
   padding: 10px;
 }
+
 button {
   cursor: pointer;
   font-size: 1rem;
@@ -500,18 +587,22 @@ button {
   font-weight: 700;
   letter-spacing: 1px;
 }
+
 button[alt] {
   background: light-dark(#f5f5f5, #000);
   color: light-dark(#000, #fff);
   border: 1px solid light-dark(#999, #333);
 }
+
 button[small] {
   padding: 2px 10px;
 }
+
 button[disabled],
 button[faint] {
   opacity: 0.5;
 }
+
 pass,
 info,
 error {
@@ -526,14 +617,17 @@ error {
   flex-direction: column;
   font-weight: 500;
 }
+
 info[small] {
   padding: 5px 5px 5px 26px;
   font-size: .786rem;
 }
+
 info[tiny] {
   padding: 1px 3px 1px 19px;
   font-size: .786rem;
 }
+
 pass::before,
 info::before,
 error::before {
@@ -552,6 +646,7 @@ error::before {
   height: 17px;
   width: 17px;
 }
+
 info[small]::before {
   height: 14px;
   width: 14px;
@@ -559,6 +654,7 @@ info[small]::before {
   top: 5px;
   font-size: 11px;
 }
+
 info[tiny]::before {
   height: 11px;
   width: 11px;
@@ -566,74 +662,92 @@ info[tiny]::before {
   top: 2.5px;
   font-size: 9px;
 }
+
 info {
   border-color: light-dark(#48c, #04a);
   background: light-dark(#e0f0ff, #04a);
   color: light-dark(#48c, #e0f0ff);
 }
+
 info::before {
   content: "i";
   background: light-dark(#48c, #e0f0ff);
   color: light-dark(#e0f0ff, #04a);
 }
+
 info[response] {
   border-color: light-dark(#555, #333);
   background: light-dark(#f5f5f5, #333);
   color: light-dark(#555, #f5f5f5);
 }
+
 info[response]::before {
   background: light-dark(#555, #f5f5f5);
   color: light-dark(#f5f5f5, #333);
 }
+
 pass {
   border-color: light-dark(#4a5, #091);
   background: light-dark(#f0fff0, #091);
   color: light-dark(#4a5, #f0fff0);
 }
+
 pass::before {
   content: "✓";
   background: light-dark(#4a5, #f0fff0);
   color: light-dark(#f0fff0, #091);
 }
+
 error p {
   margin-top: 5px;
 }
+
 test-wrapper {
   margin-top: 20px;
 }
-test-wrapper error + info {
+
+test-wrapper error+info {
   margin-top: 10px;
 }
-test-wrapper + add-new {
+
+test-wrapper+add-new {
   margin-top: 20px;
 }
+
 image-prompt {
   display: flex;
   flex-direction: column;
   margin-top: 10px;
 }
+
 image-prompt textarea {
   width: 100%;
 }
-image-prompt > * {
+
+image-prompt>* {
   margin-top: 10px;
 }
-image-prompt + img {
+
+image-prompt+img {
   margin-top: 10px;
   width: 100%;
 }
+
 password-wrapper {
   display: flex;
   align-items: center;
 }
+
 password-wrapper input {
   width: 218px;
 }
+
 password-help {
   display: flex;
   align-items: center;
   padding: 10px 0 9px 5px;
 }
+
 password-help::before {
   content: "?";
   display: flex;
@@ -646,6 +760,7 @@ password-help::before {
   height: 17px;
   width: 17px;
 }
+
 modal {
   position: fixed;
   flex-direction: column;
@@ -659,27 +774,33 @@ modal {
   max-width: 480px;
   width: calc(100% - 20px);
 }
+
 @media (prefers-color-scheme: dark) {
   modal {
     box-shadow: none;
     border: 1px solid #333;
   }
 }
+
 add-new {
   display: flex;
   flex-direction: column;
 }
-add-new > * {
+
+add-new>* {
   margin-bottom: 5px;
 }
-add-new > *:last-child {
+
+add-new>*:last-child {
   margin-bottom: 0;
 }
+
 add-new input,
 add-new textarea,
 add-new button {
   width: 100%;
 }
+
 main-content add-new:first-child {
   position: fixed;
   top: 64px;
@@ -687,9 +808,11 @@ main-content add-new:first-child {
   right: calc(50% + 40px);
   left: calc(50% - 480px);
 }
+
 main-content add-new:first-child textarea {
   height: 100%;
 }
+
 @media (max-width: 1000px) {
   main-content add-new:first-child {
     margin-top: 20px;
@@ -699,18 +822,22 @@ main-content add-new:first-child textarea {
     right: 0;
     left: 0;
   }
+
   main-content add-new:first-child textarea {
     height: unset;
   }
 }
+
 title-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 [img-icon] input {
   display: none;
 }
+
 [img-icon] {
   display: flex;
   border: 2px solid light-dark(#000, #f5f5f5);
@@ -721,6 +848,7 @@ title-wrapper {
   position: relative;
   overflow: hidden;
 }
+
 [img-icon]::before {
   display: flex;
   content: "";
@@ -736,6 +864,7 @@ title-wrapper {
   top: 12px;
   left: -5px;
 }
+
 [img-icon]::after {
   display: flex;
   content: "";
@@ -747,12 +876,14 @@ title-wrapper {
   top: 2px;
   right: 2px;
 }
+
 image-previews {
   display: flex;
   flex-direction: row;
   align-items: center;
   position: relative;
 }
+
 image-previews preview {
   border: 1px solid light-dark(#000, #fff);
   border-radius: 2px;
@@ -760,13 +891,15 @@ image-previews preview {
   justify-content: center;
   align-items: center;
   position: relative;
-  width: calc(25% - (15px / 4) );
+  width: calc(25% - (15px / 4));
   margin-right: 5px;
   height: 100px;
 }
+
 image-previews preview:last-child {
   margin-right: 0;
 }
+
 image-previews preview remove-icon {
   position: absolute;
   top: 1px;
@@ -778,6 +911,7 @@ image-previews preview remove-icon {
   height: 25px;
   width: 25px;
 }
+
 image-previews preview remove-icon::before,
 image-previews preview remove-icon::after {
   content: "";
@@ -789,26 +923,33 @@ image-previews preview remove-icon::after {
   top: 11px;
   left: 4px;
 }
+
 image-previews preview remove-icon::after {
   transform: rotate(-45deg);
 }
+
 image-previews preview img {
   max-height: 100px;
   max-width: 100%;
 }
+
 [add-new-comment] {
   padding: 10px 0;
 }
+
 [add-new-comment] button {
   width: 100%;
 }
+
 comments {
   display: flex;
   flex-direction: column;
 }
+
 comments[thread] {
   margin-top: 20px;
 }
+
 comment {
   display: flex;
   flex-direction: column;
@@ -816,55 +957,69 @@ comment {
   border-radius: 2px;
   padding: 10px;
 }
-comments > comment {
+
+comments>comment {
   margin-bottom: 20px;
 }
+
 comments comment:last-child {
   margin-bottom: 0;
 }
+
 comment comment {
   margin-top: 10px;
 }
+
 comment p {
   margin-top: 5px;
 }
+
 comment pass,
 comment info {
   margin-top: 10px;
 }
+
 info b {
   margin-top: -1.5px;
   margin-bottom: 5px;
 }
-comments > add-new:first-child {
+
+comments>add-new:first-child {
   padding: 10px;
   border: 1px solid light-dark(#ddd, #666);
   margin: 20px 0 10px 0;
 }
-comments > add-new:not(:first-child) {
+
+comments>add-new:not(:first-child) {
   margin: 0 0 20px 0;
   border: 1px solid light-dark(#ddd, #666);
   border-radius: 2px;
   margin-bottom: 20px;
   padding: 10px;
 }
-topics > add-new:first-child {
+
+topics>add-new:first-child {
   padding: 20px 0;
   margin-bottom: -20px;
 }
+
 comment add-new {
   margin-top: 10px;
 }
+
 reply-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-top: 10px;
+  margin: 0 0 -10px -10px;
 }
+
 display-name-wrapper {
   padding-bottom: 5px;
   flex: 1;
 }
+
 expand-wrapper {
   cursor: pointer;
   display: flex;
@@ -873,21 +1028,26 @@ expand-wrapper {
   margin: 0 0 -10px 0;
   position: relative;
 }
+
 expand-wrapper[above-comments] {
   cursor: default;
   margin: 0 0 10px 0;
 }
+
 expand-wrapper[above-comments]:first-child {
   margin: 10px 0 10px 0;
 }
+
 expand-wrapper[collapse] {
   flex-direction: row;
   justify-content: center;
 }
+
 back-forward-wrapper {
   display: flex;
   justify-content: space-between;
 }
+
 mark-all-as-read-wrapper,
 read-more-wrapper,
 share-wrapper,
@@ -901,14 +1061,17 @@ back-wrapper {
   min-height: 18px;
   position: relative;
 }
+
 read-more-wrapper {
   margin: 0;
   white-space: nowrap;
 }
+
 forward-wrapper:only-child {
   justify-content: flex-end;
   flex: 1;
 }
+
 read-more-wrapper button,
 forward-wrapper button,
 back-wrapper button,
@@ -918,6 +1081,7 @@ expand-wrapper button {
   position: relative;
   padding: 6px;
 }
+
 share-wrapper info {
   position: absolute;
   top: calc(50% - 13px);
@@ -927,10 +1091,12 @@ share-wrapper info {
   white-space: nowrap;
   z-index: 1;
 }
+
 share-wrapper info[show] {
   display: flex;
   animation: fade-out .5s ease-in-out 1 3.5s;
 }
+
 forward-wrapper button::before,
 back-wrapper button::before,
 [expand-left]::before,
@@ -950,10 +1116,12 @@ back-wrapper button::before,
   transform: rotate(45deg);
   opacity: .5;
 }
+
 [expand-down]::before {
   top: -10px;
   transform: rotate(-135deg);
 }
+
 [expand-left]::before {
   transform: rotate(-45deg);
   height: 10px;
@@ -961,6 +1129,7 @@ back-wrapper button::before,
   top: 5px;
   left: calc(50% - 10px);
 }
+
 [expand-right]::before {
   transform: rotate(135deg);
   height: 10px;
@@ -968,6 +1137,7 @@ back-wrapper button::before,
   top: 5px;
   left: calc(50% - 3px);
 }
+
 read-more-wrapper [expand-right]::before,
 forward-wrapper [expand-right]::before,
 back-wrapper [expand-left]::before {
@@ -977,11 +1147,13 @@ back-wrapper [expand-left]::before {
   height: 10px;
   width: 10px;
 }
+
 read-more-wrapper [expand-right]::before,
 forward-wrapper [expand-right]::before {
   transform: rotate(135deg);
   left: -4px;
 }
+
 all-clear-wrapper p,
 read-more-wrapper p,
 share-wrapper p,
@@ -994,20 +1166,25 @@ expand-wrapper p {
   opacity: .5;
   text-align: center;
 }
+
 all-clear-wrapper p {
   margin: 60px 0;
   text-align: center;
 }
+
 read-more-wrapper p {
   margin: 0;
 }
+
 expand-wrapper[above-comments] p {
   text-align: left;
   margin: 0;
 }
-expand-wrapper button + p {
+
+expand-wrapper button+p {
   margin-top: 5px;
 }
+
 read-more-wrapper p,
 share-wrapper p,
 forward-wrapper p,
@@ -1015,15 +1192,18 @@ back-wrapper p {
   margin: 0 5px;
   text-align: left;
 }
+
 read-more-wrapper p,
 share-wrapper p,
 forward-wrapper p {
   text-align: right;
 }
+
 notifications {
   display: flex;
   flex-direction: column;
 }
+
 notifications notification {
   display: flex;
   flex-direction: row;
@@ -1033,75 +1213,92 @@ notifications notification {
   gap: 5px;
   position: relative;
 }
+
 notifications notification first-column {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
 }
+
 notifications notification info[tiny] b {
   font-weight: 600;
 }
+
 notifications notification summary {
   font-size: .786rem;
 }
+
 notifications notification summary b {
   font-weight: 600;
 }
+
 notifications notification summary i {
   margin: 0 3px 0 0;
 }
+
 notifications notification summary span {
   margin: 0 3px;
 }
+
 notifications h3 {
   margin-top: 20px;
 }
-notifications notification + h3 {
+
+notifications notification+h3 {
   margin-top: 30px;
 }
+
 topics {
   display: flex;
   flex-direction: column;
 }
+
 activities activity,
 topics topic {
   padding-bottom: 21px;
   position: relative;
 }
+
 notifications notification::after,
 topics topic::before {
   content: "";
   display: flex;
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: -20px;
+  right: -20px;
   border-bottom: 1px solid light-dark(#ddd, #666);
 }
+
 notifications notification::after {
   bottom: -10px;
 }
+
 notifications notification:last-child::after,
 notifications notification:has(+ h3)::after {
   display: none;
 }
+
 topics-loading {
   display: flex;
   flex-direction: column;
   opacity: 0;
   animation: loading 1.5s ease-in-out infinite 1s;
 }
+
 topics-loading h2 {
   background: light-dark(#ddd, #333);
   width: 80%;
   height: 32px;
 }
+
 topics-loading p {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
+
 topics-loading p::before,
 topics-loading p::after {
   content: "";
@@ -1111,45 +1308,56 @@ topics-loading p::after {
   border-bottom: 16px solid light-dark(#ddd, #333);
   height: 10px;
 }
+
 topics-loading p::after {
   margin-top: 10px;
   width: 33%;
   border-bottom: none;
 }
+
 activities {
   display: flex;
   flex-direction: column;
 }
-activity > h2 {
+
+activity>h2 {
   font-size: .786rem;
   margin-bottom: 5px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
 }
-activity > topic h2 {
+
+activity>topic h2 {
   margin-top: 0;
 }
-activity > [parent-comment] {
+
+activity>[parent-comment] {
   background: light-dark(#f5f5f5, #0c0c0c)
 }
-activity > [parent-comment] comment {
+
+activity>[parent-comment] comment {
   background: light-dark(#fff, #000);
 }
+
 @keyframes loading {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
+
   100% {
     opacity: 1;
   }
 }
+
 [flash-focus] {
   animation: flash-focus .5s ease-in 1;
 }
+
 [flash-long-focus] {
   animation: flash-long-focus 2s ease-in 1;
 }
@@ -1158,98 +1366,180 @@ activity > [parent-comment] comment {
   0% {
     box-shadow: 0 0 5px #0061fe;
   }
+
   100% {
     box-shadow: none;
   }
 }
+
 @keyframes flash-long-focus {
   0% {
     box-shadow: 0 0 5px #0061fe;
   }
+
   75% {
     box-shadow: 0 0 5px #0061fe;
   }
+
   100% {
     box-shadow: none;
   }
 }
+
 @keyframes fade-out {
   0% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
 }
 
 topic-details {
-  margin-top: 10px;
+  margin: 0 -10px -10px -10px;
   display: flex;
 }
+
 reply-wrapper detail,
 topic-details detail {
   font-size: .786rem;
   display: flex;
   align-items: center;
   opacity: .5;
+  padding: 10px;
 }
+
+detail[favorites],
+topic-details detail[more] {
+  cursor: pointer;
+}
+
 topic-details detail[comments] {
   flex: 1;
 }
+
 reply-wrapper detail icon,
 topic-details icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 reply-wrapper svg,
 topic-details svg {
   fill: light-dark(#000, #fff);
   width: 30px;
   height: 30px;
 }
+
 reply-wrapper p,
 topic-details p {
   margin-top: -1.5px;
   font-weight: 600;
 }
+
 detail[favorites] icon {
   margin: -3px 0 -4px -7px;
 }
+
 detail[comments] icon {
-  margin: -3px 3px -4px 15px;
+  margin: -3px 3px -4px -3px;
 }
+
 detail[comments] svg {
   height: 26px;
   width: 26px;
 }
+
 detail[more] icon {
   margin: -3px -6px -4px -1px;
 }
+
 detail[more] svg {
   height: 26px;
   width: 26px;
 }
+
 topic:not([trimmed]) detail[more] {
   display: none;
 }
+
 share-wrapper {
   flex-direction: column;
 }
+
 share-wrapper:only-child {
   justify-self: flex-end;
 }
+
 share-wrapper p {
   margin: 2px 0 0 0;
 }
+
 icon[share] {
   width: 100%;
   display: flex;
   justify-content: center;
 }
+
 icon[share] svg {
   opacity: .5;
   fill: light-dark(#000, #fff);
   height: 26px;
   width: 26px;
+}
+
+alert-wrapper {
+  position: fixed;
+  z-index: 1;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+alert-wrapper alert {
+  animation: slide-down 0.2s ease-in-out, slide-up 0.2s ease-in-out 4.8s forwards;
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: margin-top(0);
+    margin-bottom: 0;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    margin-bottom: -50px;
+  }
+}
+
+activity[explode-out] {
+  animation: explode-out .2s ease-in-out 0s forwards;
+}
+
+@keyframes explode-out {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.1, 1.1);;
+  }
 }

@@ -102,7 +102,7 @@ const showMenu = () => {
               }
             })
             .catch(function () {
-              modalError("Network error");
+              alertError("Network error");
             });
         });
         $settings_modal.$("[remove]").on("click", () => {
@@ -143,7 +143,7 @@ const showMenu = () => {
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  modalError("Server error removing account");
+                  alertError("Server error removing account");
                 } else {
                   $("modal-wrapper")?.remove();
                   modalInfo("Account removed");
@@ -155,7 +155,7 @@ const showMenu = () => {
                 }
               })
               .catch((error) => {
-                modalError("Network error removing account");
+                alertError("Network error removing account");
               });
             });
             $remove_modal.$("[cancel]").on("click", removeModalCancel);
@@ -203,11 +203,11 @@ const showMenu = () => {
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  modalError("Server error saving subscription");
+                  alertError("Server error saving subscription");
                 }
               })
               .catch((error) => {
-                modalError("Network error saving subscription");
+                alertError("Network error saving subscription");
               });
           });
         return;
@@ -225,11 +225,11 @@ const showMenu = () => {
           .then((response) => response.json())
           .then((data) => {
             if (!data || !data.success) {
-              modalError("Server error saving subscription");
+              alertError("Server error saving subscription");
             }
           })
           .catch(() => {
-            modalError("Network error saving subscription");
+            alertError("Network error saving subscription");
           });
         return;
       }
@@ -248,11 +248,11 @@ const showMenu = () => {
             .then((response) => response.json())
             .then((data) => {
               if (!data || !data.success) {
-                modalError("Server error saving subscription");
+                alertError("Server error saving subscription");
               }
             })
             .catch(() => {
-              modalError("Network error saving subscription");
+              alertError("Network error saving subscription");
             });
         }
         window.webkit.messageHandlers["push-permission-request"].postMessage(
@@ -294,7 +294,7 @@ const showMenu = () => {
                           retries++;
                           setTimeout(check_for_success, retries * 1000);
                         } else {
-                          modalError("Server error saving subscription");
+                          alertError("Server error saving subscription");
                           state.push_active = false;
                           $("toggle-wrapper").removeAttribute("active");
                           subscription.unsubscribe();
@@ -375,7 +375,7 @@ const showMenu = () => {
       $sign_in.appendChild(
         $(
           `
-          error[show]
+          error
             $1
           `,
           [error],
@@ -413,7 +413,7 @@ const showMenu = () => {
       $sign_in.appendChild(
         $(
           `
-        info[show] Validating...
+        info Validating...
         `,
         ),
       );

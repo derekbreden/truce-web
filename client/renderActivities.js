@@ -50,6 +50,7 @@ const renderActivities = (activities) => {
         $event.preventDefault();
         goToPath("/comment/" + activity.id);
       });
+      activity.$activity = $activity;
       return $activity;
     } else {
       const $topic = renderTopic(activity);
@@ -62,6 +63,7 @@ const renderActivities = (activities) => {
           `,
         [preamble, $topic],
       );
+      activity.$activity = $activity;
       return $activity;
     }
   });

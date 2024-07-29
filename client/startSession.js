@@ -72,7 +72,7 @@ const startSession = () => {
     .catch(function (error) {
       state.loading_path = false;
       console.error(error);
-      modalError("Network error");
+      alertError("Network error");
     });
 };
 
@@ -93,7 +93,13 @@ const getMoreRecent = () => {
 
   // Find the newest (max) create_date of what we have so far
   const min_create_date = current_cache.activities.reduce((max, activity) => {
-    return max > activity.create_date ? max : activity.create_date;
+    if (current_cache === "/favorites") {
+      return max > activity.favorite_create_date
+        ? max
+        : activity.favorite_create_date;
+    } else {
+      return max > activity.create_date ? max : activity.create_date;
+    }
   }, "");
   const min_comment_create_date = current_cache.comments.reduce(
     (max, comment) => {
@@ -227,10 +233,11 @@ const getMoreRecent = () => {
 
       // Render activities if appropriate
       if (data.activities?.length) {
-        const new_ids = data.activities.map((activity) => activity.id);
-        current_cache.activities = current_cache.activities.filter(
-          (a) => new_ids.indexOf(a.id) === -1,
-        );
+        current_cache.activities = current_cache.activities.filter((a) => {
+          return !data.activities.some((a2) => {
+            return a.type === a2.type && a.id === a2.id;
+          });
+        });
         current_cache.activities.unshift(...data.activities);
         renderActivities(current_cache.activities);
       }
@@ -325,6 +332,6 @@ const getMoreRecent = () => {
     .catch(function (error) {
       state.loading_path = false;
       console.error(error);
-      modalError("Network error");
+      alertError("Network error");
     });
 };

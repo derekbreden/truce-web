@@ -4,7 +4,7 @@ const modalInfo = (message) => {
     `
     modal-wrapper
       modal[info]
-        info[show] $1
+        info $1
         button[close] Okay
       modal-bg
     `,
@@ -25,7 +25,7 @@ const modalError = (message) => {
     `
     modal-wrapper
       modal[error]
-        error[show] $1
+        error $1
         button[close] Okay
       modal-bg
     `,
@@ -39,3 +39,62 @@ const modalError = (message) => {
   $("modal-wrapper")?.remove();
   $("body").appendChild($modal);
 };
+
+// Generic alert sliding down from top
+let alert_timeout = 0;
+const alertInfo = (message) => {
+  const $alert = $(
+      `
+      alert
+        info $1
+      `,
+      [message]
+    );
+  clearTimeout(alert_timeout);
+  if ($("alert-wrapper")) {
+    $alert.style.zIndex = (Number($("alert-wrapper alert").length || 1) + 1) * -1;
+    $("alert-wrapper").appendChild($alert);
+  } else {
+    $alert.style.zIndex = -1;
+    const $alert_wrapper = $(
+      `
+      alert-wrapper
+        $1
+      `,
+      [ $alert ]
+    );
+    $("body").appendChild($alert_wrapper);
+  }
+  alert_timeout = setTimeout(() => {
+    $("alert-wrapper")?.remove();
+  }, 5000);
+}
+
+// Generic alert error sliding down from top
+const alertError = (message) => {
+  const $alert = $(
+      `
+      alert
+        error $1
+      `,
+      [message]
+    );
+  clearTimeout(alert_timeout);
+  if ($("alert-wrapper")) {
+    $alert.style.zIndex = (Number($("alert-wrapper alert").length || 1) + 1) * -1;
+    $("alert-wrapper").appendChild($alert);
+  } else {
+    $alert.style.zIndex = -1;
+    const $alert_wrapper = $(
+      `
+      alert-wrapper
+        $1
+      `,
+      [ $alert ]
+    );
+    $("body").appendChild($alert_wrapper);
+  }
+  alert_timeout = setTimeout(() => {
+    $("alert-wrapper")?.remove();
+  }, 5000);
+}

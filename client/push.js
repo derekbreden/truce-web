@@ -31,13 +31,13 @@ if (navigator.serviceWorker) {
           .then((response) => response.json())
           .then((data) => {
             if (!data || !data.success) {
-              modalError("Server error saving subscription");
+              alertError("Server error saving subscription");
               state.push_active = false;
               subscription.unsubscribe();
             }
           })
           .catch(() => {
-            modalError("Network error saving subscription");
+            alertError("Network error saving subscription");
             state.push_active = false;
             subscription.unsubscribe();
           });
@@ -79,11 +79,11 @@ if (
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  modalError("Server error saving subscription");
+                  alertError("Server error saving subscription");
                 }
               })
               .catch(() => {
-                modalError("Network error saving subscription");
+                alertError("Network error saving subscription");
               });
           }
           break;
@@ -103,13 +103,13 @@ if (
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  modalError("Server error saving subscription");
+                  alertError("Server error saving subscription");
                 } else {
                   modalError(`You must enable notifications in settings.`);
                 }
               })
               .catch(() => {
-                modalError("Network error saving subscription");
+                alertError("Network error saving subscription");
               });
           }
           break;
@@ -131,7 +131,7 @@ if (
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  modalError("Server error saving subscription");
+                  alertError("Server error saving subscription");
                   state.fcm_push_active = false;
                 } else if (data.deactivated) {
                   state.fcm_push_active = false;
@@ -141,7 +141,7 @@ if (
                 }
               })
               .catch(() => {
-                modalError("Network error saving subscription");
+                alertError("Network error saving subscription");
                 state.fcm_push_active = false;
               });
           }
@@ -174,13 +174,13 @@ if (
             .then((response) => response.json())
             .then((data) => {
               if (!data || !data.success) {
-                modalError("Server error saving subscription");
+                alertError("Server error saving subscription");
               } else {
                 modalError(`You must enable notifications in settings.`);
               }
             })
             .catch(() => {
-              modalError("Network error saving subscription");
+              alertError("Network error saving subscription");
             });
         } else if (state.fcm_push_not_determined) {
           fetch("/session", {
@@ -193,11 +193,11 @@ if (
             .then((response) => response.json())
             .then((data) => {
               if (!data || !data.success) {
-                modalError("Server error saving subscription");
+                alertError("Server error saving subscription");
               }
             })
             .catch(() => {
-              modalError("Network error saving subscription");
+              alertError("Network error saving subscription");
             });
         } else {
           fetch("/session", {
@@ -209,7 +209,7 @@ if (
             .then((response) => response.json())
             .then((data) => {
               if (!data || !data.success) {
-                modalError("Server error saving subscription");
+                alertError("Server error saving subscription");
                 state.fcm_push_active = false;
               } else if (data.deactivated) {
                 state.fcm_push_active = false;
@@ -219,7 +219,7 @@ if (
               }
             })
             .catch(() => {
-              modalError("Network error saving subscription");
+              alertError("Network error saving subscription");
               state.fcm_push_active = false;
             });
         }

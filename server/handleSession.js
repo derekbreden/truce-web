@@ -45,6 +45,7 @@ module.exports = async (req, res) => {
     await require("./session/getFavorites")(req, res);
     await require("./session/getPageTopics")(req, res);
     await require("./session/getUpdatedCounts")(req, res);
+    await require("./session/saveFavorite")(req, res);
     await require("./session/promptToUsePasswordReset")(req, res);
 
     // Default response if nothing else responded sooner

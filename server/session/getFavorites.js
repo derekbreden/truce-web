@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
           c.parent_comment_id,
           c.parent_topic_id,
           fc.user_id as favorite_user_id,
+          fc.create_date as favorite_create_date,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
           FALSE as commented,
           'comment' AS type
@@ -38,7 +39,8 @@ module.exports = async (req, res) => {
           c.user_id,
           c.parent_comment_id,
           c.parent_topic_id,
-          fc.user_id
+          fc.user_id,
+          fc.create_date
         UNION
         SELECT
           t.topic_id AS id,
@@ -54,6 +56,7 @@ module.exports = async (req, res) => {
           NULL as parent_comment_id,
           NULL as parent_topic_id,
           ft.user_id as favorite_user_id,
+          ft.create_date as favorite_create_date,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented,
           'topic' AS type
@@ -72,7 +75,8 @@ module.exports = async (req, res) => {
           t.comment_count,
           t.counts_max_create_date,
           t.user_id,
-          ft.user_id
+          ft.user_id,
+          ft.create_date
       )
       SELECT 
         combined.id,
@@ -88,6 +92,7 @@ module.exports = async (req, res) => {
         combined.image_uuids,
         TRUE as favorited,
         combined.commented,
+        combined.favorite_create_date,
         u.display_name,
         u.display_name_index,
         pt.title AS parent_topic_title,
@@ -104,9 +109,9 @@ module.exports = async (req, res) => {
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
       WHERE
         combined.favorite_user_id = $1
-        AND (combined.create_date < $2 OR $2 IS NULL)
-        AND (combined.create_date > $3 OR $3 IS NULL)
-      ORDER BY combined.create_date DESC
+        AND (combined.favorite_create_date < $2 OR $2 IS NULL)
+        AND (combined.favorite_create_date > $3 OR $3 IS NULL)
+      ORDER BY combined.favorite_create_date DESC
       LIMIT 30;
       `,
       [

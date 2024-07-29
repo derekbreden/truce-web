@@ -44,7 +44,7 @@ const renderTopic = (topic) => {
         ? $(
             `
             info-wrapper
-              info[show]
+              info
                 b $1
                 span $2
             `,
@@ -84,6 +84,10 @@ const renderTopic = (topic) => {
       ),
     ],
   );
+  $topic.$("detail[favorites]").on("click", ($event) => {
+    $event.stopPropagation();
+    toggleFavorite(topic);
+  });
   if (topic.edit) {
     $topic.$("[edit]").on("click", ($event) => {
       $event.preventDefault();

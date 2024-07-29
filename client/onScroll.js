@@ -54,7 +54,60 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            modalError("Network error");
+            alertError("Network error");
+          });
+      }
+    }
+
+    // Favorites load older
+    if (
+      state.path === "/favorites" &&
+      state.cache["/favorites"] &&
+      !state.cache["/favorites"].finished
+    ) {
+      // A threshold based on how much is left to scroll
+      const threshold =
+        $("main-content-wrapper[active]").scrollHeight -
+        $("main-content-wrapper[active]").clientHeight * 3;
+
+      // When we pass the threshold
+      if ($("main-content-wrapper[active]").scrollTop > threshold) {
+        // Find the oldest (min) create_date of what we have so far
+        const max_create_date = state.cache["/favorites"].activities.reduce(
+          (min, activity) => {
+            return min < activity.favorite_create_date ? min : activity.favorite_create_date;
+          },
+          new Date().toISOString(),
+        );
+
+        // Use that to load anything older than that (our min is the max of what we want returned)
+        state.loading_path = true;
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            path: "/favorites",
+            max_create_date,
+          }),
+        })
+          .then((response) => response.json())
+          .then(function (data) {
+            // Stop when we reach the end (no more results returned)
+            if (data.activities && !data.activities.length) {
+              state.cache["/favorites"].finished = true;
+            }
+
+            // Append what we found to the existing cache
+            state.cache["/favorites"].activities.push(...data.activities);
+
+            // And re-render if any activities added
+            if (data.activities.length) {
+              renderActivities(state.cache["/favorites"].activities);
+            }
+            state.loading_path = false;
+          })
+          .catch(function (error) {
+            state.loading_path = false;
+            alertError("Network error");
           });
       }
     }
@@ -108,7 +161,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            modalError("Network error");
+            alertError("Network error");
           });
       }
     }
@@ -162,7 +215,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            modalError("Network error");
+            alertError("Network error");
           });
       }
     }
@@ -235,7 +288,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            modalError("Network error");
+            alertError("Network error");
           });
       }
     }

@@ -18,7 +18,7 @@ const showForgotPassword = () => {
     $modal.$("[password-help]").appendChild(
       $(
         `
-        error[show] $1
+        error $1
         `,
         [ message ]
       )
@@ -42,7 +42,7 @@ const showForgotPassword = () => {
     $modal.$("[password-help]").appendChild(
       $(
         `
-        info[show] Validating...
+        info Validating...
         `
       )
     );
@@ -97,7 +97,7 @@ const showResetPassword = () => {
     $modal.$("[password-reset]").appendChild(
       $(
         `
-        error[show] $1
+        error $1
         `,
         [ message ]
       )
@@ -121,7 +121,7 @@ const showResetPassword = () => {
     $modal.$("[password-reset]").appendChild(
       $(
         `
-        info[show] Validating...
+        info Validating...
         `
       )
     );

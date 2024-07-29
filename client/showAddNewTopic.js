@@ -19,7 +19,7 @@ const showAddNewTopic = (topic) => {
     $add_new.appendChild(
       $(
         `
-        error[show]
+        error
           $1
         `,
         [error],
@@ -111,7 +111,7 @@ const showAddNewTopic = (topic) => {
     $add_new.appendChild(
       $(
         `
-          info[show] Validating...
+          info Validating...
         `,
       ),
     );

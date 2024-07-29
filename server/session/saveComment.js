@@ -417,8 +417,8 @@ module.exports = async (req, res) => {
       `
       UPDATE topics
       SET
-        comment_count = subquery.comment_count,
-        counts_max_create_date = subquery.counts_max_create_date
+        comment_count = COALESCE(subquery.comment_count, 0),
+        counts_max_create_date = NOW()
       FROM (
         SELECT
           COUNT(*) AS comment_count,

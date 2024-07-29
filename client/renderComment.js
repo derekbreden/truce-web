@@ -27,7 +27,7 @@ const renderComment = (comment) => {
         ? $(
             `
             info-wrapper
-              info[show]
+              info
                 b $1
                 span $2
             `,
@@ -53,6 +53,10 @@ const renderComment = (comment) => {
       ),
     ],
   );
+  $comment.$("detail[favorites]").on("click", ($event) => {
+    $event.stopPropagation();
+    toggleFavorite(comment);
+  });
   $comment.$("[reply]").on("click", () => {
     $comment.$(":scope > reply-wrapper").style.display = "none";
     $comment
