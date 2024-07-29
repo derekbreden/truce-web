@@ -1271,6 +1271,10 @@ topics topic {
   padding-bottom: 21px;
   position: relative;
 }
+activities activity {
+  display: flex;
+  flex-direction: column;
+}
 
 activities[favorites] activity::after,
 notifications notification::after,

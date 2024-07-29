@@ -11,18 +11,17 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     // Slide from left to right as if clicking back in several more scenarios
-    if (
-      (state.path === "/topics" && new_path === "/")
-      || (state.path === "/recent" && new_path === "/")
-      || (state.path === "/recent" && new_path === "/topics")
-      || (state.path === "/favorites" && new_path === "/")
-      || (state.path === "/favorites" && new_path === "/topics")
-      || (state.path === "/favorites" && new_path === "/recent")
-      || (state.path === "/notifications" && new_path === "/")
-      || (state.path === "/notifications" && new_path === "/topics")
-      || (state.path === "/notifications" && new_path === "/recent")
-      || (state.path === "/notifications" && new_path === "/favorites")
-    ) {
+    const sequence = [
+      "/",
+      "/privacy",
+      "/topics",
+      "/recent",
+      "/favorites",
+      "/notifications",
+    ];
+    const previous_sequence = sequence.indexOf(state.path) !== -1 ? sequence.indexOf(state.path) : 999;
+    const next_sequence = sequence.indexOf(new_path) !== -1 ? sequence.indexOf(new_path) : 999;
+    if (next_sequence < previous_sequence) {
       clicked_back = true;
     }
 

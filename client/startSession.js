@@ -13,15 +13,15 @@ fetch = function (url, options) {
 const startSession = () => {
   // If cache available, render from that first
   if (state.cache[state.path]) {
-    renderPage(state.cache[state.path]);
+    if (state.path !== "/" && state.path !== "/privacy") {
+      renderPage(state.cache[state.path]);
+    }
 
     // Restore scroll position if found
     if (state.cache[state.path].scroll_top) {
       $("main-content-wrapper[active]").scrollTop =
         state.cache[state.path].scroll_top;
       delete state.cache[state.path].scroll_top;
-      // } else {
-      // $body.scrollTop = 0;
     }
 
     // Get more recent if available
@@ -66,9 +66,11 @@ const startSession = () => {
       if (data.error) {
         modalError(data.error);
       }
-      if (data.path && state.path !== "/" && state.path !== "/privacy") {
+      if (data.path) {
         state.cache[data.path] = data;
-        renderPage(data);
+        if (state.path !== "/" && state.path !== "/privacy") {
+          renderPage(data);
+        }
       }
       state.loading_path = false;
     })
