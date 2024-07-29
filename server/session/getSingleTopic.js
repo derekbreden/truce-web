@@ -149,6 +149,7 @@ module.exports = async (req, res) => {
             )
             OR (
               c.create_date > $4 AND $4 IS NOT NULL
+              AND c.parent_comment_id IS NOT NULL
             )
           )
         GROUP BY
