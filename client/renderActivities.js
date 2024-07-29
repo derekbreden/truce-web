@@ -1,5 +1,33 @@
 const renderActivities = (activities) => {
-  if (!$("main-content-wrapper[active] activities")) {
+  // Empty favorites?
+  if (state.path === "/favorites" && activities.length === 0) {
+    $("main-content-wrapper[active] main-content").replaceChildren(
+      $(
+        `
+        topics[favorites-empty]
+          topic
+            h2 Favorites
+            p[favorites-empty]
+              span When you tap the favorite icon
+              $1
+              span on a topic or comment, it will display here.
+            p[favorites-empty]
+              span Head over to "Topics" and start tapping 
+              $2
+              span to get started!
+        `,
+        [
+          $("footer icon[favorites] svg").cloneNode(true),
+          $("footer icon[favorites] svg").cloneNode(true),
+        ]
+      ),
+    );
+  } else {
+    $("topics[favorites-empty]")?.remove();
+  }
+
+  // Render activities
+  if (!$("main-content-wrapper[active] main-content activities")) {
     $("main-content-wrapper[active] main-content").appendChild(
       $(
         `
@@ -8,6 +36,8 @@ const renderActivities = (activities) => {
         [state.path === "/favorites"],
       ),
     );
+  }
+  if (!$("main-content-wrapper[active] main-content-2 activities")) {
     $("main-content-wrapper[active] main-content-2").appendChild(
       $(
         `
