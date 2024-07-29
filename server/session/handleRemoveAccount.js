@@ -79,6 +79,20 @@ module.exports = async (req, res) => {
       [ req.session.user_id ]
     );
 
+    // Delete favorites
+    await req.client.query(
+      `
+      DELETE FROM favorite_topics WHERE user_id = $1
+      `,
+      [ req.session.user_id ]
+    );
+    await req.client.query(
+      `
+      DELETE FROM favorite_comments WHERE user_id = $1
+      `,
+      [ req.session.user_id ]
+    );
+
     // Sessions
     await req.client.query(
       `
@@ -115,6 +129,56 @@ module.exports = async (req, res) => {
       DELETE FROM users WHERE user_id = $1
       `,
       [ req.session.user_id ]
+    );
+
+    // Update favorite and comment count columns on comments and topics
+    await req.client.query(
+      `
+      UPDATE comments
+      SET
+        favorite_count = COALESCE(subquery.favorite_count, 0),
+        counts_max_create_date = NOW()
+      FROM (
+        SELECT
+          comment_id,
+          COUNT(*) AS favorite_count
+        FROM favorite_comments
+        GROUP BY comment_id
+      ) AS subquery
+      WHERE comments.comment_id = subquery.comment_id;
+      `,
+    );
+    await req.client.query(
+      `
+      UPDATE topics
+      SET
+        favorite_count = COALESCE(subquery.favorite_count, 0),
+        counts_max_create_date = NOW()
+      FROM (
+        SELECT
+          topic_id,
+          COUNT(*) AS favorite_count
+        FROM favorite_topics
+        GROUP BY topic_id
+      ) AS subquery
+      WHERE topics.topic_id = subquery.topic_id;
+      `,
+    );
+    await req.client.query(
+      `
+      UPDATE topics
+      SET
+        comment_count = COALESCE(subquery.comment_count, 0),
+        counts_max_create_date = NOW()
+      FROM (
+        SELECT
+          parent_topic_id,
+          COUNT(*) AS comment_count
+        FROM comments
+        GROUP BY parent_topic_id
+      ) AS subquery
+      WHERE topics.topic_id = subquery.parent_topic_id;
+      `,
     );
 
 

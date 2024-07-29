@@ -25,8 +25,7 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count,
-              MAX(create_date) AS counts_max_create_date
+              COUNT(*) AS favorite_count
             FROM favorite_topics
             WHERE topic_id = $1
           ) AS subquery
@@ -55,8 +54,7 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count,
-              MAX(create_date) AS counts_max_create_date
+              COUNT(*) AS favorite_count
             FROM favorite_comments
             WHERE comment_id = $1
           ) AS subquery
@@ -87,8 +85,7 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count,
-              MAX(create_date) AS counts_max_create_date
+              COUNT(*) AS favorite_count
             FROM favorite_topics
             WHERE topic_id = $1
           ) AS subquery
@@ -117,8 +114,7 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count,
-              MAX(create_date) AS counts_max_create_date
+              COUNT(*) AS favorite_count
             FROM favorite_comments
             WHERE comment_id = $1
           ) AS subquery

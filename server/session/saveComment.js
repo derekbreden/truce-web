@@ -421,8 +421,7 @@ module.exports = async (req, res) => {
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          COUNT(*) AS comment_count,
-          MAX(create_date) AS counts_max_create_date
+          COUNT(*) AS comment_count
         FROM comments
         WHERE parent_topic_id = $1
       ) AS subquery

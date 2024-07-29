@@ -50,7 +50,7 @@ const showMenu = () => {
       goToPath($el.getAttribute("href"));
     });
   });
-  if (state.email) {
+  if (state.user_id) {
     const $settings = $(
       `
         a[href=/]
@@ -102,7 +102,7 @@ const showMenu = () => {
               }
             })
             .catch(function () {
-              alertError("Network error");
+              modalError("Network error");
             });
         });
         $settings_modal.$("[remove]").on("click", () => {
@@ -143,7 +143,7 @@ const showMenu = () => {
               .then((response) => response.json())
               .then((data) => {
                 if (!data || !data.success) {
-                  alertError("Server error removing account");
+                  modalError("Server error removing account");
                 } else {
                   $("modal-wrapper")?.remove();
                   modalInfo("Account removed");
@@ -157,7 +157,7 @@ const showMenu = () => {
                 }
               })
               .catch((error) => {
-                alertError("Network error removing account");
+                modalError("Network error removing account");
               });
             });
             $remove_modal.$("[cancel]").on("click", removeModalCancel);
@@ -171,6 +171,8 @@ const showMenu = () => {
         $("body").appendChild($settings_modal);
     });
     $menu.$("links").appendChild($settings);
+  }
+  if (state.email) {
     const $signed_in = $(
       `
       signed-in
