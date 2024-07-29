@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   ) {
     const user_found = await req.client.query(
       `
-      SELECT password_hash, user_id
+      SELECT password_hash, user_id, display_name
       FROM users
       WHERE lower(email) = lower($1)
       `,
@@ -35,6 +35,8 @@ module.exports = async (req, res) => {
           JSON.stringify({
             success: true,
             signed_in: true,
+            user_id: user_found.rows[0].user_id,
+            display_name: user_found.rows[0].display_name,
           }),
         );
       } else {
@@ -47,6 +49,8 @@ module.exports = async (req, res) => {
     } else {
       const make_admin = process.env["ROOT_EMAIL"] === req.body.email;
       const password_hash = await bcrypt.hash(req.body.password, 12);
+
+      let user_id = req.session.user_id;
 
       // If they posted a comment first, they may have a user_id already
       if (req.session.user_id) {
@@ -83,6 +87,7 @@ module.exports = async (req, res) => {
           `,
           [user_inserted.rows[0].user_id, req.session.session_id],
         );
+        user_id = user_inserted.rows[0].user_id;
       }
 
       // Return success so the client reloads
@@ -90,6 +95,8 @@ module.exports = async (req, res) => {
         JSON.stringify({
           success: true,
           created_account: true,
+          user_id: user_id,
+          display_name: req.session.display_name,
         }),
       );
     }

@@ -158,6 +158,8 @@ module.exports = async (req, res) => {
         JSON.stringify({
           success: true,
           slug,
+          user_id: req.session.user_id,
+          display_name: req.session.display_name,
         }),
       );
     } else {

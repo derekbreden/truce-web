@@ -16,6 +16,8 @@ module.exports = async (req, res) => {
       res.end(
         JSON.stringify({
           success: true,
+          user_id: req.session.user_id,
+          display_name: req.session.display_name,
         }),
       );
     } else {

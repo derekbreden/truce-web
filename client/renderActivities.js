@@ -3,15 +3,17 @@ const renderActivities = (activities) => {
     $("main-content-wrapper[active] main-content").appendChild(
       $(
         `
-        activities
+        activities[favorites=$1]
         `,
+        [state.path === "/favorites"],
       ),
     );
     $("main-content-wrapper[active] main-content-2").appendChild(
       $(
         `
-        activities
+        activities[favorites=$1]
         `,
+        [state.path === "/favorites"],
       ),
     );
   }
@@ -38,7 +40,7 @@ const renderActivities = (activities) => {
       }
       const $activity = $(
         `
-            activity
+            activity[comment]
               h2
                 span $1
                 span $2
@@ -57,7 +59,7 @@ const renderActivities = (activities) => {
       let preamble = `Topic:`;
       const $activity = $(
         `
-            activity
+            activity[topic]
               h2 $1
               $2
           `,
@@ -68,8 +70,8 @@ const renderActivities = (activities) => {
     }
   });
   if (window.innerWidth > 1000) {
-    const $activities_1 = $activities.filter((x, i) => i % 2 === 1);
-    const $activities_2 = $activities.filter((x, i) => i % 2 === 0);
+    const $activities_1 = $activities.filter((x, i) => i % 2 === 0);
+    const $activities_2 = $activities.filter((x, i) => i % 2 === 1);
     $("main-content-wrapper[active] main-content activities").replaceChildren(
       ...$activities_1,
     );

@@ -57,6 +57,9 @@ const startSession = () => {
           showResetPassword();
         }
       }
+      if (data.user_id) {
+        state.user_id = data.user_id;
+      }
       if (data.display_name) {
         state.display_name = data.display_name;
       }

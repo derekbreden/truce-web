@@ -4,16 +4,15 @@ const toggleFavorite = async (topic_or_comment) => {
   // Set some variables
   const topic_id = topic_or_comment.topic_id || topic_or_comment.id;
   const comment_id = topic_or_comment.comment_id || topic_or_comment.id;
-  let was_favorited = false;
+  const was_favorited = topic_or_comment.favorited;
 
   // Update any cached items
   if (topic_or_comment.$topic) {
     forEachCachedTopic((topic) => {
       if (topic.topic_id === topic_id) {
-        if (topic_or_comment.favorited) {
+        if (was_favorited) {
           topic.favorite_count = String(Number(topic.favorite_count) - 1);
           topic.favorited = false;
-          was_favorited = true;
         } else {
           topic.favorite_count = String(Number(topic.favorite_count) + 1);
           topic.favorited = true;
@@ -46,7 +45,7 @@ const toggleFavorite = async (topic_or_comment) => {
         activity.type === "topic" &&
         activity.id === topic_id)
     ) {
-      if (!topic_or_comment.favorited) {
+      if (was_favorited) {
         state.cache["/favorites"]?.activities?.splice(activity_index, 1);
         activity.$activity.setAttribute("explode-out", "");
         setTimeout(() => {
@@ -111,6 +110,13 @@ const toggleFavorite = async (topic_or_comment) => {
         if (data.error || !data.success) {
           console.error(data.error);
           alertError(data.error || "Server error");
+        } else {
+          if (data.user_id) {
+            state.user_id = data.user_id;
+          }
+          if (data.display_name) {
+            state.display_name = data.display_name;
+          }
         }
         performNextSave();
       })

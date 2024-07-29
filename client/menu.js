@@ -147,6 +147,8 @@ const showMenu = () => {
                 } else {
                   $("modal-wrapper")?.remove();
                   modalInfo("Account removed");
+                  state.user_id = "";
+                  state.display_name = "";
                   state.email = "";
                   state.reset_token_uuid = "";
                   localStorage.removeItem("session_uuid");
@@ -332,6 +334,8 @@ const showMenu = () => {
     });
     $signed_in.$("[sign-out]").on("click", () => {
       $signed_in.$("[sign-out]").setAttribute("disabled", "");
+      state.user_id = "";
+      state.display_name = "";
       state.email = "";
       state.reset_token_uuid = "";
 
@@ -438,6 +442,12 @@ const showMenu = () => {
             $sign_in.$("[cancel]").removeAttribute("disabled");
             signInError(data.error || "Server error");
             return;
+          }
+          if (data.user_id) {
+            state.user_id = data.user_id;
+          }
+          if (data.display_name) {
+            state.display_name = data.display_name;
           }
           state.email = email;
           state.cache = {};

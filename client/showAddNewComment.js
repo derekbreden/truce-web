@@ -161,6 +161,13 @@ const showAddNewComment = (
         if (data.error || !data.success) {
           addCommentError(data.error || "Server error");
           state.display_name = "";
+        } else {
+          if (data.user_id) {
+            state.user_id = data.user_id;
+          }
+          if (data.display_name) {
+            state.display_name = data.display_name;
+          }
         }
         hideDisplayNameInput();
       })
@@ -221,6 +228,12 @@ const showAddNewComment = (
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]").removeAttribute("disabled");
           addCommentError(data.error || "Server error");
+          if (data.user_id) {
+            state.user_id = data.user_id;
+          }
+          if (data.display_name) {
+            state.display_name = data.display_name;
+          }
           return;
         }
         delete state.active_add_new_comment;

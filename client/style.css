@@ -125,6 +125,15 @@ main-content-2 {
   position: relative;
 }
 
+@media (prefers-color-scheme: dark) and (min-width: 482px) {
+
+  main-content,
+  main-content-2 {
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+  }
+}
+
 @media (max-width: 1000px) {
   main-content-wrapper {
     flex-wrap: nowrap;
@@ -1260,6 +1269,7 @@ topics topic {
   position: relative;
 }
 
+activities[favorites] activity::after,
 notifications notification::after,
 topics topic::before {
   content: "";
@@ -1535,11 +1545,13 @@ activity[explode-out] {
 @keyframes explode-out {
   0% {
     opacity: 1;
-    transform: scale(1, 1);;
+    transform: scale(1, 1);
+    ;
   }
 
   100% {
     opacity: 0;
-    transform: scale(1.1, 1.1);;
+    transform: scale(1.1, 1.1);
+    ;
   }
 }
