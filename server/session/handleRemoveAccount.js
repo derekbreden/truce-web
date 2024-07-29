@@ -136,48 +136,51 @@ module.exports = async (req, res) => {
       `
       UPDATE comments
       SET
-        favorite_count = COALESCE(subquery.favorite_count, 0),
+        favorite_count = COALESCE(fav_counts.favorite_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          comment_id,
-          COUNT(*) AS favorite_count
-        FROM favorite_comments
-        GROUP BY comment_id
-      ) AS subquery
-      WHERE comments.comment_id = subquery.comment_id;
+          c.comment_id,
+          COUNT(fc.comment_id) AS favorite_count
+        FROM comments c
+        LEFT JOIN favorite_comments fc ON c.comment_id = fc.comment_id
+        GROUP BY c.comment_id
+      ) AS fav_counts
+      WHERE comments.comment_id = fav_counts.comment_id
       `,
     );
     await req.client.query(
       `
       UPDATE topics
       SET
-        favorite_count = COALESCE(subquery.favorite_count, 0),
+        favorite_count = COALESCE(fav_counts.favorite_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          topic_id,
-          COUNT(*) AS favorite_count
-        FROM favorite_topics
-        GROUP BY topic_id
-      ) AS subquery
-      WHERE topics.topic_id = subquery.topic_id;
+          t.topic_id,
+          COUNT(ft.topic_id) AS favorite_count
+        FROM topics t
+        LEFT JOIN favorite_topics ft ON t.topic_id = ft.topic_id
+        GROUP BY t.topic_id
+      ) AS fav_counts
+      WHERE topics.topic_id = fav_counts.topic_id
       `,
     );
     await req.client.query(
       `
       UPDATE topics
       SET
-        comment_count = COALESCE(subquery.comment_count, 0),
+        comment_count = COALESCE(comment_counts.comment_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          parent_topic_id,
-          COUNT(*) AS comment_count
-        FROM comments
-        GROUP BY parent_topic_id
-      ) AS subquery
-      WHERE topics.topic_id = subquery.parent_topic_id;
+          t.topic_id,
+          COUNT(c.comment_id) AS comment_count
+        FROM topics t
+        LEFT JOIN comments c ON t.topic_id = c.parent_topic_id
+        GROUP BY t.topic_id
+      ) AS comment_counts
+      WHERE topics.topic_id = comment_counts.topic_id
       `,
     );
 
