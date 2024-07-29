@@ -70,15 +70,62 @@ const renderNotifications = (notifications) => {
   if (state.path !== "/notifications") {
     return;
   }
+  if (!state.email) {
+    $("main-content-wrapper[active] main-content").replaceChildren(
+      $(
+        `
+        topics[notifications-header]
+          topic
+            h2 Notifications
+            p To enable notifications, please sign in or sign up, using the menu in the top right hand corner.
+        `,
+      ),
+    );
+  } else if (state.push_available || state.fcm_push_available) {
+    $("main-content-wrapper[active] main-content").replaceChildren(
+      $(
+        `
+        topics[notifications-header]
+          topic
+            h2 Notifications
+            p When you "Subscribe to replies", you will get a notification anytime someone responds to a topic or comment you have posted.
+        `,
+      ),
+    );
+  } else if (state.fcm_push_denied) {
+    $("main-content-wrapper[active] main-content").replaceChildren(
+      $(
+        `
+        topics[notifications-header]
+          topic
+            h2 Notifications
+            p You must enable notifications for this app in settings
+        `,
+      ),
+    );
+  } else {
+    $("main-content-wrapper[active] main-content").replaceChildren(
+      $(
+        `
+        topics[notifications-header]
+          topic
+            h2 Notifications
+            p[add-to-home]
+              span To enable notifications, tap the
+              $1
+              span icon on your browser and then tap "Add to Home Screen".
+        `,
+        [$("icons icon[share] svg").cloneNode(true)],
+      ),
+    );
+  }
   const unread_notifications = notifications.filter((n) => !n.read);
   const read_notifications = notifications.filter((n) => n.read);
   const $unread_header = $(
     `
     h3 $1
     `,
-    [
-      state.unread_count ? `Unread (${state.unread_count})` : "Unread",
-    ],
+    [state.unread_count ? `Unread (${state.unread_count})` : "Unread"],
   );
   const $read_header = $(
     `
@@ -107,7 +154,7 @@ const renderNotifications = (notifications) => {
       ),
     ];
   }
-  if (!$("main-content-wrapper[active] notifications")) {
+  if (!$("main-content-wrapper[active] main-content notifications")) {
     $("main-content-wrapper[active] main-content").appendChild(
       $(
         `
@@ -115,6 +162,8 @@ const renderNotifications = (notifications) => {
         `,
       ),
     );
+  }
+  if (!$("main-content-wrapper[active] main-content-2 notifications")) {
     $("main-content-wrapper[active] main-content-2").appendChild(
       $(
         `
@@ -170,12 +219,6 @@ const renderMarkAllAsRead = () => {
       `,
       [!Boolean(state.unread_count)],
     );
-    $("main-content-wrapper[active] back-forward-wrapper")
-      .$("mark-all-as-read-wrapper")
-      ?.remove();
-    $("main-content-wrapper[active] back-forward-wrapper").appendChild(
-      $mark_all_as_read,
-    );
     $mark_all_as_read.on("click", () => {
       $mark_all_as_read.$("button").setAttribute("alt", "");
       $mark_all_as_read.$("button").setAttribute("faint", "");
@@ -205,6 +248,173 @@ const renderMarkAllAsRead = () => {
           console.error(error);
         });
     });
+    if (
+      (state.push_active || state.fcm_push_active)
+      && Boolean(state.unread_count)
+    ) {
+      $("main-content-wrapper[active] main-content notifications").append($mark_all_as_read);
+    }
+    const $toggle_wrapper = $(
+      `
+      toggle-wrapper[disabled=$1][active=$2]
+        toggle-text Subscribe to replies
+        toggle-button
+          toggle-circle
+      `,
+      [
+        !state.push_available && !state.fcm_push_available,
+        state.push_active || state.fcm_push_active,
+      ],
+    );
+    $toggle_wrapper.on("click", () => {
+      if (state.push_active) {
+        state.push_active = false;
+        $("toggle-wrapper").removeAttribute("active");
+        navigator.serviceWorker.ready
+          .then((registration) => {
+            return registration.pushManager.getSubscription();
+          })
+          .then((subscription) => {
+            subscription.unsubscribe();
+            fetch("/session", {
+              method: "POST",
+              body: JSON.stringify({
+                remove: true,
+                subscription,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data || !data.success) {
+                  alertError("Server error saving subscription");
+                }
+              })
+              .catch((error) => {
+                alertError("Network error saving subscription");
+              });
+          });
+        return;
+      }
+      if (state.fcm_push_active) {
+        state.fcm_push_active = false;
+        $("toggle-wrapper").removeAttribute("active");
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            fcm_subscription: state.fcm_token,
+            deactivate: true,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data || !data.success) {
+              alertError("Server error saving subscription");
+            }
+          })
+          .catch(() => {
+            alertError("Network error saving subscription");
+          });
+        return;
+      }
+      if (state.fcm_push_available) {
+        state.fcm_push_active = true;
+        getUnreadCountUnseenCount();
+        $("toggle-wrapper").setAttribute("active", "");
+        if (state.fcm_token) {
+          fetch("/session", {
+            method: "POST",
+            body: JSON.stringify({
+              fcm_subscription: state.fcm_token,
+              reactivate: true,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (!data || !data.success) {
+                alertError("Server error saving subscription");
+              }
+            })
+            .catch(() => {
+              alertError("Network error saving subscription");
+            });
+        }
+        window.webkit.messageHandlers["push-permission-request"].postMessage(
+          "push-permission-request",
+        );
+      } else if (state.push_available) {
+        state.push_active = true;
+        $("toggle-wrapper").setAttribute("active", "");
+        navigator.serviceWorker.ready
+          .then(async (registration) => {
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: (function () {
+                const raw = window.atob(
+                  "BP8IxEorl8eTn6QkMCyfKCo5sDdx/AQruapRiq3wWaretKdIegWr3oMXUu2WXIiQvP46DcuoZxdKRHpGNMp+UNc=",
+                );
+                const array = new Uint8Array(new ArrayBuffer(raw.length));
+                for (let i = 0; i < raw.length; i++) {
+                  array[i] = raw.charCodeAt(i);
+                }
+                return array;
+              })(),
+            });
+            let retries = 0;
+            const check_for_success = () => {
+              registration.pushManager
+                .getSubscription()
+                .then((subscription) => {
+                  fetch("/session", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      subscription,
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then((data) => {
+                      if (!data || !data.success) {
+                        if (retries < 20) {
+                          retries++;
+                          setTimeout(check_for_success, retries * 1000);
+                        } else {
+                          alertError("Server error saving subscription");
+                          state.push_active = false;
+                          $("toggle-wrapper").removeAttribute("active");
+                          subscription.unsubscribe();
+                        }
+                      }
+                    })
+                    .catch(() => {
+                      if (retries < 20) {
+                        retries++;
+                        setTimeout(check_for_success, retries * 1000);
+                      } else {
+                        modalError("Error enabling notifications");
+                        state.push_active = false;
+                        $("toggle-wrapper").removeAttribute("active");
+                        subscription.unsubscribe();
+                      }
+                    });
+                });
+            };
+            setTimeout(check_for_success, 1000);
+          })
+          .catch(() => {
+            modalError("Subscription error");
+            state.push_active = false;
+            $("toggle-wrapper").removeAttribute("active");
+          });
+      } else {
+        if (state.fcm_push_denied) {
+          modalError(`You must enable notifications in settings.`);
+        } else {
+          modalError(`You must "Add to Home Screen" to enable notifications.`);
+        }
+      }
+    });
+    if (state.email && (state.push_available || state.fcm_push_available)) {
+      $("topics[notifications-header] topic").appendChild($toggle_wrapper);
+    }
   }
 };
 

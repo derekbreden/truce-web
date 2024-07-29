@@ -498,18 +498,21 @@ menu links a[unread]::before {
   left: 6px;
 }
 
-menu toggle-wrapper {
+toggle-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 15px;
+  margin: 20px 0 0 0;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-menu toggle-wrapper[disabled] {
+toggle-wrapper[disabled] {
   opacity: .5;
 }
 
-menu toggle-wrapper toggle-button {
+toggle-wrapper toggle-button {
+  margin-left: 20px;
   display: flex;
   height: 30px;
   width: 50px;
@@ -519,7 +522,7 @@ menu toggle-wrapper toggle-button {
   transition: background .2s ease-in-out;
 }
 
-menu toggle-wrapper toggle-button toggle-circle {
+toggle-wrapper toggle-button toggle-circle {
   height: 28px;
   width: 28px;
   background: light-dark(#fff, #000);
@@ -530,11 +533,11 @@ menu toggle-wrapper toggle-button toggle-circle {
   transition: left .2s ease-in-out;
 }
 
-menu toggle-wrapper[active] toggle-button {
+toggle-wrapper[active] toggle-button {
   background: light-dark(#4a5, #091);
 }
 
-menu toggle-wrapper[active] toggle-button toggle-circle {
+toggle-wrapper[active] toggle-button toggle-circle {
   left: 21px;
 }
 
@@ -1554,4 +1557,29 @@ activity[explode-out] {
     transform: scale(1.1, 1.1);
     ;
   }
+}
+
+p[favorites-empty] {
+  overflow: visible;
+}
+
+p[favorites-empty] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+p[add-to-home] svg,
+p[favorites-empty] svg {
+  fill: light-dark(#000, #fff);
+  margin-bottom: -16px;
+}
+
+p[add-to-home] {
+  overflow: visible;
+}
+p[add-to-home] svg {
+  height: 30px;
+  width: 30px;
+  margin-bottom: -6px;
 }
