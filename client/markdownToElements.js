@@ -21,9 +21,9 @@ const markdownToElements = (text) => {
     }
 
     // Support for #
-    if (p_content.substr(0, 2) === "# " || p_content.substr(0,2) === "##") {
+    if (p_content.substr(0, 2) === "# " || p_content.substr(0, 2) === "##") {
       p_element.setAttribute("bold", "");
-      p_content = p_content.replace(/#{1,} /g, "");
+      p_content = p_content.replace(/#{1,} /g, "").replace(/\*{2,}/g, "");
     }
 
     // Support for -
@@ -51,8 +51,8 @@ const markdownToElements = (text) => {
         `
         audio[controls][src=$1]
         `,
-        [ p_content ]
-      )
+        [p_content],
+      );
     }
 
     let inserts = [];
@@ -62,9 +62,7 @@ const markdownToElements = (text) => {
     // Support for ![alt](src)
     let p_content_remaining = p_content;
     let offset = 0;
-    while (
-      (imgs = p_content_remaining.match(/!\[([^\]]*)\]\(([^\)]*)\)/))
-    ) {
+    while ((imgs = p_content_remaining.match(/!\[([^\]]*)\]\(([^\)]*)\)/))) {
       const img_element = $(
         `
         img[alt=$1][src=$2]
@@ -86,9 +84,7 @@ const markdownToElements = (text) => {
     // Support for [text](href)
     p_content_remaining = p_content;
     offset = 0;
-    while (
-      (links = p_content_remaining.match(/\[([^\]]*)\]\(([^\)]*)\)/))
-    ) {
+    while ((links = p_content_remaining.match(/\[([^\]]*)\]\(([^\)]*)\)/))) {
       const big = Boolean(links[0] === p_content_remaining && offset === 0);
       const link_element = $(
         `
