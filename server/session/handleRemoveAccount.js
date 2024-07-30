@@ -92,6 +92,12 @@ module.exports = async (req, res) => {
       `,
       [ req.session.user_id ]
     );
+    await req.client.query(
+      `
+      DELETE FROM blocked_users WHERE user_id_blocking = $1 OR user_id_blocked = $1
+      `,
+      [ req.session.user_id ]
+    );
 
     // Sessions
     await req.client.query(

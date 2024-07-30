@@ -110,11 +110,23 @@ module.exports = async (req, res) => {
         LEFT JOIN comments p ON p.comment_id = c.parent_comment_id
         INNER JOIN users u ON u.user_id = c.user_id
         INNER JOIN topics a ON a.topic_id = c.parent_topic_id
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        LEFT JOIN flagged_comments l2 ON l2.comment_id = p.comment_id
+        LEFT JOIN blocked_users b2 ON b2.user_id_blocked = p.user_id AND b2.user_id_blocking = $1
+        LEFT JOIN flagged_topics l3 ON l3.topic_id = a.topic_id
+        LEFT JOIN blocked_users b3 ON b3.user_id_blocked = a.user_id AND b3.user_id_blocking = $1
         WHERE
           n.user_id = $1
           AND read = FALSE
           AND (n.create_date < $2 OR $2 IS NULL)
           AND (n.create_date > $3 OR $3 IS NULL)
+          AND l.comment_id IS NULL
+          AND b.user_id_blocked IS NULL
+          AND l2.comment_id IS NULL
+          AND b2.user_id_blocked IS NULL
+          AND l3.topic_id IS NULL
+          AND b3.user_id_blocked IS NULL
         ORDER BY n.create_date DESC
         LIMIT 30
         `,
@@ -147,11 +159,23 @@ module.exports = async (req, res) => {
         LEFT JOIN comments p ON p.comment_id = c.parent_comment_id
         INNER JOIN users u ON u.user_id = c.user_id
         INNER JOIN topics a ON a.topic_id = c.parent_topic_id
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        LEFT JOIN flagged_comments l2 ON l2.comment_id = p.comment_id
+        LEFT JOIN blocked_users b2 ON b2.user_id_blocked = p.user_id AND b2.user_id_blocking = $1
+        LEFT JOIN flagged_topics l3 ON l3.topic_id = a.topic_id
+        LEFT JOIN blocked_users b3 ON b3.user_id_blocked = a.user_id AND b3.user_id_blocking = $1
         WHERE
           n.user_id = $1
           AND read = TRUE
           AND (n.create_date < $2 OR $2 IS NULL)
           AND (n.create_date > $3 OR $3 IS NULL)
+          AND l.comment_id IS NULL
+          AND b.user_id_blocked IS NULL
+          AND l2.comment_id IS NULL
+          AND b2.user_id_blocked IS NULL
+          AND l3.topic_id IS NULL
+          AND b3.user_id_blocked IS NULL
         ORDER BY n.create_date DESC
         LIMIT 30
         `,

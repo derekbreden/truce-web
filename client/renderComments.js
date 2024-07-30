@@ -211,7 +211,7 @@ const renderComments = (comments) => {
     $("reply-wrapper")?.forEach(
       ($reply_wrapper) => ($reply_wrapper.style.display = "none"),
     );
-    $("p[add-new-comment]").remove();
+    $("p[add-new-comment]")?.remove();
     $("expand-wrapper[above-comments]")?.remove();
   }
   afterDomUpdate();

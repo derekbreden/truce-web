@@ -265,6 +265,16 @@ h3 {
   justify-content: space-between;
   align-items: center;
 }
+comment h3 icon[more] {
+  margin: -4px 0 -8px 0;
+  cursor: pointer;
+}
+comment h3 icon[more] svg {
+  height: 30px;
+  width: 30px;
+  fill: #000;
+  fill: light-dark(#000, #fff);
+}
 
 audio,
 p {
@@ -1419,6 +1429,16 @@ activity > h2 > span:last-child {
 activity>topic h2 {
   margin-top: 0;
 }
+topic>h2>icon[more] {
+  margin: -4px 0 -8px 0;
+  cursor: pointer;
+}
+topic>h2>icon[more] svg {
+  height: 30px;
+  width: 30px;
+  fill: #000;
+  fill: light-dark(#000, #fff);
+}
 
 activity>[parent-comment] {
   background: #f5f5f5;
@@ -1699,4 +1719,24 @@ footer dot[index="3"] {
 footer dot[index="4"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
+}
+
+action {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  cursor: pointer;
+}
+action p {
+  margin: 0 0 0 5px;
+}
+action>icon {
+  cursor: pointer;
+  margin: 0 0 -4px 0;
+}
+action>icon svg {
+  height: 24px;
+  width: 24px;
+  fill: #000;
+  fill: light-dark(#000, #fff);
 }

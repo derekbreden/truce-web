@@ -6,7 +6,11 @@ module.exports = async (req, res) => {
     (req.body.display_name ||
       req.body.title ||
       req.body.topic_id_to_favorite ||
-      req.body.comment_id_to_favorite)
+      req.body.comment_id_to_favorite ||
+      req.body.topic_id_to_block ||
+      req.body.comment_id_to_block ||
+      req.body.topic_id_to_flag ||
+      req.body.comment_id_to_flag)
   ) {
     const user_inserted = await req.client.query(
       `

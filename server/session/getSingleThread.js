@@ -36,6 +36,8 @@ module.exports = async (req, res) => {
       INNER JOIN users u ON c.user_id = u.user_id
       LEFT JOIN comment_images i ON c.comment_id = i.comment_id
       LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $2
+      LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+      LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
       WHERE
         (
           c.comment_id IN (
@@ -50,6 +52,8 @@ module.exports = async (req, res) => {
         ) AND (
           c.create_date > $3 OR $3 IS NULL
         )
+        AND l.comment_id IS NULL
+        AND b.user_id_blocked IS NULL
       GROUP BY
         c.create_date,
         c.comment_id,
@@ -71,15 +75,19 @@ module.exports = async (req, res) => {
     if (comment_results.rows.length) {
       const topic_result = await req.client.query(
         `
-        SELECT title, slug
-        FROM topics
-        WHERE topic_id IN (
+        SELECT t.title, t.slug
+        FROM topics t
+        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
+        WHERE t.topic_id IN (
           SELECT parent_topic_id
           FROM comments
-          WHERE comment_id = $1
+          WHERE comment_id = $2
         )
+        AND l.topic_id IS NULL
+        AND b.user_id_blocked IS NULL
         `,
-        [comment_id],
+        [req.session.user_id || 0, comment_id],
       );
       req.results.parent_topic = {
         title: topic_result.rows[0].title,

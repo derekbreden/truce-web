@@ -23,6 +23,11 @@ module.exports = async (req, res) => {
         FROM comments c
         LEFT JOIN comment_images i ON c.comment_id = i.comment_id
         LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        WHERE
+          l.comment_id IS NULL
+          AND b.user_id_blocked IS NULL
         GROUP BY
           c.comment_id,
           c.create_date,
@@ -59,9 +64,13 @@ module.exports = async (req, res) => {
       LEFT JOIN users pu ON pa.user_id = pu.user_id
       LEFT JOIN comments pc ON combined.parent_comment_id = pc.comment_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
+      LEFT JOIN flagged_comments l ON l.comment_id = pc.comment_id
+      LEFT JOIN blocked_users b ON b.user_id_blocked = pc.user_id AND b.user_id_blocking = $1
       WHERE
         (combined.create_date < $2 OR $2 IS NULL)
         AND (combined.create_date > $3 OR $3 IS NULL)
+        AND l.comment_id IS NULL
+        AND b.user_id_blocked IS NULL
       ORDER BY combined.create_date DESC
       LIMIT 30;
       `,

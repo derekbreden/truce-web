@@ -14,14 +14,13 @@ const renderComment = (comment) => {
     `,
     [
       renderName(comment.display_name, comment.display_name_index) + ":",
-      comment.edit
-        ? $(
-            `
-            button[edit][small][alt][faint] Edit
-            `,
-            [],
-          )
-        : [],
+      $(
+        `
+        icon[more]
+          $1
+        `,
+        [ $("icons icon[more] svg").cloneNode(true) ],
+      ),
       markdownToElements(comment.body),
       comment.note
         ? $(
@@ -64,11 +63,64 @@ const renderComment = (comment) => {
       .after(showAddNewComment(null, comment));
     focusAddNewComment();
   });
-  $comment.$("[edit]")?.on("click", () => {
-    $comment.replaceWith(showAddNewComment(comment));
-    focusAddNewComment();
+  $comment.$("icon[more]").on("click", ($event) => {
+    $event.preventDefault();
+    $event.stopPropagation();
+    const $more_modal = $(
+      `
+      modal-wrapper
+        modal[info]
+          action[edit]
+            icon[edit]
+              $1
+            p Edit
+          action[flag]
+            icon[flag]
+              $2
+            p Flag comment
+          action[block]
+            icon[block]
+              $3
+            p Block user
+          button-wrapper
+            button[alt][cancel] Cancel
+        modal-bg
+      `,
+      [
+        $("icons icon[edit] svg").cloneNode(true),
+        $("icons icon[flag] svg").cloneNode(true),
+        $("icons icon[block] svg").cloneNode(true),
+      ]
+    );
+    const moreModalCancel = () => {
+      $more_modal.remove();
+    };
+    $more_modal.$("[cancel]").on("click", moreModalCancel);
+    $more_modal.$("modal-bg").on("click", moreModalCancel);
+    if (comment.edit) {
+      $more_modal.$("action[edit]").on("click", ($event) => {
+        $event.preventDefault();
+        moreModalCancel();
+        $comment.replaceWith(showAddNewComment(comment));
+        focusAddNewComment();
+      });
+      $more_modal.$("action[block]").remove();
+    } else {
+      $more_modal.$("action[edit]").remove();
+      $more_modal.$("action[block]").on("click", ($event) => {
+        $event.preventDefault();
+        moreModalCancel();
+        markBlocked(comment);
+      });
+    }
+    $more_modal.$("action[flag]").on("click", ($event) => {
+      $event.preventDefault();
+      moreModalCancel();
+      markFlagged(comment);
+    });
+    $("modal-wrapper")?.remove();
+    $("body").appendChild($more_modal);
   });
-
   if (comment.image_uuids) {
     const image_uuids = comment.image_uuids.split(",").reverse();
     for (const image_uuid of image_uuids) {

@@ -32,14 +32,13 @@ const renderTopic = (topic) => {
     `,
     [
       topic.title,
-      topic.edit
-        ? $(
-            `
-            button[edit][small][alt][faint] Edit
-            `,
-            [],
-          )
-        : [],
+      $(
+        `
+        icon[more]
+          $1
+        `,
+        [ $("icons icon[more] svg").cloneNode(true) ],
+      ),
       topic.note
         ? $(
             `
@@ -88,13 +87,67 @@ const renderTopic = (topic) => {
     $event.stopPropagation();
     toggleFavorite(topic);
   });
-  if (topic.edit) {
-    $topic.$("[edit]").on("click", ($event) => {
+  $topic.$("icon[more]").on("click", ($event) => {
+    $event.preventDefault();
+    $event.stopPropagation();
+    const $more_modal = $(
+      `
+      modal-wrapper
+        modal[info]
+          action[edit]
+            icon[edit]
+              $1
+            p Edit
+          action[flag]
+            icon[flag]
+              $2
+            p Flag topic
+          action[block]
+            icon[block]
+              $3
+            p Block user
+          button-wrapper
+            button[alt][cancel] Cancel
+          p[style="margin-top:5px;opacity:.5;font-size:.786rem;text-align:center;"]
+            span You may also reach us directly at
+            a[style="margin-left:3px;"][href="mailto:derek@truce.net"] derek@truce.net
+        modal-bg
+      `,
+      [
+        $("icons icon[edit] svg").cloneNode(true),
+        $("icons icon[flag] svg").cloneNode(true),
+        $("icons icon[block] svg").cloneNode(true),
+      ]
+    );
+    const moreModalCancel = () => {
+      $more_modal.remove();
+    };
+    $more_modal.$("[cancel]").on("click", moreModalCancel);
+    $more_modal.$("modal-bg").on("click", moreModalCancel);
+    if (topic.edit) {
+      $more_modal.$("action[edit]").on("click", ($event) => {
+        $event.preventDefault();
+        moreModalCancel();
+        $topic.replaceWith(showAddNewTopic(topic));
+        focusAddNewTopic();
+      });
+      $more_modal.$("action[block]").remove();
+    } else {
+      $more_modal.$("action[edit]").remove();
+      $more_modal.$("action[block]").on("click", ($event) => {
+        $event.preventDefault();
+        moreModalCancel();
+        markBlocked(topic);
+      });
+    }
+    $more_modal.$("action[flag]").on("click", ($event) => {
       $event.preventDefault();
-      $topic.replaceWith(showAddNewTopic(topic));
-      focusAddNewTopic();
+      moreModalCancel();
+      markFlagged(topic);
     });
-  }
+    $("modal-wrapper")?.remove();
+    $("body").appendChild($more_modal);
+  });
   if (topic.image_uuids) {
     const image_uuids = topic.image_uuids.split(",").reverse();
     for (const image_uuid of image_uuids) {

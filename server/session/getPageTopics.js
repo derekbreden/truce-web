@@ -20,9 +20,13 @@ module.exports = async (req, res) => {
         LEFT JOIN topic_images i ON t.topic_id = i.topic_id
         LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
         LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
+        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
           (t.create_date > $2 OR $2 IS NULL)
           AND (t.create_date < $3 OR $3 IS NULL)
+          AND l.topic_id IS NULL
+          AND b.user_id_blocked IS NULL
         GROUP BY
           t.create_date,
           t.topic_id,
@@ -53,15 +57,17 @@ module.exports = async (req, res) => {
       const topic_counts = await req.client.query(
         `
         SELECT
-          topic_id,
-          favorite_count,
-          comment_count
-        FROM topics
+          t.topic_id,
+          t.favorite_count,
+          t.comment_count
+        FROM topics t
+        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
-          create_date > $1
-          AND counts_max_create_date > $2
+          t.create_date > $2
+          AND t.counts_max_create_date > $3
         `,
-        [req.body.min_create_date_for_counts, req.body.min_counts_create_date ]
+        [req.session.user_id || 0, req.body.min_create_date_for_counts, req.body.min_counts_create_date ]
       );
       req.results.topic_counts = topic_counts.rows;
     }

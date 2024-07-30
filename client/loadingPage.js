@@ -66,6 +66,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             p Then, please join us in this Truce.
             p
               a[big][href=/topics] Join the Discussion
+            p[style="opacity:.5;font-size:.786rem;text-align:center;"]
+              span By clicking "Join the Discussion," you agree to these terms.
         `,
         [ $("icons icon[welcome] svg").cloneNode(true) ]
       ),
@@ -87,9 +89,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             ul
               li A label will be applied
               li The label will be explained
-              li Nothing is banned
-              li Nothing is muted
-              li Nothing is blocked
             comments
               expand-wrapper[above-comments]
                 p Examples
@@ -113,7 +112,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                     b Judgement
                     p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
         topics
-          p[style="opacity:.5;text-align:center;"]
+          p[style="opacity:.5;text-align:center;font-size:.786rem;"]
             a[href="/privacy"] Privacy Policy
         `,
         [ $("icons icon[communication] svg").cloneNode(true) ]
@@ -135,6 +134,10 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
     $("main-content-wrapper[active] main-content").replaceChildren(
       $(
         `
+        back-forward-wrapper
+          back-wrapper
+            button[expand-left]
+            p Back to welcome
         topics
           topic
             h2 Privacy Policy
@@ -154,5 +157,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         [ $("icons icon[welcome] svg").cloneNode(true) ]
       ),
     );
+    $("main-content-wrapper[active] main-content back-forward-wrapper").on("click", () => {
+      goToPath("/");
+    })
   }
 };

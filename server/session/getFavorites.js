@@ -29,6 +29,11 @@ module.exports = async (req, res) => {
         FROM comments c
         INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
         LEFT JOIN comment_images i ON c.comment_id = i.comment_id
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        WHERE
+          l.comment_id IS NULL
+          AND b.user_id_blocked IS NULL
         GROUP BY
           c.comment_id,
           c.create_date,
@@ -64,6 +69,11 @@ module.exports = async (req, res) => {
         INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
         LEFT JOIN topic_images i ON t.topic_id = i.topic_id
         LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
+        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
+        WHERE
+          l.topic_id IS NULL
+          AND b.user_id_blocked IS NULL
         GROUP BY
           t.topic_id,
           t.create_date,
@@ -107,15 +117,19 @@ module.exports = async (req, res) => {
       LEFT JOIN users pu ON pt.user_id = pu.user_id
       LEFT JOIN comments pc ON combined.parent_comment_id = pc.comment_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
+      LEFT JOIN flagged_comments l ON l.comment_id = pc.comment_id
+      LEFT JOIN blocked_users b ON b.user_id_blocked = pc.user_id AND b.user_id_blocking = $1
       WHERE
         combined.favorite_user_id = $1
         AND (combined.favorite_create_date < $2 OR $2 IS NULL)
         AND (combined.favorite_create_date > $3 OR $3 IS NULL)
+        AND l.comment_id IS NULL
+        AND b.user_id_blocked IS NULL
       ORDER BY combined.favorite_create_date DESC
       LIMIT 30;
       `,
       [
-        req.session.user_id,
+        req.session.user_id || 0,
         req.body.max_create_date || null,
         req.body.min_create_date || null,
       ],
@@ -135,12 +149,17 @@ module.exports = async (req, res) => {
           t.comment_count
         FROM topics t
         INNER JOIN favorite_topics ft ON ft.topic_id = t.topic_id
+        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
-          t.create_date > $1
-          AND t.counts_max_create_date > $2
-          AND ft.user_id = $3
+          t.create_date > $2
+          AND t.counts_max_create_date > $3
+          AND ft.user_id = $4
+          AND l.topic_id IS NULL
+          AND b.user_id_blocked IS NULL
         `,
         [
+          req.session.user_id || 0,
           req.body.min_create_date_for_counts,
           req.body.min_counts_create_date,
           req.session.user_id,
