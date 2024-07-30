@@ -107,9 +107,10 @@ const renderTopic = (topic) => {
             p Block user
           button-wrapper
             button[alt][cancel] Cancel
-          p[style="margin-top:5px;opacity:.5;font-size:.786rem;text-align:center;"]
-            span You may also reach us directly at
-            a[style="margin-left:3px;"][href="mailto:derek@truce.net"] derek@truce.net
+          p[notice]
+            span Email us at
+            a[href="mailto:derek@truce.net"] derek@truce.net
+            span to provide feedback or report inappropriate activity.
         modal-bg
       `,
       [

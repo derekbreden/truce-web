@@ -487,6 +487,23 @@ menu links a {
   border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
+menu p[notice] {
+  width: 280px;
+  border-top: 1px solid #999;
+  border-top: 1px solid light-dark(#999, #333);
+  padding: 10px;
+}
+p[notice] {
+  text-align: center;
+  font-size: .786rem;
+}
+p[notice] span,
+p[notice] a {
+  opacity: .5;
+}
+p[notice] a {
+  margin: 0 3px;
+}
 
 menu links a icon {
   height: 36px;

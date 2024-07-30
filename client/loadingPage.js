@@ -112,8 +112,12 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                     b Judgement
                     p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
         topics
-          p[style="opacity:.5;text-align:center;font-size:.786rem;"]
+          p[notice]
             a[href="/privacy"] Privacy Policy
+          p[notice]
+            span Email us at
+            a[href="mailto:derek@truce.net"] derek@truce.net
+            span to provide feedback or report inappropriate activity.
         `,
         [$("icons icon[communication] svg").cloneNode(true)],
       ),
