@@ -491,7 +491,8 @@ menu p[notice] {
   width: 280px;
   border-top: 1px solid #999;
   border-top: 1px solid light-dark(#999, #333);
-  padding: 10px;
+  padding: 10px 20px;
+  margin-top: 0;
 }
 p[notice] {
   text-align: center;
@@ -502,6 +503,7 @@ p[notice] a {
   opacity: .5;
 }
 p[notice] a {
+  font-weight: 600;
   margin: 0 3px;
 }
 
