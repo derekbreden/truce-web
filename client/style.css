@@ -31,6 +31,8 @@ html {
 body {
   min-height: 100%;
   font-size: 1rem;
+  background: #fff;
+  color: #000;
   background: light-dark(#fff, #000);
   color: light-dark(#000, #f5f5f5);
   overflow: hidden;
@@ -48,6 +50,7 @@ main-content-wrapper {
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
+  background: #f5f5f5;
   background: light-dark(#f5f5f5, #000);
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
@@ -117,6 +120,7 @@ main-content,
 main-content-2 {
   flex: 1;
   display: flex;
+  background: #fff;
   background: light-dark(#fff, #000);
   flex-direction: column;
   padding: 0 20px 20px 20px;
@@ -162,6 +166,7 @@ footer {
   height: calc(54px + env(safe-area-inset-bottom));
   justify-content: space-around;
   align-items: center;
+  border-top: 1px solid #000;
   border-top: 1px solid light-dark(#000, #fff);
   z-index: 1;
   padding: 0 0 env(safe-area-inset-bottom) 0;
@@ -235,6 +240,7 @@ body[app] main-content add-new:first-child {
 a,
 a:visited,
 a:active {
+  color: #000;
   color: light-dark(#000, #f5f5f5);
   font-weight: 500;
 }
@@ -293,7 +299,9 @@ topic[trimmed] p[img]+p[img] {
 
 p[quote] {
   padding: 10px;
+  border-left: 2px solid #999;
   border-left: 2px solid light-dark(#999, #333);
+  background: #f5f5f5;
   background: light-dark(#f5f5f5, #0c0c0c);
 }
 
@@ -326,6 +334,7 @@ header {
   top: 0;
   left: 0;
   background: #fff;
+  border-bottom: 1px solid #000;
   border-bottom: 1px solid light-dark(#000, #fff);
   right: 0;
   height: 44px;
@@ -384,6 +393,7 @@ hamburger {
   position: absolute;
   top: calc(50% - 4px);
   left: -14px;
+  background: #48c;
   background: light-dark(#48c, #04f);
   border-radius: 50%;
   height: 8px;
@@ -415,6 +425,7 @@ menu {
   position: absolute;
   top: 0;
   right: 0;
+  background: #fff;
   background: light-dark(#fff, #000);
   border-radius: 0 0 0 2px;
   z-index: 6;
@@ -462,6 +473,7 @@ menu links a {
   display: flex;
   align-items: center;
   padding: 5px 20px 5px 11px;
+  border-bottom: 1px solid #999;
   border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
@@ -475,6 +487,7 @@ menu links a icon {
 }
 
 menu links a icon svg {
+  fill: #000;
   fill: light-dark(#000, #fff);
 }
 
@@ -517,6 +530,7 @@ toggle-wrapper toggle-button {
   height: 30px;
   width: 50px;
   border-radius: 16px;
+  background: #ddd;
   background: light-dark(#ddd, #666);
   position: relative;
   transition: background .2s ease-in-out;
@@ -525,6 +539,7 @@ toggle-wrapper toggle-button {
 toggle-wrapper toggle-button toggle-circle {
   height: 28px;
   width: 28px;
+  background: #fff;
   background: light-dark(#fff, #000);
   border-radius: 50%;
   position: absolute;
@@ -534,6 +549,7 @@ toggle-wrapper toggle-button toggle-circle {
 }
 
 toggle-wrapper[active] toggle-button {
+  background: #4a5;
   background: light-dark(#4a5, #091);
 }
 
@@ -558,8 +574,11 @@ a[big] {
   width: 100%;
   text-decoration: none;
   border-radius: 2px;
+  border: 1px solid #4a5;
   border: 1px solid light-dark(#4a5, #091);
+  color: #fff;
   color: light-dark(#fff, #f0fff0);
+  background: #4a5;
   background: light-dark(#4a5, #091);
   padding: 10px;
   font-weight: 700;
@@ -568,6 +587,7 @@ a[big] {
 
 modal-bg {
   display: flex;
+  background: #00000077;
   background: light-dark(#00000077, #000000cc);
   position: absolute;
   top: 0;
@@ -582,6 +602,8 @@ textarea {
   font-size: 1rem;
   width: 240px;
   border-radius: 2px;
+  border: 1px solid #000;
+  background: #fff;
   border: 1px solid light-dark(#000, #333);
   background: light-dark(#fff, #000);
   padding: 10px;
@@ -592,6 +614,9 @@ button {
   font-size: 1rem;
   -webkit-appearance: none;
   border-radius: 2px;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
   background: light-dark(#000, #f5f5f5);
   border: 1px solid light-dark(#000, #fff);
   color: light-dark(#fff, #000);
@@ -601,6 +626,9 @@ button {
 }
 
 button[alt] {
+  background: #f5f5f5;
+  color: #000;
+  border: 1px solid #999;
   background: light-dark(#f5f5f5, #000);
   color: light-dark(#000, #fff);
   border: 1px solid light-dark(#999, #333);
@@ -620,6 +648,9 @@ info,
 error {
   padding: 10px 10px 10px 36px;
   position: relative;
+  background: #fee;
+  border: 1px solid #b66;
+  color: #b66;
   background: light-dark(#fee, #b66);
   border: 1px solid light-dark(#b66, #b66);
   color: light-dark(#b66, #fee);
@@ -651,6 +682,8 @@ error::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
+  background: #b66;
+  color: #fee;
   background: light-dark(#b66, #fee);
   color: light-dark(#fee, #b66);
   font-size: 14px;
@@ -676,6 +709,9 @@ info[tiny]::before {
 }
 
 info {
+  border-color: #48c;
+  background: #e0f0ff;
+  color: #48c;
   border-color: light-dark(#48c, #04a);
   background: light-dark(#e0f0ff, #04a);
   color: light-dark(#48c, #e0f0ff);
@@ -683,22 +719,31 @@ info {
 
 info::before {
   content: "i";
+  background: #48c;
   background: light-dark(#48c, #e0f0ff);
   color: light-dark(#e0f0ff, #04a);
 }
 
 info[response] {
+  border-color: #555;
+  background: #f5f5f5;
+  color: #555;
   border-color: light-dark(#555, #333);
   background: light-dark(#f5f5f5, #333);
   color: light-dark(#555, #f5f5f5);
 }
 
 info[response]::before {
+  background: #555;
+  color: #f5f5f5;
   background: light-dark(#555, #f5f5f5);
   color: light-dark(#f5f5f5, #333);
 }
 
 pass {
+  border-color: #4a5;
+  background: #f0fff0;
+  color: #4a5;
   border-color: light-dark(#4a5, #091);
   background: light-dark(#f0fff0, #091);
   color: light-dark(#4a5, #f0fff0);
@@ -706,6 +751,8 @@ pass {
 
 pass::before {
   content: "✓";
+  background: #4a5;
+  color: #f0fff0;
   background: light-dark(#4a5, #f0fff0);
   color: light-dark(#f0fff0, #091);
 }
@@ -766,6 +813,8 @@ password-help::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
+  background: #48c;
+  color: #e0f0ff;
   background: light-dark(#48c, #04a);
   color: light-dark(#e0f0ff, #e0f0ff);
   font-weight: 600;
@@ -780,6 +829,7 @@ modal {
   top: 44px;
   left: 50%;
   transform: translateX(-50%);
+  background: #fff;
   background: light-dark(#fff, #000);
   border-radius: 2px;
   box-shadow: 0px 0px 5px #000;
@@ -852,6 +902,7 @@ title-wrapper {
 
 [img-icon] {
   display: flex;
+  border: 2px solid #000;
   border: 2px solid light-dark(#000, #f5f5f5);
   border-radius: 4px;
   height: 25px;
@@ -864,6 +915,8 @@ title-wrapper {
 [img-icon]::before {
   display: flex;
   content: "";
+  border-top: 2px solid #000;
+  border-left: 2px solid #000;
   border-top: 2px solid light-dark(#000, #f5f5f5);
   border-left: 2px solid light-dark(#000, #f5f5f5);
   border-right: 2px solid transparent;
@@ -880,6 +933,7 @@ title-wrapper {
 [img-icon]::after {
   display: flex;
   content: "";
+  border: 2px solid #000;
   border: 2px solid light-dark(#000, #fff);
   border-radius: 50%;
   height: 3px;
@@ -897,6 +951,7 @@ image-previews {
 }
 
 image-previews preview {
+  border: 1px solid #000;
   border: 1px solid light-dark(#000, #fff);
   border-radius: 2px;
   display: flex;
@@ -918,6 +973,7 @@ image-previews preview remove-icon {
   right: 1px;
   display: flex;
   border-radius: 50%;
+  background: #000;
   background: light-dark(#000, #fff);
   font-weight: 600;
   height: 25px;
@@ -929,6 +985,7 @@ image-previews preview remove-icon::after {
   content: "";
   position: absolute;
   width: 15px;
+  border: 1px solid #fff;
   border: 1px solid light-dark(#fff, #000);
   border-radius: 4px;
   transform: rotate(45deg);
@@ -965,6 +1022,7 @@ comments[thread] {
 comment {
   display: flex;
   flex-direction: column;
+  border: 1px solid #ddd;
   border: 1px solid light-dark(#ddd, #666);
   border-radius: 2px;
   padding: 10px;
@@ -998,12 +1056,14 @@ info b {
 
 comments>add-new:first-child {
   padding: 10px;
+  border: 1px solid #ddd;
   border: 1px solid light-dark(#ddd, #666);
   margin: 20px 0 10px 0;
 }
 
 comments>add-new:not(:first-child) {
   margin: 0 0 20px 0;
+  border: 1px solid #ddd;
   border: 1px solid light-dark(#ddd, #666);
   border-radius: 2px;
   margin-bottom: 20px;
@@ -1088,6 +1148,8 @@ read-more-wrapper button,
 forward-wrapper button,
 back-wrapper button,
 expand-wrapper button {
+  background: #fff;
+  border-color: #fff;
   background: light-dark(#fff, #000);
   border-color: light-dark(#fff, #000);
   position: relative;
@@ -1116,6 +1178,8 @@ back-wrapper button::before,
 [expand-down]::before,
 [expand-up]::before {
   content: "";
+  border-top: 1.5px solid #000;
+  border-left: 1.5px solid #000;
   border-top: 1.5px solid light-dark(#000, #fff);
   border-left: 1.5px solid light-dark(#000, #fff);
   border-right: 1.5px solid transparent;
@@ -1285,6 +1349,7 @@ topics topic::before {
   bottom: 0;
   left: -20px;
   right: -20px;
+  border-bottom: 1px solid #ddd;
   border-bottom: 1px solid light-dark(#ddd, #666);
 }
 
@@ -1305,6 +1370,7 @@ topics-loading {
 }
 
 topics-loading h2 {
+  background: #ddd;
   background: light-dark(#ddd, #333);
   width: 80%;
   height: 32px;
@@ -1321,6 +1387,8 @@ topics-loading p::after {
   content: "";
   display: block;
   width: 100%;
+  border-top: 16px solid #ddd;
+  border-bottom: 16px solid #ddd;
   border-top: 16px solid light-dark(#ddd, #333);
   border-bottom: 16px solid light-dark(#ddd, #333);
   height: 10px;
@@ -1350,10 +1418,12 @@ activity>topic h2 {
 }
 
 activity>[parent-comment] {
+  background: #f5f5f5;
   background: light-dark(#f5f5f5, #0c0c0c)
 }
 
 activity>[parent-comment] comment {
+  background: #fff;
   background: light-dark(#fff, #000);
 }
 
@@ -1445,6 +1515,7 @@ topic-details icon {
 
 reply-wrapper svg,
 topic-details svg {
+  fill: #000;
   fill: light-dark(#000, #fff);
   width: 30px;
   height: 30px;
@@ -1502,6 +1573,7 @@ icon[share] {
 
 icon[share] svg {
   opacity: .5;
+  fill: #000;
   fill: light-dark(#000, #fff);
   height: 26px;
   width: 26px;
@@ -1576,6 +1648,7 @@ h2[welcome] svg,
 h2[moderation] svg,
 p[add-to-home] svg,
 p[favorites-empty] svg {
+  fill: #000;
   fill: light-dark(#000, #fff);
   margin-bottom: -16px;
 }
