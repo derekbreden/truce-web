@@ -23,10 +23,9 @@ const toggleFavorite = async (topic_or_comment) => {
   if (topic_or_comment.$comment) {
     forEachCachedComment((comment) => {
       if (comment.comment_id === comment_id) {
-        if (topic_or_comment.favorited) {
+        if (was_favorited) {
           comment.favorite_count = String(Number(comment.favorite_count) - 1);
           comment.favorited = false;
-          was_favorited = true;
         } else {
           comment.favorite_count = String(Number(comment.favorite_count) + 1);
           comment.favorited = true;

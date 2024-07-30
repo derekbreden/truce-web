@@ -1283,7 +1283,7 @@ notifications {
 notifications notification {
   display: flex;
   flex-direction: row;
-  justify-content: space-betwee;
+  justify-content: space-between;
   align-items: center;
   margin-top: 20px;
   gap: 5px;
@@ -1411,6 +1411,9 @@ activity>h2 {
   display: flex;
   justify-content: space-between;
   gap: 20px;
+}
+activity > h2 > span:last-child {
+  text-align: right;
 }
 
 activity>topic h2 {
