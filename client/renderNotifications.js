@@ -440,8 +440,7 @@ const getUnreadCountUnseenCount = () => {
         if (
           window.webkit &&
           window.webkit.messageHandlers &&
-          window.webkit.messageHandlers["push-permission-request"] &&
-          window.webkit.messageHandlers["push-permission-state"]
+          window.webkit.messageHandlers["set-badge"]
         ) {
           window.webkit.messageHandlers["set-badge"].postMessage(
             JSON.stringify({
