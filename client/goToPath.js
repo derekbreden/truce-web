@@ -1,4 +1,8 @@
 const goToPath = (new_path, skip_state, clicked_back) => {
+  if (new_path !== "/" && new_path !== "/privacy" && !localStorage.getItem("truce:agreed")) {
+    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
+    return;
+  }
   if (state.path !== new_path) {
     // Cancel any open active comment or topic
     delete state.active_add_new_comment;
@@ -61,7 +65,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     if (state.path === "/topics") {
-      localStorage.setItem("has_visited_topics", true);
+      localStorage.setItem("truce:has_visited_topics", true);
     } else if (state.path === "/") {
       localStorage.removeItem("has_visited_topics");
     }

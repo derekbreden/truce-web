@@ -1,4 +1,8 @@
 const showMenu = () => {
+  if (!localStorage.getItem("truce:agreed")) {
+    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
+    return;
+  }
   const $menu = $(
     `
     menu-wrapper
