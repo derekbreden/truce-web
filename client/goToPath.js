@@ -12,16 +12,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     // Slide from left to right as if clicking back in several more scenarios
-    const sequence = [
-      "/",
-      "/privacy",
-      "/topics",
-      "/recent",
-      "/favorites",
-      "/notifications",
-    ];
-    const previous_sequence = sequence.indexOf(state.path);
-    const next_sequence = sequence.indexOf(new_path);
+    const previous_sequence = path_sequence.indexOf(state.path);
+    const next_sequence = path_sequence.indexOf(new_path);
 
     // From one main page to another
     if (
@@ -36,15 +28,21 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       // Find the main page they were at most recently
       most_recent_sequence_page = state.path_history
         .toReversed()
-        .find((p) => sequence.indexOf(p) !== -1);
+        .find((p) => path_sequence.indexOf(p) !== -1);
 
       // If they are going to that same one, or one further back in the sequence, animate back
       if (
         most_recent_sequence_page &&
-        sequence.indexOf(most_recent_sequence_page) >= next_sequence
+        path_sequence.indexOf(most_recent_sequence_page) >= next_sequence
       ) {
         clicked_back = true;
       }
+    }
+
+    // Dot indicating main page on most recently
+    if (next_sequence !== -1) {
+      const dot_index = Math.max(next_sequence - 1, 0);
+      $("footer dot").setAttribute("index", dot_index);
     }
 
     // Set the new path

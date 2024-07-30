@@ -1,3 +1,13 @@
+// Path sequence
+const path_sequence = [
+  "/",
+  "/privacy",
+  "/topics",
+  "/recent",
+  "/favorites",
+  "/notifications",
+];
+
 // Read URL into path
 const parsePath = () => {
   let new_path = "/";
@@ -14,6 +24,8 @@ const parsePath = () => {
   return new_path;
 };
 state.path = parsePath();
+const dot_index = Math.max(path_sequence.indexOf(state.path) - 1, 0);
+$("footer dot").setAttribute("index", dot_index);
 
 // Default to /topics instead of / when we have visited before
 if (state.path === "/") {

@@ -1593,3 +1593,34 @@ p[add-to-home] svg {
   width: 30px;
   margin-bottom: -6px;
 }
+
+footer dot {
+  position: absolute;
+  z-index: 1;
+  transition: right .2s ease-in-out, background .2s ease-in-out;
+  top: 54px;
+  background: #000;
+  height: 4px;
+  width: 4px;
+  border-radius: 50%;
+}
+footer dot[index="0"] {
+  right: 100%;
+  background: #000;
+}
+footer dot[index="1"] {
+  right: calc(7 * 100% / 8 - 2px);
+  background: #000;
+}
+footer dot[index="2"] {
+  right: calc(5 * 100% / 8 - 2px);
+  background: #000;
+}
+footer dot[index="3"] {
+  right: calc(3 * 100% / 8 - 2px);
+  background: #fff;
+}
+footer dot[index="4"] {
+  right: calc(1 * 100% / 8 - 2px);
+  background: #fff;
+}
