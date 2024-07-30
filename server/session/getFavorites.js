@@ -23,6 +23,7 @@ module.exports = async (req, res) => {
           c.parent_topic_id,
           fc.user_id as favorite_user_id,
           fc.create_date as favorite_create_date,
+          CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
           FALSE as commented,
           'comment' AS type
@@ -45,7 +46,8 @@ module.exports = async (req, res) => {
           c.parent_comment_id,
           c.parent_topic_id,
           fc.user_id,
-          fc.create_date
+          fc.create_date,
+          CASE WHEN c.user_id = $1 THEN true ELSE false END
         UNION
         SELECT
           t.topic_id AS id,
@@ -62,6 +64,7 @@ module.exports = async (req, res) => {
           NULL as parent_topic_id,
           ft.user_id as favorite_user_id,
           ft.create_date as favorite_create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented,
           'topic' AS type
@@ -86,7 +89,8 @@ module.exports = async (req, res) => {
           t.counts_max_create_date,
           t.user_id,
           ft.user_id,
-          ft.create_date
+          ft.create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END
       )
       SELECT 
         combined.id,
@@ -99,6 +103,7 @@ module.exports = async (req, res) => {
         combined.comment_count,
         combined.counts_max_create_date,
         combined.type,
+        combined.edit,
         combined.image_uuids,
         TRUE as favorited,
         combined.commented,

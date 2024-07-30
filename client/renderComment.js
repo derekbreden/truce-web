@@ -1,6 +1,6 @@
 const renderComment = (comment) => {
   const note = comment.note || "";
-  const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/ig, "");
+  const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/gi, "");
   const note_body = note.slice(note.indexOf(" ") + 1);
   let $comment = $(
     `
@@ -19,7 +19,7 @@ const renderComment = (comment) => {
         icon[more]
           $1
         `,
-        [ $("icons icon[more] svg").cloneNode(true) ],
+        [$("icons icon[more] svg").cloneNode(true)],
       ),
       markdownToElements(comment.body),
       comment.note
@@ -90,7 +90,7 @@ const renderComment = (comment) => {
         $("icons icon[edit] svg").cloneNode(true),
         $("icons icon[flag] svg").cloneNode(true),
         $("icons icon[block] svg").cloneNode(true),
-      ]
+      ],
     );
     const moreModalCancel = () => {
       $more_modal.remove();
@@ -105,6 +105,9 @@ const renderComment = (comment) => {
         focusAddNewComment();
       });
       $more_modal.$("action[block]").remove();
+      if (state.path === "/favorites" || state.path === "/recent") {
+        $more_modal.$("action[edit]").remove();
+      }
     } else {
       $more_modal.$("action[edit]").remove();
       $more_modal.$("action[block]").on("click", ($event) => {

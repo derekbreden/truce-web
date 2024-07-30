@@ -24,7 +24,11 @@ const parsePath = () => {
   return new_path;
 };
 state.path = parsePath();
-if (state.path !== "/" && state.path !== "/privacy" && !localStorage.getItem(`truce:agreed`)) {
+if (
+  state.path !== "/" &&
+  state.path !== "/privacy" &&
+  !localStorage.getItem(`truce:agreed`)
+) {
   state.next_path = state.path;
   state.path = "/";
 }

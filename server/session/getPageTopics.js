@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
           t.favorite_count,
           t.comment_count,
           t.counts_max_create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented
@@ -36,7 +37,8 @@ module.exports = async (req, res) => {
           t.note,
           t.favorite_count,
           t.comment_count,
-          t.counts_max_create_date
+          t.counts_max_create_date,
+          CASE WHEN t.user_id = $1 THEN true ELSE false END
         ORDER BY t.create_date DESC
         LIMIT 20
         `,

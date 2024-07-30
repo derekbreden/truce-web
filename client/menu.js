@@ -1,6 +1,6 @@
 const showMenu = () => {
   if (!localStorage.getItem("truce:agreed")) {
-    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
+    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
   }
   const $menu = $(
@@ -25,23 +25,23 @@ const showMenu = () => {
             icon[notifications]
             p Notifications
     `,
-    [ Boolean(state.unread_count) ]
+    [Boolean(state.unread_count)],
   );
-  $menu.$("icon[welcome]").appendChild(
-    $("icons icon[welcome] svg").cloneNode(true),
-  );
-  $menu.$("icon[topics]").appendChild(
-    $("footer icon[topics] svg").cloneNode(true),
-  );
-  $menu.$("icon[recent]").appendChild(
-    $("footer icon[recent] svg").cloneNode(true),
-  );
-  $menu.$("icon[favorites]").appendChild(
-    $("footer icon[favorites] svg").cloneNode(true),
-  );
-  $menu.$("icon[notifications]").appendChild(
-    $("footer icon[notifications] svg").cloneNode(true),
-  );
+  $menu
+    .$("icon[welcome]")
+    .appendChild($("icons icon[welcome] svg").cloneNode(true));
+  $menu
+    .$("icon[topics]")
+    .appendChild($("footer icon[topics] svg").cloneNode(true));
+  $menu
+    .$("icon[recent]")
+    .appendChild($("footer icon[recent] svg").cloneNode(true));
+  $menu
+    .$("icon[favorites]")
+    .appendChild($("footer icon[favorites] svg").cloneNode(true));
+  $menu
+    .$("icon[notifications]")
+    .appendChild($("footer icon[notifications] svg").cloneNode(true));
   const menuCancel = () => {
     $menu.remove();
   };
@@ -62,14 +62,14 @@ const showMenu = () => {
           p Account Settings
       `,
     );
-    $settings.$("icon[settings]").appendChild(
-      $("icons icon[settings] svg").cloneNode(true),
-    );
+    $settings
+      .$("icon[settings]")
+      .appendChild($("icons icon[settings] svg").cloneNode(true));
     $settings.on("click", ($event) => {
-        $event.preventDefault();
-        menuCancel();
-        const $settings_modal = $(
-          `
+      $event.preventDefault();
+      menuCancel();
+      const $settings_modal = $(
+        `
           modal-wrapper
             modal[info]
               p You may change your display name here.
@@ -81,39 +81,39 @@ const showMenu = () => {
               button[remove][alt] Remove Account
             modal-bg
           `,
-          [ state.display_name ]
-        );
-        const settingsModalCancel = () => {
-          $settings_modal.remove();
-        };
-        $settings_modal.$("[save]").on("click", () => {
-          settingsModalCancel();
-          modalInfo("Saving display name...");
-          const new_display_name = $settings_modal.$("[display-name]").value;
-          fetch("/session", {
-            method: "POST",
-            body: JSON.stringify({
-              display_name: new_display_name,
-            }),
+        [state.display_name],
+      );
+      const settingsModalCancel = () => {
+        $settings_modal.remove();
+      };
+      $settings_modal.$("[save]").on("click", () => {
+        settingsModalCancel();
+        modalInfo("Saving display name...");
+        const new_display_name = $settings_modal.$("[display-name]").value;
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            display_name: new_display_name,
+          }),
+        })
+          .then((response) => response.json())
+          .then(function (data) {
+            if (data.error || !data.success) {
+              modalError(data.error || "Server error");
+            } else {
+              state.display_name = new_display_name;
+              modalInfo("Display name saved.");
+            }
           })
-            .then((response) => response.json())
-            .then(function (data) {
-              if (data.error || !data.success) {
-                modalError(data.error || "Server error");
-              } else {
-                state.display_name = new_display_name;
-                modalInfo("Display name saved.")
-              }
-            })
-            .catch(function () {
-              modalError("Network error");
-            });
-        });
-        $settings_modal.$("[remove]").on("click", () => {
-          $event.preventDefault();
-          menuCancel();
-          const $remove_modal = $(
-            `
+          .catch(function () {
+            modalError("Network error");
+          });
+      });
+      $settings_modal.$("[remove]").on("click", () => {
+        $event.preventDefault();
+        menuCancel();
+        const $remove_modal = $(
+          `
             modal-wrapper
               modal[info]
                 error
@@ -131,48 +131,48 @@ const showMenu = () => {
                   button[alt][cancel] Cancel
               modal-bg
             `,
-          );
-          const removeModalCancel = () => {
-            $remove_modal.remove();
-          };
-          $remove_modal.$("[remove]").on("click", () => {
-            removeModalCancel();
-            modalInfo("Removing account...");
-            fetch("/session", {
-              method: "POST",
-              body: JSON.stringify({
-                remove_account: true,
-              }),
+        );
+        const removeModalCancel = () => {
+          $remove_modal.remove();
+        };
+        $remove_modal.$("[remove]").on("click", () => {
+          removeModalCancel();
+          modalInfo("Removing account...");
+          fetch("/session", {
+            method: "POST",
+            body: JSON.stringify({
+              remove_account: true,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (!data || !data.success) {
+                modalError("Server error removing account");
+              } else {
+                $("modal-wrapper")?.remove();
+                modalInfo("Account removed");
+                state.user_id = "";
+                state.display_name = "";
+                state.email = "";
+                state.reset_token_uuid = "";
+                localStorage.removeItem("session_uuid");
+                state.cache = {};
+                goToPath("/");
+              }
             })
-              .then((response) => response.json())
-              .then((data) => {
-                if (!data || !data.success) {
-                  modalError("Server error removing account");
-                } else {
-                  $("modal-wrapper")?.remove();
-                  modalInfo("Account removed");
-                  state.user_id = "";
-                  state.display_name = "";
-                  state.email = "";
-                  state.reset_token_uuid = "";
-                  localStorage.removeItem("session_uuid");
-                  state.cache = {};
-                  goToPath("/");
-                }
-              })
-              .catch((error) => {
-                modalError("Network error removing account");
-              });
+            .catch((error) => {
+              modalError("Network error removing account");
             });
-            $remove_modal.$("[cancel]").on("click", removeModalCancel);
-            $remove_modal.$("modal-bg").on("click", removeModalCancel);
-            $("modal-wrapper")?.remove();
-            $("body").appendChild($remove_modal);
         });
-        $settings_modal.$("[cancel]").on("click", settingsModalCancel);
-        $settings_modal.$("modal-bg").on("click", settingsModalCancel);
+        $remove_modal.$("[cancel]").on("click", removeModalCancel);
+        $remove_modal.$("modal-bg").on("click", removeModalCancel);
         $("modal-wrapper")?.remove();
-        $("body").appendChild($settings_modal);
+        $("body").appendChild($remove_modal);
+      });
+      $settings_modal.$("[cancel]").on("click", settingsModalCancel);
+      $settings_modal.$("modal-bg").on("click", settingsModalCancel);
+      $("modal-wrapper")?.remove();
+      $("body").appendChild($settings_modal);
     });
     $menu.$("links").appendChild($settings);
   }
@@ -305,9 +305,9 @@ const showMenu = () => {
           startSession();
           menuCancel();
           if (data.signed_in) {
-            modalInfo("You have been signed in to your existing account")
+            modalInfo("You have been signed in to your existing account");
           } else if (data.created_account) {
-            modalInfo("You have created a new account")
+            modalInfo("You have created a new account");
           }
         })
         .catch(function (error) {

@@ -11,7 +11,6 @@ const renderTopic = (topic) => {
     state.path === "/favorites"
   ) {
     trimmed = true;
-    topic.edit = false;
     $topic_body = $topic_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
       if (characters_used < 500) {
@@ -37,7 +36,7 @@ const renderTopic = (topic) => {
         icon[more]
           $1
         `,
-        [ $("icons icon[more] svg").cloneNode(true) ],
+        [$("icons icon[more] svg").cloneNode(true)],
       ),
       topic.note
         ? $(
@@ -78,7 +77,7 @@ const renderTopic = (topic) => {
             : $("footer icon[recent] svg").cloneNode(true),
           topic.comment_count +
             (topic.comment_count === "1" ? " comment" : " comments"),
-          $("icons icon[forward] svg").cloneNode(true)
+          $("icons icon[forward] svg").cloneNode(true),
         ],
       ),
     ],
@@ -117,7 +116,7 @@ const renderTopic = (topic) => {
         $("icons icon[edit] svg").cloneNode(true),
         $("icons icon[flag] svg").cloneNode(true),
         $("icons icon[block] svg").cloneNode(true),
-      ]
+      ],
     );
     const moreModalCancel = () => {
       $more_modal.remove();
@@ -132,6 +131,13 @@ const renderTopic = (topic) => {
         focusAddNewTopic();
       });
       $more_modal.$("action[block]").remove();
+      if (
+        state.path === "/topics" ||
+        state.path === "/favorites" ||
+        state.path === "/recent"
+      ) {
+        $more_modal.$("action[edit]").remove();
+      }
     } else {
       $more_modal.$("action[edit]").remove();
       $more_modal.$("action[block]").on("click", ($event) => {

@@ -1,6 +1,10 @@
 const goToPath = (new_path, skip_state, clicked_back) => {
-  if (new_path !== "/" && new_path !== "/privacy" && !localStorage.getItem("truce:agreed")) {
-    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
+  if (
+    new_path !== "/" &&
+    new_path !== "/privacy" &&
+    !localStorage.getItem("truce:agreed")
+  ) {
+    modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
   }
   if (state.path !== new_path) {

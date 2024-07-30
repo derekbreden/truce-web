@@ -69,7 +69,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             p[style="opacity:.5;font-size:.786rem;text-align:center;"]
               span By clicking "Join the Discussion," you agree to these terms.
         `,
-        [ $("icons icon[welcome] svg").cloneNode(true) ]
+        [$("icons icon[welcome] svg").cloneNode(true)],
       ),
     );
     $("main-content-wrapper[active] main-content-2").replaceChildren(
@@ -115,7 +115,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           p[style="opacity:.5;text-align:center;font-size:.786rem;"]
             a[href="/privacy"] Privacy Policy
         `,
-        [ $("icons icon[communication] svg").cloneNode(true) ]
+        [$("icons icon[communication] svg").cloneNode(true)],
       ),
     );
 
@@ -124,7 +124,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
       .forEach(($el) => {
         $el.on("click", ($event) => {
           $event.preventDefault();
-          let new_path = $el.getAttribute("href")
+          let new_path = $el.getAttribute("href");
           if (new_path === "/topics") {
             localStorage.setItem("truce:agreed", true);
             if (state.next_path) {
@@ -161,11 +161,14 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             p[bold] Contact
             p For any questions, contact us at derek@truce.net
         `,
-        [ $("icons icon[welcome] svg").cloneNode(true) ]
+        [$("icons icon[welcome] svg").cloneNode(true)],
       ),
     );
-    $("main-content-wrapper[active] main-content back-forward-wrapper").on("click", () => {
-      goToPath("/");
-    })
+    $("main-content-wrapper[active] main-content back-forward-wrapper").on(
+      "click",
+      () => {
+        goToPath("/");
+      },
+    );
   }
 };

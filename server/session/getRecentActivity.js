@@ -17,6 +17,7 @@ module.exports = async (req, res) => {
           c.user_id,
           c.parent_comment_id,
           c.parent_topic_id,
+          CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           STRING_AGG(i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           'comment' AS type
@@ -35,7 +36,8 @@ module.exports = async (req, res) => {
           c.note,
           c.user_id,
           c.parent_comment_id,
-          c.parent_topic_id
+          c.parent_topic_id,
+          CASE WHEN c.user_id = $1 THEN true ELSE false END
       )
       SELECT 
         combined.id,
@@ -48,6 +50,7 @@ module.exports = async (req, res) => {
         combined.comment_count,
         combined.counts_max_create_date,
         combined.type,
+        combined.edit,
         combined.image_uuids,
         combined.favorited,
         u.display_name,
@@ -74,7 +77,11 @@ module.exports = async (req, res) => {
       ORDER BY combined.create_date DESC
       LIMIT 30;
       `,
-      [req.session.user_id || 0, req.body.max_create_date || null, req.body.min_create_date || null],
+      [
+        req.session.user_id || 0,
+        req.body.max_create_date || null,
+        req.body.min_create_date || null,
+      ],
     );
     req.results.activities.push(...activity_results.rows);
   }
