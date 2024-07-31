@@ -27,6 +27,27 @@ module.exports = async (req, res) => {
         `,
         [req.session.user_id, req.body.comment_id_to_flag],
       );
+      await req.client.query(
+        `
+        UPDATE topics
+        SET
+          comment_count = COALESCE(subquery.comment_count, 0),
+          counts_max_create_date = NOW()
+        FROM (
+          SELECT
+            COUNT(c.*) AS comment_count
+          FROM comments c
+          LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+          WHERE
+            c.parent_topic_id = $1
+            AND l.comment_id IS NULL
+        ) AS subquery
+        WHERE topics.topic_id IN (
+          SELECT parent_topic_id FROM comments WHERE comment_id = $1
+        )
+        `,
+        [req.body.comment_id_to_flag],
+      );
     }
     res.end(
       JSON.stringify({
@@ -37,4 +58,3 @@ module.exports = async (req, res) => {
     );
   }
 };
-

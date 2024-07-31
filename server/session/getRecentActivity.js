@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
           c.parent_comment_id,
           c.parent_topic_id,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') as image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           'comment' AS type
         FROM comments c

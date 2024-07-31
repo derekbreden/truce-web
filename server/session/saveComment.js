@@ -86,7 +86,7 @@ module.exports = async (req, res) => {
         a.body,
         a.note,
         u.display_name,
-        STRING_AGG(i.image_uuid, ',') AS image_uuids
+        STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids
       FROM topics a
       INNER JOIN users u ON a.user_id = u.user_id
       LEFT JOIN topic_images i ON i.topic_id = a.topic_id
@@ -168,7 +168,7 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.comment_id,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids
+          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids
         FROM comments c
         INNER JOIN users u ON u.user_id = c.user_id
         LEFT JOIN comment_images i ON i.comment_id = c.comment_id
@@ -421,9 +421,12 @@ module.exports = async (req, res) => {
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          COUNT(*) AS comment_count
-        FROM comments
-        WHERE parent_topic_id = $1
+          COUNT(c.*) AS comment_count
+        FROM comments c
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        WHERE
+          c.parent_topic_id = $1
+          AND l.comment_id IS NULL
       ) AS subquery
       WHERE topics.topic_id = $1
       `,

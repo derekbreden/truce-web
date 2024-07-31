@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
           fc.user_id as favorite_user_id,
           fc.create_date as favorite_create_date,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') as image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
           FALSE as commented,
           'comment' AS type
         FROM comments c
@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
           ft.user_id as favorite_user_id,
           ft.create_date as favorite_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') as image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
           CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented,
           'topic' AS type
         FROM topics t

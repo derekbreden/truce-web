@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         u.display_name,
         u.display_name_index,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
-        STRING_AGG(i.image_uuid, ',') AS image_uuids,
+        STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
         CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
       FROM comments c
       INNER JOIN users u ON c.user_id = u.user_id

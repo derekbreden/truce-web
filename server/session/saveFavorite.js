@@ -25,9 +25,10 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count
-            FROM favorite_topics
-            WHERE topic_id = $1
+              COUNT(f.*) AS favorite_count
+            FROM favorite_topics f
+            LEFT JOIN flagged_topics l ON l.topic_id = f.topic_id
+            WHERE f.topic_id = $1
           ) AS subquery
           WHERE topics.topic_id = $1
           `,
@@ -54,9 +55,10 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count
-            FROM favorite_comments
-            WHERE comment_id = $1
+              COUNT(f.*) AS favorite_count
+            FROM favorite_comments f
+            LEFT JOIN flagged_comments l ON l.comment_id = f.comment_id
+            WHERE f.comment_id = $1
           ) AS subquery
           WHERE comments.comment_id = $1
           `,
@@ -85,9 +87,10 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count
-            FROM favorite_topics
-            WHERE topic_id = $1
+              COUNT(f.*) AS favorite_count
+            FROM favorite_topics f
+            LEFT JOIN flagged_topics l ON l.topic_id = f.topic_id
+            WHERE f.topic_id = $1
           ) AS subquery
           WHERE topics.topic_id = $1
           `,
@@ -114,9 +117,10 @@ module.exports = async (req, res) => {
             counts_max_create_date = NOW()
           FROM (
             SELECT
-              COUNT(*) AS favorite_count
-            FROM favorite_comments
-            WHERE comment_id = $1
+              COUNT(f.*) AS favorite_count
+            FROM favorite_comments f
+            LEFT JOIN flagged_comments l ON l.comment_id = f.comment_id
+            WHERE f.comment_id = $1
           ) AS subquery
           WHERE comments.comment_id = $1
           `,

@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
           t.comment_count,
           t.counts_max_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented
         FROM topics t
@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
@@ -117,8 +117,7 @@ module.exports = async (req, res) => {
           c.favorite_count,
           c.counts_max_create_date,
           u.display_name,
-          u.display_name_index,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END
+          u.display_name_index
         ORDER BY c.create_date DESC
         LIMIT 10
         `,
@@ -142,7 +141,7 @@ module.exports = async (req, res) => {
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(i.image_uuid, ',') AS image_uuids,
+          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
           CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
@@ -174,8 +173,7 @@ module.exports = async (req, res) => {
           c.favorite_count,
           c.counts_max_create_date,
           u.display_name,
-          u.display_name_index,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END
+          u.display_name_index
         ORDER BY c.create_date ASC
         LIMIT 10
         `,
