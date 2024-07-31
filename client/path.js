@@ -27,7 +27,7 @@ state.path = parsePath();
 if (
   state.path !== "/" &&
   state.path !== "/privacy" &&
-  !localStorage.getItem(`truce:agreed`)
+  !localStorage.getItem(`trucev1:agreed`)
 ) {
   state.next_path = state.path;
   state.path = "/";
@@ -37,7 +37,7 @@ $("footer dot").setAttribute("index", dot_index);
 
 // Default to /topics instead of / when we have visited before
 if (state.path === "/") {
-  if (localStorage.getItem("truce:has_visited_topics")) {
+  if (localStorage.getItem("trucev1:has_visited_topics")) {
     state.path = "/topics";
   }
 }

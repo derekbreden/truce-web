@@ -11,7 +11,7 @@ const params = search_string
 // Set Defaults
 const test_mode = params.test_mode || "playback"; // "record"; // "end2end"; // "playback";
 const delay = params.delay || 0;
-const original_session_uuid = localStorage.getItem("truce:session_uuid");
+const original_session_uuid = localStorage.getItem("trucev1:session_uuid");
 if (test_mode === "record") {
   localStorage.removeItem("session_uuid");
 }
@@ -140,7 +140,7 @@ $("body").on("page-rendered", async () => {
 });
 
 const testCleanup = () => {
-  localStorage.setItem("truce:session_uuid", original_session_uuid);
+  localStorage.setItem("trucev1:session_uuid", original_session_uuid);
   history.replaceState({ path_index: state.path_index }, "", "/test");
   if (test_mode !== "playback") {
     originalFetch("/test_cleanup", {

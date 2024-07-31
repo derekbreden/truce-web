@@ -132,7 +132,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           $event.preventDefault();
           let new_path = $el.getAttribute("href");
           if (new_path === "/topics") {
-            localStorage.setItem("truce:agreed", true);
+            localStorage.setItem("trucev1:agreed", true);
             if (state.next_path) {
               new_path = state.next_path;
             }

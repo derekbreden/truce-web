@@ -1,7 +1,7 @@
 // Workaround for replit Webview not supporting Set-Cookie
 const original_fetch_2 = fetch;
 fetch = function (url, options) {
-  const session_uuid = localStorage.getItem("truce:session_uuid");
+  const session_uuid = localStorage.getItem("trucev1:session_uuid");
   if (session_uuid) {
     options.headers = options.headers || {};
     options.headers["Authorization"] = `Bearer ${session_uuid}`;
@@ -47,7 +47,7 @@ const startSession = () => {
     .then(function (data) {
       // Workaround for replit Webview not supporting Set-Cookie
       if (data.session_uuid) {
-        localStorage.setItem("truce:session_uuid", data.session_uuid);
+        localStorage.setItem("trucev1:session_uuid", data.session_uuid);
       }
       // END Workaround
 
