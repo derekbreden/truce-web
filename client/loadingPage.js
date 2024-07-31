@@ -66,7 +66,9 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             p Then, please join us in this Truce.
             p
               a[big][href=/topics] Join the Discussion
-            p[style="opacity:.5;font-size:.786rem;text-align:center;"]
+            p[notice]
+              span To be clear, there is no tolerance for objectionable content or abusive users.
+            p[notice][style="margin-top:5px;"]
               span By clicking "Join the Discussion," you agree to these terms.
         `,
         [$("icons icon[welcome] svg").cloneNode(true)],
