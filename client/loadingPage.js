@@ -143,15 +143,17 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
       .$("[href]")
       .forEach(($el) => {
         $el.on("click", ($event) => {
-          $event.preventDefault();
           let new_path = $el.getAttribute("href");
-          if (new_path === "/topics") {
-            localStorage.setItem("trucev1:agreed", true);
-            if (state.next_path) {
-              new_path = state.next_path;
+          if (new_path.startsWith("/")) {
+            $event.preventDefault();
+            if (new_path === "/topics") {
+              localStorage.setItem("trucev1:agreed", true);
+              if (state.next_path) {
+                new_path = state.next_path;
+              }
             }
+            goToPath(new_path);
           }
-          goToPath(new_path);
         });
       });
   }
