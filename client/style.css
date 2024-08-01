@@ -1759,3 +1759,19 @@ action>icon svg {
   fill: #000;
   fill: light-dark(#000, #fff);
 }
+app-store-wrapper {
+  padding: 20px 0 0 0;
+  display: flex;
+  justify-content: center;
+}
+app-store-wrapper img[white] {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  app-store-wrapper img[white] {
+    display: block;
+  }
+  app-store-wrapper img[black] {
+    display: none;
+  }
+}

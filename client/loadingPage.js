@@ -70,8 +70,22 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
               span To be clear, there is no tolerance for objectionable content or abusive users.
             p[notice][style="margin-top:5px;"]
               span By clicking "Join the Discussion," you agree to these terms.
+          $2
         `,
-        [$("icons icon[welcome] svg").cloneNode(true)],
+        [
+          $("icons icon[welcome] svg").cloneNode(true),
+          !Boolean(window.webkit)
+            ? $(
+              `
+              topic
+                app-store-wrapper
+                  a[href=https://apps.apple.com/us/app/truce/id6578447172]
+                    img[src=app_store_black.svg][black]
+                    img[src=app_store_white.svg][white]
+              `
+            )
+            : []
+        ],
       ),
     );
     $("main-content-wrapper[active] main-content-2").replaceChildren(
