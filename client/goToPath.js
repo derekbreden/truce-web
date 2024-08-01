@@ -71,7 +71,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     if (state.path === "/topics") {
       localStorage.setItem("trucev1:has_visited_topics", true);
     } else if (state.path === "/") {
-      localStorage.removeItem("has_visited_topics");
+      localStorage.removeItem("trucev1:has_visited_topics");
     }
   }
 
