@@ -144,13 +144,44 @@ const renderTopic = (topic) => {
       $more_modal.$("action[block]").on("click", ($event) => {
         $event.preventDefault();
         moreModalCancel();
-        markBlocked(topic);
+        modalConfirm(
+          $(
+            `
+            h2
+              icon[block]
+                $1
+              span Block user - are you sure?
+            p This will hide all content from this user for you, but it will not silence them on this app, effectively creating an information bubble.
+            p This app will lose the balancing effect of your voice being able to respond to them.
+            `,
+            [ $("icons icon[block] svg").cloneNode(true) ]
+          ),
+          () => {
+            markBlocked(topic);
+          },
+        );
       });
     }
     $more_modal.$("action[flag]").on("click", ($event) => {
       $event.preventDefault();
       moreModalCancel();
-      markFlagged(topic);
+      modalConfirm(
+        $(
+          `
+          h2
+            icon
+              $1
+            span Flag topic - are you sure?
+          p This will hide this topic for everyone.
+          p You are giving the person you are censoring martyrdom.
+          p This may have the opposite of the intended result.
+          `,
+          [ $("icons icon[flag] svg").cloneNode(true) ]
+        ),
+        () => {
+          markFlagged(topic);
+        },
+      );
     });
     $("modal-wrapper")?.remove();
     $("body").appendChild($more_modal);

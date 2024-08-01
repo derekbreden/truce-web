@@ -181,9 +181,16 @@ module.exports = async (req, res) => {
       FROM (
         SELECT
           t.topic_id,
-          COUNT(c.comment_id) AS comment_count
+          SUM(
+            CASE
+              WHEN l.comment_id IS NULL AND c.comment_id IS NOT NULL
+                THEN 1
+              ELSE 0
+            END
+          ) AS comment_count
         FROM topics t
         LEFT JOIN comments c ON t.topic_id = c.parent_topic_id
+        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         GROUP BY t.topic_id
       ) AS comment_counts
       WHERE topics.topic_id = comment_counts.topic_id

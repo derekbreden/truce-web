@@ -1,3 +1,30 @@
+// Confirm modal
+const modalConfirm = (message, callback) => {
+  const $modal = $(
+    `
+    modal-wrapper
+      modal[confirm]
+        $1
+        button-wrapper
+          button[confirm][close] Yes, I am sure
+          button[cancel][close][alt] Cancel
+      modal-bg
+    `,
+    [ message ]
+  );
+  const modalCancel = () => {
+    $modal.remove();
+  };
+  $modal.$("button[confirm]").on("click", () => {
+    modalCancel();
+    callback();
+  });
+  $modal.$("button[cancel]").on("click", modalCancel);
+  $modal.$("modal-bg").on("click", modalCancel);
+  $("modal-wrapper")?.remove();
+  $("body").appendChild($modal);
+}
+
 // Generic modal info
 const modalInfo = (message) => {
   const $modal = $(

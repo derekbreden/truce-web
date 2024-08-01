@@ -117,13 +117,44 @@ const renderComment = (comment) => {
       $more_modal.$("action[block]").on("click", ($event) => {
         $event.preventDefault();
         moreModalCancel();
-        markBlocked(comment);
+        modalConfirm(
+          $(
+            `
+            h2
+              icon[block]
+                $1
+              span Block user - are you sure?
+            p This will hide all content from this user for you, but it will not silence them on this app, effectively creating an information bubble.
+            p This app will lose the balancing effect of your voice being able to respond to them.
+            `,
+            [ $("icons icon[block] svg").cloneNode(true) ]
+          ),
+          () => {
+            markBlocked(comment);
+          },
+        );
       });
     }
     $more_modal.$("action[flag]").on("click", ($event) => {
       $event.preventDefault();
       moreModalCancel();
-      markFlagged(comment);
+      modalConfirm(
+        $(
+          `
+          h2
+            icon
+              $1
+            span Flag comment - are you sure?
+          p This will hide this comment for everyone.
+          p You are giving the person you are censoring martyrdom.
+          p This may have the opposite of the intended result.
+          `,
+          [ $("icons icon[flag] svg").cloneNode(true) ]
+        ),
+        () => {
+          markFlagged(comment);
+        },
+      );
     });
     $("modal-wrapper")?.remove();
     $("body").appendChild($more_modal);

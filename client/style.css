@@ -457,6 +457,24 @@ modal[image] {
   width: 100%;
   max-width: 480px;
 }
+modal[confirm] h2 {
+  margin: 0;
+  justify-content: flex-start;
+}
+modal[confirm] h2 icon {
+  margin: -4px 6px -4px -5px;
+}
+modal[confirm] h2 icon[block] {
+  margin: -4px 6px -4px -2px;
+}
+modal[confirm] h2 icon svg {
+  height: 30px;
+  width: 30px;
+  fill: light-dark(#000, #fff);
+}
+modal[confirm] button-wrapper {
+  margin-top: 10px;
+}
 
 menu signed-in>*,
 menu sign-in>*,
@@ -590,6 +608,10 @@ button-wrapper {
   display: flex;
   justify-content: space-between;
   gap: 5px;
+}
+action + button-wrapper,
+p + button-wrapper {
+  margin-top: 10px;
 }
 
 button-wrapper button {
