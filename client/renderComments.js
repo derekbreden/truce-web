@@ -44,6 +44,7 @@ const renderComments = (comments) => {
   // Identify the root comments (threads) to be displayed
   const $root_comments = comments
     .filter((c) => !c.parent_comment_id)
+    .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
     .map((c) => {
       c.$comment.comment_id = c.comment_id;
       return c.$comment;
