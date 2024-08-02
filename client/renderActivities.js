@@ -19,7 +19,7 @@ const renderActivities = (activities) => {
         [
           $("footer icon[favorites] svg").cloneNode(true),
           $("footer icon[favorites] svg").cloneNode(true),
-        ]
+        ],
       ),
     );
   } else {
@@ -47,67 +47,73 @@ const renderActivities = (activities) => {
       ),
     );
   }
-  const $activities = activities.map((activity) => {
-    if (activity.type === "comment") {
-      const $comment = renderComment(activity);
-      $comment.$("reply-wrapper button")?.remove();
-      let preamble = `Comment:`;
-      if (activity.parent_comment_display_name) {
-        preamble = `Reply:`;
-      }
-      let $comment_wrapper = $comment;
-      if (activity.parent_comment_body) {
-        const parent_comment = {
-          display_name: activity.parent_comment_display_name,
-          body: activity.parent_comment_body,
-          note: activity.parent_comment_note,
-        };
-        const $parent_comment = renderComment(parent_comment);
-        $parent_comment.setAttribute("parent-comment", "");
-        $parent_comment.$("reply-wrapper")?.remove();
-        $parent_comment.appendChild($comment);
-        $comment_wrapper = $parent_comment;
-      }
-      const $activity = $(
-        `
+  const $activities = activities
+    .sort(
+      (a, b) =>
+        new Date(b.favorite_create_date || b.create_date) -
+        new Date(a.favorite_create_date || a.create_date),
+    )
+    .map((activity) => {
+      if (activity.type === "comment") {
+        const $comment = renderComment(activity);
+        $comment.$("reply-wrapper button")?.remove();
+        let preamble = `Comment:`;
+        if (activity.parent_comment_display_name) {
+          preamble = `Reply:`;
+        }
+        let $comment_wrapper = $comment;
+        if (activity.parent_comment_body) {
+          const parent_comment = {
+            display_name: activity.parent_comment_display_name,
+            body: activity.parent_comment_body,
+            note: activity.parent_comment_note,
+          };
+          const $parent_comment = renderComment(parent_comment);
+          $parent_comment.setAttribute("parent-comment", "");
+          $parent_comment.$("reply-wrapper")?.remove();
+          $parent_comment.appendChild($comment);
+          $comment_wrapper = $parent_comment;
+        }
+        const $activity = $(
+          `
             activity[comment]
               h2
                 span $1
                 span $2
               $3
           `,
-        [preamble, activity.parent_topic_title, $comment_wrapper],
-      );
-      $activity.on("click", ($event) => {
-        $event.preventDefault();
-        goToPath("/comment/" + activity.id);
-      });
-      activity.$activity = $activity;
-      return $activity;
-    } else {
-      const $topic = renderTopic(activity);
-      let preamble = `Topic:`;
-      const $activity = $(
-        `
+          [preamble, activity.parent_topic_title, $comment_wrapper],
+        );
+        $activity.on("click", ($event) => {
+          $event.preventDefault();
+          goToPath("/comment/" + activity.id);
+        });
+        activity.$activity = $activity;
+        return $activity;
+      } else {
+        const $topic = renderTopic(activity);
+        let preamble = `Topic:`;
+        const $activity = $(
+          `
             activity[topic]
               h2 $1
               $2
           `,
-        [preamble, $topic],
-      );
-      activity.$activity = $activity;
-      return $activity;
-    }
-  });
+          [preamble, $topic],
+        );
+        activity.$activity = $activity;
+        return $activity;
+      }
+    });
   if (window.innerWidth > 1000) {
     const $activities_1 = $activities.filter((x, i) => i % 2 === 0);
     const $activities_2 = $activities.filter((x, i) => i % 2 === 1);
     $("main-content-wrapper[active] main-content activities")?.replaceChildren(
       ...$activities_1,
     );
-    $("main-content-wrapper[active] main-content-2 activities")?.replaceChildren(
-      ...$activities_2,
-    );
+    $(
+      "main-content-wrapper[active] main-content-2 activities",
+    )?.replaceChildren(...$activities_2);
   } else {
     $("main-content-wrapper[active] main-content activities")?.replaceChildren(
       ...$activities,

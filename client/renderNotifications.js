@@ -175,14 +175,18 @@ const renderNotifications = (notifications) => {
   $("main-content-wrapper[active] main-content notifications").replaceChildren(
     ...[$unread_header],
     ...$unread_allclear,
-    ...unread_notifications.map(renderNotification),
+    ...unread_notifications
+      .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+      .map(renderNotification),
   );
   $(
     "main-content-wrapper[active] main-content-2 notifications",
   ).replaceChildren(
     ...[$read_header],
     ...$read_allclear,
-    ...read_notifications.map(renderNotification),
+    ...read_notifications
+      .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+      .map(renderNotification),
   );
 
   // On notifications render, mark all as seen
@@ -249,10 +253,12 @@ const renderMarkAllAsRead = () => {
         });
     });
     if (
-      (state.push_active || state.fcm_push_active)
-      && Boolean(state.unread_count)
+      (state.push_active || state.fcm_push_active) &&
+      Boolean(state.unread_count)
     ) {
-      $("main-content-wrapper[active] main-content notifications").append($mark_all_as_read);
+      $("main-content-wrapper[active] main-content notifications").append(
+        $mark_all_as_read,
+      );
     }
     const $toggle_wrapper = $(
       `

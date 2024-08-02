@@ -13,7 +13,11 @@ const renderTopics = (topics) => {
       ),
     );
   }
-  $("main-content-wrapper[active] topics").replaceChildren(...topics.map(renderTopic));
+  $("main-content-wrapper[active] topics").replaceChildren(
+    ...topics
+      .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+      .map(renderTopic),
+  );
 
   if (state.active_add_new_topic?.is_edit) {
     const topic = topics.find(
