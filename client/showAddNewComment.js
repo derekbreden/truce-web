@@ -23,7 +23,7 @@ const showAddNewComment = (
         input[display-name][placeholder=Your name][maxlength=50][value=$1]
         label[img-icon]
           input[img][type=file][accept=image/*]
-      textarea[body][placeholder=Comment][rows=5][maxlength=1000] $2
+      textarea[body][placeholder=Comment][rows=5][maxlength=8000] $2
       button[submit] $3
       button[alt][cancel] Cancel
     `,

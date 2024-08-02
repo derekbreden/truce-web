@@ -2,6 +2,33 @@ const renderComment = (comment) => {
   const note = comment.note || "";
   const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/gi, "");
   const note_body = note.slice(note.indexOf(" ") + 1);
+
+  let $comment_body = markdownToElements(comment.body);
+  let characters_used = 0;
+  let trimmed = false;
+  if (state.path === "/recent" || state.path === "/favorites") {
+    let added = 0;
+    $comment_body = $comment_body.reduce((acc, child) => {
+      characters_used += child.textContent.length;
+      if (characters_used < 500 || !added) {
+        acc.push(child);
+        added++;
+      } else {
+        trimmed = true;
+      }
+      return acc;
+    }, []);
+    if (trimmed) {
+      $comment_body.push(
+        $(
+          `
+          p ...
+          `,
+        ),
+      );
+    }
+  }
+
   let $comment = $(
     `
     comment
@@ -21,7 +48,7 @@ const renderComment = (comment) => {
         `,
         [$("icons icon[more] svg").cloneNode(true)],
       ),
-      markdownToElements(comment.body),
+      $comment_body,
       comment.note
         ? $(
             `
@@ -40,6 +67,10 @@ const renderComment = (comment) => {
             icon
               $1
             p $2
+          detail[more]
+            p Read more
+            icon
+              $3
           button[small][reply] Reply
         `,
         [
@@ -48,10 +79,14 @@ const renderComment = (comment) => {
             : $("footer icon[favorites] svg").cloneNode(true),
           comment.favorite_count +
             (comment.favorite_count === "1" ? " favorite" : " favorites"),
+          $("icons icon[forward] svg").cloneNode(true),
         ],
       ),
     ],
   );
+  if (!trimmed) {
+    $comment.$("detail[more]")?.remove();
+  }
   $comment.$("detail[favorites]").on("click", ($event) => {
     $event.stopPropagation();
     toggleFavorite(comment);
@@ -127,7 +162,7 @@ const renderComment = (comment) => {
             p This will hide all content from this user for you, but it will not silence them on this app, effectively creating an information bubble.
             p This app will lose the balancing effect of your voice being able to respond to them.
             `,
-            [ $("icons icon[block] svg").cloneNode(true) ]
+            [$("icons icon[block] svg").cloneNode(true)],
           ),
           () => {
             markBlocked(comment);
@@ -149,7 +184,7 @@ const renderComment = (comment) => {
           p You are giving the person you are censoring martyrdom.
           p This may have the opposite of the intended result.
           `,
-          [ $("icons icon[flag] svg").cloneNode(true) ]
+          [$("icons icon[flag] svg").cloneNode(true)],
         ),
         () => {
           markFlagged(comment);

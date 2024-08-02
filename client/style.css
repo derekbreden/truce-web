@@ -1135,7 +1135,7 @@ reply-wrapper {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-  margin: 0 0 -10px -10px;
+  margin: 0 -10px -10px -10px;
 }
 
 display-name-wrapper {
