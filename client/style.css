@@ -456,6 +456,8 @@ modal {
 modal[image] {
   width: 100%;
   max-width: 480px;
+  max-height: calc(100% - 44px);
+  overflow-y: auto;
 }
 modal[confirm] h2 {
   margin: 0;
