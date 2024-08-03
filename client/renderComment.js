@@ -159,8 +159,8 @@ const renderComment = (comment) => {
               icon[block]
                 $1
               span Block user - are you sure?
-            p This will hide all content from this user for you, but it will not silence them on this app, effectively creating an information bubble.
-            p This app will lose the balancing effect of your voice being able to respond to them.
+            p This will hide all content from this user.
+            p This action cannot be undone.
             `,
             [$("icons icon[block] svg").cloneNode(true)],
           ),
@@ -181,8 +181,7 @@ const renderComment = (comment) => {
               $1
             span Flag comment - are you sure?
           p This will hide this comment for everyone.
-          p You are giving the person you are censoring martyrdom.
-          p This may have the opposite of the intended result.
+          p This action cannot be undone.
           `,
           [$("icons icon[flag] svg").cloneNode(true)],
         ),
