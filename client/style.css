@@ -1137,6 +1137,9 @@ reply-wrapper {
   margin-top: 10px;
   margin: 0 -10px -10px -10px;
 }
+reply-wrapper button {
+  margin: 0 10px 0 0;
+}
 
 display-name-wrapper {
   padding-bottom: 5px;
