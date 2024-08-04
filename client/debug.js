@@ -13,7 +13,7 @@ const debug = function () {
   }
   rendered.push(to_render);
   $("debug")?.remove();
-  $("main-content").prepend(
+  $("main-content-wrapper").prepend(
     $(
       `
     debug $1
@@ -27,5 +27,5 @@ const debug = function () {
 };
 
 window.addEventListener("error", ($error) => {
-  debug($error);
+  // debug($error);
 });

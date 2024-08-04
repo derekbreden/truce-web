@@ -440,13 +440,14 @@ const getUnreadCountUnseenCount = () => {
         state.unread_count = Number(data.unread_count);
         state.unseen_count = Number(data.unseen_count);
         if (navigator.setAppBadge) {
-          navigator.setAppBadge(state.unread_count);
+          navigator.setAppBadge(state.push_active ? state.unread_count : 0);
         }
 
         if (
           window.webkit &&
           window.webkit.messageHandlers &&
-          window.webkit.messageHandlers["set-badge"]
+          window.webkit.messageHandlers["set-badge"] &&
+          state.fcm_push_active
         ) {
           window.webkit.messageHandlers["set-badge"].postMessage(
             JSON.stringify({
@@ -463,7 +464,8 @@ const getUnreadCountUnseenCount = () => {
         }
         if (
           state.unseen_count &&
-          (state.window_recently_focused || state.window_recently_loaded)
+          (state.window_recently_focused || state.window_recently_loaded) &&
+          (state.push_active || state.fcm_push_active)
         ) {
           // When exactly one, just go to the comment
           if (
@@ -525,15 +527,14 @@ window.addEventListener("focus", () => {
     state.window_recently_focused = false;
   }, 5000);
   getMoreRecent();
-  if (state.push_active || state.fcm_push_active) {
-    getUnreadCountUnseenCount();
-  }
+  getUnreadCountUnseenCount();
 });
 window.addEventListener("load", () => {
   state.window_recently_loaded = true;
   setTimeout(() => {
     state.window_recently_loaded = false;
   }, 5000);
+  getUnreadCountUnseenCount();
 });
 if (window.webkit || window.matchMedia("(display-mode: standalone)").matches) {
   $("body").setAttribute("app", "");

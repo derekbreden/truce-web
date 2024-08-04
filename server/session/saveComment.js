@@ -252,7 +252,7 @@ module.exports = async (req, res) => {
     }
     messages.push({
       role: "user",
-      name: req.body.display_name.replace(/[^a-z0-9_\-]/ig, ""),
+      name: req.body.display_name.replace(/[^a-z0-9_\-]/gi, ""),
       content: [
         { type: "text", text: req.body.display_name + ":\n" + req.body.body },
         ...req.body.pngs.map((png) => {
@@ -275,7 +275,7 @@ module.exports = async (req, res) => {
       return;
     }
     let comment_id = req.body.comment_id;
-    if (ai_response_text.replace(/[^a-z\-]/ig, "") === "OK") {
+    if (ai_response_text.replace(/[^a-z\-]/gi, "") === "OK") {
       if (req.body.comment_id) {
         await req.client.query(
           `
@@ -468,26 +468,40 @@ module.exports = async (req, res) => {
       [topic_id, comment_id, req.session.user_id],
     );
 
-    // Track user_id of notifications inserted, as the same user may have multiple clients subscribed
-    const user_ids_notifications_inserted = [];
+    // Get user_id(s) to notify
+    const user_ids_to_notify = await req.client.query(
+      `
+      SELECT user_id
+      FROM topics
+      WHERE
+        topic_id = $1
+        AND user_id <> $3
+      UNION
+      SELECT user_id
+      FROM comments
+      WHERE
+        comment_id IN (
+          SELECT ancestor_id
+          FROM comment_ancestors
+          WHERE comment_id = $2
+        )
+        AND user_id <> $3
+      `,
+      [topic_id, comment_id, req.session.user_id],
+    );
 
     // Wait for all notifications to be inserted
-    for (const subscription of subscriptions.rows) {
+    for (const user_id_record of user_ids_to_notify.rows) {
       // Insert notifications records for unread notifications
-      if (
-        user_ids_notifications_inserted.indexOf(subscription.user_id) === -1
-      ) {
-        await req.client.query(
-          `
+      await req.client.query(
+        `
         INSERT INTO notifications
           (user_id, comment_id)
         VALUES
           ($1, $2)
         `,
-          [subscription.user_id, comment_id],
-        );
-        user_ids_notifications_inserted.push(subscription.user_id);
-      }
+        [user_id_record.user_id, comment_id],
+      );
     }
 
     // Trigger all pushes
@@ -553,7 +567,7 @@ module.exports = async (req, res) => {
               DELETE FROM subscriptions
               WHERE fcm_token = $1
               `,
-              [ subscription.fcm_token ]
+              [subscription.fcm_token],
             );
           }
         }
