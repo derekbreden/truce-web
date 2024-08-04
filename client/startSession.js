@@ -10,7 +10,7 @@ fetch = function (url, options) {
 };
 // END Workaround
 
-const startSession = () => {
+const startSession = (was_same_path) => {
   // If cache available, render from that first
   if (state.cache[state.path]) {
     if (state.path !== "/" && state.path !== "/privacy") {
@@ -25,7 +25,18 @@ const startSession = () => {
     }
 
     // Get more recent if available
-    getMoreRecent();
+    if (was_same_path) {
+      if ($("main-content-wrapper[active]").scrollTop !== 0) {
+        $("main-content-wrapper[active]").scroll({
+          top: 0,
+          behavior: "smooth",
+        });
+      } else {
+        getMoreRecent();
+      }
+    } else {
+      getMoreRecent();
+    }
     if (state.path !== "/" && state.path !== "/privacy") {
       return;
     }
@@ -304,29 +315,36 @@ const getMoreRecent = () => {
       }
 
       // Render updated topic comment counts
-      // if (data.topic_counts?.length) {
-      //   data.topic_counts.forEach((topic_comment_count) => {
-      //     const found_topic = current_cache.topics.find(
-      //       (topic) => topic.topic_id === topic_comment_count.topic_id,
-      //     );
-      //     const found_activity = current_cache.activities.find(
-      //       (activity) =>
-      //         activity.id === topic_comment_count.topic_id &&
-      //         activity.type === "topic",
-      //     );
-      //     const text =
-      //       topic_comment_count.comment_count +
-      //       (topic_comment_count.comment_count === "1"
-      //         ? " comment"
-      //         : " comments");
-      //     if (found_topic) {
-      //       found_topic.$topic.$("[comments]").innerText = text;
-      //     }
-      //     if (found_activity) {
-      //       found_activity.$topic.$("[comments]").innerText = text;
-      //     }
-      //   });
-      // }
+      if (data.topic_counts?.length) {
+        data.topic_counts.forEach((topic_count) => {
+          const found_topic = current_cache.topics.find(
+            (topic) => topic.topic_id === topic_count.topic_id,
+          );
+          const found_activity = current_cache.activities.find(
+            (activity) =>
+              activity.id === topic_count.topic_id &&
+              activity.type === "topic",
+          );
+          const comment_text =
+            topic_count.comment_count +
+            (topic_count.comment_count === "1"
+              ? " comment"
+              : " comments");
+          const favorite_text =
+            topic_count.favorite_count +
+            (topic_count.favorite_count === "1"
+              ? " favorite"
+              : " favorites");
+          if (found_topic) {
+            found_topic.$topic.$("[comments] p").innerText = comment_text;
+            found_topic.$topic.$("[favorites] p").innerText = favorite_text;
+          }
+          if (found_activity) {
+            found_activity.$topic.$("[comments] p").innerText = comment_text;
+            found_activity.$topic.$("[favorites] p").innerText = favorite_text;
+          }
+        });
+      }
 
       // Acknowledge we finished loading
       state.loading_path = false;

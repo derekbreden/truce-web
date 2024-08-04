@@ -7,7 +7,10 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
   }
+  let was_same_path = true;
+
   if (state.path !== new_path) {
+    was_same_path = false;
     // Cancel any open active comment or topic
     delete state.active_add_new_comment;
     delete state.active_add_new_topic;
@@ -76,5 +79,5 @@ const goToPath = (new_path, skip_state, clicked_back) => {
   }
 
   // Load the page
-  startSession();
+  startSession(was_same_path);
 };
