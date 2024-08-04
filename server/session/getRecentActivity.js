@@ -57,6 +57,7 @@ module.exports = async (req, res) => {
         u.display_name_index,
         pa.title AS parent_topic_title,
         pa.slug AS parent_topic_slug,
+        pc.comment_id AS parent_comment_id,
         pc.body AS parent_comment_body,
         pc.note AS parent_comment_note,
         pcu.display_name AS parent_comment_display_name,

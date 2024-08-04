@@ -47,20 +47,31 @@ const renderActivities = (activities) => {
       ),
     );
   }
+  const comment_ids_rendered = [];
   const $activities = activities
     .sort(
       (a, b) =>
         new Date(b.favorite_create_date || b.create_date) -
         new Date(a.favorite_create_date || a.create_date),
     )
+    .filter((activity) => {
+      if (activity.type === "comment") {
+        if (
+          comment_ids_rendered.includes(activity.id)
+          && state.path !== "/favorites"
+           ) {
+          return false;
+        }
+        comment_ids_rendered.push(activity.id);
+        comment_ids_rendered.push(activity.parent_comment_id);
+      }
+      return true;
+    })
     .map((activity) => {
       if (activity.type === "comment") {
         const $comment = renderComment(activity);
         $comment.$("reply-wrapper button")?.remove();
-        let preamble = `Comment:`;
-        if (activity.parent_comment_display_name) {
-          preamble = `Reply:`;
-        }
+        let preamble = `Comment from topic:`;
         let $comment_wrapper = $comment;
         if (activity.parent_comment_body) {
           const parent_comment = {
