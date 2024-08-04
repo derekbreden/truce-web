@@ -39,7 +39,9 @@ module.exports = async (req, res) => {
           FROM comments c
           LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
           WHERE
-            c.parent_topic_id = $1
+            c.parent_topic_id IN (
+              SELECT parent_topic_id FROM comments WHERE comment_id = $1
+            )
             AND l.comment_id IS NULL
         ) AS subquery
         WHERE topics.topic_id IN (
