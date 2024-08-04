@@ -80,8 +80,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
               topic
                 app-store-wrapper
                   a[href=https://apps.apple.com/us/app/truce/id6578447172]
-                    img[src=app_store_black.svg][black]
-                    img[src=app_store_white.svg][white]
+                    img[src=/app_store_black.svg][black]
+                    img[src=/app_store_white.svg][white]
               `
             )
             : []
