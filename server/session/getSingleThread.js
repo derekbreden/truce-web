@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
   if (
     !res.writableEnded &&
     req.body.path &&
-    req.body.path.substr(0, 8) === "/comment"
+    req.body.path.substr(0, 9) === "/comment/"
   ) {
     const comment_id = req.body.path.substr(9);
     const comment_results = await req.client.query(
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
       LEFT JOIN comment_images i ON c.comment_id = i.comment_id
       LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $2
       LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
-      LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+      LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $2
       WHERE
         (
           c.comment_id IN (
