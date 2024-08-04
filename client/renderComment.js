@@ -62,7 +62,7 @@ const renderComment = (comment) => {
         : [],
       $(
         `
-        reply-wrapper
+        reply-wrapper[detail-wrapper]
           detail[favorites]
             icon
               $1

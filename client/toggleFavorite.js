@@ -56,25 +56,27 @@ const toggleFavorite = async (topic_or_comment) => {
 
   // Update the current DOM
   (topic_or_comment.$topic || topic_or_comment.$comment)
-    .$("detail[favorites] svg")
+    .$(":scope > [detail-wrapper] detail[favorites] svg")
     .replaceWith(
       topic_or_comment.favorited
         ? $("icons icon[favorited] svg").cloneNode(true)
         : $("footer icon[favorites] svg").cloneNode(true),
     );
-  (topic_or_comment.$topic || topic_or_comment.$comment).$("detail[favorites] p").replaceWith(
-    $(
-      `
+  (topic_or_comment.$topic || topic_or_comment.$comment)
+    .$(":scope > [detail-wrapper] detail[favorites] p")
+    .replaceWith(
+      $(
+        `
       p $1
       `,
-      [
-        topic_or_comment.favorite_count +
-          (topic_or_comment.favorite_count === "1"
-            ? " favorite"
-            : " favorites"),
-      ],
-    ),
-  );
+        [
+          topic_or_comment.favorite_count +
+            (topic_or_comment.favorite_count === "1"
+              ? " favorite"
+              : " favorites"),
+        ],
+      ),
+    );
 
   // Alert the user to the change
   if (was_favorited) {

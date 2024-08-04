@@ -52,7 +52,7 @@ const renderTopic = (topic) => {
       $topic_body,
       $(
         `
-        topic-details
+        topic-details[detail-wrapper]
           detail[favorites]
             icon
               $1
