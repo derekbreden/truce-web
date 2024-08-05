@@ -30,11 +30,10 @@ module.exports = async (req, res) => {
         u.display_name,
         u.display_name_index,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
-        STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
-        CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
+        c.image_uuids,
+        CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
       FROM comments c
       INNER JOIN users u ON c.user_id = u.user_id
-      LEFT JOIN comment_images i ON c.comment_id = i.comment_id
       LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $2
       LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
       LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $2
@@ -54,16 +53,6 @@ module.exports = async (req, res) => {
         )
         AND l.comment_id IS NULL
         AND b.user_id_blocked IS NULL
-      GROUP BY
-        c.create_date,
-        c.comment_id,
-        c.body,
-        c.note,
-        c.favorite_count,
-        c.parent_comment_id,
-        u.display_name,
-        u.display_name_index,
-        CASE WHEN c.user_id = $2 THEN true ELSE false END
       ORDER BY c.create_date ASC
       `,
       [

@@ -105,27 +105,30 @@ module.exports = async (req, res) => {
       if (req.body.topic_id) {
         const existing_images = await req.client.query(
           `
-          DELETE FROM topic_images
+          SELECT image_uuids
+          FROM topics
           WHERE topic_id = $1
-          RETURNING image_uuid
           `,
           [topic_id],
         );
         for (const existing_image of existing_images.rows) {
-          try {
-            await object_client.send(
-              new DeleteObjectCommand({
-                Bucket: "truce.net",
-                Key: `${existing_image.image_uuid}.png`,
-              }),
-            );
-          } catch (err) {
-            console.error(err);
+          for (const image_uuid of existing_image.image_uuids.split(",")) {
+            try {
+              await object_client.send(
+                new DeleteObjectCommand({
+                  Bucket: "truce.net",
+                  Key: `${image_uuid}.png`,
+                }),
+              );
+            } catch (err) {
+              console.error(err);
+            }
           }
         }
       }
 
       // Add new images
+      const image_uuids = [];
       for (const png of req.body.pngs) {
         const image_uuid = crypto.randomUUID();
         try {
@@ -136,18 +139,20 @@ module.exports = async (req, res) => {
               Body: png.url,
             }),
           );
-          await req.client.query(
-            `
-            INSERT INTO topic_images
-              (topic_id, image_uuid)
-            VALUES
-              ($1, $2)
-            `,
-            [topic_id, image_uuid],
-          );
+          image_uuids.push(image_uuid);
         } catch (error) {
           console.error(error);
         }
+      }
+      if (image_uuids.length) {
+        await req.client.query(
+          `
+          UPDATE topics
+          SET image_uuids = $1
+          WHERE topic_id = $2
+          `,
+          [image_uuids.join(","), topic_id],
+        );
       }
 
       // Send websocket update

@@ -21,13 +21,16 @@ module.exports = async (req, res) => {
           t.comment_count,
           t.counts_max_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
-          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
-          CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented
+          t.image_uuids,
+          CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
+          CASE WHEN EXISTS (
+            SELECT 1
+            FROM comments c
+            WHERE c.parent_topic_id = t.topic_id
+              AND c.user_id = $1
+          ) THEN TRUE ELSE FALSE END as commented
         FROM topics t
-        LEFT JOIN topic_images i ON t.topic_id = i.topic_id
         LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
-        LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
@@ -35,16 +38,6 @@ module.exports = async (req, res) => {
           AND (t.create_date > $3 OR $3 IS NULL)
           AND l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          t.create_date,
-          t.topic_id,
-          t.title,
-          t.slug,
-          t.body,
-          t.favorite_count,
-          t.comment_count,
-          t.counts_max_create_date,
-          CASE WHEN t.user_id = $1 THEN true ELSE false END
         `,
         [
           req.session.user_id || 0,
@@ -93,11 +86,10 @@ module.exports = async (req, res) => {
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
-          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
+          c.image_uuids,
+          CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
-        LEFT JOIN comment_images i ON c.comment_id = i.comment_id
         LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
@@ -108,16 +100,6 @@ module.exports = async (req, res) => {
           AND (c.create_date < $4 OR $4 IS NULL)
           AND l.comment_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          c.create_date,
-          c.comment_id,
-          c.body,
-          c.note,
-          c.parent_comment_id,
-          c.favorite_count,
-          c.counts_max_create_date,
-          u.display_name,
-          u.display_name_index
         ORDER BY c.create_date DESC
         LIMIT 10
         `,
@@ -141,11 +123,10 @@ module.exports = async (req, res) => {
           u.display_name,
           u.display_name_index,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids,
-          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited
+          c.image_uuids,
+          CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
         FROM comments c
         INNER JOIN users u ON c.user_id = u.user_id
-        LEFT JOIN comment_images i ON c.comment_id = i.comment_id
         LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
@@ -164,16 +145,6 @@ module.exports = async (req, res) => {
           )
           AND l.comment_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          c.create_date,
-          c.comment_id,
-          c.body,
-          c.note,
-          c.parent_comment_id,
-          c.favorite_count,
-          c.counts_max_create_date,
-          u.display_name,
-          u.display_name_index
         ORDER BY c.create_date ASC
         LIMIT 10
         `,

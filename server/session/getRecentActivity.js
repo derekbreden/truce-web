@@ -18,26 +18,16 @@ module.exports = async (req, res) => {
           c.parent_comment_id,
           c.parent_topic_id,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
-          CASE WHEN MAX(f.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
+          c.image_uuids,
+          CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           'comment' AS type
         FROM comments c
-        LEFT JOIN comment_images i ON c.comment_id = i.comment_id
         LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
         WHERE
           l.comment_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          c.comment_id,
-          c.create_date,
-          c.body,
-          c.note,
-          c.user_id,
-          c.parent_comment_id,
-          c.parent_topic_id,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END
       )
       SELECT 
         combined.id,

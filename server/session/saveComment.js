@@ -82,22 +82,15 @@ module.exports = async (req, res) => {
     const topic_results = await req.client.query(
       `
       SELECT
-        a.title,
-        a.body,
-        a.note,
+        t.title,
+        t.body,
+        t.note,
         u.display_name,
-        STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids
-      FROM topics a
-      INNER JOIN users u ON a.user_id = u.user_id
-      LEFT JOIN topic_images i ON i.topic_id = a.topic_id
-      WHERE a.topic_id = $1
-      GROUP BY
-        a.title,
-        a.body,
-        a.note,
-        u.display_name,
-        a.create_date
-      ORDER BY a.create_date ASC
+        t.image_uuids
+      FROM topics t
+      INNER JOIN users u ON t.user_id = u.user_id
+      WHERE t.topic_id = $1
+      ORDER BY t.create_date ASC
       `,
       [topic_id],
     );
@@ -168,10 +161,9 @@ module.exports = async (req, res) => {
           c.body,
           c.note,
           c.comment_id,
-          STRING_AGG(DISTINCT i.image_uuid, ',') AS image_uuids
+          c.image_uuids
         FROM comments c
         INNER JOIN users u ON u.user_id = c.user_id
-        LEFT JOIN comment_images i ON i.comment_id = c.comment_id
         WHERE
           c.comment_id = $1
           OR c.comment_id IN (
@@ -179,12 +171,6 @@ module.exports = async (req, res) => {
             FROM comment_ancestors
             WHERE comment_id = $1
           )
-        GROUP BY
-          u.display_name,
-          c.body,
-          c.note,
-          c.comment_id,
-          c.create_date
         ORDER BY c.create_date ASC
         `,
         [req.body.parent_comment_id],
@@ -367,27 +353,30 @@ module.exports = async (req, res) => {
     if (req.body.comment_id) {
       const existing_images = await req.client.query(
         `
-        DELETE FROM comment_images
+        SELECT image_uuids
+        FROM comments
         WHERE comment_id = $1
-        RETURNING image_uuid
         `,
         [comment_id],
       );
       for (const existing_image of existing_images.rows) {
-        try {
-          await object_client.send(
-            new DeleteObjectCommand({
-              Bucket: "truce.net",
-              Key: `${existing_image.image_uuid}.png`,
-            }),
-          );
-        } catch (err) {
-          console.error(err);
+        for (const image_uuid of existing_image.image_uuids.split(",")) {
+          try {
+            await object_client.send(
+              new DeleteObjectCommand({
+                Bucket: "truce.net",
+                Key: `${image_uuid}.png`,
+              }),
+            );
+          } catch (err) {
+            console.error(err);
+          }
         }
       }
     }
 
     // Add new images
+    const image_uuids = [];
     for (const png of req.body.pngs) {
       const image_uuid = crypto.randomUUID();
       try {
@@ -398,18 +387,20 @@ module.exports = async (req, res) => {
             Body: png.url,
           }),
         );
-        await req.client.query(
-          `
-          INSERT INTO comment_images
-            (comment_id, image_uuid)
-          VALUES
-            ($1, $2)
-          `,
-          [comment_id, image_uuid],
-        );
+        image_uuids.push(image_uuid);
       } catch (error) {
         console.error(error);
       }
+    }
+    if (image_uuids.length) {
+      await req.client.query(
+        `
+        UPDATE comments
+        SET image_uuids = $1
+        WHERE comment_id = $2
+        `,
+        [image_uuids.join(","), comment_id],
+      );
     }
 
     // Update the topic comment_count and counts_max_create_date

@@ -13,58 +13,30 @@ module.exports = async (req, res) => {
     // Delete images
     const images = await req.client.query(
       `
-      SELECT image_uuid
-      FROM comment_images
-      WHERE comment_id IN (
-        SELECT comment_id
-        FROM comments
-        WHERE user_id = $1
-      )
+      SELECT image_uuids
+      FROM comments
+      WHERE user_id = $1
       UNION
-      SELECT image_uuid
-      FROM topic_images
-      WHERE topic_id IN (
-        SELECT topic_id
-        FROM topics
-        WHERE user_id = $1
-      )
+      SELECT image_uuids
+      FROM topics
+      WHERE user_id = $1
       `,
       [ req.session.user_id ]
     );
     for (const existing_image of images.rows) {
-      try {
-        await object_client.send(
-          new DeleteObjectCommand({
-            Bucket: "truce.net",
-            Key: `${existing_image.image_uuid}.png`,
-          }),
-        );
-      } catch (err) {
-        console.error(err);
+      for (const image_uuid of existing_image.image_uuids.split(",")) {
+        try {
+          await object_client.send(
+            new DeleteObjectCommand({
+              Bucket: "truce.net",
+              Key: `${image_uuid}.png`,
+            }),
+          );
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
-    await req.client.query(
-      `
-      DELETE FROM comment_images
-      WHERE comment_id IN (
-        SELECT comment_id
-        FROM comments
-        WHERE user_id = $1
-      )
-      `,
-      [ req.session.user_id ]
-    );
-    await req.client.query(
-      `
-      DELETE FROM topic_images
-      WHERE topic_id IN (
-        SELECT topic_id
-        FROM topics
-        WHERE user_id = $1
-      )
-      `,
-      [ req.session.user_id ]
-    );
     
     // Delete comment ancestors
     await req.client.query(

@@ -24,30 +24,16 @@ module.exports = async (req, res) => {
           fc.user_id as favorite_user_id,
           fc.create_date as favorite_create_date,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
+          c.image_uuids,
           FALSE as commented,
           'comment' AS type
         FROM comments c
         INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
-        LEFT JOIN comment_images i ON c.comment_id = i.comment_id
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
         WHERE
           l.comment_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          c.comment_id,
-          c.create_date,
-          c.body,
-          c.note,
-          c.favorite_count,
-          c.counts_max_create_date,
-          c.user_id,
-          c.parent_comment_id,
-          c.parent_topic_id,
-          fc.user_id,
-          fc.create_date,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END
         UNION
         SELECT
           t.topic_id AS id,
@@ -65,32 +51,21 @@ module.exports = async (req, res) => {
           ft.user_id as favorite_user_id,
           ft.create_date as favorite_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          STRING_AGG(DISTINCT i.image_uuid, ',') as image_uuids,
-          CASE WHEN MAX(c.user_id) IS NOT NULL THEN TRUE ELSE FALSE END as commented,
+          t.image_uuids,
+          CASE WHEN EXISTS (
+            SELECT 1
+            FROM comments c
+            WHERE c.parent_topic_id = t.topic_id
+              AND c.user_id = $1
+          ) THEN TRUE ELSE FALSE END as commented,
           'topic' AS type
         FROM topics t
         INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
-        LEFT JOIN topic_images i ON t.topic_id = i.topic_id
-        LEFT JOIN comments c ON c.parent_topic_id = t.topic_id AND c.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
           l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
-        GROUP BY
-          t.topic_id,
-          t.create_date,
-          t.title,
-          LEFT(t.body, 1000),
-          t.note,
-          t.slug,
-          t.favorite_count,
-          t.comment_count,
-          t.counts_max_create_date,
-          t.user_id,
-          ft.user_id,
-          ft.create_date,
-          CASE WHEN t.user_id = $1 THEN true ELSE false END
       )
       SELECT 
         combined.id,
