@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
         `
         SELECT slug FROM topics WHERE slug = $1
         `,
-        [ slug ]
+        [slug],
       );
       if (slug_exists.rows.length > 0) {
         slug = (slug + "-" + crypto.randomUUID()).replace(/\-/g, "_");
@@ -73,7 +73,9 @@ module.exports = async (req, res) => {
             req.body.title,
             slug,
             req.body.body,
-            ai_response_text.replace(/[^a-z\-]/ig, "") === "OK" ? null : ai_response_text,
+            ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
+              ? null
+              : ai_response_text,
             req.body.topic_id,
             req.session.user_id,
           ],
@@ -94,7 +96,9 @@ module.exports = async (req, res) => {
             req.body.title,
             slug,
             req.body.body,
-            ai_response_text.replace(/[^a-z\-]/ig, "") === "OK" ? null : ai_response_text,
+            ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
+              ? null
+              : ai_response_text,
             req.session.user_id,
           ],
         );
@@ -144,16 +148,14 @@ module.exports = async (req, res) => {
           console.error(error);
         }
       }
-      if (image_uuids.length) {
-        await req.client.query(
-          `
-          UPDATE topics
-          SET image_uuids = $1
-          WHERE topic_id = $2
-          `,
-          [image_uuids.join(","), topic_id],
-        );
-      }
+      await req.client.query(
+        `
+        UPDATE topics
+        SET image_uuids = $1
+        WHERE topic_id = $2
+        `,
+        [image_uuids.join(","), topic_id],
+      );
 
       // Send websocket update
       req.sendWsMessage("UPDATE", topic_id);

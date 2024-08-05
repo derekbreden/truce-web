@@ -392,16 +392,14 @@ module.exports = async (req, res) => {
         console.error(error);
       }
     }
-    if (image_uuids.length) {
-      await req.client.query(
-        `
-        UPDATE comments
-        SET image_uuids = $1
-        WHERE comment_id = $2
-        `,
-        [image_uuids.join(","), comment_id],
-      );
-    }
+    await req.client.query(
+      `
+      UPDATE comments
+      SET image_uuids = $1
+      WHERE comment_id = $2
+      `,
+      [image_uuids.join(","), comment_id],
+    );
 
     // Update the topic comment_count and counts_max_create_date
     await req.client.query(
