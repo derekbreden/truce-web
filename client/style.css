@@ -1791,18 +1791,20 @@ poll-input-wrapper {
   flex-direction: column;
   gap: 5px;
 }
+poll-input-wrapper icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 poll-input-wrapper svg {
   fill: light-dark(#000, #fff);
   height: 26px;
   width: 26px;
-  margin: -2px 0 -5px -3px;
-}
-poll-input-wrapper icon[remove] svg {
-  margin: -2px -3px -5px -3px;
+  margin: 0 -2px 0 -2px;
 }
 poll-input-wrapper poll-text {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   justify-content: flex-start;
   align-items: center;
   min-height: 30px;
