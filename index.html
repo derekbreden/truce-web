@@ -28,15 +28,22 @@
       window_recently_loaded: false,
       version: 1,
     };
-
+    if (window.webkit) {
+      state.version = Number(
+        (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 1,
+      );
+    } else {
+      // Enable as we enable polling
+      // state.version = 2;
+    }
 
     // Global elements
     const $body = document.scrollingElement || document.documentElement;
 
     // Global variables
     const note_keywords = {
-      "Escalation": "Escalation",
-      "Judgment": "Judgment",
+      Escalation: "Escalation",
+      Judgment: "Judgment",
       "Name-calling": "Name-calling",
     };
 
