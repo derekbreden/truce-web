@@ -955,56 +955,22 @@ main-content add-new:first-child textarea {
 title-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-[img-icon] input {
+title-wrapper input {
   display: none;
 }
-
-[img-icon] {
-  display: flex;
-  border: 2px solid #000;
-  border: 2px solid light-dark(#000, #f5f5f5);
-  border-radius: 4px;
-  height: 25px;
-  width: 30px;
-  margin-left: 5px;
-  position: relative;
-  overflow: hidden;
+title-wrapper svg {
+  fill: light-dark(#000, #fff);
+  cursor: pointer;
 }
-
-[img-icon]::before {
-  display: flex;
-  content: "";
-  border-top: 2px solid #000;
-  border-left: 2px solid #000;
-  border-top: 2px solid light-dark(#000, #f5f5f5);
-  border-left: 2px solid light-dark(#000, #f5f5f5);
-  border-right: 2px solid transparent;
-  border-bottom: 2px solid transparent;
-  border-radius: 4px;
-  height: 20px;
-  width: 20px;
-  transform: rotate(45deg);
-  position: absolute;
-  top: 12px;
-  left: -5px;
+title-wrapper svg {
+  height: 34px;
+  width: 34px;
+  margin: 0 -3px -5px 5px;
 }
-
-[img-icon]::after {
-  display: flex;
-  content: "";
-  border: 2px solid #000;
-  border: 2px solid light-dark(#000, #fff);
-  border-radius: 50%;
-  height: 3px;
-  width: 3px;
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
-
 image-previews {
   display: flex;
   flex-direction: row;

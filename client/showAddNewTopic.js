@@ -2,18 +2,34 @@ const showAddNewTopic = (topic) => {
   const $add_new = $(
     `
     add-new[topic]
+      input[title][placeholder=Title][maxlength=140][value=$3]
       title-wrapper
-        input[title][placeholder=Title][maxlength=140][value=$1]
-        label[img-icon]
-          input[img][type=file][multiple][accept=image/*]
-      textarea[body][placeholder=Content][rows=10][maxlength=8000] $2
-      button[submit] $3
+        label[poll]
+          icon
+            $1
+        label[image]
+          icon
+            $2
+          input[image][type=file][multiple][accept=image/*]
+      textarea[body][placeholder=Content][rows=10][maxlength=8000] $4
+      button[submit] $5
       button[alt][cancel] Cancel
     `,
-    topic
-      ? [topic.title, topic.body, "Save changes"]
-      : ["", "", "Add topic"],
+    [
+      $("icons icon[poll] svg").cloneNode(true),
+      $("icons icon[image] svg").cloneNode(true),
+      ...topic
+        ? [topic.title, topic.body, "Save changes"]
+        : ["", "", "Add topic"],
+    ]
   );
+
+  
+  if (state.version > 1) {
+    
+  } else {
+    $add_new.$("[poll]").remove();
+  }
 
   const addTopicError = (error) => {
     $add_new.appendChild(
@@ -39,8 +55,8 @@ const showAddNewTopic = (topic) => {
     }
   }
 
-  $add_new.$("[img]").on("change", () => {
-    Array.from($add_new.$("[img]").files).forEach((file) => {
+  $add_new.$("input[image]").on("change", () => {
+    Array.from($add_new.$("input[image]").files).forEach((file) => {
       const reader = new FileReader();
       reader.onload = ($event) => {
         imageToPng($event.target.result, (png) => {
@@ -60,22 +76,24 @@ const showAddNewTopic = (topic) => {
 
   const previewPngs = () => {
     $add_new.$("image-previews")?.remove();
-    $add_new.$("title-wrapper").after(document.createElement("image-previews"));
-    pngs.forEach((png, i) => {
-      const $preview = $(
-        `
-        preview
-          remove-icon
-          img[src=$1]
-        `,
-        [png.url],
-      );
-      $preview.$("remove-icon").on("click", () => {
-        pngs.splice(i, 1);
-        previewPngs();
+    if (pngs.length) {
+      $add_new.$("title-wrapper").after(document.createElement("image-previews"));
+      pngs.forEach((png, i) => {
+        const $preview = $(
+          `
+          preview
+            remove-icon
+            img[src=$1]
+          `,
+          [png.url],
+        );
+        $preview.$("remove-icon").on("click", () => {
+          pngs.splice(i, 1);
+          previewPngs();
+        });
+        $add_new.$("image-previews").appendChild($preview);
       });
-      $add_new.$("image-previews").appendChild($preview);
-    });
+    }
   };
 
   $add_new.$("[title]").on("focus", () => {
