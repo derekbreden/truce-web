@@ -36,9 +36,9 @@ const showAddNewTopic = (topic) => {
             `
             poll-input-wrapper
               poll-text
-                input[poll-text-1][placeholder=Choice 1][maxlength=50]
+                input[poll-1][placeholder=Choice 1][maxlength=50]
               poll-text
-                input[poll-text-2][placeholder=Choice 2][maxlength=50]
+                input[poll-2][placeholder=Choice 2][maxlength=50]
               poll-text[add]
                 icon
                   $1
@@ -59,7 +59,7 @@ const showAddNewTopic = (topic) => {
                 $3
             `,
             [
-              `poll-text-${choice_number}`,
+              `poll-${choice_number}`,
               `Choice ${choice_number}`,
               $("icons icon[remove] svg").cloneNode(true),
             ],
@@ -70,10 +70,10 @@ const showAddNewTopic = (topic) => {
             $add_new.$("poll-text[add]").style.display = "flex";
             $add_new
               .$("poll-input-wrapper poll-text:nth-child(3) input")
-              ?.removeAttribute("poll-text-4");
+              ?.removeAttribute("poll-4");
             $add_new
               .$("poll-input-wrapper poll-text:nth-child(3) input")
-              ?.setAttribute("poll-text-3", "");
+              ?.setAttribute("poll-3", "");
             $add_new
               .$("poll-input-wrapper poll-text:nth-child(3) input")
               ?.setAttribute("placeholder", `Choice 3`);
@@ -178,10 +178,10 @@ const showAddNewTopic = (topic) => {
     $add_new.$("error")?.remove();
     const title = $add_new.$("[title]").value;
     const body = $add_new.$("[body]").value;
-    const poll_text_1 = $add_new.$("[poll-text-1]")?.value || "";
-    const poll_text_2 = $add_new.$("[poll-text-2]")?.value || "";
-    const poll_text_3 = $add_new.$("[poll-text-3]")?.value || "";
-    const poll_text_4 = $add_new.$("[poll-text-4]")?.value || "";
+    const poll_1 = $add_new.$("[poll-1]")?.value || "";
+    const poll_2 = $add_new.$("[poll-2]")?.value || "";
+    const poll_3 = $add_new.$("[poll-3]")?.value || "";
+    const poll_4 = $add_new.$("[poll-4]")?.value || "";
     if (!title) {
       addTopicError("Please enter a title");
       return;
@@ -195,8 +195,8 @@ const showAddNewTopic = (topic) => {
       return;
     }
     if (
-      (poll_text_1.length && !poll_text_2.length) ||
-      (poll_text_2.length && !poll_text_1.length)
+      (poll_1.length && !poll_2.length) ||
+      (poll_2.length && !poll_1.length)
     ) {
       addTopicError("Please fill in 2 choices for a poll");
       return;
@@ -210,10 +210,10 @@ const showAddNewTopic = (topic) => {
     );
     $add_new.$("[title]").setAttribute("disabled", "");
     $add_new.$("[body]").setAttribute("disabled", "");
-    $add_new.$("[poll-text-1]")?.setAttribute("disabled", "");
-    $add_new.$("[poll-text-2]")?.setAttribute("disabled", "");
-    $add_new.$("[poll-text-3]")?.setAttribute("disabled", "");
-    $add_new.$("[poll-text-4]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-1]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-2]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-3]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-4]")?.setAttribute("disabled", "");
     $add_new.$("[submit]").setAttribute("disabled", "");
     $add_new.$("[cancel]")?.setAttribute("disabled", "");
     fetch("/session", {
@@ -222,10 +222,10 @@ const showAddNewTopic = (topic) => {
         path: state.path,
         title,
         body,
-        poll_text_1,
-        poll_text_2,
-        poll_text_3,
-        poll_text_4,
+        poll_1,
+        poll_2,
+        poll_3,
+        poll_4,
         pngs,
         topic_id: topic ? topic.topic_id : undefined,
       }),
@@ -236,10 +236,10 @@ const showAddNewTopic = (topic) => {
           $add_new.$("info")?.remove();
           $add_new.$("[title]").removeAttribute("disabled");
           $add_new.$("[body]").removeAttribute("disabled");
-          $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
+          $add_new.$("[poll-1]")?.removeAttribute("disabled");
+          $add_new.$("[poll-2]")?.removeAttribute("disabled");
+          $add_new.$("[poll-3]")?.removeAttribute("disabled");
+          $add_new.$("[poll-4]")?.removeAttribute("disabled");
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]")?.removeAttribute("disabled");
           addTopicError(data.error || "Server error");
@@ -256,10 +256,10 @@ const showAddNewTopic = (topic) => {
           $add_new.$("info")?.remove();
           $add_new.$("[title]").removeAttribute("disabled");
           $add_new.$("[body]").removeAttribute("disabled");
-          $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
-          $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
+          $add_new.$("[poll-1]")?.removeAttribute("disabled");
+          $add_new.$("[poll-2]")?.removeAttribute("disabled");
+          $add_new.$("[poll-3]")?.removeAttribute("disabled");
+          $add_new.$("[poll-4]")?.removeAttribute("disabled");
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]")?.removeAttribute("disabled");
         }
@@ -276,10 +276,10 @@ const showAddNewTopic = (topic) => {
         $add_new.$("info")?.remove();
         $add_new.$("[title]").removeAttribute("disabled");
         $add_new.$("[body]").removeAttribute("disabled");
-        $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
-        $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
-        $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
-        $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
+        $add_new.$("[poll-1]")?.removeAttribute("disabled");
+        $add_new.$("[poll-2]")?.removeAttribute("disabled");
+        $add_new.$("[poll-3]")?.removeAttribute("disabled");
+        $add_new.$("[poll-4]")?.removeAttribute("disabled");
         $add_new.$("[submit]").removeAttribute("disabled");
         $add_new.$("[cancel]")?.removeAttribute("disabled");
         addTopicError("Network error");

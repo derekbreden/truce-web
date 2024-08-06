@@ -1,4 +1,5 @@
 const ai = require("../ai");
+const prompts = require("../prompts");
 const crypto = require("node:crypto");
 const {
   DeleteObjectCommand,
@@ -20,6 +21,25 @@ module.exports = async (req, res) => {
   ) {
     const messages = [];
 
+    let text_to_evaluate = req.body.title + "\n\n" + req.body.body;
+    let poll_counts = "";
+    if (req.body.poll_1) {
+      text_to_evaluate = `${req.body.title}
+
+${req.body.body}
+
+A) ${req.body.poll_1}
+B) ${req.body.poll_2}`;
+      poll_counts = "0,0";
+      if (req.body.poll_3) {
+        text_to_evaluate += `\nC) ${req.body.poll_3}`;
+        poll_counts = "0,0,0";
+      }
+      if (req.body.poll_4) {
+        text_to_evaluate += `\nD) ${req.body.poll_4}`;
+        poll_counts = "0,0,0,0";
+      }
+    }
     messages.push({
       role: "user",
       name: (req.session.display_name || "Anonymous").replace(
@@ -27,7 +47,7 @@ module.exports = async (req, res) => {
         "",
       ),
       content: [
-        { type: "text", text: req.body.title + "\n\n" + req.body.body },
+        { type: "text", text: text_to_evaluate },
         ...req.body.pngs.map((png) => {
           return {
             image_url: {
@@ -38,7 +58,10 @@ module.exports = async (req, res) => {
         }),
       ],
     });
-    const ai_response_text = await ai.ask(messages, "common");
+    const ai_response_text = await ai.ask(
+      messages,
+      req.body.poll_1 ? "poll" : "common",
+    );
     if (ai_response_text !== "Spam") {
       let slug = req.body.title
         .replace(/[^a-z0-9 ]/gi, "")
@@ -63,16 +86,26 @@ module.exports = async (req, res) => {
             title = $1,
             slug = $2,
             body = $3,
-            note = $4,
+            poll_1 = $4,
+            poll_2 = $5,
+            poll_3 = $6,
+            poll_4 = $7,
+            poll_counts = $8
+            note = $9,
             create_date = NOW()
           WHERE
-            topic_id = $5
-            AND user_id = $6
+            topic_id = $10
+            AND user_id = $11
           `,
           [
             req.body.title,
             slug,
             req.body.body,
+            req.body.poll_1 || "",
+            req.body.poll_2 || "",
+            req.body.poll_3 || "",
+            req.body.poll_4 || "",
+            poll_counts,
             ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
               ? null
               : ai_response_text,
@@ -87,15 +120,20 @@ module.exports = async (req, res) => {
         const topic_result = await req.client.query(
           `
           INSERT INTO topics
-            (title, slug, body, note, user_id)
+            (title, slug, body, poll_1, poll_2, poll_3, poll_4, poll_counts, note, user_id)
           VALUES
-            ($1, $2, $3, $4, $5)
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           RETURNING topic_id;
           `,
           [
             req.body.title,
             slug,
             req.body.body,
+            req.body.poll_1 || "",
+            req.body.poll_2 || "",
+            req.body.poll_3 || "",
+            req.body.poll_4 || "",
+            poll_counts,
             ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
               ? null
               : ai_response_text,
@@ -156,6 +194,66 @@ module.exports = async (req, res) => {
         `,
         [image_uuids.join(","), topic_id],
       );
+
+      // Get estimated poll response
+      if (req.body.poll_1) {
+        const ai_poll_response = await ai.ask(
+          [{
+            role: "user",
+            name: (req.session.display_name || "Anonymous").replace(
+              /[^a-z0-9_\-]/g,
+              "",
+            ),
+            content: [
+              { type: "text", text: text_to_evaluate },
+              ...req.body.pngs.map((png) => {
+                return {
+                  image_url: {
+                    url: png.url,
+                  },
+                  type: "image_url",
+                };
+              }),
+            ],
+          }],
+          "poll",
+          [prompts.poll_tool],
+          "required",
+        );
+        if (ai_poll_response.length && ai_poll_response[0]?.function?.arguments) {
+          try {
+            const results = JSON.parse(ai_poll_response[0].function.arguments);
+            const total_votes = 1000 * results.response_rate;
+            const estimated = [
+              Math.round(total_votes * results.choice_a) || 0,
+              Math.round(total_votes * results.choice_b) || 0
+            ];
+            if (req.body.poll_3) {
+              estimated.push(
+                Math.round(total_votes * results.choice_c) || 0
+              )
+            }
+            if (req.body.poll_4) {
+              estimated.push(
+                Math.round(total_votes * results.choice_d) || 0
+              )
+            }
+            await req.client.query(
+              `
+              UPDATE topics
+              SET poll_counts_estimated = $1
+              WHERE topic_id = $2
+              `,
+              [
+                estimated.join(","),
+                topic_id,
+              ]
+            )
+          } catch (e) {
+            console.error("Error poll response:", e)
+          }
+        }
+      }
 
       // Send websocket update
       req.sendWsMessage("UPDATE", topic_id);
