@@ -935,6 +935,7 @@ main-content add-new:first-child {
 
 main-content add-new:first-child textarea {
   height: 100%;
+  min-height: 74px;
 }
 
 @media (max-width: 1000px) {
@@ -1783,4 +1784,36 @@ app-store-wrapper img[white] {
     top: 0;
     z-index: 2;
   }
+}
+
+poll-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+poll-input-wrapper svg {
+  fill: light-dark(#000, #fff);
+  height: 26px;
+  width: 26px;
+  margin: -2px 0 -5px -3px;
+}
+poll-input-wrapper icon[remove] svg {
+  margin: -2px -3px -5px -3px;
+}
+poll-input-wrapper poll-text {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 30px;
+}
+poll-input-wrapper poll-text[add],
+poll-input-wrapper poll-text [remove] {
+  cursor: pointer;
+}
+poll-input-wrapper poll-text p {
+  margin: 0;
+}
+poll-input-wrapper poll-text input {
+  flex: 1;
 }

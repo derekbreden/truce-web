@@ -18,15 +18,77 @@ const showAddNewTopic = (topic) => {
     [
       $("icons icon[poll] svg").cloneNode(true),
       $("icons icon[image] svg").cloneNode(true),
-      ...topic
+      ...(topic
         ? [topic.title, topic.body, "Save changes"]
-        : ["", "", "Add topic"],
-    ]
+        : ["", "", "Add topic"]),
+    ],
   );
 
-  
+  let mode = "topic";
   if (state.version > 1) {
-    
+    $add_new.$("[poll]").on("click", () => {
+      if (mode === "topic") {
+        mode = "poll";
+        $add_new.$("[body]").setAttribute("placeholder", "Question");
+        $add_new.$("[body]").setAttribute("rows", "3");
+        $add_new.$("[body]").after(
+          $(
+            `
+            poll-input-wrapper
+              poll-text
+                input[poll-text-1][placeholder=Choice 1][maxlength=50]
+              poll-text
+                input[poll-text-2][placeholder=Choice 2][maxlength=50]
+              poll-text[add]
+                icon
+                  $1
+                p Add choice
+            `,
+            [$("icons icon[add] svg").cloneNode(true)],
+          ),
+        );
+        $add_new.$("poll-text[add]").on("click", () => {
+          const choice_number = $add_new.querySelectorAll(
+            "poll-input-wrapper poll-text",
+          ).length;
+          const $new_choice = $(
+            `
+            poll-text
+              input[$1][placeholder=$2][maxlength=50]
+              icon[remove]
+                $3
+            `,
+            [
+              `poll-text-${choice_number}`,
+              `Choice ${choice_number}`,
+              $("icons icon[remove] svg").cloneNode(true),
+            ],
+          );
+          $add_new.$("poll-text[add]").before($new_choice);
+          $new_choice.$("[remove]").on("click", () => {
+            $new_choice.remove();
+            $add_new.$("poll-text[add]").style.display = "flex";
+            $add_new
+              .$("poll-input-wrapper poll-text:nth-child(3) input")
+              ?.removeAttribute("poll-text-4");
+            $add_new
+              .$("poll-input-wrapper poll-text:nth-child(3) input")
+              ?.setAttribute("poll-text-3", "");
+            $add_new
+              .$("poll-input-wrapper poll-text:nth-child(3) input")
+              ?.setAttribute("placeholder", `Choice 3`);
+          });
+          if (choice_number > 3) {
+            $add_new.$("poll-text[add]").style.display = "none";
+          }
+        });
+      } else {
+        mode = "topic";
+        $add_new.$("[body]").setAttribute("placeholder", "Content");
+        $add_new.$("[body]").setAttribute("rows", "10");
+        $add_new.$("poll-input-wrapper").remove();
+      }
+    });
   } else {
     $add_new.$("[poll]").remove();
   }
@@ -77,7 +139,9 @@ const showAddNewTopic = (topic) => {
   const previewPngs = () => {
     $add_new.$("image-previews")?.remove();
     if (pngs.length) {
-      $add_new.$("title-wrapper").after(document.createElement("image-previews"));
+      $add_new
+        .$("title-wrapper")
+        .after(document.createElement("image-previews"));
       pngs.forEach((png, i) => {
         const $preview = $(
           `
@@ -114,6 +178,10 @@ const showAddNewTopic = (topic) => {
     $add_new.$("error")?.remove();
     const title = $add_new.$("[title]").value;
     const body = $add_new.$("[body]").value;
+    const poll_text_1 = $add_new.$("[poll-text-1]")?.value || "";
+    const poll_text_2 = $add_new.$("[poll-text-2]")?.value || "";
+    const poll_text_3 = $add_new.$("[poll-text-3]")?.value || "";
+    const poll_text_4 = $add_new.$("[poll-text-4]")?.value || "";
     if (!title) {
       addTopicError("Please enter a title");
       return;
@@ -126,6 +194,13 @@ const showAddNewTopic = (topic) => {
       addTopicError("The content must be longer than the title");
       return;
     }
+    if (
+      (poll_text_1.length && !poll_text_2.length) ||
+      (poll_text_2.length && !poll_text_1.length)
+    ) {
+      addTopicError("Please fill in 2 choices for a poll");
+      return;
+    }
     $add_new.appendChild(
       $(
         `
@@ -135,6 +210,10 @@ const showAddNewTopic = (topic) => {
     );
     $add_new.$("[title]").setAttribute("disabled", "");
     $add_new.$("[body]").setAttribute("disabled", "");
+    $add_new.$("[poll-text-1]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-text-2]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-text-3]")?.setAttribute("disabled", "");
+    $add_new.$("[poll-text-4]")?.setAttribute("disabled", "");
     $add_new.$("[submit]").setAttribute("disabled", "");
     $add_new.$("[cancel]")?.setAttribute("disabled", "");
     fetch("/session", {
@@ -143,6 +222,10 @@ const showAddNewTopic = (topic) => {
         path: state.path,
         title,
         body,
+        poll_text_1,
+        poll_text_2,
+        poll_text_3,
+        poll_text_4,
         pngs,
         topic_id: topic ? topic.topic_id : undefined,
       }),
@@ -153,6 +236,10 @@ const showAddNewTopic = (topic) => {
           $add_new.$("info")?.remove();
           $add_new.$("[title]").removeAttribute("disabled");
           $add_new.$("[body]").removeAttribute("disabled");
+          $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]")?.removeAttribute("disabled");
           addTopicError(data.error || "Server error");
@@ -161,11 +248,18 @@ const showAddNewTopic = (topic) => {
         if (!topic) {
           $add_new.$("[body]").value = "";
           $add_new.$("[title]").value = "";
+          if (mode === "poll") {
+            $add_new.$("[poll]").click();
+          }
           pngs.splice(0, pngs.length);
           previewPngs();
           $add_new.$("info")?.remove();
           $add_new.$("[title]").removeAttribute("disabled");
           $add_new.$("[body]").removeAttribute("disabled");
+          $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
+          $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
           $add_new.$("[submit]").removeAttribute("disabled");
           $add_new.$("[cancel]")?.removeAttribute("disabled");
         }
@@ -182,6 +276,10 @@ const showAddNewTopic = (topic) => {
         $add_new.$("info")?.remove();
         $add_new.$("[title]").removeAttribute("disabled");
         $add_new.$("[body]").removeAttribute("disabled");
+        $add_new.$("[poll-text-1]")?.removeAttribute("disabled");
+        $add_new.$("[poll-text-2]")?.removeAttribute("disabled");
+        $add_new.$("[poll-text-3]")?.removeAttribute("disabled");
+        $add_new.$("[poll-text-4]")?.removeAttribute("disabled");
         $add_new.$("[submit]").removeAttribute("disabled");
         $add_new.$("[cancel]")?.removeAttribute("disabled");
         addTopicError("Network error");
@@ -197,4 +295,4 @@ const showAddNewTopic = (topic) => {
 };
 const focusAddNewTopic = () => {
   state.active_add_new_topic.$("[title]").focus();
-}
+};
