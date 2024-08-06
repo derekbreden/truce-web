@@ -54,6 +54,7 @@ main-content-wrapper {
   background: light-dark(#f5f5f5, #000);
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
+  transition: top 0.2s ease-in-out;
 }
 
 main-content-wrapper[inactive] {
@@ -659,9 +660,15 @@ textarea {
   border-radius: 2px;
   border: 1px solid #000;
   background: #fff;
-  border: 1px solid light-dark(#000, #333);
+  border: 1px solid light-dark(#999, #333);
   background: light-dark(#fff, #000);
   padding: 10px;
+}
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: light-dark(#000, #fff);
+  caret-color: light-dark(#000, #fff);
 }
 
 button {
@@ -1802,5 +1809,12 @@ app-store-wrapper img[white] {
   }
   app-store-wrapper img[black] {
     display: none;
+  }
+}
+
+@media (max-width: 481px) {
+  [textarea-focused] main-content-wrapper {
+    top: 0;
+    z-index: 2;
   }
 }

@@ -549,6 +549,14 @@ const focusChange = () => {
   } else if (state.is_app) {
     $("body").setAttribute("app", "");
   }
+  if (
+    document.activeElement?.tagName === "INPUT" ||
+    document.activeElement?.tagName === "TEXTAREA"
+  ) {
+    $("body").setAttribute("textarea-focused", "");
+  } else {
+    $("body").removeAttribute("textarea-focused");
+  }
 };
 window.addEventListener("focusin", focusChange);
 window.addEventListener("focusout", focusChange);
