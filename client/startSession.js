@@ -322,26 +322,48 @@ const getMoreRecent = () => {
           );
           const found_activity = current_cache.activities.find(
             (activity) =>
-              activity.id === topic_count.topic_id &&
-              activity.type === "topic",
+              activity.id === topic_count.topic_id && activity.type === "topic",
           );
           const comment_text =
             topic_count.comment_count +
-            (topic_count.comment_count === "1"
-              ? " comment"
-              : " comments");
+            (topic_count.comment_count === "1" ? " comment" : " comments");
           const favorite_text =
             topic_count.favorite_count +
-            (topic_count.favorite_count === "1"
-              ? " favorite"
-              : " favorites");
-          if (found_topic) {
-            found_topic.$topic.$("[comments] p").innerText = comment_text;
-            found_topic.$topic.$("[favorites] p").innerText = favorite_text;
+            (topic_count.favorite_count === "1" ? " favorite" : " favorites");
+          if (found_topic || found_activity) {
+            (found_topic || found_activity).$topic.$("[comments] p").innerText =
+              comment_text;
+            (found_topic || found_activity).$topic.$(
+              "[favorites] p",
+            ).innerText = favorite_text;
+            if (found_topic.poll_1 && topic_count.poll_counts) {
+              found_topic.poll_counts = topic_count.poll_counts;
+              found_topic.$topic.replaceWith(renderTopic(found_topic));
+            }
+          }
+        });
+      }
+
+      // Render updated comment favorite counts
+      if (data.comment_counts?.length) {
+        data.comment_counts.forEach((comment_count) => {
+          const found_comment = current_cache.comments.find(
+            (comment) => comment.comment_id === comment_count.comment_id,
+          );
+          const found_activity = current_cache.activities.find(
+            (activity) =>
+              activity.id === comment_count.comment_id &&
+              activity.type === "comment",
+          );
+          const favorite_text =
+            comment_count.favorite_count +
+            (comment_count.favorite_count === "1" ? " favorite" : " favorites");
+          if (found_comment) {
+            found_comment.$comment.$("[favorites] p").innerText = favorite_text;
           }
           if (found_activity) {
-            found_activity.$topic.$("[comments] p").innerText = comment_text;
-            found_activity.$topic.$("[favorites] p").innerText = favorite_text;
+            found_activity.$comment.$("[favorites] p").innerText =
+              favorite_text;
           }
         });
       }

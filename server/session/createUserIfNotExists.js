@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
       req.body.topic_id_to_block ||
       req.body.comment_id_to_block ||
       req.body.topic_id_to_flag ||
-      req.body.comment_id_to_flag)
+      req.body.comment_id_to_flag ||
+      (req.body.topic_id && req.body.poll_choice))
   ) {
     const user_inserted = await req.client.query(
       `

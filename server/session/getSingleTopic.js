@@ -16,6 +16,12 @@ module.exports = async (req, res) => {
           t.title,
           t.slug,
           t.body,
+          t.poll_1,
+          t.poll_2,
+          t.poll_3,
+          t.poll_4,
+          t.poll_counts,
+          t.poll_counts_estimated,
           t.note,
           t.favorite_count,
           t.comment_count,
@@ -28,9 +34,11 @@ module.exports = async (req, res) => {
             FROM comments c
             WHERE c.parent_topic_id = t.topic_id
               AND c.user_id = $1
-          ) THEN TRUE ELSE FALSE END as commented
+          ) THEN TRUE ELSE FALSE END as commented,
+          CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted
         FROM topics t
         LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
+        LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE

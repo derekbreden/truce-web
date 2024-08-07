@@ -28,6 +28,7 @@ const renderTopic = (topic) => {
       $3
       $4
       $5
+      $6
     `,
     [
       topic.title,
@@ -50,6 +51,63 @@ const renderTopic = (topic) => {
           )
         : [],
       $topic_body,
+      topic.poll_1
+        ? $(
+            `
+          poll-wrapper
+            poll-vote-wrapper
+              poll-1 $1
+              poll-2 $2
+              poll-3 $3
+              poll-4 $4
+            p[results][actual] Actual results:
+            poll-counts-actual
+              poll-1
+                text
+                  bg
+                  $1
+                percent
+              poll-2
+                text
+                  bg
+                  $2
+                percent
+              poll-3
+                text
+                  bg
+                  $3
+                percent
+              poll-4
+                text
+                  bg
+                  $4
+                percent
+            p[results] Estimated results:
+            poll-counts-estimated
+              poll-1
+                text
+                  bg
+                  $1
+                percent
+              poll-2
+                text
+                  bg
+                  $2
+                percent
+              poll-3
+                text
+                  bg
+                  $3
+                percent
+              poll-4
+                text
+                  bg
+                  $4
+                percent
+          `,
+            [topic.poll_1, topic.poll_2, topic.poll_3, topic.poll_4],
+          )
+        : [],
       $(
         `
         topic-details[detail-wrapper]
@@ -82,6 +140,116 @@ const renderTopic = (topic) => {
       ),
     ],
   );
+  if (topic.poll_1) {
+    const counts_actual = topic.poll_counts.split(",");
+    const votes_1 = Number(counts_actual[0] || 0);
+    const votes_2 = Number(counts_actual[1] || 0);
+    const votes_3 = Number(counts_actual[2] || 0);
+    const votes_4 = Number(counts_actual[3] || 0);
+    const votes_sum = votes_1 + votes_2 + votes_3 + votes_4;
+    const percent_1 = Math.round((votes_1 / votes_sum) * 100) || 0;
+    const percent_2 = Math.round((votes_2 / votes_sum) * 100) || 0;
+    const percent_3 = Math.round((votes_3 / votes_sum) * 100) || 0;
+    const percent_4 = Math.round((votes_4 / votes_sum) * 100) || 0;
+    $topic.$("poll-counts-actual poll-1 percent").innerText = percent_1 + "%";
+    $topic.$("poll-counts-actual poll-1 bg").style.width = percent_1 + "%";
+    $topic.$("poll-counts-actual poll-2 percent").innerText = percent_2 + "%";
+    $topic.$("poll-counts-actual poll-2 bg").style.width = percent_2 + "%";
+    $topic.$("poll-counts-actual poll-3 percent").innerText = percent_3 + "%";
+    $topic.$("poll-counts-actual poll-3 bg").style.width = percent_3 + "%";
+    $topic.$("poll-counts-actual poll-4 percent").innerText = percent_4 + "%";
+    $topic.$("poll-counts-actual poll-4 bg").style.width = percent_4 + "%";
+    const counts_estimated = topic.poll_counts_estimated.split(",");
+    const est_votes_1 = Number(counts_estimated[0] || 0);
+    const est_votes_2 = Number(counts_estimated[1] || 0);
+    const est_votes_3 = Number(counts_estimated[2] || 0);
+    const est_votes_4 = Number(counts_estimated[3] || 0);
+    const est_votes_sum = est_votes_1 + est_votes_2 + est_votes_3 + est_votes_4;
+    const est_percent_1 = Math.round((est_votes_1 / est_votes_sum) * 100);
+    const est_percent_2 = Math.round((est_votes_2 / est_votes_sum) * 100);
+    const est_percent_3 = Math.round((est_votes_3 / est_votes_sum) * 100);
+    const est_percent_4 = Math.round((est_votes_4 / est_votes_sum) * 100);
+    $topic.$("poll-counts-estimated poll-1 percent").innerText =
+      est_percent_1 + "%";
+    $topic.$("poll-counts-estimated poll-1 bg").style.width =
+      est_percent_1 + "%";
+    $topic.$("poll-counts-estimated poll-2 percent").innerText =
+      est_percent_2 + "%";
+    $topic.$("poll-counts-estimated poll-2 bg").style.width =
+      est_percent_2 + "%";
+    $topic.$("poll-counts-estimated poll-3 percent").innerText =
+      est_percent_3 + "%";
+    $topic.$("poll-counts-estimated poll-3 bg").style.width =
+      est_percent_3 + "%";
+    $topic.$("poll-counts-estimated poll-4 percent").innerText =
+      est_percent_4 + "%";
+    $topic.$("poll-counts-estimated poll-4 bg").style.width =
+      est_percent_4 + "%";
+    const savePollChoice = (poll_choice) => {
+      $topic.$("poll-vote-wrapper").replaceWith(
+        $(
+          `
+          p
+            info[small] Loading results...
+          `,
+        ),
+      );
+      fetch("/session", {
+        method: "POST",
+        body: JSON.stringify({
+          topic_id: topic.topic_id,
+          poll_choice,
+        }),
+      })
+        .then((response) => response.json())
+        .then(function (data) {
+          if (data.error || !data.success) {
+            alertError("Server error saving choice");
+          } else {
+            topic.voted = true;
+            alertInfo("Poll choice saved");
+          }
+          getMoreRecent();
+        })
+        .catch(function (error) {
+          console.error(error);
+          alertError("Network error saving choice");
+          getMoreRecent();
+        });
+    };
+    $topic.$("poll-vote-wrapper poll-1").on("click", ($event) => {
+      $event.stopPropagation();
+      savePollChoice(1);
+    });
+    $topic.$("poll-vote-wrapper poll-2").on("click", ($event) => {
+      $event.stopPropagation();
+      savePollChoice(2);
+    });
+    $topic.$("poll-vote-wrapper poll-3").on("click", ($event) => {
+      $event.stopPropagation();
+      savePollChoice(3);
+    });
+    $topic.$("poll-vote-wrapper poll-4").on("click", ($event) => {
+      $event.stopPropagation();
+      savePollChoice(4);
+    });
+    if (topic.edit || topic.voted) {
+      $topic.$("poll-vote-wrapper").remove();
+    } else {
+      $topic.$("poll-counts-actual").remove();
+      $topic.$("[results][actual]").remove();
+    }
+    if (!topic.poll_3) {
+      $topic.$("poll-vote-wrapper poll-3")?.remove();
+      $topic.$("poll-counts-estimated poll-3")?.remove();
+      $topic.$("poll-counts-actual poll-3")?.remove();
+    }
+    if (!topic.poll_4) {
+      $topic.$("poll-vote-wrapper poll-4")?.remove();
+      $topic.$("poll-counts-estimated poll-4")?.remove();
+      $topic.$("poll-counts-actual poll-4")?.remove();
+    }
+  }
   $topic.$("detail[favorites]").on("click", ($event) => {
     $event.stopPropagation();
     toggleFavorite(topic);
@@ -154,7 +322,7 @@ const renderTopic = (topic) => {
             p This will hide all content from this user.
             p This action cannot be undone.
             `,
-            [ $("icons icon[block] svg").cloneNode(true) ]
+            [$("icons icon[block] svg").cloneNode(true)],
           ),
           () => {
             markBlocked(topic);
@@ -175,7 +343,7 @@ const renderTopic = (topic) => {
           p This will hide this topic for everyone.
           p This action cannot be undone.
           `,
-          [ $("icons icon[flag] svg").cloneNode(true) ]
+          [$("icons icon[flag] svg").cloneNode(true)],
         ),
         () => {
           markFlagged(topic);

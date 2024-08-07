@@ -71,6 +71,26 @@ module.exports = async (req, res) => {
       [ req.session.user_id ]
     );
 
+    // Delete polls
+    await req.client.query(
+      `
+      DELETE FROM poll_votes
+      WHERE topic_id IN (
+        SELECT topic_id
+        FROM topics
+        WHERE user_id = $1
+      )
+      `,
+      [ req.session.user_id ]
+    );
+    await req.client.query(
+      `
+      DELETE FROM poll_votes
+      WHERE user_id = $1
+      `,
+      [ req.session.user_id ]
+    );
+
     // Sessions
     await req.client.query(
       `

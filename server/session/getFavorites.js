@@ -13,6 +13,12 @@ module.exports = async (req, res) => {
           c.create_date,
           NULL AS title,
           c.body,
+          NULL as poll_1,
+          NULL as poll_2,
+          NULL as poll_3,
+          NULL as poll_4,
+          NULL as poll_counts,
+          NULL as poll_counts_estimated,
           c.note,
           NULL as slug,
           c.favorite_count,
@@ -26,6 +32,7 @@ module.exports = async (req, res) => {
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           c.image_uuids,
           FALSE as commented,
+          FALSE as voted,
           'comment' AS type
         FROM comments c
         INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
@@ -40,6 +47,12 @@ module.exports = async (req, res) => {
           t.create_date,
           t.title,
           LEFT(t.body, 1000) as body,
+          t.poll_1,
+          t.poll_2,
+          t.poll_3,
+          t.poll_4,
+          t.poll_counts,
+          t.poll_counts_estimated,
           t.note,
           t.slug,
           t.favorite_count,
@@ -58,9 +71,11 @@ module.exports = async (req, res) => {
             WHERE c.parent_topic_id = t.topic_id
               AND c.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
+          CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           'topic' AS type
         FROM topics t
         INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
+        LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
@@ -72,6 +87,12 @@ module.exports = async (req, res) => {
         combined.create_date,
         combined.title,
         combined.body,
+        combined.poll_1,
+        combined.poll_2,
+        combined.poll_3,
+        combined.poll_4,
+        combined.poll_counts,
+        combined.poll_counts_estimated,
         combined.note,
         combined.slug,
         combined.favorite_count,
@@ -82,6 +103,7 @@ module.exports = async (req, res) => {
         combined.image_uuids,
         TRUE as favorited,
         combined.commented,
+        combined.voted,
         combined.favorite_create_date,
         u.display_name,
         u.display_name_index,

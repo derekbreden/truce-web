@@ -89,6 +89,19 @@ const showAddNewTopic = (topic) => {
         $add_new.$("poll-input-wrapper").remove();
       }
     });
+    if (topic && topic.poll_1) {
+      $add_new.$("[poll]").click();
+      $add_new.$("input[poll-1]").value = topic.poll_1;
+      $add_new.$("input[poll-2]").value = topic.poll_2;
+      if (topic.poll_3) {
+        $add_new.$("poll-text[add]").click();
+        $add_new.$("input[poll-3]").value = topic.poll_3;
+      }
+      if (topic.poll_4) {
+        $add_new.$("poll-text[add]").click();
+        $add_new.$("input[poll-4]").value = topic.poll_4;
+      }
+    }
   } else {
     $add_new.$("[poll]").remove();
   }

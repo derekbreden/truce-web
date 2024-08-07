@@ -57,13 +57,19 @@ const renderActivities = (activities) => {
     .filter((activity) => {
       if (activity.type === "comment") {
         if (
-          comment_ids_rendered.includes(activity.id)
-          && state.path !== "/favorites"
-           ) {
+          comment_ids_rendered.includes(activity.id) &&
+          state.path !== "/favorites"
+        ) {
           return false;
         }
         comment_ids_rendered.push(activity.id);
         comment_ids_rendered.push(activity.parent_comment_id);
+      }
+      if (state.version > 1) {
+      } else {
+        if (activity.type === "topic" && activity.poll_1) {
+          return false;
+        }
       }
       return true;
     })

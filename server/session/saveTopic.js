@@ -30,15 +30,7 @@ ${req.body.body}
 
 A) ${req.body.poll_1}
 B) ${req.body.poll_2}`;
-      poll_counts = "0,0";
-      if (req.body.poll_3) {
-        text_to_evaluate += `\nC) ${req.body.poll_3}`;
-        poll_counts = "0,0,0";
-      }
-      if (req.body.poll_4) {
-        text_to_evaluate += `\nD) ${req.body.poll_4}`;
-        poll_counts = "0,0,0,0";
-      }
+      poll_counts = "0,0,0,0";
     }
     messages.push({
       role: "user",
@@ -90,7 +82,7 @@ B) ${req.body.poll_2}`;
             poll_2 = $5,
             poll_3 = $6,
             poll_4 = $7,
-            poll_counts = $8
+            poll_counts = $8,
             note = $9,
             create_date = NOW()
           WHERE
@@ -194,6 +186,17 @@ B) ${req.body.poll_2}`;
         `,
         [image_uuids.join(","), topic_id],
       );
+
+      // Remove existing poll votes
+      if (req.body.topic_id) {
+        await req.client.query(
+          `
+          DELETE FROM poll_votes
+          WHERE topic_id = $1
+          `,
+          [topic_id],
+        );
+      }
 
       // Get estimated poll response
       if (req.body.poll_1) {

@@ -48,6 +48,7 @@ module.exports = async (req, res) => {
     await require("./session/saveFavorite")(req, res);
     await require("./session/saveBlocked")(req, res);
     await require("./session/saveFlagged")(req, res);
+    await require("./session/savePollChoice")(req, res);
     await require("./session/promptToUsePasswordReset")(req, res);
 
     // Default response if nothing else responded sooner

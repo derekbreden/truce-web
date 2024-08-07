@@ -15,6 +15,13 @@ const renderTopics = (topics) => {
   }
   $("main-content-wrapper[active] topics").replaceChildren(
     ...topics
+      .filter((topic) => {
+        if (state.version > 1) {
+          return true;
+        } else {
+          return !topic.poll_1;
+        }
+      })
       .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
       .map(renderTopic),
   );
