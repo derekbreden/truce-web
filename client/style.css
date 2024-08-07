@@ -475,6 +475,7 @@ modal[confirm] h2 icon[block] {
 modal[confirm] h2 icon svg {
   height: 30px;
   width: 30px;
+  fill: #000;
   fill: light-dark(#000, #fff);
 }
 modal[confirm] button-wrapper {
@@ -667,6 +668,8 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
+  border-color: #000;
+  caret-color: #000;
   border-color: light-dark(#000, #fff);
   caret-color: light-dark(#000, #fff);
 }
@@ -964,6 +967,7 @@ title-wrapper input {
   display: none;
 }
 title-wrapper svg {
+  fill: #000;
   fill: light-dark(#000, #fff);
   cursor: pointer;
 }
@@ -1797,6 +1801,7 @@ poll-input-wrapper icon {
   justify-content: center;
 }
 poll-input-wrapper svg {
+  fill: #000;
   fill: light-dark(#000, #fff);
   height: 26px;
   width: 26px;
@@ -1826,6 +1831,7 @@ poll-vote-wrapper {
   margin: 10px 0;
 }
 poll-vote-wrapper > * {
+  border: 1px solid #000;
   border: 1px solid light-dark(#000, #fff);
   border-radius: 20px;
   min-height: 35px;
@@ -1865,6 +1871,7 @@ poll-counts-estimated > * bg {
   top: 0;
   left: 0;
   bottom: 0;
+  background: #000;
   background: light-dark(#000, #fff);
   opacity: .2;
   border-radius: 5px;
