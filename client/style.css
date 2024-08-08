@@ -1876,3 +1876,6 @@ poll-counts-estimated > * bg {
   opacity: .2;
   border-radius: 5px;
 }
+poll-counts-estimated {
+  font-size: .786rem;
+}
