@@ -1,8 +1,11 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "net.truce.twa",
-        "sha256_cert_fingerprints": ["53:54:FE:45:82:0F:58:E9:9A:67:BF:5A:4E:FC:B2:76:86:B4:EF:D8:51:36:43:C5:DC:80:63:78:79:F3:77:65"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "net.truce.twa",
+      "sha256_cert_fingerprints":
+        ["46:61:CA:B4:64:A7:1D:FE:D4:16:10:4E:56:E1:6B:6C:FA:17:A7:50:82:AA:A1:DC:8C:9D:35:7B:70:B8:BD:06"]
+    }
+  }
+]
