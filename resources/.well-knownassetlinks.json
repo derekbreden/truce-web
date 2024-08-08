@@ -7,5 +7,14 @@
       "sha256_cert_fingerprints":
         ["46:61:CA:B4:64:A7:1D:FE:D4:16:10:4E:56:E1:6B:6C:FA:17:A7:50:82:AA:A1:DC:8C:9D:35:7B:70:B8:BD:06"]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "net.truce.twa",
+      "sha256_cert_fingerprints":
+        ["FF:C6:49:32:C4:15:00:3A:1D:3F:54:5E:19:CE:32:EF:BD:01:3D:68:BE:FF:07:51:C4:6E:C8:6C:70:8C:A0:86"]
+    }
   }
 ]
