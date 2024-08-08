@@ -147,6 +147,8 @@ const renderTopic = (topic) => {
     const votes_3 = Number(counts_actual[2] || 0);
     const votes_4 = Number(counts_actual[3] || 0);
     const votes_sum = votes_1 + votes_2 + votes_3 + votes_4;
+    $topic.$("p[results][actual]").innerText =
+      `Actual results: (${votes_sum} ${votes_sum === 1 ? `vote` : `votes`})`;
     const percent_1 = Math.round((votes_1 / votes_sum) * 100) || 0;
     const percent_2 = Math.round((votes_2 / votes_sum) * 100) || 0;
     const percent_3 = Math.round((votes_3 / votes_sum) * 100) || 0;
