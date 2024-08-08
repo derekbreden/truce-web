@@ -7,9 +7,9 @@ module.exports = {
       apiKey: process.env["OPENAI_API_KEY"],
     });
   },
-  async ask(messages, prompt = "common", tools, tool_choice) {
+  async ask(messages, prompt = "common", response_format) {
     const criteria = {
-      model: "gpt-4o",
+      model: "gpt-4o-2024-08-06",
       messages: [
         {
           role: "system",
@@ -28,15 +28,11 @@ module.exports = {
       frequency_penalty: 0,
       presence_penalty: 0,
     };
-    if (tools) {
-      criteria.tools = tools;
-    }
-    if (tool_choice) {
-      criteria.tool_choice = tool_choice;
+    if (response_format) {
+      criteria.response_format = response_format;
     }
     const ai_response = await this.openai.chat.completions.create(criteria);
     return (
-      ai_response.choices[0].message.tool_calls ||
       ai_response.choices[0].message.content[0].text ||
       ai_response.choices[0].message.content
     );

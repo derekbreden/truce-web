@@ -201,60 +201,48 @@ B) ${req.body.poll_2}`;
       // Get estimated poll response
       if (req.body.poll_1) {
         const ai_poll_response = await ai.ask(
-          [{
-            role: "user",
-            name: (req.session.display_name || "Anonymous").replace(
-              /[^a-z0-9_\-]/g,
-              "",
-            ),
-            content: [
-              { type: "text", text: text_to_evaluate },
-              ...req.body.pngs.map((png) => {
-                return {
-                  image_url: {
-                    url: png.url,
-                  },
-                  type: "image_url",
-                };
-              }),
-            ],
-          }],
+          [
+            {
+              role: "user",
+              name: (req.session.display_name || "Anonymous").replace(
+                /[^a-z0-9_\-]/g,
+                "",
+              ),
+              content: [
+                { type: "text", text: text_to_evaluate },
+                ...req.body.pngs.map((png) => {
+                  return {
+                    image_url: {
+                      url: png.url,
+                    },
+                    type: "image_url",
+                  };
+                }),
+              ],
+            },
+          ],
           "poll",
-          [prompts.poll_tool],
-          "required",
+          prompts.poll_response_format,
         );
-        if (ai_poll_response.length && ai_poll_response[0]?.function?.arguments) {
-          try {
-            const results = JSON.parse(ai_poll_response[0].function.arguments);
-            const total_votes = 1000 * results.response_rate;
-            const estimated = [
-              Math.round(total_votes * results.choice_a) || 0,
-              Math.round(total_votes * results.choice_b) || 0
-            ];
-            if (req.body.poll_3) {
-              estimated.push(
-                Math.round(total_votes * results.choice_c) || 0
-              )
-            }
-            if (req.body.poll_4) {
-              estimated.push(
-                Math.round(total_votes * results.choice_d) || 0
-              )
-            }
-            await req.client.query(
-              `
-              UPDATE topics
-              SET poll_counts_estimated = $1
-              WHERE topic_id = $2
-              `,
-              [
-                estimated.join(","),
-                topic_id,
-              ]
-            )
-          } catch (e) {
-            console.error("Error poll response:", e)
-          }
+        try {
+          const results = JSON.parse(ai_poll_response);
+          const total_votes = 1000 * results.response_rate;
+          const estimated = [
+            Math.round(total_votes * results.choice_a) || 0,
+            Math.round(total_votes * results.choice_b) || 0,
+            Math.round(total_votes * results.choice_c) || 0,
+            Math.round(total_votes * results.choice_d) || 0,
+          ];
+          await req.client.query(
+            `
+            UPDATE topics
+            SET poll_counts_estimated = $1
+            WHERE topic_id = $2
+            `,
+            [estimated.join(","), topic_id],
+          );
+        } catch (e) {
+          console.error("Error poll response:", e);
         }
       }
 

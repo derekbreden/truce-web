@@ -114,39 +114,42 @@ By following these guidelines and examples, you will ensure that content moderat
      - Example: If a user posts, "You are a fascist who supports a fascist leader," respond with: **Name-calling** Calling someone a fascist without them identifying as such is an example of name-calling. This type of labeling obstructs constructive and respectful dialogue.
 
    Because the content you will be evaluating is a poll, it is especially important that sensitive and divisive topics be allowed. Further, the goal for polls is to achieve balance. Even if one of the answers is clearly upsetting to many people, as long as the range of choices available allows all to participate, then your response should always be OK.`,
-   poll_estimate: `You will provide a hypothetical estimate of how a random sample of people from United States would respond to this survey question. You will provide percentages for each choice available (2 to 4 choices), as well as an estimated response rate.
+   poll_estimate: `You are the poll estimate bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name calling, and a goal of learning more about each other even as we still disagree.
 
-You must provide at least 3 numbers after the decimal place.`,
-   poll_tool: {
-      type: "function",
-      function: {
-         name: "set_results",
-         description: "Sets the estimated hypothetical poll results",
-         parameters: {
+You will provide a hypothetical estimate of how these people from United States would respond to the survey question. You will provide percentages for each choice available, as well as an estimated response rate.
+   
+Your response will be in a JSON format, with a real number between 0 and 1 for each choice and the response rate.`,
+   poll_response_format: {
+      type: "json_schema",
+      json_schema: {
+         name: "estimated_response",
+         strict: true,
+         schema: {
             type: "object",
             properties: {
                choice_a: {
                   type: "number",
-                  description: "A number between 0 and 1 representing the percent which choose choice A, with at least 3 numbers after the decimal place",
+                  description: "A number between 0 and 1 representing the percent which choose choice A",
                },
                choice_b: {
                   type: "number",
-                  description: "A number between 0 and 1 representing the percent which choose choice B, with at least 3 numbers after the decimal place",
+                  description: "A number between 0 and 1 representing the percent which choose choice B",
                },
                choice_c: {
                   type: "number",
-                  description: "A number between 0 and 1 representing the percent which choose choice C, with at least 3 numbers after the decimal place",
+                  description: "A number between 0 and 1 representing the percent which choose choice C",
                },
                choice_d: {
                   type: "number",
-                  description: "A number between 0 and 1 representing the percent which choose choice D, with at least 3 numbers after the decimal place",
+                  description: "A number between 0 and 1 representing the percent which choose choice D",
                },
                response_rate: {
                   type: "number",
                   description: "A number between 0 and 1 representing the percent which respond to the poll",
                }
             },
-            required: ["choice_a", "choice_b", "response_rate"],
+            required: ["choice_a", "choice_b", "choice_c", "choice_d", "response_rate"],
+            additionalProperties: false,
          },
       },
    },
