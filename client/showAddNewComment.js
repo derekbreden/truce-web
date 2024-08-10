@@ -17,12 +17,12 @@ const showAddNewComment = (comment, parent_comment) => {
     `
     add-new[comment]
       input[display-name][placeholder=Your name][maxlength=50][value=$2]
+      textarea[body][placeholder=Comment][rows=5][maxlength=8000] $3
       title-wrapper
         label[image]
           icon
             $1
           input[image][type=file][accept=image/*]
-      textarea[body][placeholder=Comment][rows=5][maxlength=8000] $3
       button[submit] $4
       button[alt][cancel] Cancel
     `,

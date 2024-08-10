@@ -275,9 +275,13 @@ comment h3 b {
   gap: 10px;
   align-items: center;
 }
+comment h3 + p {
+  margin-top: 0;
+}
 comment > reply-wrapper {
   margin-left: 40px;
 }
+add-new[comment] input[display-name],
 add-new[comment] title-wrapper,
 add-new[comment] image-previews,
 add-new[comment] textarea,
@@ -1005,9 +1009,8 @@ image-previews {
 }
 
 image-previews preview {
-  border: 1px solid #000;
-  border: 1px solid light-dark(#000, #fff);
   border-radius: 2px;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1015,6 +1018,14 @@ image-previews preview {
   width: calc(25% - (15px / 4));
   margin-right: 5px;
   height: 100px;
+}
+add-new[comment] image-previews {
+  margin-top: -33px;
+  width: calc(100% - 95px);
+}
+add-new[comment] image-previews preview {
+  width: unset;
+  max-width: 100%;
 }
 
 image-previews preview:last-child {
@@ -1144,9 +1155,10 @@ reply-wrapper button {
   margin: 0 10px 0 0;
 }
 
+add-new > display-name-wrapper,
 display-name-wrapper {
-  padding-bottom: 5px;
   flex: 1;
+  margin-bottom: 0;
 }
 
 expand-wrapper {
