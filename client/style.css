@@ -1485,9 +1485,6 @@ activity > h2 > span:last-child {
   text-align: right;
 }
 
-activity>topic h2 {
-  margin-top: 0;
-}
 topic>h2>icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;

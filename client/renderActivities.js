@@ -77,7 +77,6 @@ const renderActivities = (activities) => {
       if (activity.type === "comment") {
         const $comment = renderComment(activity);
         $comment.$("reply-wrapper button")?.remove();
-        let preamble = `Comment from topic:`;
         let $comment_wrapper = $comment;
         if (activity.parent_comment_body) {
           const parent_comment = {
@@ -95,12 +94,10 @@ const renderActivities = (activities) => {
         const $activity = $(
           `
             activity[comment]
-              h2
-                span $1
-                span $2
-              $3
+              h2 $1
+              $2
           `,
-          [preamble, activity.parent_topic_title, $comment_wrapper],
+          [activity.parent_topic_title, $comment_wrapper],
         );
         $activity.on("click", ($event) => {
           $event.preventDefault();
@@ -110,14 +107,12 @@ const renderActivities = (activities) => {
         return $activity;
       } else {
         const $topic = renderTopic(activity);
-        let preamble = `Topic:`;
         const $activity = $(
           `
             activity[topic]
-              h2 $1
-              $2
+              $1
           `,
-          [preamble, $topic],
+          [$topic],
         );
         activity.$activity = $activity;
         return $activity;
