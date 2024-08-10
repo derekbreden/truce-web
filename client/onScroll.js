@@ -54,7 +54,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            alertError("Network error");
+            alertError("Network error loading more");
           });
       }
     }
@@ -107,7 +107,7 @@ const bindScrollEvent = () => {
           })
           .catch(function (error) {
             state.loading_path = false;
-            alertError("Network error");
+            alertError("Network error loading more");
           });
       }
     }
@@ -161,7 +161,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            alertError("Network error");
+            alertError("Network error loading more");
           });
       }
     }
@@ -215,7 +215,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            alertError("Network error");
+            alertError("Network error loading more");
           });
       }
     }
@@ -288,7 +288,7 @@ const bindScrollEvent = () => {
           .catch(function (error) {
             state.loading_path = false;
             console.error(error);
-            alertError("Network error");
+            alertError("Network error loading more");
           });
       }
     }

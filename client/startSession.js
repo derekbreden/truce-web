@@ -114,7 +114,7 @@ const startSession = (was_same_path) => {
     .catch(function (error) {
       state.loading_path = false;
       console.error(error);
-      alertError("Network error");
+      alertError("Network error loading page");
     });
 };
 
@@ -407,6 +407,6 @@ const getMoreRecent = () => {
     .catch(function (error) {
       state.loading_path = false;
       console.error(error);
-      alertError("Network error");
+      alertError("Network error loading recent");
     });
 };
