@@ -74,7 +74,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         `,
         [
           $("icons icon[welcome] svg").cloneNode(true),
-          !Boolean(window.webkit)
+          !Boolean(window.webkit) &&
+          document.referrer !== "android-app://net.truce.twa/"
             ? $(
                 `
               topic
