@@ -59,7 +59,7 @@ const showMenu = () => {
       `
         a[href=/]
           icon[settings]
-          p Account Settings
+          p Account settings
       `,
     );
     $settings
