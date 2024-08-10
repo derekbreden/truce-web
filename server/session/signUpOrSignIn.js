@@ -97,6 +97,7 @@ module.exports = async (req, res) => {
           created_account: true,
           user_id: user_id,
           display_name: req.session.display_name,
+          profile_picture_uuid: req.session.profile_picture_uuid,
         }),
       );
     }

@@ -82,6 +82,7 @@ const renderActivities = (activities) => {
         if (activity.parent_comment_body) {
           const parent_comment = {
             display_name: activity.parent_comment_display_name,
+            profile_picture_uuid: activity.parent_comment_profile_picture_uuid,
             body: activity.parent_comment_body,
             note: activity.parent_comment_note,
           };

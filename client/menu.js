@@ -83,6 +83,7 @@ const showMenu = () => {
       $signed_in.$("[sign-out]").setAttribute("disabled", "");
       state.user_id = "";
       state.display_name = "";
+      state.profile_picture_uuid = "";
       state.email = "";
       state.reset_token_uuid = "";
 

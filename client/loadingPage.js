@@ -109,20 +109,35 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
               expand-wrapper[above-comments]
                 p Examples
               comment
-                h3 John Doe:
+                h3
+                  b
+                    profile-picture
+                      image
+                        $2
+                    span John Doe:
                 p You are a fascist, who attended a fascist rally and supported a fascist leader.
                 info-wrapper
                   info
                     b Name-calling
                     p If someone does not identify themselves as a fascist, calling them one is an example of name-calling. This type of labeling hinders constructive and respectful dialogue.
               comment
-                h3 Jane Doe:
+                h3
+                  b
+                    profile-picture
+                      image
+                        $3
+                    span Jane Doe:
                 p Sometimes violence is the answer.
                   info
                     b Escalation
                     p This statement suggests that violence can be a solution, which promotes conflict and hostility rather than peaceful dialogue.
               comment
-                h3 Sam Smith:
+                h3
+                  b
+                    profile-picture
+                      image
+                        $4
+                    span Sam Smith:
                 p They are pure evil.
                   info
                     b Judgement
@@ -135,7 +150,12 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             a[href="mailto:derek@truce.net"] derek@truce.net
             span to provide feedback or report inappropriate activity.
         `,
-        [$("icons icon[communication] svg").cloneNode(true)],
+        [
+          $("icons icon[communication] svg").cloneNode(true),
+          $("icons icon[profile-picture] svg").cloneNode(true),
+          $("icons icon[profile-picture] svg").cloneNode(true),
+          $("icons icon[profile-picture] svg").cloneNode(true),
+        ],
       ),
     );
 
@@ -202,11 +222,16 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           h2[settings]
             span Account settings
             $1
-          p You may change your display name or remove your account here.
+          p You may change your profile picture or your display name here. You may also remove your account.
         topic
+          p[bold] Profile picture
+          label[profile-picture][large]
+            image
+              $2
+            input[image][type=file][accept=image/*]
           p[bold] Display name
           p[input]
-            input[type=text][display-name][value=$2]
+            input[type=text][display-name][value=$3]
           p[button]
             button[save] Save display name
         topic
@@ -214,13 +239,68 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           p[button]
             button[remove][alt] Remove Account
       `,
-      [$("icons icon[settings] svg").cloneNode(true), state.display_name],
+      [
+        $("icons icon[settings] svg").cloneNode(true),
+        state.profile_picture_uuid
+          ? $(
+              `
+              img[src=$1]
+              `,
+              ["/image/" + state.profile_picture_uuid],
+            )
+          : $("icons icon[profile-picture] svg").cloneNode(true),
+        state.display_name,
+      ],
     );
     $("main-content-wrapper[active] main-content").replaceChildren($settings);
 
+    $settings.$("input[image]").on("change", () => {
+      Array.from($settings.$("input[image]").files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = ($event) => {
+          imageToPng(
+            $event.target.result,
+            (png) => {
+              const $image = $(
+                `
+                img[src=$1]
+                `,
+                [png.url],
+              );
+              const $original = $("[profile-picture] image").childNodes[0];
+              $("[profile-picture] image").replaceChildren($image);
+              alertInfo("Saving profile picture...");
+              fetch("/session", {
+                method: "POST",
+                body: JSON.stringify({
+                  profile_picture: png.url,
+                }),
+              })
+                .then((response) => response.json())
+                .then(function (data) {
+                  if (data.error || !data.success) {
+                    modalError(data.error || "Server error");
+                    $("[profile-picture] image").replaceChildren($original);
+                  } else {
+                    alertInfo("Profile picture saved.");
+                  }
+                })
+                .catch(function () {
+                  modalError("Network error");
+                  $("[profile-picture] image").replaceChildren($original);
+                });
+            },
+            512,
+            true,
+          );
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
     $settings.$("[save]").on("click", ($event) => {
       $event.preventDefault();
-      modalInfo("Saving display name...");
+      alertInfo("Saving display name...");
       const new_display_name = $settings.$("[display-name]").value;
       fetch("/session", {
         method: "POST",
@@ -234,7 +314,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             modalError(data.error || "Server error");
           } else {
             state.display_name = new_display_name;
-            modalInfo("Display name saved.");
+            alertInfo("Display name saved.");
           }
         })
         .catch(function () {
@@ -284,6 +364,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
               modalInfo("Account removed");
               state.user_id = "";
               state.display_name = "";
+              state.profile_picture_uuid = "";
               state.email = "";
               state.reset_token_uuid = "";
               localStorage.removeItem("session_uuid");

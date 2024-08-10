@@ -85,6 +85,17 @@ const startSession = (was_same_path) => {
           ($el) => ($el.value = state.display_name),
         );
       }
+      if (data.profile_picture_uuid) {
+        state.profile_picture_uuid = data.profile_picture_uuid;
+        $("[profile-picture][large] image")?.replaceChildren(
+          $(
+            `
+            img[src=$1]
+            `,
+            ["/image/" + state.profile_picture_uuid],
+          ),
+        );
+      }
       if (data.error) {
         modalError(data.error);
       }

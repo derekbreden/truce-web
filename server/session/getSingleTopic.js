@@ -93,6 +93,7 @@ module.exports = async (req, res) => {
           c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
+          u.profile_picture_uuid,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           c.image_uuids,
           CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
@@ -130,6 +131,7 @@ module.exports = async (req, res) => {
           c.counts_max_create_date,
           u.display_name,
           u.display_name_index,
+          u.profile_picture_uuid,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           c.image_uuids,
           CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited

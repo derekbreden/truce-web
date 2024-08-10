@@ -3,7 +3,7 @@ const showAddNewCommentButton = () => {
     `
     p[add-new-comment]
       button[alt] Add comment
-    `
+    `,
   );
   $add_new_button.on("click", ($event) => {
     $event.preventDefault();
@@ -12,10 +12,7 @@ const showAddNewCommentButton = () => {
   });
   return $add_new_button;
 };
-const showAddNewComment = (
-  comment,
-  parent_comment,
-) => {
+const showAddNewComment = (comment, parent_comment) => {
   const $add_new = $(
     `
     add-new[comment]
@@ -31,12 +28,12 @@ const showAddNewComment = (
     `,
     [
       $("icons icon[image] svg").cloneNode(true),
-      ...comment
+      ...(comment
         ? [state.display_name, comment.body, "Save changes"]
         : parent_comment
           ? [state.display_name, "", "Reply"]
-          : [state.display_name, "", "Add comment"],
-    ]
+          : [state.display_name, "", "Add comment"]),
+    ],
   );
   if (comment) {
     $add_new.$("[cancel]").on("click", () => {
@@ -45,7 +42,8 @@ const showAddNewComment = (
     });
   } else if (parent_comment) {
     $add_new.$("[cancel]").on("click", () => {
-      parent_comment.$comment.$(":scope > reply-wrapper").style.display = "flex";
+      parent_comment.$comment.$(":scope > reply-wrapper").style.display =
+        "flex";
       $add_new.remove();
       delete state.active_add_new_comment;
     });
@@ -77,7 +75,7 @@ const showAddNewComment = (
       });
     }
   }
-  
+
   $add_new.$("input[image]").on("change", () => {
     Array.from($add_new.$("input[image]").files).forEach((file) => {
       const reader = new FileReader();
@@ -95,7 +93,9 @@ const showAddNewComment = (
   const previewPngs = () => {
     $add_new.$("image-previews")?.remove();
     if (pngs.length) {
-      $add_new.$("title-wrapper").after(document.createElement("image-previews"));
+      $add_new
+        .$("title-wrapper")
+        .after(document.createElement("image-previews"));
       pngs.forEach((png, i) => {
         const $preview = $(
           `
@@ -113,7 +113,7 @@ const showAddNewComment = (
       });
     }
   };
-  
+
   $add_new.$("[display-name]").on("focus", () => {
     $add_new.$("error")?.remove();
   });
@@ -126,9 +126,23 @@ const showAddNewComment = (
       const $display_name_wrapper = $(
         `
         display-name-wrapper
-          b $1
+          b
+            profile-picture
+              image
+                $1
+            span $2
         `,
-        [state.display_name + ":"],
+        [
+          state.profile_picture_uuid
+            ? $(
+                `
+                img[src=$1]
+                `,
+                ["/image/" + state.profile_picture_uuid],
+              )
+            : $("icons icon[profile-picture] svg").cloneNode(true),
+          state.display_name + ":",
+        ],
       );
       $display_name_wrapper.on("click", () => {
         $display_name_wrapper.replaceWith($display_name);
@@ -190,7 +204,8 @@ const showAddNewComment = (
   hideDisplayNameInput();
   $add_new.$("[submit]").on("click", () => {
     $add_new.$("error")?.remove();
-    state.display_name = $add_new.$("[display-name]")?.value || state.display_name;
+    state.display_name =
+      $add_new.$("[display-name]")?.value || state.display_name;
     const body = $add_new.$("[body]").value;
     if (!state.display_name) {
       addCommentError("Please enter your name");

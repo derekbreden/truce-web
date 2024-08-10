@@ -45,13 +45,15 @@ module.exports = async (req, res) => {
         combined.favorited,
         u.display_name,
         u.display_name_index,
+        u.profile_picture_uuid,
         pa.title AS parent_topic_title,
         pa.slug AS parent_topic_slug,
         pc.comment_id AS parent_comment_id,
         pc.body AS parent_comment_body,
         pc.note AS parent_comment_note,
         pcu.display_name AS parent_comment_display_name,
-        pcu.display_name_index AS parent_comment_display_name_index
+        pcu.display_name_index AS parent_comment_display_name_index,
+        pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id
       LEFT JOIN topics pa ON combined.parent_topic_id = pa.topic_id

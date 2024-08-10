@@ -37,6 +37,26 @@ module.exports = async (req, res) => {
         }
       }
     }
+    const profile_image = await req.client.query(
+      `
+      SELECT profile_picture_uuid
+      FROM users
+      WHERE user_id = $1
+      `,
+      [ req.session.user_id ]
+    );
+    if (profile_image.rows[0].profile_picture_uuid) {
+        try {
+          await object_client.send(
+            new DeleteObjectCommand({
+              Bucket: "truce.net",
+              Key: `${profile_image.rows[0].profile_picture_uuid}.png`,
+            }),
+          );
+        } catch (err) {
+          console.error(err);
+        }
+    }
     
     // Delete comment ancestors
     await req.client.query(

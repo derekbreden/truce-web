@@ -33,13 +33,25 @@ const renderComment = (comment) => {
     `
     comment
       h3
-        b $1
-        $2
-      $3
+        b
+          profile-picture
+            image
+              $1
+          span $2
+        $3
       $4
       $5
+      $6
     `,
     [
+      comment.profile_picture_uuid
+        ? $(
+            `
+            img[src=$1]
+            `,
+            ["/image/" + comment.profile_picture_uuid],
+          )
+        : $("icons icon[profile-picture] svg").cloneNode(true),
       renderName(comment.display_name, comment.display_name_index) + ":",
       $(
         `

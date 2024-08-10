@@ -49,6 +49,7 @@ module.exports = async (req, res) => {
     await require("./session/saveBlocked")(req, res);
     await require("./session/saveFlagged")(req, res);
     await require("./session/savePollChoice")(req, res);
+    await require("./session/saveProfilePicture")(req, res);
     await require("./session/promptToUsePasswordReset")(req, res);
 
     // Default response if nothing else responded sooner
@@ -56,6 +57,7 @@ module.exports = async (req, res) => {
       req.results.user_id = req.session.user_id;
       req.results.email = req.session.email;
       req.results.display_name = req.session.display_name;
+      req.results.profile_picture_uuid = req.session.profile_picture_uuid
       req.results.display_name_index = req.session.display_name_index;
       res.end(JSON.stringify(req.results));
     }
