@@ -6,6 +6,7 @@ const path_sequence = [
   "/recent",
   "/favorites",
   "/notifications",
+  "/settings",
 ];
 
 // Read URL into path

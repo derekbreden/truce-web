@@ -13,7 +13,11 @@ fetch = function (url, options) {
 const startSession = (was_same_path) => {
   // If cache available, render from that first
   if (state.cache[state.path]) {
-    if (state.path !== "/" && state.path !== "/privacy") {
+    if (
+      state.path !== "/" &&
+      state.path !== "/privacy" &&
+      state.path !== "/settings"
+    ) {
       renderPage(state.cache[state.path]);
     }
 
@@ -37,7 +41,11 @@ const startSession = (was_same_path) => {
     } else {
       getMoreRecent();
     }
-    if (state.path !== "/" && state.path !== "/privacy") {
+    if (
+      state.path !== "/" &&
+      state.path !== "/privacy" &&
+      state.path !== "/settings"
+    ) {
       return;
     }
   }
@@ -73,13 +81,20 @@ const startSession = (was_same_path) => {
       }
       if (data.display_name) {
         state.display_name = data.display_name;
+        $("input[type=text][display-name]")?.forEach(
+          ($el) => ($el.value = state.display_name),
+        );
       }
       if (data.error) {
         modalError(data.error);
       }
       if (data.path) {
         state.cache[data.path] = data;
-        if (state.path !== "/" && state.path !== "/privacy") {
+        if (
+          state.path !== "/" &&
+          state.path !== "/privacy" &&
+          state.path !== "/settings"
+        ) {
           renderPage(data);
         }
       }
@@ -94,7 +109,11 @@ const startSession = (was_same_path) => {
 
 const getMoreRecent = () => {
   // Skip for introduction
-  if (state.path === "/" || state.path === "/privacy") {
+  if (
+    state.path === "/" ||
+    state.path === "/privacy" ||
+    state.path === "/settings"
+  ) {
     return;
   }
 

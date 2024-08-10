@@ -76,15 +76,15 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           $("icons icon[welcome] svg").cloneNode(true),
           !Boolean(window.webkit)
             ? $(
-              `
+                `
               topic
                 app-store-wrapper
                   a[href=https://apps.apple.com/us/app/truce/id6578447172]
                     img[src=/app_store_black.svg][black]
                     img[src=/app_store_white.svg][white]
-              `
-            )
-            : []
+              `,
+              )
+            : [],
         ],
       ),
     );
@@ -192,5 +192,113 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         goToPath("/");
       },
     );
+  }
+
+  if (state.path === "/settings") {
+    const $settings = $(
+      `
+      topics
+        topic
+          h2[settings]
+            span Account settings
+            $1
+          p You may change your display name or remove your account here.
+        topic
+          p[bold] Display name
+          p[input]
+            input[type=text][display-name][value=$2]
+          p[button]
+            button[save] Save display name
+        topic
+          p[bold] Remove account
+          p[button]
+            button[remove][alt] Remove Account
+      `,
+      [$("icons icon[settings] svg").cloneNode(true), state.display_name],
+    );
+    $("main-content-wrapper[active] main-content").replaceChildren($settings);
+
+    $settings.$("[save]").on("click", ($event) => {
+      $event.preventDefault();
+      modalInfo("Saving display name...");
+      const new_display_name = $settings.$("[display-name]").value;
+      fetch("/session", {
+        method: "POST",
+        body: JSON.stringify({
+          display_name: new_display_name,
+        }),
+      })
+        .then((response) => response.json())
+        .then(function (data) {
+          if (data.error || !data.success) {
+            modalError(data.error || "Server error");
+          } else {
+            state.display_name = new_display_name;
+            modalInfo("Display name saved.");
+          }
+        })
+        .catch(function () {
+          modalError("Network error");
+        });
+    });
+    $settings.$("[remove]").on("click", ($event) => {
+      $event.preventDefault();
+      const $remove_modal = $(
+        `
+          modal-wrapper
+            modal[info]
+              error
+                b Warning
+                p This will permanently remove your account. This action cannot be undone.
+              p Everything you posted will be deleted:
+              ul
+                li Comments
+                li Topics
+                li Images
+                li Favorites
+              p Tap remove to confirm.
+              button-wrapper
+                button[remove] Remove
+                button[alt][cancel] Cancel
+            modal-bg
+          `,
+      );
+      const removeModalCancel = () => {
+        $remove_modal.remove();
+      };
+      $remove_modal.$("[remove]").on("click", () => {
+        removeModalCancel();
+        modalInfo("Removing account...");
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            remove_account: true,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data || !data.success) {
+              modalError("Server error removing account");
+            } else {
+              $("modal-wrapper")?.remove();
+              modalInfo("Account removed");
+              state.user_id = "";
+              state.display_name = "";
+              state.email = "";
+              state.reset_token_uuid = "";
+              localStorage.removeItem("session_uuid");
+              state.cache = {};
+              goToPath("/");
+            }
+          })
+          .catch((error) => {
+            modalError("Network error removing account");
+          });
+      });
+      $remove_modal.$("[cancel]").on("click", removeModalCancel);
+      $remove_modal.$("modal-bg").on("click", removeModalCancel);
+      $("modal-wrapper")?.remove();
+      $("body").appendChild($remove_modal);
+    });
   }
 };

@@ -1693,6 +1693,7 @@ p[favorites-empty] icon {
   align-items: center;
   justify-content: center;
 }
+h2[settings] svg,
 h2[welcome] svg,
 h2[moderation] svg,
 p[add-to-home] svg,
@@ -1881,4 +1882,11 @@ poll-counts-actual > * text {
 }
 poll-counts-estimated {
   font-size: .786rem;
+}
+
+p[button] button {
+  width: 100%;
+}
+p[input] input {
+  width: 100%;
 }

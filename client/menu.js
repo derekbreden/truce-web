@@ -68,111 +68,7 @@ const showMenu = () => {
     $settings.on("click", ($event) => {
       $event.preventDefault();
       menuCancel();
-      const $settings_modal = $(
-        `
-          modal-wrapper
-            modal[info]
-              p You may change your display name here.
-              input[type=text][display-name][value=$1]
-              button-wrapper
-                button[alt][cancel] Cancel
-                button[save] Save Changes
-              p You may also remove your account.
-              button[remove][alt] Remove Account
-            modal-bg
-          `,
-        [state.display_name],
-      );
-      const settingsModalCancel = () => {
-        $settings_modal.remove();
-      };
-      $settings_modal.$("[save]").on("click", () => {
-        settingsModalCancel();
-        modalInfo("Saving display name...");
-        const new_display_name = $settings_modal.$("[display-name]").value;
-        fetch("/session", {
-          method: "POST",
-          body: JSON.stringify({
-            display_name: new_display_name,
-          }),
-        })
-          .then((response) => response.json())
-          .then(function (data) {
-            if (data.error || !data.success) {
-              modalError(data.error || "Server error");
-            } else {
-              state.display_name = new_display_name;
-              modalInfo("Display name saved.");
-            }
-          })
-          .catch(function () {
-            modalError("Network error");
-          });
-      });
-      $settings_modal.$("[remove]").on("click", () => {
-        $event.preventDefault();
-        menuCancel();
-        const $remove_modal = $(
-          `
-            modal-wrapper
-              modal[info]
-                error
-                  b Warning
-                  p This will permanently remove your account. This action cannot be undone.
-                p Everything you posted will be deleted:
-                ul
-                  li Comments
-                  li Topics
-                  li Images
-                  li Favorites
-                p Tap remove to confirm.
-                button-wrapper
-                  button[remove] Remove
-                  button[alt][cancel] Cancel
-              modal-bg
-            `,
-        );
-        const removeModalCancel = () => {
-          $remove_modal.remove();
-        };
-        $remove_modal.$("[remove]").on("click", () => {
-          removeModalCancel();
-          modalInfo("Removing account...");
-          fetch("/session", {
-            method: "POST",
-            body: JSON.stringify({
-              remove_account: true,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (!data || !data.success) {
-                modalError("Server error removing account");
-              } else {
-                $("modal-wrapper")?.remove();
-                modalInfo("Account removed");
-                state.user_id = "";
-                state.display_name = "";
-                state.email = "";
-                state.reset_token_uuid = "";
-                localStorage.removeItem("session_uuid");
-                state.cache = {};
-                goToPath("/");
-              }
-            })
-            .catch((error) => {
-              modalError("Network error removing account");
-            });
-        });
-        $remove_modal.$("[cancel]").on("click", removeModalCancel);
-        $remove_modal.$("modal-bg").on("click", removeModalCancel);
-        $("modal-wrapper")?.remove();
-        $("body").appendChild($remove_modal);
-      });
-      $settings_modal.$("[cancel]").on("click", settingsModalCancel);
-      $settings_modal.$("modal-bg").on("click", settingsModalCancel);
-      $("modal-wrapper")?.remove();
-      $("body").appendChild($settings_modal);
+      goToPath("/settings");
     });
     $menu.$("links").appendChild($settings);
   }
@@ -204,7 +100,7 @@ const showMenu = () => {
         .then((response) => response.json())
         .then(function (data) {
           state.cache = {};
-          startSession();
+          goToPath("/topics");
           menuCancel();
         });
     });
