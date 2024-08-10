@@ -276,7 +276,7 @@ comment h3 b {
   align-items: center;
 }
 comment > reply-wrapper {
-  margin-left: 30px;
+  margin-left: 40px;
 }
 add-new[comment] title-wrapper,
 add-new[comment] image-previews,
@@ -284,8 +284,8 @@ add-new[comment] textarea,
 add-new[comment] button,
 comment > info-wrapper,
 comment > p {
-  margin-left: 40px;
-  width: calc(100% - 40px);
+  margin-left: 50px;
+  width: calc(100% - 50px);
 }
 comment h3 icon[more] {
   margin: -4px 0 -8px 0;
@@ -1932,8 +1932,8 @@ profile-picture image img,
 }
 profile-picture image,
 [profile-picture] image {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
 }
 profile-picture large image,
 [profile-picture][large] image {
@@ -1946,8 +1946,8 @@ profile-picture large image,
   padding: 20px 20px 0 20px;
 }
 profile-picture svg {
-  height: 37px;
-  width: 37px;
+  height: 50px;
+  width: 50px;
   margin: -5px;
 }
 [profile-picture][large] svg {
