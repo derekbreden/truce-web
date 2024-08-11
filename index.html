@@ -31,7 +31,7 @@
     };
     if (window.webkit) {
       state.version = Number(
-        (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 1,
+        (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 2,
       );
     } else {
       state.version = 2;
