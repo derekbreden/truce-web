@@ -208,6 +208,7 @@ const renderNotifications = (notifications) => {
         }
       })
       .catch(function (error) {
+        state.most_recent_error = error;
         alertError("Network error");
         console.error(error);
       });
@@ -484,7 +485,8 @@ const getUnreadCountUnseenCount = () => {
       }
     })
     .catch(function (error) {
-      alertError("Network error");
+      state.most_recent_error = error;
+      alertError("Network error loading unread count");
       console.error(error);
     });
 };
@@ -516,7 +518,8 @@ const markAsRead = (notification_id) => {
       }
     })
     .catch(function (error) {
-      alertError("Network error");
+      state.most_recent_error = error;
+      alertError("Network error marking as read");
       console.error(error);
     });
 };

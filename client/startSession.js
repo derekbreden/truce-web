@@ -114,6 +114,7 @@ const startSession = (was_same_path) => {
     .catch(function (error) {
       state.loading_path = false;
       console.error(error);
+      state.most_recent_error = error;
       alertError("Network error loading page");
     });
 };
@@ -366,9 +367,9 @@ const getMoreRecent = () => {
             (found_topic || found_activity).$topic.$(
               "[favorites] p",
             ).innerText = favorite_text;
-            if (found_topic.poll_1 && topic_count.poll_counts) {
-              found_topic.poll_counts = topic_count.poll_counts;
-              found_topic.$topic.replaceWith(renderTopic(found_topic));
+            if ((found_topic || found_activity).poll_1 && topic_count.poll_counts) {
+              (found_topic || found_activity).poll_counts = topic_count.poll_counts;
+              (found_topic || found_activity).$topic.replaceWith(renderTopic((found_topic || found_activity)));
             }
           }
         });
