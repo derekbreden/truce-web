@@ -34,8 +34,6 @@ if (
   state.next_path = state.path;
   state.path = "/";
 }
-const dot_index = Math.max(path_sequence.indexOf(state.path) - 1, 0);
-$("footer dot").setAttribute("index", dot_index);
 
 // Default to /topics instead of / when we have visited before
 if (state.path === "/") {
@@ -43,6 +41,8 @@ if (state.path === "/") {
     state.path = "/topics";
   }
 }
+const dot_index = Math.max(path_sequence.indexOf(state.path) - 1, 0);
+$("footer dot").setAttribute("index", dot_index);
 
 // Update page contents when the user hits the back button
 window.addEventListener("popstate", () => {
