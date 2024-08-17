@@ -169,6 +169,61 @@ const bindScrollEvent = () => {
       }
     }
 
+    // Topics from favorites load older
+    if (
+      state.path === "/topics_from_favorites" &&
+      state.cache["/topics_from_favorites"] &&
+      !state.cache["/topics_from_favorites"].finished
+    ) {
+      // A threshold based on how much is left to scroll
+      const threshold =
+        $("main-content-wrapper[active]").scrollHeight -
+        $("main-content-wrapper[active]").clientHeight * 3;
+
+      // When we pass the threshold
+      if ($("main-content-wrapper[active]").scrollTop > threshold) {
+        // Find the oldest (min) create_date of what we have so far
+        const max_topic_create_date = state.cache["/topics"].topics.reduce(
+          (min, topic) => {
+            return min < topic.create_date ? min : topic.create_date;
+          },
+          new Date().toISOString(),
+        );
+
+        // Use that to load anything older than that (our min is the max of what we want returned)
+        state.loading_path = true;
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            path: "/topics_from_favorites",
+            max_topic_create_date,
+          }),
+        })
+          .then((response) => response.json())
+          .then(function (data) {
+            // Stop when we reach the end (no more results returned)
+            if (data.topics && !data.topics.length) {
+              state.cache["/topics_from_favorites"].finished = true;
+            }
+
+            // Append what we found to the existing cache
+            state.cache["/topics_from_favorites"].topics.push(...data.topics);
+
+            // And re-render if any topics added
+            if (data.topics.length) {
+              renderTopics(state.cache["/topics_from_favorites"].topics);
+            }
+            state.loading_path = false;
+          })
+          .catch(function (error) {
+            state.loading_path = false;
+            console.error(error);
+            state.most_recent_error = error;
+            alertError("Network error loading more");
+          });
+      }
+    }
+
     // Comments load older
     if (
       (state.path.substr(0, 7) === "/topic/") &&
