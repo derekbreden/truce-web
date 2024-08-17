@@ -1,29 +1,77 @@
 const renderActivities = (activities) => {
+
   // Empty favorites?
-  if (state.path === "/favorites" && activities.length === 0) {
-    $("main-content-wrapper[active] main-content").replaceChildren(
-      $(
-        `
-        topics[favorites-empty]
-          topic
-            h2 Favorites
+  if (state.path === "/favorites") {
+    if (activities.length === 0) {
+      $("topic[favorites]")?.remove();
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[favorites]
+            h2[favorites]
+              span Manage favorites
+              icon
+                $1
+                $2
             p[favorites-empty]
               span When you tap the favorite icon
-              $1
+              $3
               span on a topic or comment, it will display here.
             p[favorites-empty]
               span Head over to "Topics" and start tapping 
-              $2
+              $4
               span to get started!
-        `,
-        [
-          $("footer icon[favorites] svg").cloneNode(true),
-          $("footer icon[favorites] svg").cloneNode(true),
-        ],
-      ),
-    );
-  } else {
-    $("topics[favorites-empty]")?.remove();
+          `,
+          [
+            $("icons icon[settings] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+          ],
+        ),
+      );
+    } else {
+      $("topic[favorites]")?.remove();
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[favorites]
+            h2[favorites]
+              span Manage favorites
+              icon
+                $1
+                $2
+            p[favorites-empty]
+              span When you tap the favorite icon
+              $3
+              span on a topic or comment, it will display here.
+            p[right]
+              button[href="/topics_from_favorites"]
+                span Topics from favorites
+                icon
+                  $4
+                  $5
+          `,
+          [
+            $("icons icon[settings] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[topics] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+          ],
+        ),
+      );
+      $("topics [href]")?.forEach(($a) => {
+        const new_path = $a.getAttribute("href");
+        if (new_path.substr(0, 1) === "/") {
+          $a.on("click", ($event) => {
+            $event.preventDefault();
+            $event.stopPropagation();
+            goToPath(new_path);
+          });
+        }
+      });
+    }
   }
 
   // Render activities

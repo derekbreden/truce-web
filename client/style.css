@@ -713,6 +713,21 @@ button {
   padding: 10px;
   font-weight: 700;
   letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button icon {
+  margin: -5px -6px -6px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button svg {
+  fill: #fff;
+  fill: light-dark(#fff, #000);
+  height: 26px;
+  width: 26px;
 }
 
 button[alt] {
@@ -1726,6 +1741,7 @@ p[favorites-empty] icon {
 h2[settings] svg,
 h2[welcome] svg,
 h2[moderation] svg,
+h2[favorites] svg,
 p[add-to-home] svg,
 p[favorites-empty] svg {
   fill: #000;
@@ -1736,6 +1752,17 @@ h2[moderation] svg {
   width: 60px;
   height: 60px;
   margin-top: -16px;
+}
+h2[favorites] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+h2[favorites] svg {
+  margin: -12px -4px -8px -4px;
+}
+h2[favorites] svg:nth-child(2) {
+  margin-top: -9px;
 }
 
 p[add-to-home] {
@@ -1966,4 +1993,9 @@ profile-picture svg {
 }
 [profile-picture] input {
   display: none;
+}
+
+p[right] {
+  display: flex;
+  justify-content: flex-end;
 }

@@ -389,10 +389,10 @@ const getMoreRecent = () => {
           const favorite_text =
             comment_count.favorite_count +
             (comment_count.favorite_count === "1" ? " favorite" : " favorites");
-          if (found_comment) {
+          if (found_comment?.$comment?.$("[favorites] p")?.innerText) {
             found_comment.$comment.$("[favorites] p").innerText = favorite_text;
           }
-          if (found_activity) {
+          if (found_activity?.$comment?.$("[favorites] p")?.innerText) {
             found_activity.$comment.$("[favorites] p").innerText =
               favorite_text;
           }

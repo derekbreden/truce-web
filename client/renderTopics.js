@@ -1,4 +1,5 @@
 const renderTopics = (topics) => {
+
   beforeDomUpdate();
   if (!$("main-content-wrapper[active] topics")) {
     const target =
@@ -32,8 +33,83 @@ const renderTopics = (topics) => {
     );
     topic.$topic.replaceWith(state.active_add_new_topic);
   }
+
+  // Empty topics from favorites
+  if (state.path === "/topics_from_favorites") {
+    if (topics.length === 0) {
+      $("topic[favorites]")?.remove();
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[favorites]
+            h2[favorites]
+              span Topics from favorites
+              icon
+                $1
+                $2
+            p[favorites-empty]
+              span When you tap the favorite icon
+              $3
+              span on a topic or comment, it will be added to your favorites.
+            p[favorites-empty]
+              span You will see here all of the topics
+              $4
+              span from the same people that posted your favorites.
+            p[favorites-empty]
+              span Head over to "Topics" and start tapping 
+              $5
+              span to get started!
+          `,
+          [
+            $("footer icon[topics] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[topics] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+          ],
+        ),
+      );
+    } else {
+      $("topic[favorites]")?.remove();
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[favorites]
+            h2[favorites]
+              span Topics from favorites
+              icon
+                $1
+                $2
+            p[favorites-empty]
+              span When you tap the favorite icon
+              $3
+              span on a topic or comment, it will be added to your favorites.
+            p[favorites-empty]
+              span You will see here all of the topics
+              $4
+              span from the same people that posted your favorites.
+            p[right]
+              button[href="/favorites"]
+                span Manage favorites
+                icon
+                  $5
+                  $6
+          `,
+          [
+            $("footer icon[topics] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+            $("footer icon[topics] svg").cloneNode(true),
+            $("icons icon[settings] svg").cloneNode(true),
+            $("footer icon[favorites] svg").cloneNode(true),
+          ],
+        ),
+      );
+    }
+  }
+
   afterDomUpdate();
-  $("topics a")?.forEach(($a) => {
+  $("topics [href]")?.forEach(($a) => {
     const new_path = $a.getAttribute("href");
     if (new_path.substr(0, 1) === "/") {
       $a.on("click", ($event) => {

@@ -8,7 +8,8 @@ const renderTopic = (topic) => {
   if (
     state.path === "/topics" ||
     state.path === "/recent" ||
-    state.path === "/favorites"
+    state.path === "/favorites" ||
+    state.path === "/favorites_from_topics"
   ) {
     trimmed = true;
     $topic_body = $topic_body.reduce((acc, child) => {
@@ -305,7 +306,8 @@ const renderTopic = (topic) => {
       if (
         state.path === "/topics" ||
         state.path === "/favorites" ||
-        state.path === "/recent"
+        state.path === "/recent" ||
+        state.path === "/topics_from_favorites"
       ) {
         $more_modal.$("action[edit]").remove();
       }
@@ -371,7 +373,8 @@ const renderTopic = (topic) => {
   if (
     state.path === "/topics" ||
     state.path === "/recent" ||
-    state.path === "/favorites"
+    state.path === "/favorites" ||
+    state.path === "/topics_from_favorites"
   ) {
     $topic.setAttribute("trimmed", "");
     $topic.on("click", ($event) => {

@@ -18,7 +18,7 @@ const showMenu = () => {
           a[href=/recent]
             icon[recent]
             p Comments
-          a[href=/favorites]
+          a[href=/topics_from_favorites]
             icon[favorites]
             p Favorites
           a[href=/notifications][unread=$1]

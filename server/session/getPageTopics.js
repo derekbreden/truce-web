@@ -1,5 +1,8 @@
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.body.path === "/topics") {
+  if (
+    !res.writableEnded &&
+    (req.body.path === "/topics" || (req.body.path === "/topics_from_favorites" && req.session.user_id))
+  ) {
     if (!req.body.max_comment_create_date) {
       const topic_results = await req.client.query(
         `
@@ -39,6 +42,21 @@ module.exports = async (req, res) => {
           AND (t.create_date < $3 OR $3 IS NULL)
           AND l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
+          ${
+            (req.body.path === "/topics_from_favorites" && req.session.user_id)
+              ? `
+                AND t.user_id IN (
+                  SELECT t.user_id
+                  FROM topics t
+                  INNER JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
+                  UNION
+                  SELECT c.user_id
+                  FROM comments c
+                  INNER JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
+                )
+                `
+              : ""
+          }
         ORDER BY t.create_date DESC
         LIMIT 20
         `,

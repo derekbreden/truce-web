@@ -4,6 +4,7 @@ const path_sequence = [
   "/privacy",
   "/topics",
   "/recent",
+  "/topics_from_favorites",
   "/favorites",
   "/notifications",
   "/settings",
