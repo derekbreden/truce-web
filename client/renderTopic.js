@@ -9,7 +9,7 @@ const renderTopic = (topic) => {
     state.path === "/topics" ||
     state.path === "/recent" ||
     state.path === "/favorites" ||
-    state.path === "/favorites_from_topics"
+    state.path === "/topics_from_favorites"
   ) {
     trimmed = true;
     $topic_body = $topic_body.reduce((acc, child) => {
