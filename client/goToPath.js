@@ -53,9 +53,6 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     // Dot indicating main page on most recently
     if (next_sequence !== -1) {
       let dot_index = Math.max(next_sequence - 1, 0);
-      if (dot_index > 3) {
-        dot_index--;
-      }
       $("footer dot").setAttribute("index", dot_index);
     }
 

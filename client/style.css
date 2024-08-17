@@ -1802,6 +1802,10 @@ footer dot[index="3"] {
   background: #fff;
 }
 footer dot[index="4"] {
+  right: calc(3 * 100% / 8 - 22px);
+  background: #fff;
+}
+footer dot[index="5"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
 }
