@@ -45,7 +45,7 @@ const renderActivities = (activities) => {
               span When you tap the favorite icon
               $3
               span on a topic or comment, it will display here.
-            p[right]
+            p
               button[href="/topics_from_favorites"]
                 span Topics from favorites
                 icon
