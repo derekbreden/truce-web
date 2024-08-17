@@ -1783,6 +1783,7 @@ footer dot {
   height: 4px;
   width: 4px;
   border-radius: 50%;
+  right: 0;
 }
 footer dot[index="0"] {
   right: 100%;
