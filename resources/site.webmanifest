@@ -20,7 +20,7 @@
     "start_url": "/",
     "scope": "/",
     "id": "/",
-    "description": "No escalations. No judgements",
+    "description": "No escalations. No judgments",
     "launch_handler": {
         "client_mode": "focus_existing"
     },

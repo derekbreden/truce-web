@@ -141,7 +141,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                     span Sam Smith:
                 p They are pure evil.
                   info
-                    b Judgement
+                    b Judgment
                     p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
         topics
           p[notice]
