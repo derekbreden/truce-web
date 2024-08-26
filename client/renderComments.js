@@ -75,7 +75,7 @@ const renderComments = (comments) => {
         if (index !== -1) {
           state.expanded_comment_ids.splice(index, 1);
           localStorage.setItem(
-            "trucev1:expanded_comment_ids",
+            `:expanded_comment_ids`,
             JSON.stringify(state.expanded_comment_ids),
           );
         }
@@ -112,7 +112,7 @@ const renderComments = (comments) => {
         if (index === -1) {
           state.expanded_comment_ids.push($root_comment.comment_id);
           localStorage.setItem(
-            "trucev1:expanded_comment_ids",
+            `:expanded_comment_ids`,
             JSON.stringify(state.expanded_comment_ids),
           );
         }

@@ -1,5 +1,5 @@
 const showMenu = () => {
-  if (!localStorage.getItem("trucev1:agreed")) {
+  if (!localStorage.getItem(`:agreed`)) {
     modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
   }

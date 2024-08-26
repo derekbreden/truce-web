@@ -56,7 +56,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         topics
           topic
             h2[welcome]
-              span Welcome
+              span Terms and conditions
               $1
             p If you agree to:
             ul
@@ -68,6 +68,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
               a[big][href=/topics] Join the Discussion
             p[notice]
               span To be clear, there is no tolerance for objectionable content or abusive users.
+            p[notice][style="margin-top:5px;"]
+              span Objectionable content is defined as escalations, judgments, or name-calling.
             p[notice][style="margin-top:5px;"]
               span By clicking "Join the Discussion," you agree to these terms.
           $2
@@ -168,7 +170,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           if (new_path.startsWith("/")) {
             $event.preventDefault();
             if (new_path === "/topics") {
-              localStorage.setItem("trucev1:agreed", true);
+              localStorage.setItem(`:agreed`, true);
               if (state.next_path) {
                 new_path = state.next_path;
               }

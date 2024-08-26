@@ -29,7 +29,7 @@ state.path = parsePath();
 if (
   state.path !== "/" &&
   state.path !== "/privacy" &&
-  !localStorage.getItem(`trucev1:agreed`)
+  !localStorage.getItem(`:agreed`)
 ) {
   state.next_path = state.path;
   state.path = "/";
@@ -37,7 +37,7 @@ if (
 
 // Default to /topics instead of / when we have visited before
 if (state.path === "/") {
-  if (localStorage.getItem("trucev1:has_visited_topics")) {
+  if (localStorage.getItem(`:has_visited_topics`)) {
     state.path = "/topics";
   }
 }
