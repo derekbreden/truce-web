@@ -12,10 +12,7 @@
     // Set the localstorage key based on android presence
     window.local_storage_key = "trucev1";
     window.is_android = false;
-    if (
-      document.referrer === "android-app://net.truce.twa/" ||
-      navigator.userAgent.includes("Android")
-    ) {
+    if (document.referrer === "android-app://net.truce.twa/") {
       window.local_storage_key = "trucev1_android";
       window.is_android = true;
     }
