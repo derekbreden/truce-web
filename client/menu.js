@@ -1,5 +1,5 @@
 const showMenu = () => {
-  if (!localStorage.getItem(`:agreed`)) {
+  if (!localStorage.getItem(`${window.local_storage_key}:agreed`)) {
     modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
   }

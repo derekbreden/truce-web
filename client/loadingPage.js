@@ -77,7 +77,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         [
           $("icons icon[welcome] svg").cloneNode(true),
           !Boolean(window.webkit) &&
-          document.referrer !== "android-app://net.truce.twa/"
+          !Boolean(window.is_android)
             ? $(
                 `
               topic
@@ -170,7 +170,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           if (new_path.startsWith("/")) {
             $event.preventDefault();
             if (new_path === "/topics") {
-              localStorage.setItem(`:agreed`, true);
+              localStorage.setItem(`${window.local_storage_key}:agreed`, true);
               if (state.next_path) {
                 new_path = state.next_path;
               }

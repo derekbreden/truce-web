@@ -9,14 +9,17 @@
   </head>
   <!--#include file="client/body.html" -->
   <script>
-
     // Set the localstorage key based on android presence
-    let local_storage_key = "trucev1";
-    if (document.referrer === "android-app://net.truce.twa/") {
-      local_storage_key = "trucev1_android";
+    window.local_storage_key = "trucev1";
+    window.is_android = false;
+    if (
+      document.referrer === "android-app://net.truce.twa/" ||
+      navigator.userAgent.includes("Android")
+    ) {
+      window.local_storage_key = "trucev1_android";
+      window.is_android = true;
     }
 
-    
     // Global state
     const state = {
       path: "/",
@@ -25,8 +28,14 @@
       display_name: "",
       profile_picture_uuid: "",
       email: "",
-      expanded_comment_ids: localStorage.getItem(`:expanded_comment_ids`)
-        ? JSON.parse(localStorage.getItem(`:expanded_comment_ids`))
+      expanded_comment_ids: localStorage.getItem(
+        `${window.local_storage_key}:expanded_comment_ids`,
+      )
+        ? JSON.parse(
+            localStorage.getItem(
+              `${window.local_storage_key}:expanded_comment_ids`,
+            ),
+          )
         : [],
       reset_token_uuid: "",
       cache: {},

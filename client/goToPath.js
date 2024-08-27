@@ -2,7 +2,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
   if (
     new_path !== "/" &&
     new_path !== "/privacy" &&
-    !localStorage.getItem(`:agreed`)
+    !localStorage.getItem(`${window.local_storage_key}:agreed`)
   ) {
     modalInfo(`Please tap "Join the Discussion" to agree to these terms.`);
     return;
@@ -72,9 +72,9 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     if (state.path === "/topics") {
-      localStorage.setItem(`:has_visited_topics`, true);
+      localStorage.setItem(`${window.local_storage_key}:has_visited_topics`, true);
     } else if (state.path === "/") {
-      localStorage.removeItem(`:has_visited_topics`);
+      localStorage.removeItem(`${window.local_storage_key}:has_visited_topics`);
     }
   }
 
