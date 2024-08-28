@@ -539,7 +539,7 @@ window.addEventListener("load", () => {
   }, 5000);
   getUnreadCountUnseenCount();
 });
-if (window.webkit || window.matchMedia("(display-mode: standalone)").matches) {
+if (window.webkit || window.matchMedia("(display-mode: standalone)").matches || window.is_android) {
   $("body").setAttribute("app", "");
   state.is_app = true;
 }
