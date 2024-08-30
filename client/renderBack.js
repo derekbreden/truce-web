@@ -17,21 +17,21 @@ const renderBack = () => {
       `,
       [
         previous_path === "/topics"
-          ? "Back to topics"
+          ? "Topics"
           : previous_path === "/recent"
-            ? "Back to comments"
+            ? "Comments"
             : previous_path?.substr(0, 8) === "/comment"
-              ? "Back to comment thread"
+              ? "Comment thread"
               : previous_path?.substr(0, 7) === "/topic/"
-                ? "Back to topic"
+                ? "Topic"
                 : previous_path === "/"
-                  ? "Back to home"
+                  ? "Home"
                   : previous_path === "/notifications"
-                    ? "Back to notifications"
+                    ? "Notifications"
                     : previous_path === "/favorites"
-                      ? "Back to favorites"
+                      ? "Favorites"
                       : previous_path === "/topics_from_favorites"
-                        ? "Back to topics from favorites"
+                        ? "Topics from favorites"
                         : "Back",
       ],
     );

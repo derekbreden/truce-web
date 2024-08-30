@@ -9,22 +9,15 @@ const renderActivities = (activities) => {
           `
           topic[favorites]
             h2[favorites]
-              span Manage favorites
+              span Favorites
               icon
                 $1
-                $2
             p[favorites-empty]
               span When you tap the favorite icon
-              $3
+              $2
               span on a topic or comment, it will display here.
-            p[favorites-empty]
-              span Head over to "Topics" and start tapping 
-              $4
-              span to get started!
           `,
           [
-            $("icons icon[settings] svg").cloneNode(true),
-            $("footer icon[favorites] svg").cloneNode(true),
             $("footer icon[favorites] svg").cloneNode(true),
             $("footer icon[favorites] svg").cloneNode(true),
           ],
@@ -37,26 +30,16 @@ const renderActivities = (activities) => {
           `
           topic[favorites]
             h2[favorites]
-              span Manage favorites
+              span Favorites
               icon
                 $1
-                $2
             p[favorites-empty]
               span When you tap the favorite icon
-              $3
+              $2
               span on a topic or comment, it will display here.
-            p
-              button[href="/topics_from_favorites"]
-                span Topics from favorites
-                icon
-                  $4
-                  $5
           `,
           [
-            $("icons icon[settings] svg").cloneNode(true),
             $("footer icon[favorites] svg").cloneNode(true),
-            $("footer icon[favorites] svg").cloneNode(true),
-            $("footer icon[topics] svg").cloneNode(true),
             $("footer icon[favorites] svg").cloneNode(true),
           ],
         ),

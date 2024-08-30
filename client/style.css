@@ -164,13 +164,13 @@ footer {
   left: 0;
   right: 0;
   background: #fff;
-  height: calc(54px + env(safe-area-inset-bottom));
+  height: calc(64px + env(safe-area-inset-bottom));
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid #000;
   border-top: 1px solid light-dark(#000, #fff);
   z-index: 1;
-  padding: 0 0 env(safe-area-inset-bottom) 0;
+  padding: 0 0 calc(10px + env(safe-area-inset-bottom)) 0;
 }
 
 footer::after {
@@ -227,7 +227,7 @@ footer a[unread]::before {
 }
 
 body[app] main-content-wrapper {
-  bottom: calc(54px + env(safe-area-inset-bottom));
+  bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
 body[app] footer {
@@ -235,7 +235,7 @@ body[app] footer {
 }
 
 body[app] main-content add-new:first-child {
-  bottom: calc(74px + env(safe-area-inset-bottom));
+  bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
 a,
@@ -1802,10 +1802,6 @@ footer dot[index="3"] {
   background: #fff;
 }
 footer dot[index="4"] {
-  right: calc(3 * 100% / 8 - 22px);
-  background: #fff;
-}
-footer dot[index="5"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
 }

@@ -76,8 +76,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         `,
         [
           $("icons icon[welcome] svg").cloneNode(true),
-          !Boolean(window.webkit) &&
-          !Boolean(window.is_android)
+          !Boolean(window.webkit) && !Boolean(window.is_android)
             ? $(
                 `
               topic
@@ -189,7 +188,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         back-forward-wrapper
           back-wrapper
             button[expand-left]
-            p Back to welcome
+            p Terms and conditions
         topics
           topic
             h2 Privacy Policy

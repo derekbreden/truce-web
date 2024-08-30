@@ -11,19 +11,19 @@ const showMenu = () => {
         links
           a[href=/]
             icon[welcome]
-            p Welcome
+            p Terms and conditions
           a[href=/topics]
             icon[topics]
             p Topics
           a[href=/recent]
             icon[recent]
             p Comments
-          a[href=/topics_from_favorites]
+          a[href=/favorites]
             icon[favorites]
             p Favorites
           a[href=/notifications][unread=$1]
             icon[notifications]
-            p Notifications
+            p Alerts
     `,
     [Boolean(state.unread_count)],
   );

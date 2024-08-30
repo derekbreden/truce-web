@@ -33,7 +33,6 @@ const renderNotification = (notification) => {
           b $6
         $7
       read-more-wrapper
-        p Read more
         button[expand-right]
     `,
     [
@@ -76,8 +75,8 @@ const renderNotifications = (notifications) => {
         `
         topics[notifications-header]
           topic
-            h2 Notifications
-            p To enable notifications, please sign in or sign up, using the menu in the top right hand corner.
+            h2 Alerts
+            p To enable alerts, please sign in or sign up, using the menu in the top right hand corner.
         `,
       ),
     );
@@ -87,8 +86,8 @@ const renderNotifications = (notifications) => {
         `
         topics[notifications-header]
           topic
-            h2 Notifications
-            p When you "Subscribe to replies", you will get a notification anytime someone responds to a topic or comment you have posted.
+            h2 Alerts
+            p When you "Subscribe to replies", you will get an alert anytime someone responds to a topic or comment you have posted.
         `,
       ),
     );
@@ -98,7 +97,7 @@ const renderNotifications = (notifications) => {
         `
         topics[notifications-header]
           topic
-            h2 Notifications
+            h2 Alerts
             p You must enable notifications for this app in settings
         `,
       ),
@@ -109,9 +108,9 @@ const renderNotifications = (notifications) => {
         `
         topics[notifications-header]
           topic
-            h2 Notifications
+            h2 Alerts
             p[add-to-home]
-              span To enable notifications, tap the
+              span To enable alerts, tap the
               $1
               span icon on your browser and then tap "Add to Home Screen".
         `,
@@ -539,7 +538,11 @@ window.addEventListener("load", () => {
   }, 5000);
   getUnreadCountUnseenCount();
 });
-if (window.webkit || window.matchMedia("(display-mode: standalone)").matches || window.is_android) {
+if (
+  window.webkit ||
+  window.matchMedia("(display-mode: standalone)").matches ||
+  window.is_android
+) {
   $("body").setAttribute("app", "");
   state.is_app = true;
 }

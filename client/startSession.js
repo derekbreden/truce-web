@@ -1,7 +1,9 @@
 // Workaround for replit Webview not supporting Set-Cookie
 const original_fetch_2 = fetch;
 fetch = function (url, options) {
-  const session_uuid = localStorage.getItem(`${window.local_storage_key}:session_uuid`);
+  const session_uuid = localStorage.getItem(
+    `${window.local_storage_key}:session_uuid`,
+  );
   if (session_uuid) {
     options.headers = options.headers || {};
     options.headers["Authorization"] = `Bearer ${session_uuid}`;
@@ -66,7 +68,10 @@ const startSession = (was_same_path) => {
     .then(function (data) {
       // Workaround for replit Webview not supporting Set-Cookie
       if (data.session_uuid) {
-        localStorage.setItem(`${window.local_storage_key}:session_uuid`, data.session_uuid);
+        localStorage.setItem(
+          `${window.local_storage_key}:session_uuid`,
+          data.session_uuid,
+        );
       }
       // END Workaround
 
@@ -348,7 +353,6 @@ const getMoreRecent = () => {
       // Render updated topic comment counts
       if (data.topic_counts?.length) {
         data.topic_counts.forEach((topic_count) => {
-
           // See if we can find a match in the cache
           const found_topic = current_cache.topics.find(
             (topic) => topic.topic_id === topic_count.topic_id,
@@ -359,19 +363,16 @@ const getMoreRecent = () => {
           );
 
           // Prepare the text for the markup
-          const comment_text =
-            topic_count.comment_count +
-            (topic_count.comment_count === "1" ? " comment" : " comments");
-          const favorite_text =
-            topic_count.favorite_count +
-            (topic_count.favorite_count === "1" ? " favorite" : " favorites");
+          const comment_text = topic_count.comment_count;
+          const favorite_text = topic_count.favorite_count;
 
           // If we found a match in the cache
           if (found_topic || found_activity) {
-
             // Update the cached data
-            (found_topic || found_activity).comment_count = topic_count.comment_count;
-            (found_topic || found_activity).favorite_count = topic_count.favorite_count;
+            (found_topic || found_activity).comment_count =
+              topic_count.comment_count;
+            (found_topic || found_activity).favorite_count =
+              topic_count.favorite_count;
 
             // Update the markup
             (found_topic || found_activity).$topic.$("[comments] p").innerText =
@@ -381,11 +382,16 @@ const getMoreRecent = () => {
             ).innerText = favorite_text;
 
             // Poll requires a complete re-render
-            if ((found_topic || found_activity).poll_1 && topic_count.poll_counts) {
-              (found_topic || found_activity).poll_counts = topic_count.poll_counts;
-              (found_topic || found_activity).$topic.replaceWith(renderTopic((found_topic || found_activity)));
+            if (
+              (found_topic || found_activity).poll_1 &&
+              topic_count.poll_counts
+            ) {
+              (found_topic || found_activity).poll_counts =
+                topic_count.poll_counts;
+              (found_topic || found_activity).$topic.replaceWith(
+                renderTopic(found_topic || found_activity),
+              );
             }
-
           }
         });
       }
@@ -401,13 +407,13 @@ const getMoreRecent = () => {
               activity.id === comment_count.comment_id &&
               activity.type === "comment",
           );
-          const favorite_text =
-            comment_count.favorite_count +
-            (comment_count.favorite_count === "1" ? " favorite" : " favorites");
+          const favorite_text = comment_count.favorite_count;
           if (found_comment?.$comment?.$("[favorites] p")?.innerText) {
+            found_comment.favorite_count = comment_count.favorite_count;
             found_comment.$comment.$("[favorites] p").innerText = favorite_text;
           }
           if (found_activity?.$comment?.$("[favorites] p")?.innerText) {
+            found_activity.favorite_count = comment_count.favorite_count;
             found_activity.$comment.$("[favorites] p").innerText =
               favorite_text;
           }

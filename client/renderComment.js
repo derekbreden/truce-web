@@ -80,7 +80,6 @@ const renderComment = (comment) => {
               $1
             p $2
           detail[more]
-            p Read more
             icon
               $3
           button[small][reply] Reply
@@ -89,8 +88,7 @@ const renderComment = (comment) => {
           comment.favorited
             ? $("icons icon[favorited] svg").cloneNode(true)
             : $("footer icon[favorites] svg").cloneNode(true),
-          comment.favorite_count +
-            (comment.favorite_count === "1" ? " favorite" : " favorites"),
+          comment.favorite_count,
           $("icons icon[forward] svg").cloneNode(true),
         ],
       ),

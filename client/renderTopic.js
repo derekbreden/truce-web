@@ -121,7 +121,6 @@ const renderTopic = (topic) => {
               $3
             p $4
           detail[more]
-            p Read more
             icon
               $5
         `,
@@ -129,13 +128,11 @@ const renderTopic = (topic) => {
           topic.favorited
             ? $("icons icon[favorited] svg").cloneNode(true)
             : $("footer icon[favorites] svg").cloneNode(true),
-          topic.favorite_count +
-            (topic.favorite_count === "1" ? " favorite" : " favorites"),
+          topic.favorite_count,
           topic.commented
             ? $("icons icon[commented] svg").cloneNode(true)
             : $("footer icon[recent] svg").cloneNode(true),
-          topic.comment_count +
-            (topic.comment_count === "1" ? " comment" : " comments"),
+          topic.comment_count,
           $("icons icon[forward] svg").cloneNode(true),
         ],
       ),
