@@ -112,19 +112,20 @@ const renderTopic = (topic) => {
       $(
         `
         topic-details[detail-wrapper]
-          detail[favorites]
+          detail[favorites][favorited=$1]
             icon
-              $1
-            p $2
+              $2
+            p $3
           detail[comments]
             icon
-              $3
-            p $4
+              $4
+            p $5
           detail[more]
             icon
-              $5
+              $6
         `,
         [
+          topic.favorited,
           topic.favorited
             ? $("icons icon[favorited] svg").cloneNode(true)
             : $("footer icon[favorites] svg").cloneNode(true),

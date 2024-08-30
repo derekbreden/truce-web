@@ -75,16 +75,17 @@ const renderComment = (comment) => {
       $(
         `
         reply-wrapper[detail-wrapper]
-          detail[favorites]
+          detail[favorites][favorited=$1]
             icon
-              $1
-            p $2
+              $2
+            p $3
           detail[more]
             icon
-              $3
+              $4
           button[small][reply] Reply
         `,
         [
+          comment.favorited,
           comment.favorited
             ? $("icons icon[favorited] svg").cloneNode(true)
             : $("footer icon[favorites] svg").cloneNode(true),

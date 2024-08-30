@@ -55,6 +55,15 @@ const toggleFavorite = async (topic_or_comment) => {
   });
 
   // Update the current DOM
+  if (topic_or_comment.favorited) {
+    (topic_or_comment.$topic || topic_or_comment.$comment)
+      .$(":scope > [detail-wrapper] detail[favorites]")
+      .setAttribute("favorited", "");
+  } else {
+    (topic_or_comment.$topic || topic_or_comment.$comment)
+      .$(":scope > [detail-wrapper] detail[favorites]")
+      .removeAttribute("favorited");
+  }
   (topic_or_comment.$topic || topic_or_comment.$comment)
     .$(":scope > [detail-wrapper] detail[favorites] svg")
     .replaceWith(
@@ -69,12 +78,7 @@ const toggleFavorite = async (topic_or_comment) => {
         `
       p $1
       `,
-        [
-          topic_or_comment.favorite_count +
-            (topic_or_comment.favorite_count === "1"
-              ? " favorite"
-              : " favorites"),
-        ],
+        [topic_or_comment.favorite_count],
       ),
     );
 

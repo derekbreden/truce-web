@@ -1586,8 +1586,13 @@ reply-wrapper detail,
 topic-details detail {
   display: flex;
   align-items: center;
-  opacity: .5;
   padding: 10px;
+}
+reply-wrapper detail:not([favorited]),
+reply-wrapper detail[favorited] p,
+topic-details detail:not([favorited]),
+topic-details detail[favorited] p {
+  opacity: .5;
 }
 
 detail[favorites],
@@ -1620,8 +1625,13 @@ topic-details p {
   font-weight: 600;
 }
 
-detail[favorites] icon {
+detail[favorites] icon {  
   margin: -3px -1px -4px -7px;
+}
+
+detail[favorites][favorited] svg {
+  fill: #e48;
+  fill: light-dark(#e48, #f48);
 }
 
 detail[comments] icon {
