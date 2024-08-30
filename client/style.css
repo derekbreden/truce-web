@@ -1584,7 +1584,6 @@ topic-details {
 
 reply-wrapper detail,
 topic-details detail {
-  font-size: .786rem;
   display: flex;
   align-items: center;
   opacity: .5;
@@ -1611,8 +1610,8 @@ reply-wrapper svg,
 topic-details svg {
   fill: #000;
   fill: light-dark(#000, #fff);
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 
 reply-wrapper p,
@@ -1622,20 +1621,20 @@ topic-details p {
 }
 
 detail[favorites] icon {
-  margin: -3px 0 -4px -7px;
+  margin: -3px -1px -4px -7px;
 }
 
 detail[comments] icon {
-  margin: -3px 3px -4px -3px;
+  margin: -3px 3px -3px -3px;
 }
 
 detail[comments] svg {
-  height: 26px;
-  width: 26px;
+  height: 28px;
+  width: 28px;
 }
 
 detail[more] icon {
-  margin: -3px -6px -4px -1px;
+  margin: -3px -6px -3px -1px;
 }
 
 detail[more] svg {
