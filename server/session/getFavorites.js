@@ -33,7 +33,8 @@ module.exports = async (req, res) => {
           c.image_uuids,
           FALSE as commented,
           FALSE as voted,
-          'comment' AS type
+          'comment' AS type,
+          '' AS tags
         FROM comments c
         INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
@@ -72,7 +73,13 @@ module.exports = async (req, res) => {
               AND c.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
-          'topic' AS type
+          'topic' AS type,
+          (
+            SELECT STRING_AGG(ts.tag_name, ',')
+            FROM topic_tags tt
+            INNER JOIN tags ts ON ts.tag_id = tt.tag_id
+            WHERE tt.topic_id = t.topic_id
+          ) as tags
         FROM topics t
         INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
         LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
@@ -115,7 +122,8 @@ module.exports = async (req, res) => {
         pc.note AS parent_comment_note,
         pcu.display_name AS parent_comment_display_name,
         pcu.display_name_index AS parent_comment_display_name_index,
-        pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid
+        pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid,
+        combined.tags
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id
       LEFT JOIN topics pt ON combined.parent_topic_id = pt.topic_id

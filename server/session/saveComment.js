@@ -18,6 +18,7 @@ webpush.setVapidDetails(
 const fcm_admin = require("firebase-admin");
 const { initializeApp } = require("firebase-admin/app");
 const { getMessaging } = require("firebase-admin/messaging");
+const prompts = require("../prompts");
 const fcm_app = initializeApp({
   credential: fcm_admin.credential.cert(
     JSON.parse(process.env.FIREBASE_CREDENTIAL),
@@ -251,17 +252,25 @@ module.exports = async (req, res) => {
         }),
       ],
     });
-    const ai_response_text = await ai.ask(messages, "common");
-    if (ai_response_text === "Spam") {
+    const ai_response = await ai.ask(messages, "common", prompts.common_response_format);
+
+    let ai_response_parsed = { keyword: "OK" };
+    try {
+      ai_response_parsed = JSON.parse(ai_response);
+    } catch (e) {
+      console.error("Failed to parse AI JSON", ai_response, e);
+    }
+
+    if (ai_response_parsed.keyword === "Spam") {
       res.end(
         JSON.stringify({
-          error: ai_response_text,
+          error: ai_response_parsed.keyword,
         }),
       );
       return;
     }
     let comment_id = req.body.comment_id;
-    if (ai_response_text.replace(/[^a-z\-]/gi, "") === "OK") {
+    if (ai_response_parsed.keyword === "OK") {
       if (req.body.comment_id) {
         await req.client.query(
           `
@@ -303,7 +312,7 @@ module.exports = async (req, res) => {
           `,
           [
             req.body.body,
-            ai_response_text,
+            `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
             req.body.comment_id,
             req.session.user_id,
           ],
@@ -319,7 +328,7 @@ module.exports = async (req, res) => {
           `,
           [
             req.body.body,
-            ai_response_text,
+            `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
             topic_id,
             req.session.user_id,
             req.body.parent_comment_id,

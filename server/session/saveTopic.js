@@ -30,6 +30,12 @@ ${req.body.body}
 
 A) ${req.body.poll_1}
 B) ${req.body.poll_2}`;
+      if (req.body.poll_3) {
+        text_to_evaluate += `\nC) ${req.body.poll_3}`;
+      }
+      if (req.body.poll_4) {
+        text_to_evaluate += `\nD) ${req.body.poll_4}`;
+      }
       poll_counts = "0,0,0,0";
     }
     messages.push({
@@ -50,11 +56,20 @@ B) ${req.body.poll_2}`;
         }),
       ],
     });
-    const ai_response_text = await ai.ask(
+    const ai_response = await ai.ask(
       messages,
       req.body.poll_1 ? "poll" : "common",
+      req.body.poll_1
+        ? prompts.poll_response_format
+        : prompts.common_response_format,
     );
-    if (ai_response_text !== "Spam") {
+    let ai_response_parsed = { keyword: "OK" };
+    try {
+      ai_response_parsed = JSON.parse(ai_response);
+    } catch (e) {
+      console.error("Failed to parse AI JSON", ai_response, e);
+    }
+    if (ai_response_parsed.keyword !== "Spam") {
       let slug = req.body.title
         .replace(/[^a-z0-9 ]/gi, "")
         .replace(/ {1,}/g, "_");
@@ -84,6 +99,7 @@ B) ${req.body.poll_2}`;
             poll_4 = $7,
             poll_counts = $8,
             note = $9,
+            counts_max_create_date = NOW(),
             create_date = NOW()
           WHERE
             topic_id = $10
@@ -98,9 +114,9 @@ B) ${req.body.poll_2}`;
             req.body.poll_3 || "",
             req.body.poll_4 || "",
             poll_counts,
-            ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
+            ai_response_parsed.keyword === "OK"
               ? null
-              : ai_response_text,
+              : `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
             req.body.topic_id,
             req.session.user_id,
           ],
@@ -126,9 +142,9 @@ B) ${req.body.poll_2}`;
             req.body.poll_3 || "",
             req.body.poll_4 || "",
             poll_counts,
-            ai_response_text.replace(/[^a-z\-]/gi, "") === "OK"
+            ai_response_parsed.keyword === "OK"
               ? null
-              : ai_response_text,
+              : `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
             req.session.user_id,
           ],
         );
@@ -198,6 +214,59 @@ B) ${req.body.poll_2}`;
         );
       }
 
+      // Get the relevant tags
+      const ai_tags_response = await ai.ask(
+        messages,
+        "tags",
+        prompts.tags_response_format,
+      );
+      let ai_tags_response_parsed = [];
+      try {
+        ai_tags_response_parsed = JSON.parse(ai_tags_response);
+      } catch (e) {
+        console.error("Failed to parse AI JSON", ai_tags_response, e);
+      }
+
+      await req.client.query(
+        `
+        DELETE FROM topic_tags
+        WHERE topic_id = $1
+        `,
+        [topic_id],
+      );
+
+      const tag_id_query = await req.client.query(
+        `
+          SELECT tag_id, tag_name FROM tags
+        `,
+      );
+      const tag_ids = tag_id_query.rows.reduce((acc, row) => {
+        acc[row.tag_name] = row.tag_id;
+        return acc;
+      }, {})
+      for (const tag of ai_tags_response_parsed.tags) {
+        if (ai_tags_response_parsed.tags.includes("polls") && tag === "asks") {
+          continue;
+        }
+        if (tag_ids[tag]) {
+          await req.client.query(
+            `
+            INSERT INTO topic_tags
+              (topic_id, tag_id)
+            VALUES
+              ($1, $2)
+            `,
+            [
+              topic_id,
+              tag_ids[tag],
+            ],
+          );
+        } else {
+          console.error("Unable to find tag", tag)
+        }
+      }
+      
+
       // Get estimated poll response
       if (req.body.poll_1) {
         const ai_poll_response = await ai.ask(
@@ -221,8 +290,8 @@ B) ${req.body.poll_2}`;
               ],
             },
           ],
-          "poll",
-          prompts.poll_response_format,
+          "poll_estimate",
+          prompts.poll_estimate_response_format,
         );
         try {
           const results = JSON.parse(ai_poll_response);
@@ -236,7 +305,9 @@ B) ${req.body.poll_2}`;
           await req.client.query(
             `
             UPDATE topics
-            SET poll_counts_estimated = $1
+            SET
+              poll_counts_estimated = $1,
+              counts_max_create_date = NOW()
             WHERE topic_id = $2
             `,
             [estimated.join(","), topic_id],
@@ -261,7 +332,7 @@ B) ${req.body.poll_2}`;
     } else {
       res.end(
         JSON.stringify({
-          error: ai_response_text,
+          error: `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
         }),
       );
     }

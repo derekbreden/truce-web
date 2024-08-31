@@ -129,7 +129,8 @@ const getMoreRecent = () => {
   if (
     state.path === "/" ||
     state.path === "/privacy" ||
-    state.path === "/settings"
+    state.path === "/settings" ||
+    state.path === "/tags"
   ) {
     return;
   }

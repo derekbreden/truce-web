@@ -9,6 +9,7 @@ const renderTopic = (topic) => {
     state.path === "/topics" ||
     state.path === "/recent" ||
     state.path === "/favorites" ||
+    state.path.substr(0, 5) === "/tag/" ||
     state.path === "/topics_from_favorites"
   ) {
     trimmed = true;
@@ -30,6 +31,7 @@ const renderTopic = (topic) => {
       $4
       $5
       $6
+      $7
     `,
     [
       topic.title,
@@ -39,6 +41,48 @@ const renderTopic = (topic) => {
           $1
         `,
         [$("icons icon[more] svg").cloneNode(true)],
+      ),
+      $(
+        `
+        author-tags
+          author
+            profile-picture
+              image
+                $1
+            span by
+            b $2
+          tags
+            $3
+        `,
+        [
+          topic.profile_picture_uuid
+            ? $(
+                `
+                img[src=$1]
+                `,
+                ["/image/" + topic.profile_picture_uuid],
+              )
+            : $("icons icon[profile-picture] svg").cloneNode(true),
+          topic.display_name || "Anonymous",
+          topic.tags
+            .split(",")
+            .filter((x) => x)
+            .map((tag) =>
+              $(
+                `
+                tag[tag=$1]
+                  icon
+                    $2
+                  span $3
+                `,
+                [
+                  tag,
+                  $(`icons icon[${tag}] svg`).cloneNode(true),
+                  tag[0].toUpperCase() + tag.slice(1),
+                ],
+              ),
+            ),
+        ],
       ),
       topic.note
         ? $(
@@ -132,13 +176,20 @@ const renderTopic = (topic) => {
           topic.favorite_count,
           topic.commented
             ? $("icons icon[commented] svg").cloneNode(true)
-            : $("footer icon[recent] svg").cloneNode(true),
+            : $("icons icon[comment] svg").cloneNode(true),
           topic.comment_count,
           $("icons icon[forward] svg").cloneNode(true),
         ],
       ),
     ],
   );
+
+  $topic.$("tag").forEach(($tag) => {
+    $tag.on("click", ($event) => {
+      $event.stopPropagation();
+      goToPath("/tag/" + $tag.getAttribute("tag"))
+    })
+  })
   if (topic.poll_1) {
     const counts_actual = topic.poll_counts.split(",");
     const votes_1 = Number(counts_actual[0] || 0);
@@ -305,6 +356,7 @@ const renderTopic = (topic) => {
         state.path === "/topics" ||
         state.path === "/favorites" ||
         state.path === "/recent" ||
+        state.path.substr(0, 5) === "/tag/" ||
         state.path === "/topics_from_favorites"
       ) {
         $more_modal.$("action[edit]").remove();
@@ -365,13 +417,14 @@ const renderTopic = (topic) => {
         `,
         ["/image/" + image_uuid],
       );
-      $topic.$("h2").after($image);
+      $topic.$("author-tags").after($image);
     }
   }
   if (
     state.path === "/topics" ||
     state.path === "/recent" ||
     state.path === "/favorites" ||
+    state.path.substr(0, 5) === "/tag/" ||
     state.path === "/topics_from_favorites"
   ) {
     $topic.setAttribute("trimmed", "");

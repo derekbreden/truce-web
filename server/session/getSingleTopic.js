@@ -14,6 +14,8 @@ module.exports = async (req, res) => {
           t.create_date,
           t.topic_id,
           t.title,
+          u.display_name,
+          u.profile_picture_uuid,
           t.slug,
           t.body,
           t.poll_1,
@@ -35,8 +37,15 @@ module.exports = async (req, res) => {
             WHERE c.parent_topic_id = t.topic_id
               AND c.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
-          CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted
+          CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
+          (
+            SELECT STRING_AGG(ts.tag_name, ',')
+            FROM topic_tags tt
+            INNER JOIN tags ts ON ts.tag_id = tt.tag_id
+            WHERE tt.topic_id = t.topic_id
+          ) as tags
         FROM topics t
+        LEFT JOIN users u ON u.user_id = t.user_id
         LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
         LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id

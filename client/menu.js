@@ -15,9 +15,9 @@ const showMenu = () => {
           a[href=/topics]
             icon[topics]
             p Topics
-          a[href=/recent]
-            icon[recent]
-            p Comments
+          a[href=/tags]
+            icon[tag]
+            p Tags
           a[href=/favorites]
             icon[favorites]
             p Favorites
@@ -33,9 +33,7 @@ const showMenu = () => {
   $menu
     .$("icon[topics]")
     .appendChild($("footer icon[topics] svg").cloneNode(true));
-  $menu
-    .$("icon[recent]")
-    .appendChild($("footer icon[recent] svg").cloneNode(true));
+  $menu.$("icon[tag]").appendChild($("footer icon[tag] svg").cloneNode(true));
   $menu
     .$("icon[favorites]")
     .appendChild($("footer icon[favorites] svg").cloneNode(true));
@@ -221,8 +219,8 @@ const showMenu = () => {
         span Email us at
         a[href="mailto:derek@truce.net"] derek@truce.net
         span to provide feedback or report inappropriate activity.
-      `
-    )
+      `,
+    ),
   );
   $("modal-bg")?.parentElement?.remove();
   $("body").appendChild($menu);

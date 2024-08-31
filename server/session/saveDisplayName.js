@@ -1,8 +1,9 @@
 const ai = require("../ai");
+const prompts = require("../prompts");
 
 module.exports = async (req, res) => {
   if (!res.writableEnded && req.session.user_id && req.body.display_name) {
-    const ai_response_text = await ai.ask(
+    const ai_response = await ai.ask(
       [
         {
           role: "user",
@@ -10,8 +11,15 @@ module.exports = async (req, res) => {
         },
       ],
       "display_name",
+      prompts.display_name_response_format,
     );
-    if (ai_response_text.replace(/[^a-z\-]/ig, "") === "OK") {
+    let ai_response_parsed = { keyword: "OK" };
+    try {
+      ai_response_parsed = JSON.parse(ai_response);
+    } catch (e) {
+      console.error("Failed to parse AI JSON", ai_response, e);
+    }
+    if (ai_response_parsed.keyword === "OK") {
       await require("./updateDisplayName")(req, res);
       res.end(
         JSON.stringify({
@@ -23,7 +31,7 @@ module.exports = async (req, res) => {
     } else {
       res.end(
         JSON.stringify({
-          error: ai_response_text,
+          error: ai_response_parsed.keyword,
         }),
       );
     }

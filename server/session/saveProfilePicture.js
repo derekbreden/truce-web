@@ -1,4 +1,5 @@
 const ai = require("../ai");
+const prompts = require("../prompts");
 const crypto = require("node:crypto");
 const {
   DeleteObjectCommand,
@@ -11,7 +12,7 @@ const object_client = new S3Client({
 
 module.exports = async (req, res) => {
   if (!res.writableEnded && req.session.user_id && req.body.profile_picture) {
-    const ai_response_text = await ai.ask(
+    const ai_response = await ai.ask(
       [
         {
           role: "user",
@@ -30,9 +31,16 @@ module.exports = async (req, res) => {
         },
       ],
       "profile_picture",
+      prompts.profile_picture_response_format,
     );
-    const first_word = ai_response_text.split(" ")[0].replace(/[^a-z\-]/gi, "");
-    console.log("Profile picture AI response", ai_response_text);
+    let ai_response_parsed = { keyword: "OK" };
+    try {
+      ai_response_parsed = JSON.parse(ai_response);
+    } catch (e) {
+      console.error("Failed to parse AI JSON", ai_response, e);
+    }
+    const first_word = ai_response_parsed.keyword;
+    console.log("Profile picture AI response", ai_response_parsed.keyword);
     if (["Spam", "Violent", "Hateful", "Sexual"].indexOf(first_word) === -1) {
       const profile_picture_uuid = crypto.randomUUID();
       try {
@@ -93,7 +101,7 @@ module.exports = async (req, res) => {
     } else {
       res.end(
         JSON.stringify({
-          error: ai_response_text,
+          error: ai_response_parsed.keyword,
         }),
       );
     }

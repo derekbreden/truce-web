@@ -1,4 +1,4 @@
-const renderTopics = (topics) => {
+const renderTopics = (topics, tag) => {
 
   beforeDomUpdate();
   if (!$("main-content-wrapper[active] topics")) {
@@ -32,6 +32,49 @@ const renderTopics = (topics) => {
       (a) => a.topic_id === state.active_add_new_topic.is_edit,
     );
     topic.$topic.replaceWith(state.active_add_new_topic);
+  }
+
+  // Tag
+  if (state.path.substr(0, 5) === "/tag/") {
+    $("topic[tag]")?.remove();
+    if (topics.length === 0) {
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[tag]
+            h2[tags]
+              span $1
+              icon
+                $2
+            p $3
+            p There are no topics in this tag yet, head on over to the topics page to add one!
+          `,
+          [
+            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
+            $(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
+            tag.subtitle,
+          ],
+        ),
+      );
+    } else {
+      $("main-content-wrapper[active] topics").prepend(
+        $(
+          `
+          topic[tag]
+            h2[tags]
+              span $1
+              icon
+                $2
+            p $3
+          `,
+          [
+            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
+            $(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
+            tag.subtitle,
+          ],
+        ),
+      );
+    }
   }
 
   // Empty topics from favorites

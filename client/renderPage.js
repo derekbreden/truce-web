@@ -10,7 +10,7 @@ const renderPage = (data) => {
   $("main-content-wrapper[active] topics-loading")?.remove();
 
   // Render Topics
-  renderTopics(data.topics);
+  renderTopics(data.topics, data.tag);
 
   // Render Comments
   renderComments(data.comments);
@@ -23,6 +23,9 @@ const renderPage = (data) => {
 
   // Render Images
   renderImages();
+
+  // Render Tags
+  renderTags(data.tags);
 
   // Render Forward Button on comment thread
   renderForward(data.parent_topic);

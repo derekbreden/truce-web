@@ -569,7 +569,7 @@ menu links a icon svg {
   fill: light-dark(#000, #fff);
 }
 
-menu links a icon[recent] svg {
+menu links a icon[tag] svg {
   width: 28px;
 }
 
@@ -1419,9 +1419,94 @@ topics topic {
   padding-bottom: 21px;
   position: relative;
 }
+topics topic info-wrapper,
+activities activity[topic] info-wrapper {
+  display: flex;
+  margin-top: 10px;
+}
 activities activity {
   display: flex;
   flex-direction: column;
+}
+
+topic author-tags {
+  display: flex;
+  justify-content: space-between;
+  font-size: .786rem;
+  gap: 20px;
+  margin: 10px 0 0 0;
+  opacity: .5;
+  align-items: flex-start;
+}
+topic author-tags author profile-picture image {
+  width: 20px;
+  height: 20px;
+}
+topic author-tags author profile-picture svg {
+  height: 25px;
+  width: 25px;
+  margin: -3px;
+}
+topic author-tags author {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+topic author-tags tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+topic author-tags tags tag {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+topic author-tags tags tag icon {
+  font-size: 0;
+}
+topic author-tags tags tag svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 20px;
+  width: 20px;
+}
+
+tags[tags-list] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-top: 20px;
+}
+tags[tags-list] tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: calc(50% - 10px);
+  cursor: pointer;
+}
+tags[tags-list] tag tagname-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+tags[tags-list] tag tagname {
+  font-size: 1.286rem;
+  font-weight: bold;
+}
+tags[tags-list] tag subtitle {
+  font-size: .786rem;
+}
+tags[tags-list] tag icon {
+  font-size: 0;
+}
+tags[tags-list] tag svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 40px;
+  width: 40px;
 }
 
 activities[favorites] activity::after,
@@ -1747,6 +1832,7 @@ p[favorites-empty] icon {
   align-items: center;
   justify-content: center;
 }
+h2[tags] svg,
 h2[settings] svg,
 h2[welcome] svg,
 h2[moderation] svg,
@@ -1756,6 +1842,10 @@ p[favorites-empty] svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   margin-bottom: -16px;
+}
+h2[tags] svg {
+  width: 30px;
+  height: 30px;
 }
 h2[moderation] svg {
   width: 60px;
