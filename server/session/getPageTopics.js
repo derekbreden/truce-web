@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     !res.writableEnded &&
     (req.body.path === "/topics" ||
       (req.body.path === "/topics_from_favorites" && req.session.user_id) ||
-      req.body.path.substr(0, 5) === "/tag/")
+      req.body.path?.substr(0, 5) === "/tag/")
   ) {
     if (!req.body.max_comment_create_date) {
       const topic_results = await req.client.query(
