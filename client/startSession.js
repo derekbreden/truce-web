@@ -317,7 +317,7 @@ const getMoreRecent = () => {
           (a) => new_ids.indexOf(a.topic_id) === -1,
         );
         current_cache.topics.unshift(...data.topics);
-        renderTopics(current_cache.topics);
+        renderTopics(current_cache.topics, current_cache.tag);
 
         // Flash any newly added items
         data.topics.forEach((topic) => {
