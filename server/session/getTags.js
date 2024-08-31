@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     req.results.tags = tags.rows;
   }
 
-  if (!res.writableEnded && req.body.path.substr(0, 5) === "/tag/") {
+  if (!res.writableEnded && req.body.path && req.body.path.substr(0, 5) === "/tag/") {
     const tag = await req.client.query(
       `
       SELECT
