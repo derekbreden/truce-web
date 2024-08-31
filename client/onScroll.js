@@ -266,7 +266,7 @@ const bindScrollEvent = () => {
 
             // And re-render if any topics added
             if (data.topics.length) {
-              renderTopics(state.cache[state.path].topics);
+              renderTopics(state.cache[state.path].topics, state.cache[state.path].tag);
             }
             state.loading_path = false;
           })
