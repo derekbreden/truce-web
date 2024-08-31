@@ -183,7 +183,7 @@ const bindScrollEvent = () => {
       // When we pass the threshold
       if ($("main-content-wrapper[active]").scrollTop > threshold) {
         // Find the oldest (min) create_date of what we have so far
-        const max_topic_create_date = state.cache["/topics"].topics.reduce(
+        const max_topic_create_date = state.cache[state.path].topics.reduce(
           (min, topic) => {
             return min < topic.create_date ? min : topic.create_date;
           },
@@ -238,7 +238,7 @@ const bindScrollEvent = () => {
       // When we pass the threshold
       if ($("main-content-wrapper[active]").scrollTop > threshold) {
         // Find the oldest (min) create_date of what we have so far
-        const max_topic_create_date = state.cache["/topics"].topics.reduce(
+        const max_topic_create_date = state.cache[state.path].topics.reduce(
           (min, topic) => {
             return min < topic.create_date ? min : topic.create_date;
           },
