@@ -225,8 +225,12 @@ const showMenu = () => {
   $("modal-bg")?.parentElement?.remove();
   $("body").appendChild($menu);
 };
+$("header").on("click", () => {
+  goToPath(state.path);
+})
 $("hamburger").forEach(($el) => {
-  $el.on("click", () => {
+  $el.on("click", ($event) => {
+    $event.stopPropagation();
     if ($("menu-wrapper")) {
       $("menu-wrapper").remove();
     } else {
