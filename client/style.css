@@ -1477,14 +1477,15 @@ topic author-tags tags tag svg {
 tags[tags-list] {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
   padding-top: 20px;
 }
 tags[tags-list] tag {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: calc(50% - 5px);
+  min-width: calc(50%);
+  margin-right: -10px;
   cursor: pointer;
 }
 tags[tags-list] tag tagname-subtitle {
