@@ -1505,9 +1505,11 @@ tags[tags-list] tag tagname name {
 }
 tags[tags-list] tag tagname count {
   background: #000;
-  background: light-dark(#000, #fff);
+  background: light-dark(#000, #000);
   color: #fff;
-  color: light-dark(#fff, #000);
+  color: light-dark(#fff, #fff);
+  border: 1px solid #000;
+  border: 1px solid light-dark(#000, #fff);
   border-radius: .786rem;
   padding: 2px 5px;
   min-width: 15px;
