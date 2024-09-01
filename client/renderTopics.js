@@ -23,7 +23,7 @@ const renderTopics = (topics, tag) => {
     $("main-content-wrapper[active] main-content topics")?.replaceChildren(
       ...$topics_1,
     );
-    $("main-content-wrapper[active] main-content-2").appendChild(
+    $("main-content-wrapper[active] main-content-2").replaceChildren(
       $(
         `
         topics
