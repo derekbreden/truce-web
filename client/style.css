@@ -1477,14 +1477,14 @@ topic author-tags tags tag svg {
 tags[tags-list] {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 10px;
   padding-top: 20px;
 }
 tags[tags-list] tag {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: calc(50% - 10px);
+  min-width: calc(50% - 5px);
   cursor: pointer;
 }
 tags[tags-list] tag tagname-subtitle {
@@ -1495,7 +1495,7 @@ tags[tags-list] tag tagname-subtitle {
 tags[tags-list] tag tagname {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
 }
 tags[tags-list] tag tagname name {
   font-size: 1.286rem;
@@ -1509,7 +1509,7 @@ tags[tags-list] tag tagname count {
   color: light-dark(#fff, #000);
   border-radius: .786rem;
   padding: 2px 5px;
-  min-width: 25px;
+  min-width: 15px;
   text-align: center;
   font-size: .786rem;
   line-height: .786rem;
