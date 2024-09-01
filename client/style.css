@@ -1490,11 +1490,30 @@ tags[tags-list] tag {
 tags[tags-list] tag tagname-subtitle {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 tags[tags-list] tag tagname {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+tags[tags-list] tag tagname name {
   font-size: 1.286rem;
+  line-height: 1.286rem;
   font-weight: bold;
+}
+tags[tags-list] tag tagname count {
+  background: #000;
+  background: light-dark(#000, #fff);
+  color: #fff;
+  color: light-dark(#fff, #000);
+  border-radius: .786rem;
+  padding: 2px 5px;
+  min-width: 25px;
+  text-align: center;
+  font-size: .786rem;
+  line-height: .786rem;
+  font-weight: 600;
 }
 tags[tags-list] tag subtitle {
   font-size: .786rem;

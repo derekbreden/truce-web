@@ -24,13 +24,16 @@ const renderTags = (tags) => {
           icon
             $2
           tagname-subtitle
-            tagname $3
-            subtitle $4
+            tagname
+              name $3
+              count $4
+            subtitle $5
         `,
         [
           tag.tag_name,
           $(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
           tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
+          tag.topics,
           tag.subtitle,
         ],
       ),
