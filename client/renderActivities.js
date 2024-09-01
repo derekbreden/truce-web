@@ -1,5 +1,4 @@
 const renderActivities = (activities) => {
-
   // Empty favorites?
   if (state.path === "/favorites") {
     if (activities.length === 0) {
