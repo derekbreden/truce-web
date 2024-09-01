@@ -134,8 +134,8 @@ main-content-2 {
 
   main-content,
   main-content-2 {
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
   }
 }
 
@@ -1103,7 +1103,7 @@ comment {
   display: flex;
   flex-direction: column;
   border: 1px solid #ddd;
-  border: 1px solid light-dark(#ddd, #666);
+  border: 1px solid light-dark(#ddd, #333);
   border-radius: 2px;
   padding: 10px;
 }
@@ -1137,14 +1137,14 @@ info b {
 comments>add-new:first-child {
   padding: 10px;
   border: 1px solid #ddd;
-  border: 1px solid light-dark(#ddd, #666);
+  border: 1px solid light-dark(#ddd, #333);
   margin: 20px 0 10px 0;
 }
 
 comments>add-new:not(:first-child) {
   margin: 0 0 20px 0;
   border: 1px solid #ddd;
-  border: 1px solid light-dark(#ddd, #666);
+  border: 1px solid light-dark(#ddd, #333);
   border-radius: 2px;
   margin-bottom: 20px;
   padding: 10px;
@@ -1544,7 +1544,7 @@ topics topic::before {
   left: -20px;
   right: -20px;
   border-bottom: 1px solid #ddd;
-  border-bottom: 1px solid light-dark(#ddd, #666);
+  border-bottom: 1px solid light-dark(#ddd, #333);
 }
 
 notifications notification::after {
@@ -2018,6 +2018,8 @@ poll-vote-wrapper > * {
   border: 1px solid light-dark(#000, #fff);
   border-radius: 20px;
   min-height: 35px;
+  padding: 0 20px;
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
