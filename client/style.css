@@ -1201,18 +1201,19 @@ expand-wrapper[collapse] {
 back-forward-wrapper {
   display: flex;
   justify-content: space-between;
+  position: relative;
+  padding-bottom: 15px;
 }
 
 mark-all-as-read-wrapper,
 read-more-wrapper,
-share-wrapper,
 forward-wrapper,
 back-wrapper {
   cursor: pointer;
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 20px 0 0 0;
+  margin: 15px 0 0 0;
   min-height: 18px;
   position: relative;
 }
@@ -1237,21 +1238,6 @@ expand-wrapper button {
   border-color: light-dark(#fff, #000);
   position: relative;
   padding: 6px;
-}
-
-share-wrapper info {
-  position: absolute;
-  top: calc(50% - 13px);
-  right: 40px;
-  display: none;
-  max-width: unset;
-  white-space: nowrap;
-  z-index: 1;
-}
-
-share-wrapper info[show] {
-  display: flex;
-  animation: fade-out .5s ease-in-out 1 3.5s;
 }
 
 forward-wrapper button::before,
@@ -1315,7 +1301,6 @@ forward-wrapper [expand-right]::before {
 
 all-clear-wrapper p,
 read-more-wrapper p,
-share-wrapper p,
 forward-wrapper p,
 back-wrapper p,
 expand-wrapper p {
@@ -1345,7 +1330,6 @@ expand-wrapper button+p {
 }
 
 read-more-wrapper p,
-share-wrapper p,
 forward-wrapper p,
 back-wrapper p {
   margin: 0 5px;
@@ -1353,7 +1337,6 @@ back-wrapper p {
 }
 
 read-more-wrapper p,
-share-wrapper p,
 forward-wrapper p {
   text-align: right;
 }
@@ -1542,6 +1525,7 @@ tags[tags-list] tag svg {
   width: 40px;
 }
 
+back-forward-wrapper::after,
 activities[favorites] activity::after,
 notifications notification::after,
 topics topic::before {
@@ -1772,32 +1756,6 @@ detail[more] svg {
 
 topic:not([trimmed]) detail[more] {
   display: none;
-}
-
-share-wrapper {
-  flex-direction: column;
-}
-
-share-wrapper:only-child {
-  justify-self: flex-end;
-}
-
-share-wrapper p {
-  margin: 2px 0 0 0;
-}
-
-icon[share] {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-icon[share] svg {
-  opacity: .5;
-  fill: #000;
-  fill: light-dark(#000, #fff);
-  height: 26px;
-  width: 26px;
 }
 
 alert-wrapper {

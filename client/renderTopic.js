@@ -323,13 +323,17 @@ const renderTopic = (topic) => {
             icon[edit]
               $1
             p Edit
+          action[share]
+            icon[share]
+              $2
+            p Share Topic
           action[flag]
             icon[flag]
-              $2
+              $3
             p Flag topic
           action[block]
             icon[block]
-              $3
+              $4
             p Block user
           button-wrapper
             button[alt][cancel] Cancel
@@ -341,6 +345,7 @@ const renderTopic = (topic) => {
       `,
       [
         $("icons icon[edit] svg").cloneNode(true),
+        $("icons icon[share] svg").cloneNode(true),
         $("icons icon[flag] svg").cloneNode(true),
         $("icons icon[block] svg").cloneNode(true),
       ],
@@ -389,6 +394,25 @@ const renderTopic = (topic) => {
         );
       });
     }
+    $more_modal.$("action[share]").on("click", ($event) => {
+      $event.preventDefault();
+      moreModalCancel();
+      if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers["share-link"]
+      ) {
+        window.webkit.messageHandlers["share-link"].postMessage(
+          JSON.stringify({
+            url: window.location.href,
+            text: state.cache[state.path].topics[0].title,
+          }),
+        );
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+      }
+      alertInfo("Link copied to clipboard");
+    });
     $more_modal.$("action[flag]").on("click", ($event) => {
       $event.preventDefault();
       moreModalCancel();

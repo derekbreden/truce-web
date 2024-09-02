@@ -45,9 +45,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
   // Render Back Button
   renderBack();
 
-  // Render Share Button on topic
-  renderShare();
-
   // Welcome page
   if (state.path === "/") {
     $("main-content-wrapper[active] main-content").replaceChildren(
