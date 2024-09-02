@@ -71,7 +71,7 @@ const renderTopics = (topics, tag, user) => {
                 button[edit][small][href=/settings]
                   icon[settings]
                     $1
-                  span Account settings
+                  span Edit
                 `,
                 [$("icons icon[settings] svg").cloneNode(true)],
               )

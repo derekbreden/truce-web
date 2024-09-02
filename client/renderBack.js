@@ -48,8 +48,8 @@ const renderBack = () => {
       goToPath(previous_path, false, true);
     });
 
-    if (!previous_path) {
-      $back_forward.$("back-wrapper")?.remove();
+    if (!previous_path || previous_path === state.path) {
+      $back_forward.remove();
     }
   }
 };
