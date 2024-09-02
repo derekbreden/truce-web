@@ -119,13 +119,13 @@ tests.push(async () => {
   await sleep();
   $("header hamburger").click();
   await sleep();
-  $('menu [href="/recent"]').click();
+  $('menu [href="/tags"]').click();
   $("test-wrapper")?.remove();
 });
 
-// Clicked /recent
+// Clicked /tags
 tests.push(async () => {
-  expect("activities h3");
+  expect("tags");
   await sleep();
   testCleanup();
 });

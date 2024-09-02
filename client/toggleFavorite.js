@@ -140,12 +140,6 @@ const toggleFavorite = async (topic_or_comment) => {
       active_toggle_save = false;
 
       // Finished all saves
-
-      // Update the topics from favorites as applicable
-      if (state.cache["/topics_from_favorites"]?.topics) {
-        state.cache["/topics_from_favorites"].topics = [];
-        startSession();
-      }
     }
   };
 

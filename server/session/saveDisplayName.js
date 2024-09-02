@@ -3,6 +3,22 @@ const prompts = require("../prompts");
 
 module.exports = async (req, res) => {
   if (!res.writableEnded && req.session.user_id && req.body.display_name) {
+    // Validate manually
+    req.body.display_name = req.body.display_name
+      .replace(/[^a-zA-Z]/g, " ")
+      .replace(/ {1,}/g, " ")
+      .trim();
+
+    if (!req.body.display_name) {
+      res.end(
+        JSON.stringify({
+          error: "Empty",
+        }),
+      );
+      return;
+    }
+
+    // Validate with AI
     const ai_response = await ai.ask(
       [
         {
@@ -26,6 +42,7 @@ module.exports = async (req, res) => {
           success: true,
           user_id: req.session.user_id,
           display_name: req.session.display_name,
+          display_name_index: req.session.display_name_index,
         }),
       );
     } else {

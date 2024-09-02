@@ -6,7 +6,7 @@ const renderComment = (comment) => {
   let $comment_body = markdownToElements(comment.body);
   let characters_used = 0;
   let trimmed = false;
-  if (state.path === "/recent" || state.path === "/favorites") {
+  if (state.path === "/favorites") {
     let added = 0;
     $comment_body = $comment_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
@@ -155,7 +155,7 @@ const renderComment = (comment) => {
         focusAddNewComment();
       });
       $more_modal.$("action[block]").remove();
-      if (state.path === "/favorites" || state.path === "/recent") {
+      if (state.path === "/favorites") {
         $more_modal.$("action[edit]").remove();
       }
     } else {

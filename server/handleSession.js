@@ -41,7 +41,6 @@ module.exports = async (req, res) => {
     await require("./session/createSessionIfNotExists")(req, res);
     await require("./session/getSingleTopic")(req, res);
     await require("./session/getSingleThread")(req, res);
-    await require("./session/getRecentActivity")(req, res);
     await require("./session/getFavorites")(req, res);
     await require("./session/getTags")(req, res);
     await require("./session/getPageTopics")(req, res);

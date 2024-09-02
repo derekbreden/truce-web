@@ -19,6 +19,7 @@ email VARCHAR(255),
 password_hash BYTEA,
 profile_picture_uuid VARCHAR(36),
 admin BOOL DEFAULT false,
+slug VARCHAR(70),
 create_date TIMESTAMP(3) NOT NULL DEFAULT NOW()
 );
 

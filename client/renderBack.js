@@ -18,24 +18,20 @@ const renderBack = () => {
       [
         previous_path === "/topics"
           ? "Topics"
-          : previous_path === "/recent"
-            ? "Comments"
-            : previous_path?.substr(0, 8) === "/comment"
-              ? "Comment thread"
-              : previous_path?.substr(0, 7) === "/topic/"
-                ? "Topic"
-                : previous_path === "/"
-                  ? "Home"
-                  : previous_path === "/notifications"
-                    ? "Notifications"
-                    : previous_path === "/favorites"
-                      ? "Favorites"
-                      : previous_path === "/topics_from_favorites"
-                        ? "Topics from favorites"
-                        : previous_path?.substr(0, 5) === "/tag/"
-                          ? previous_path.substr(5)[0].toUpperCase() +
-                            previous_path.substr(5).slice(1)
-                          : "Back",
+          : previous_path?.substr(0, 8) === "/comment"
+            ? "Comment thread"
+            : previous_path?.substr(0, 7) === "/topic/"
+              ? "Topic"
+              : previous_path === "/"
+                ? "Terms and conditions"
+                : previous_path === "/notifications"
+                  ? "Notifications"
+                  : previous_path === "/favorites"
+                    ? "Favorites"
+                    : previous_path?.substr(0, 5) === "/tag/"
+                      ? previous_path.substr(5)[0].toUpperCase() +
+                        previous_path.substr(5).slice(1)
+                      : "Back",
       ],
     );
     $("main-content-wrapper[active] main-content").prepend($back_forward);
