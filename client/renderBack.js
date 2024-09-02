@@ -31,7 +31,12 @@ const renderBack = () => {
                     : previous_path?.substr(0, 5) === "/tag/"
                       ? previous_path.substr(5)[0].toUpperCase() +
                         previous_path.substr(5).slice(1)
-                      : "Back",
+                      : previous_path?.substr(0, 6) === "/user/"
+                        ? renderName(
+                            state.cache[previous_path].user.display_name,
+                            state.cache[previous_path].user.display_name_index,
+                          )
+                        : "Back",
       ],
     );
     $("main-content-wrapper[active] main-content").prepend($back_forward);

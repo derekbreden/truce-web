@@ -223,17 +223,20 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         topic
           h2[settings]
             span Account settings
-            $1
+            button[profile][small][slug=$1]
+              icon
+                $2
+              span View profile
           p You may change your profile picture or your display name here. You may also remove your account.
         topic
           p[bold] Profile picture
           label[profile-picture][large]
             image
-              $2
+              $3
             input[image][type=file][accept=image/*]
           p[bold] Display name
           p[input]
-            input[type=text][display-name][value=$3]
+            input[type=text][display-name][value=$4]
           p[button]
             button[save] Save display name
         topic
@@ -242,7 +245,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             button[remove][alt] Remove Account
       `,
       [
-        $("icons icon[settings] svg").cloneNode(true),
+        state.slug,
+        $("icons icon[profile-picture] svg").cloneNode(true),
         state.profile_picture_uuid
           ? $(
               `
@@ -254,51 +258,18 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         state.display_name,
       ],
     );
-    $("main-content-wrapper[active] main-content").replaceChildren($settings);
-
-    $settings.$("input[image]").on("change", () => {
-      Array.from($settings.$("input[image]").files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = ($event) => {
-          imageToPng(
-            $event.target.result,
-            (png) => {
-              const $image = $(
-                `
-                img[src=$1]
-                `,
-                [png.url],
-              );
-              const $original = $("[profile-picture] image").childNodes[0];
-              $("[profile-picture] image").replaceChildren($image);
-              alertInfo("Saving profile picture...");
-              fetch("/session", {
-                method: "POST",
-                body: JSON.stringify({
-                  profile_picture: png.url,
-                }),
-              })
-                .then((response) => response.json())
-                .then(function (data) {
-                  if (data.error || !data.success) {
-                    modalError(data.error || "Server error");
-                    $("[profile-picture] image").replaceChildren($original);
-                  } else {
-                    alertInfo("Profile picture saved.");
-                  }
-                })
-                .catch(function () {
-                  modalError("Network error");
-                  $("[profile-picture] image").replaceChildren($original);
-                });
-            },
-            512,
-            true,
-          );
-        };
-        reader.readAsDataURL(file);
+    $settings.$("button[profile]")?.forEach(($button) => {
+      $button.on("click", ($event) => {
+        $event.preventDefault();
+        goToPath(`/user/${$button.getAttribute("slug")}`);
       });
     });
+    $("main-content-wrapper[active] main-content").replaceChildren($settings);
+
+    $("main-content-wrapper[active] [profile-picture] input[image]")?.on(
+      "change",
+      editProfilePicture,
+    );
 
     $settings.$("[save]").on("click", ($event) => {
       $event.preventDefault();

@@ -313,7 +313,7 @@ Tags:
    - **politics**
       - Uniting our divides
       - If half the country disagrees, it is political
-      - Most things most people post should be tagged with this, because they are speaking from a perspective and bubble that the other half of the country disagrees with.
+      - Most things most people post should be tagged with this, when they are speaking from a perspective and bubble that the other half of the country disagrees with.
       - Whether talking about work or technology or anything in the news or whatever, if there are two ways to spin it, this tag should be applied.
    
    - **media**

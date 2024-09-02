@@ -43,6 +43,7 @@ module.exports = async (req, res) => {
     await require("./session/getSingleThread")(req, res);
     await require("./session/getFavorites")(req, res);
     await require("./session/getTags")(req, res);
+    await require("./session/getUser")(req, res);
     await require("./session/getPageTopics")(req, res);
     await require("./session/getUpdatedCounts")(req, res);
     await require("./session/saveFavorite")(req, res);
@@ -54,6 +55,7 @@ module.exports = async (req, res) => {
 
     // Default response if nothing else responded sooner
     if (!res.writableEnded) {
+      req.results.slug = req.session.slug;
       req.results.user_id = req.session.user_id;
       req.results.email = req.session.email;
       req.results.display_name = req.session.display_name;

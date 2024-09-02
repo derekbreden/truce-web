@@ -21,6 +21,8 @@ const parsePath = () => {
     new_path = "/" + new_paths[0] + "/" + new_paths[1];
   } else if (new_paths[0] === "tag" && new_paths[1]) {
     new_path = "/" + new_paths[0] + "/" + new_paths[1];
+  } else if (new_paths[0] === "user" && new_paths[1]) {
+    new_path = "/" + new_paths[0] + "/" + new_paths[1];
   } else if (new_paths[0]) {
     new_path = "/" + new_paths[0];
   }

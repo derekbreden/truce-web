@@ -9,7 +9,8 @@ module.exports = async (req, res) => {
   if (
     !res.writableEnded &&
     (req.body.path === "/topics" ||
-      req.body.path?.substr(0, 5) === "/tag/")
+      req.body.path?.substr(0, 5) === "/tag/" ||
+      req.body.path?.substr(0, 6) === "/user/")
   ) {
     if (!req.body.max_comment_create_date) {
       const topic_results = await req.client.query(
@@ -19,6 +20,8 @@ module.exports = async (req, res) => {
           t.topic_id,
           t.title,
           u.display_name,
+          CASE WHEN u.display_name = '' THEN u.user_id ELSE u.display_name_index END as display_name_index,
+          CASE WHEN u.slug = '' THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           t.slug,
           LEFT(t.body, 1000) as body,
@@ -74,6 +77,22 @@ module.exports = async (req, res) => {
                 `
               : ""
           }
+          ${
+            req.body.path.substr(0, 6) === "/user/"
+              ? `
+                AND t.user_id IN (
+                  SELECT user_id
+                  FROM users
+                  WHERE 
+                    ${
+                      Number(req.body.path.substr(6))
+                        ? `user_id = $4`
+                        : `slug = $4`
+                    }
+                )
+                `
+              : ""
+          }
         ORDER BY t.create_date DESC
         LIMIT 20
         `,
@@ -83,7 +102,9 @@ module.exports = async (req, res) => {
           req.body.max_topic_create_date || null,
           req.body.path.substr(0, 5) === "/tag/"
             ? req.body.path.substr(5)
-            : undefined,
+            : req.body.path.substr(0, 6) === "/user/"
+              ? req.body.path.substr(6)
+              : undefined,
         ].filter(x => x !== undefined),
       );
       req.results.path = req.body.path;

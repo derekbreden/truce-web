@@ -5,118 +5,15 @@ const bindScrollEvent = () => {
       return;
     }
 
-    // Favorites load older
-    if (
-      state.path === "/favorites" &&
-      state.cache["/favorites"] &&
-      !state.cache["/favorites"].finished
-    ) {
-      // A threshold based on how much is left to scroll
-      const threshold =
-        $("main-content-wrapper[active]").scrollHeight -
-        $("main-content-wrapper[active]").clientHeight * 3;
-
-      // When we pass the threshold
-      if ($("main-content-wrapper[active]").scrollTop > threshold) {
-        // Find the oldest (min) create_date of what we have so far
-        const max_create_date = state.cache["/favorites"].activities.reduce(
-          (min, activity) => {
-            return min < activity.favorite_create_date ? min : activity.favorite_create_date;
-          },
-          new Date().toISOString(),
-        );
-
-        // Use that to load anything older than that (our min is the max of what we want returned)
-        state.loading_path = true;
-        fetch("/session", {
-          method: "POST",
-          body: JSON.stringify({
-            path: "/favorites",
-            max_create_date,
-          }),
-        })
-          .then((response) => response.json())
-          .then(function (data) {
-            // Stop when we reach the end (no more results returned)
-            if (data.activities && !data.activities.length) {
-              state.cache["/favorites"].finished = true;
-            }
-
-            // Append what we found to the existing cache
-            state.cache["/favorites"].activities.push(...data.activities);
-
-            // And re-render if any activities added
-            if (data.activities.length) {
-              renderActivities(state.cache["/favorites"].activities);
-            }
-            state.loading_path = false;
-          })
-          .catch(function (error) {
-            state.loading_path = false;
-            state.most_recent_error = error;
-            alertError("Network error loading more");
-          });
-      }
-    }
-
     // Topics load older
-    if (
-      state.path === "/topics" &&
-      state.cache["/topics"] &&
-      !state.cache["/topics"].finished
-    ) {
-      // A threshold based on how much is left to scroll
-      const threshold =
-        $("main-content-wrapper[active]").scrollHeight -
-        $("main-content-wrapper[active]").clientHeight * 3;
-
-      // When we pass the threshold
-      if ($("main-content-wrapper[active]").scrollTop > threshold) {
-        // Find the oldest (min) create_date of what we have so far
-        const max_topic_create_date = state.cache["/topics"].topics.reduce(
-          (min, topic) => {
-            return min < topic.create_date ? min : topic.create_date;
-          },
-          new Date().toISOString(),
-        );
-
-        // Use that to load anything older than that (our min is the max of what we want returned)
-        state.loading_path = true;
-        fetch("/session", {
-          method: "POST",
-          body: JSON.stringify({
-            path: "/topics",
-            max_topic_create_date,
-          }),
-        })
-          .then((response) => response.json())
-          .then(function (data) {
-            // Stop when we reach the end (no more results returned)
-            if (data.topics && !data.topics.length) {
-              state.cache["/topics"].finished = true;
-            }
-
-            // Append what we found to the existing cache
-            state.cache["/topics"].topics.push(...data.topics);
-
-            // And re-render if any topics added
-            if (data.topics.length) {
-              renderTopics(state.cache["/topics"].topics);
-            }
-            state.loading_path = false;
-          })
-          .catch(function (error) {
-            state.loading_path = false;
-            console.error(error);
-            state.most_recent_error = error;
-            alertError("Network error loading more");
-          });
-      }
-    }
-
+    // Favorites load older
     // Tags load older
+    // User load older
     if (
-      state.path.substr(0,5) === "/tag/" &&
+      (state.path === "/topics" ||
+        state.path === "/favorites" ||
+        state.path.substr(0, 5) === "/tag/" ||
+        state.path.substr(0, 6) === "/user/") &&
       state.cache[state.path] &&
       !state.cache[state.path].finished
     ) {
@@ -156,7 +53,11 @@ const bindScrollEvent = () => {
 
             // And re-render if any topics added
             if (data.topics.length) {
-              renderTopics(state.cache[state.path].topics, state.cache[state.path].tag);
+              renderTopics(
+                state.cache[state.path].topics,
+                state.cache[state.path].tag,
+                state.cache[state.path].user,
+              );
             }
             state.loading_path = false;
           })
@@ -171,7 +72,7 @@ const bindScrollEvent = () => {
 
     // Comments load older
     if (
-      (state.path.substr(0, 7) === "/topic/") &&
+      state.path.substr(0, 7) === "/topic/" &&
       state.cache[state.path] &&
       !state.cache[state.path].comments_finished
     ) {

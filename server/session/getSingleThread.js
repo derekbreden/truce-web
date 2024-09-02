@@ -29,6 +29,7 @@ module.exports = async (req, res) => {
         c.parent_comment_id,
         u.display_name,
         u.display_name_index,
+        u.slug AS user_slug,
         u.profile_picture_uuid,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
         c.image_uuids,

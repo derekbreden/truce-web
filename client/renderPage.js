@@ -10,7 +10,7 @@ const renderPage = (data) => {
   $("main-content-wrapper[active] topics-loading")?.remove();
 
   // Render Topics
-  renderTopics(data.topics, data.tag);
+  renderTopics(data.topics, data.tag, data.user);
 
   // Render Comments
   renderComments(data.comments);

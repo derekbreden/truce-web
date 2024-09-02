@@ -33,17 +33,18 @@ const renderComment = (comment) => {
     `
     comment
       h3
-        b
+        author[slug=$1]
           profile-picture
             image
-              $1
-          span $2
-        $3
-      $4
+              $2
+          span $3
+        $4
       $5
       $6
+      $7
     `,
     [
+      comment.user_slug,
       comment.profile_picture_uuid
         ? $(
             `
@@ -98,6 +99,13 @@ const renderComment = (comment) => {
   if (!trimmed) {
     $comment.$("detail[more]")?.remove();
   }
+  $comment.$("author").forEach(($author) => {
+    $author.on("click", ($event) => {
+      $event.stopPropagation();
+      const slug = $author.getAttribute("slug");
+      goToPath(`/user/${slug}`);
+    })
+  });
   $comment.$("detail[favorites]").on("click", ($event) => {
     $event.stopPropagation();
     toggleFavorite(comment);

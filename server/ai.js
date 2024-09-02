@@ -23,9 +23,9 @@ module.exports = {
         },
         ...messages,
       ],
-      temperature: 1,
+      temperature: 0.01,
       max_tokens: 520,
-      top_p: 1,
+      top_p: 0.01,
       frequency_penalty: 0,
       presence_penalty: 0,
     };

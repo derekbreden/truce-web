@@ -33,5 +33,6 @@ module.exports = async (req, res) => {
       [user_inserted.rows[0].user_id, req.session.session_id],
     );
     req.session.user_id = user_inserted.rows[0].user_id;
+    req.session.slug = user_inserted.rows[0].slug;
   }
 };

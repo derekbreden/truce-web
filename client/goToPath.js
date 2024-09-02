@@ -22,6 +22,14 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       ).scrollTop;
     }
 
+    // Add users own profile to the path sequence
+    if (state.slug) {
+      const slug = `/user/${state.slug}`;
+      if (path_sequence.indexOf(slug) === -1) {
+        path_sequence.push(slug);
+      }
+    }
+
     // Slide from left to right as if clicking back in several more scenarios
     const previous_sequence = path_sequence.indexOf(state.path);
     const next_sequence = path_sequence.indexOf(new_path);

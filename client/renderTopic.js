@@ -8,7 +8,8 @@ const renderTopic = (topic) => {
   if (
     state.path === "/topics" ||
     state.path === "/favorites" ||
-    state.path.substr(0, 5) === "/tag/"
+    state.path.substr(0, 5) === "/tag/" ||
+    state.path.substr(0, 6) === "/user/"
   ) {
     trimmed = true;
     $topic_body = $topic_body.reduce((acc, child) => {
@@ -43,16 +44,17 @@ const renderTopic = (topic) => {
       $(
         `
         author-tags
-          author
+          author[slug=$1]
             profile-picture
               image
-                $1
-            span by
-            b $2
+                $2
+            by by
+            name $3
           tags
-            $3
+            $4
         `,
         [
+          topic.user_slug,
           topic.profile_picture_uuid
             ? $(
                 `
@@ -61,7 +63,7 @@ const renderTopic = (topic) => {
                 ["/image/" + topic.profile_picture_uuid],
               )
             : $("icons icon[profile-picture] svg").cloneNode(true),
-          topic.display_name || "Anonymous",
+          renderName(topic.display_name, topic.display_name_index),
           topic.tags
             .split(",")
             .filter((x) => x)
@@ -181,7 +183,13 @@ const renderTopic = (topic) => {
       ),
     ],
   );
-
+  $topic.$("author").forEach(($author) => {
+    $author.on("click", ($event) => {
+      $event.stopPropagation();
+      const slug = $author.getAttribute("slug");
+      goToPath(`/user/${slug}`);
+    })
+  });
   $topic.$("tag").forEach(($tag) => {
     $tag.on("click", ($event) => {
       $event.stopPropagation();
@@ -353,7 +361,8 @@ const renderTopic = (topic) => {
       if (
         state.path === "/topics" ||
         state.path === "/favorites" ||
-        state.path.substr(0, 5) === "/tag/"
+        state.path.substr(0, 5) === "/tag/" ||
+        state.path.substr(0, 6) === "/user/"
       ) {
         $more_modal.$("action[edit]").remove();
       }
@@ -419,7 +428,8 @@ const renderTopic = (topic) => {
   if (
     state.path === "/topics" ||
     state.path === "/favorites" ||
-    state.path.substr(0, 5) === "/tag/"
+    state.path.substr(0, 5) === "/tag/" ||
+    state.path.substr(0, 6) === "/user/"
   ) {
     $topic.setAttribute("trimmed", "");
     $topic.on("click", ($event) => {

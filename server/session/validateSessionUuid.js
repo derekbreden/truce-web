@@ -25,7 +25,8 @@ module.exports = async (req, res) => {
         users.display_name,
         users.admin,
         users.user_id,
-        users.profile_picture_uuid
+        users.profile_picture_uuid,
+        users.slug
       FROM sessions
       LEFT JOIN user_sessions ON sessions.session_id = user_sessions.session_id
       LEFT JOIN users ON user_sessions.user_id = users.user_id
@@ -44,6 +45,7 @@ module.exports = async (req, res) => {
         session_results.rows[0].profile_picture_uuid;
       req.session.admin = session_results.rows[0].admin || false;
       req.session.user_id = session_results.rows[0].user_id || "";
+      req.session.slug = session_results.rows[0].slug || "";
     }
   }
 };

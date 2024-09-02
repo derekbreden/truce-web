@@ -55,7 +55,7 @@ const showMenu = () => {
   if (state.user_id) {
     const $settings = $(
       `
-        a[href=/]
+        a[href=/settings]
           icon[settings]
           p Account settings
       `,

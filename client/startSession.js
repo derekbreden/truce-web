@@ -81,6 +81,9 @@ const startSession = (was_same_path) => {
           showResetPassword();
         }
       }
+      if (data.slug) {
+        state.slug = data.slug;
+      }
       if (data.user_id) {
         state.user_id = data.user_id;
       }
@@ -92,14 +95,6 @@ const startSession = (was_same_path) => {
       }
       if (data.profile_picture_uuid) {
         state.profile_picture_uuid = data.profile_picture_uuid;
-        $("[profile-picture][large] image")?.replaceChildren(
-          $(
-            `
-            img[src=$1]
-            `,
-            ["/image/" + state.profile_picture_uuid],
-          ),
-        );
       }
       if (data.error) {
         modalError(data.error);
@@ -317,7 +312,7 @@ const getMoreRecent = () => {
           (a) => new_ids.indexOf(a.topic_id) === -1,
         );
         current_cache.topics.unshift(...data.topics);
-        renderTopics(current_cache.topics, current_cache.tag);
+        renderTopics(current_cache.topics, current_cache.tag, current_cache.user);
 
         // Flash any newly added items
         data.topics.forEach((topic) => {
