@@ -1312,6 +1312,7 @@ back-wrapper button::before,
 
 read-more-wrapper [expand-right]::before,
 forward-wrapper [expand-right]::before,
+back-wrapper [expand-right]::before,
 back-wrapper [expand-left]::before {
   transform: rotate(-45deg);
   top: 0;
@@ -1321,6 +1322,7 @@ back-wrapper [expand-left]::before {
 }
 
 read-more-wrapper [expand-right]::before,
+back-wrapper [expand-right]::before,
 forward-wrapper [expand-right]::before {
   transform: rotate(135deg);
   left: -4px;
@@ -1552,9 +1554,27 @@ tags[tags-list] tag svg {
   width: 40px;
 }
 
+users user {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  gap: 20px;
+}
+users author-name {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+users author-name name {
+  font-weight: 600;
+}
+
 back-forward-wrapper::after,
 activities[favorites] activity::after,
 notifications notification::after,
+users user:after,
 topics topic::before {
   content: "";
   display: flex;

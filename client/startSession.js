@@ -17,8 +17,7 @@ const startSession = (was_same_path) => {
   if (state.cache[state.path]) {
     if (
       state.path !== "/" &&
-      state.path !== "/privacy" &&
-      state.path !== "/settings"
+      state.path !== "/privacy"
     ) {
       renderPage(state.cache[state.path]);
     }
@@ -45,8 +44,7 @@ const startSession = (was_same_path) => {
     }
     if (
       state.path !== "/" &&
-      state.path !== "/privacy" &&
-      state.path !== "/settings"
+      state.path !== "/privacy"
     ) {
       return;
     }
@@ -106,8 +104,7 @@ const startSession = (was_same_path) => {
         state.cache[data.path] = data;
         if (
           state.path !== "/" &&
-          state.path !== "/privacy" &&
-          state.path !== "/settings"
+          state.path !== "/privacy"
         ) {
           renderPage(data);
         }

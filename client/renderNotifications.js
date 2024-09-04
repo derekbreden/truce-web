@@ -87,7 +87,7 @@ const renderNotifications = (notifications) => {
         topics[notifications-header]
           topic
             h2 Alerts
-            p When you "Subscribe to replies", you will get an alert anytime someone responds to a topic or comment you have posted.
+            p When you "Turn on alerts", you will get an alert anytime someone responds to a topic or comment you have posted.
         `,
       ),
     );
@@ -136,9 +136,9 @@ const renderNotifications = (notifications) => {
     $unread_allclear = [
       $(
         `
-      all-clear-wrapper
-        p All clear
-      `,
+        all-clear-wrapper
+          p All clear
+        `,
       ),
     ];
   }
@@ -263,7 +263,7 @@ const renderMarkAllAsRead = () => {
     const $toggle_wrapper = $(
       `
       toggle-wrapper[disabled=$1][active=$2]
-        toggle-text Subscribe to replies
+        toggle-text Turn on alerts
         toggle-button
           toggle-circle
       `,
@@ -541,7 +541,8 @@ window.addEventListener("load", () => {
 if (
   window.webkit ||
   window.matchMedia("(display-mode: standalone)").matches ||
-  window.is_android || 1
+  window.is_android ||
+  1
 ) {
   $("body").setAttribute("app", "");
   state.is_app = true;

@@ -31,14 +31,6 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       ).scrollTop;
     }
 
-    // Add users own profile to the path sequence
-    if (state.slug) {
-      const slug = `/user/${state.slug}`;
-      if (path_sequence.indexOf(slug) === -1) {
-        path_sequence.push(slug);
-      }
-    }
-
     // New path for /tag/ is same as /tags
     let new_path_parsed = new_path;
     if (new_path.substr(0, 5) === "/tag/") {
@@ -46,8 +38,23 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     // Slide from left to right as if clicking back in several more scenarios
-    const previous_sequence = path_sequence.indexOf(state.path);
-    const next_sequence = path_sequence.indexOf(new_path_parsed);
+    let previous_sequence = path_sequence.indexOf(state.path);
+    let next_sequence = path_sequence.indexOf(new_path_parsed);
+
+    // Slide left and right on user profile sub-pages
+    if (
+      state.path.substr(0, 6) === "/user/" &&
+      new_path_parsed.substr(0, 6) === "/user/"
+    ) {
+      const this_user_slug = state.path.split("/")[2];
+      const user_path_sequence = [
+        `/user/${this_user_slug}`,
+        `/user/${this_user_slug}/subscribers`,
+        `/user/${this_user_slug}/subscribed_to_users`,
+      ];
+      previous_sequence = user_path_sequence.indexOf(state.path);
+      next_sequence = user_path_sequence.indexOf(new_path_parsed);
+    }
 
     // From one main page to another
     if (

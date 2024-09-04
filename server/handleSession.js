@@ -45,6 +45,7 @@ module.exports = async (req, res) => {
     await require("./session/getFavorites")(req, res);
     await require("./session/getTags")(req, res);
     await require("./session/getUser")(req, res);
+    await require("./session/getSettings")(req, res);
     await require("./session/getPageTopics")(req, res);
     await require("./session/getUpdatedCounts")(req, res);
     await require("./session/saveFavorite")(req, res);

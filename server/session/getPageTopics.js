@@ -86,7 +86,7 @@ module.exports = async (req, res) => {
                   FROM users
                   WHERE 
                     ${
-                      Number(req.body.path.substr(6))
+                      Number(req.body.path.split("/")[2])
                         ? `user_id = $4`
                         : `slug = $4`
                     }
@@ -115,7 +115,7 @@ module.exports = async (req, res) => {
           req.body.path.substr(0, 5) === "/tag/"
             ? req.body.path.substr(5)
             : req.body.path.substr(0, 6) === "/user/"
-              ? req.body.path.substr(6)
+              ? req.body.path.split("/")[2]
               : undefined,
         ].filter((x) => x !== undefined),
       );

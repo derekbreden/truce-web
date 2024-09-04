@@ -17,7 +17,7 @@ const renderBack = () => {
           p $1
       `,
       [
-        previous_path === "/topics" || state.path === "/topics/all"
+        previous_path === "/topics" || previous_path === "/topics/all"
           ? "Topics"
           : previous_path?.substr(0, 8) === "/comment"
             ? "Comment thread"
