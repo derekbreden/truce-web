@@ -737,6 +737,10 @@ button[alt] {
   color: light-dark(#000, #fff);
   border: 1px solid light-dark(#999, #333);
 }
+button[alt] svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+}
 
 button[small] {
   padding: 2px 10px;
@@ -1203,6 +1207,29 @@ back-forward-wrapper {
   justify-content: space-between;
   position: relative;
   padding-bottom: 15px;
+}
+
+back-forward-wrapper center-wrapper {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin: 15px 0 0 0;
+}
+
+@media (max-width: 1000px) {
+  main-content-2 back-forward-wrapper {
+    margin-top: 20px;
+  }
+  main-content-2 back-forward-wrapper:before {
+    content: "";
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: -20px;
+    right: -20px;
+    border-top: 1px solid #ddd;
+    border-top: 1px solid light-dark(#ddd, #333);
+  }
 }
 
 mark-all-as-read-wrapper,
@@ -1883,14 +1910,18 @@ footer dot[index="1"] {
   background: #000;
 }
 footer dot[index="2"] {
-  right: calc(5 * 100% / 8 - 2px);
+  right: calc(7 * 100% / 8 - 2px);
   background: #000;
 }
 footer dot[index="3"] {
+  right: calc(5 * 100% / 8 - 2px);
+  background: #000;
+}
+footer dot[index="4"] {
   right: calc(3 * 100% / 8 - 2px);
   background: #fff;
 }
-footer dot[index="4"] {
+footer dot[index="5"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
 }

@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
   if (
     !res.writableEnded &&
     (req.body.path === "/topics" ||
+      req.body.path === "/topics/all" ||
       req.body.path?.substr(0, 5) === "/tag/" ||
       req.body.path?.substr(0, 6) === "/user/")
   ) {
@@ -93,6 +94,17 @@ module.exports = async (req, res) => {
                 `
               : ""
           }
+          ${
+            req.body.path === "/topics" && Number(req.session.subscribed_to_users) > 0
+              ? `
+                AND t.user_id IN (
+                  SELECT subscribed_to_user_id
+                  FROM subscribers
+                  WHERE user_id = $1
+                )
+                `
+              : ""
+          }
         ORDER BY t.create_date DESC
         LIMIT 20
         `,
@@ -105,7 +117,7 @@ module.exports = async (req, res) => {
             : req.body.path.substr(0, 6) === "/user/"
               ? req.body.path.substr(6)
               : undefined,
-        ].filter(x => x !== undefined),
+        ].filter((x) => x !== undefined),
       );
       req.results.path = req.body.path;
       req.results.topics.push(...topic_results.rows);

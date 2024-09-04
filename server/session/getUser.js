@@ -3,21 +3,28 @@ module.exports = async (req, res) => {
     const user = await req.client.query(
       `
       SELECT
-        user_id,
-        display_name,
-        display_name_index,
-        slug,
-        profile_picture_uuid
+        u.user_id,
+        u.display_name,
+        u.display_name_index,
+        u.slug,
+        u.profile_picture_uuid,
+        CASE WHEN s.user_id IS NULL THEN false ELSE true END AS subscribed
       FROM
-        users
+        users u
+      LEFT JOIN subscribers s ON
+        u.user_id = s.subscribed_to_user_id
+        AND s.user_id = $1
       WHERE
         ${
           Number(req.body.path.substr(6))
-            ? `user_id = $1`
-            : `slug = $1`
+            ? `u.user_id = $2`
+            : `u.slug = $2`
         }
       `,
-      [req.body.path.substr(6)],
+      [
+        req.session.user_id || 0,
+        req.body.path.substr(6)
+      ],
     );
     req.results.user = user.rows[0] || {};
   }

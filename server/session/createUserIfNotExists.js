@@ -11,7 +11,8 @@ module.exports = async (req, res) => {
       req.body.comment_id_to_block ||
       req.body.topic_id_to_flag ||
       req.body.comment_id_to_flag ||
-      (req.body.topic_id && req.body.poll_choice))
+      (req.body.topic_id && req.body.poll_choice) ||
+      req.body.subscribe_to_user_id)
   ) {
     const user_inserted = await req.client.query(
       `
@@ -33,6 +34,7 @@ module.exports = async (req, res) => {
       [user_inserted.rows[0].user_id, req.session.session_id],
     );
     req.session.user_id = user_inserted.rows[0].user_id;
-    req.session.slug = user_inserted.rows[0].slug;
+    req.session.slug = user_inserted.rows[0].user_id;
+    req.session.subscribed_to_users = "0";
   }
 };

@@ -9,6 +9,15 @@ const goToPath = (new_path, skip_state, clicked_back) => {
   }
   let was_same_path = true;
 
+  if (
+    new_path === "/topics" &&
+    localStorage.getItem(`${window.local_storage_key}:topics_preference`)
+  ) {
+    new_path = localStorage.getItem(
+      `${window.local_storage_key}:topics_preference`,
+    );
+  }
+
   if (state.path !== new_path) {
     was_same_path = false;
     // Cancel any open active comment or topic
@@ -30,9 +39,15 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       }
     }
 
+    // New path for /tag/ is same as /tags
+    let new_path_parsed = new_path;
+    if (new_path.substr(0, 5) === "/tag/") {
+      new_path_parsed = "/tags";
+    }
+
     // Slide from left to right as if clicking back in several more scenarios
     const previous_sequence = path_sequence.indexOf(state.path);
-    const next_sequence = path_sequence.indexOf(new_path);
+    const next_sequence = path_sequence.indexOf(new_path_parsed);
 
     // From one main page to another
     if (
@@ -80,9 +95,23 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     if (state.path === "/topics") {
-      localStorage.setItem(`${window.local_storage_key}:has_visited_topics`, true);
+      localStorage.setItem(
+        `${window.local_storage_key}:has_visited_topics`,
+        true,
+      );
     } else if (state.path === "/") {
       localStorage.removeItem(`${window.local_storage_key}:has_visited_topics`);
+    }
+    if (
+      state.path === "/" ||
+      state.path === "/topics" ||
+      state.path === "/topics/all" ||
+      state.path.substr(0, 5) === "/tag/"
+    ) {
+      localStorage.setItem(
+        `${window.local_storage_key}:last_root_path`,
+        state.path,
+      );
     }
   }
 

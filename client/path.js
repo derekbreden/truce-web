@@ -3,6 +3,7 @@ const path_sequence = [
   "/",
   "/privacy",
   "/topics",
+  "/topics/all",
   "/tags",
   "/favorites",
   "/notifications",
@@ -43,8 +44,19 @@ if (state.path === "/") {
   if (localStorage.getItem(`${window.local_storage_key}:has_visited_topics`)) {
     state.path = "/topics";
   }
+  // Default to last root path
+  if (localStorage.getItem(`${window.local_storage_key}:last_root_path`)) {
+    state.path = localStorage.getItem(`${window.local_storage_key}:last_root_path`);
+  }
 }
-const dot_index = Math.max(path_sequence.indexOf(state.path) - 1, 0);
+
+// New path for /tag/ is same as /tags
+let new_path_parsed = state.path;
+if (state.path.substr(0, 5) === "/tag/") {
+  new_path_parsed = "/tags";
+}
+
+const dot_index = Math.max(path_sequence.indexOf(new_path_parsed) - 1, 0);
 $("footer dot").setAttribute("index", dot_index);
 
 // Update page contents when the user hits the back button

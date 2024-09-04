@@ -33,7 +33,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
       ),
     );
   }
-  if (state.path === "/topics") {
+  if (state.path === "/topics" || state.path === "/topics/all") {
     if (!state.active_add_new_topic?.is_root) {
       $(
         "main-content-wrapper[active] main-content > add-new:first-child",

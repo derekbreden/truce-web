@@ -2,7 +2,7 @@ const renderTopics = (topics, tag, user) => {
   beforeDomUpdate();
   if (!$("main-content-wrapper[active] topics")) {
     const target =
-      state.path === "/topics"
+      (state.path === "/topics" || state.path === "/topics/all")
         ? "main-content-wrapper[active] main-content-2"
         : "main-content-wrapper[active] main-content";
     $(target).appendChild(
@@ -75,7 +75,25 @@ const renderTopics = (topics, tag, user) => {
                 `,
                 [$("icons icon[settings] svg").cloneNode(true)],
               )
-            : [],
+            : user.subscribed
+              ? $(
+                  `
+                  button[subscribe][small]
+                    icon[subscribe]
+                      $1
+                    span Unsubscribe
+                  `,
+                  [$("icons icon[subscribe] svg").cloneNode(true)],
+                )
+              : $(
+                  `
+                  button[subscribe][small][alt]
+                    icon[subscribe]
+                      $1
+                    span Subscribe
+                  `,
+                  [$("icons icon[subscribe] svg").cloneNode(true)],
+                ),
           user.profile_picture_uuid
             ? $(
                 `
@@ -94,11 +112,82 @@ const renderTopics = (topics, tag, user) => {
         ],
       ),
     );
+    $("topic[user] button[subscribe]")?.on("click", ($event) => {
+      $event.preventDefault();
+      if (user.subscribed) {
+        $("topic[user] button[subscribe] span").textContent =
+          "Unsubscribing...";
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            subscribe_to_user_id: user.user_id,
+            remove: true,
+          }),
+        })
+          .then((response) => response.json())
+          .then(function (data) {
+            if (data.error || !data.success) {
+              alertError("Server error removing subscription");
+              $("topic[user] button[subscribe] span").textContent =
+                "Unsubscribe";
+            } else {
+              user.subscribed = false;
+              state.subscribed_to_users--;
+              $("topic[user] button[subscribe]").setAttribute("alt", "");
+              $("topic[user] button[subscribe] span").textContent = "Subscribe";
+              alertInfo(
+                "Unsubscribed from " +
+                  renderName(user.display_name, user.display_name_index),
+              );
+              delete state.cache["/topics"];
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
+            alertError("Network error removing subscription");
+            $("topic[user] button[subscribe] span").textContent = "Unsubscribe";
+          });
+      } else {
+        $("topic[user] button[subscribe] span").textContent = "Subscribing...";
+        fetch("/session", {
+          method: "POST",
+          body: JSON.stringify({
+            subscribe_to_user_id: user.user_id,
+          }),
+        })
+          .then((response) => response.json())
+          .then(function (data) {
+            if (data.error || !data.success) {
+              alertError("Server error saving subscription");
+              $("topic[user] button[subscribe] span").textContent = "Subscribe";
+            } else {
+              user.subscribed = true;
+              state.subscribed_to_users++;
+              $("topic[user] button[subscribe]").removeAttribute("alt");
+              $("topic[user] button[subscribe] span").textContent =
+                "Unsubscribe";
+              alertInfo(
+                "Subscribed to " +
+                  renderName(user.display_name, user.display_name_index),
+              );
+              delete state.cache["/topics"];
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
+            alertError("Network error saving subscription");
+            $("topic[user] button[subscribe] span").textContent = "Subscribe";
+          });
+      }
+    });
     $("button[edit][small]")?.on("click", ($event) => {
       $event.preventDefault();
       goToPath("/settings");
     });
-    $("main-content-wrapper[active] [profile-picture] input[image]")?.on("change", editProfilePicture);
+    $("main-content-wrapper[active] [profile-picture] input[image]")?.on(
+      "change",
+      editProfilePicture,
+    );
   }
 
   // Tag
@@ -142,6 +231,48 @@ const renderTopics = (topics, tag, user) => {
         ),
       );
     }
+  }
+
+
+  if (state.path === "/topics" && state.subscribed_to_users) {
+    $("main-content-wrapper[active] main-content-2 topics").prepend(
+      $(
+        `
+        back-forward-wrapper
+          center-wrapper
+            span Topics from subscriptions
+          forward-wrapper
+            p All topics
+            button[expand-right]
+        `,
+        [],
+      ),
+    );
+    $("main-content-wrapper[active] main-content-2 topics back-forward-wrapper forward-wrapper").on("click", ($event) => {
+      $event.preventDefault();
+      localStorage.setItem(`${window.local_storage_key}:topics_preference`, "/topics/all")
+      goToPath("/topics/all");
+    })
+  }
+  if (state.path === "/topics/all" && state.subscribed_to_users) {
+    $("main-content-wrapper[active] main-content-2 topics").prepend(
+      $(
+        `
+        back-forward-wrapper
+          back-wrapper
+            button[expand-left]
+            p Topics from subscriptions
+          center-wrapper
+            span All topics
+        `,
+        [],
+      ),
+    );
+    $("main-content-wrapper[active] main-content-2 topics back-forward-wrapper back-wrapper").on("click", ($event) => {
+      $event.preventDefault();
+      localStorage.setItem(`${window.local_storage_key}:topics_preference`, "/topics")
+      goToPath("/topics");
+    })
   }
 
   afterDomUpdate();

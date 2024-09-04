@@ -7,6 +7,7 @@ const renderTopic = (topic) => {
   let trimmed = false;
   if (
     state.path === "/topics" ||
+    state.path === "/topics/all" ||
     state.path === "/favorites" ||
     state.path.substr(0, 5) === "/tag/" ||
     state.path.substr(0, 6) === "/user/"
@@ -365,6 +366,7 @@ const renderTopic = (topic) => {
       $more_modal.$("action[block]").remove();
       if (
         state.path === "/topics" ||
+        state.path === "/topics/all" ||
         state.path === "/favorites" ||
         state.path.substr(0, 5) === "/tag/" ||
         state.path.substr(0, 6) === "/user/"
@@ -451,6 +453,7 @@ const renderTopic = (topic) => {
   }
   if (
     state.path === "/topics" ||
+    state.path === "/topics/all" ||
     state.path === "/favorites" ||
     state.path.substr(0, 5) === "/tag/" ||
     state.path.substr(0, 6) === "/user/"

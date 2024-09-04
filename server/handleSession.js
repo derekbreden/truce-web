@@ -34,6 +34,7 @@ module.exports = async (req, res) => {
     await require("./session/generateResetToken")(req, res);
     await require("./session/useResetToken")(req, res);
     await require("./session/saveSubscription")(req, res);
+    await require("./session/saveSubscribeToUser")(req, res);
     await require("./session/saveTopic")(req, res);
     await require("./session/saveComment")(req, res);
     await require("./session/saveDisplayName")(req, res);
@@ -56,6 +57,7 @@ module.exports = async (req, res) => {
     // Default response if nothing else responded sooner
     if (!res.writableEnded) {
       req.results.slug = req.session.slug;
+      req.results.subscribed_to_users = req.session.subscribed_to_users;
       req.results.user_id = req.session.user_id;
       req.results.email = req.session.email;
       req.results.display_name = req.session.display_name;

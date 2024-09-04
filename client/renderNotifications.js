@@ -541,7 +541,7 @@ window.addEventListener("load", () => {
 if (
   window.webkit ||
   window.matchMedia("(display-mode: standalone)").matches ||
-  window.is_android
+  window.is_android || 1
 ) {
   $("body").setAttribute("app", "");
   state.is_app = true;

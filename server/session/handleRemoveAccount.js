@@ -110,6 +110,14 @@ module.exports = async (req, res) => {
       `,
       [ req.session.user_id ]
     );
+    await req.client.query(
+      `
+      DELETE FROM subscribers
+      WHERE user_id = $1
+      OR subscribed_to_user_id = $1
+      `,
+      [ req.session.user_id ]
+    );
 
     // Sessions
     await req.client.query(

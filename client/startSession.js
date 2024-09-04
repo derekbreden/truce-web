@@ -81,6 +81,9 @@ const startSession = (was_same_path) => {
           showResetPassword();
         }
       }
+      if (data.subscribed_to_users) {
+        state.subscribed_to_users = Number(data.subscribed_to_users);
+      }
       if (data.slug) {
         state.slug = data.slug;
       }
@@ -331,7 +334,7 @@ const getMoreRecent = () => {
         let min_threshold = 0;
 
         // For /topics specifically we have the add-new element that won't be shifted so we want to be (mostly) past it (~200px of it still showing means shift it away?)
-        if (current_path === "/topics") {
+        if (current_path === "/topics" || state.path === "/topics/all") {
           const $add_new = $("main-content > add-new:first-child");
           if ($add_new) {
             min_threshold = $add_new?.offsetTop + $add_new?.offsetHeight - 200;
