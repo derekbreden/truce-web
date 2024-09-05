@@ -109,7 +109,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                 p Examples
               comment
                 h3
-                  b
+                  author
                     profile-picture
                       image
                         $2
@@ -121,7 +121,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                     p If someone does not identify themselves as a fascist, calling them one is an example of name-calling. This type of labeling hinders constructive and respectful dialogue.
               comment
                 h3
-                  b
+                  author
                     profile-picture
                       image
                         $3
@@ -132,7 +132,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                     p This statement suggests that violence can be a solution, which promotes conflict and hostility rather than peaceful dialogue.
               comment
                 h3
-                  b
+                  author
                     profile-picture
                       image
                         $4
