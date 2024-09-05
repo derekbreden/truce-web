@@ -123,6 +123,7 @@ const bindSubscribeUser = ($button, user) => {
                 delete state.cache[key];
               }
             }
+            startSession();
           }
         })
         .catch(function (error) {
@@ -159,6 +160,7 @@ const bindSubscribeUser = ($button, user) => {
                 delete state.cache[key];
               }
             }
+            startSession();
           }
         })
         .catch(function (error) {

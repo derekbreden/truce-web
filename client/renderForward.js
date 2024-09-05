@@ -8,6 +8,15 @@ const renderForward = (parent_topic) => {
       `,
       [parent_topic.title],
     );
+    if (!$("main-content-wrapper[active] back-forward-wrapper")) {
+      $("main-content-wrapper[active] main-content").prepend(
+        $(
+          `
+          back-forward-wrapper
+          `,
+        ),
+      );
+    }
     $("main-content-wrapper[active] back-forward-wrapper")
       .$("forward-wrapper")
       ?.remove();

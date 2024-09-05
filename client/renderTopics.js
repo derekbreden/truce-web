@@ -2,7 +2,10 @@ const renderTopics = (topics, tag, user) => {
   let skip_topics = false;
   if (
     state.path === "/settings" ||
-    (state.path.substr(0, 6) === "/user/" && state.path.split("/")[3])
+    (state.path.substr(0, 6) === "/user/" && state.path.split("/")[3]) ||
+    state.path === "/favorites" ||
+    state.path === "/notifications" ||
+    state.path.substr(0, 9) === "/comment/"
   ) {
     skip_topics = true;
   }
