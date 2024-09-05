@@ -189,14 +189,14 @@ const renderTopic = (topic) => {
       $event.stopPropagation();
       const slug = $author.getAttribute("slug");
       goToPath(`/user/${slug}`);
-    })
+    });
   });
   $topic.$("tag").forEach(($tag) => {
     $tag.on("click", ($event) => {
       $event.stopPropagation();
-      goToPath("/tag/" + $tag.getAttribute("tag"))
-    })
-  })
+      goToPath("/tag/" + $tag.getAttribute("tag"));
+    });
+  });
   if (topic.poll_1) {
     const counts_actual = topic.poll_counts.split(",");
     const votes_1 = Number(counts_actual[0] || 0);
@@ -448,6 +448,27 @@ const renderTopic = (topic) => {
         `,
         ["/image/" + image_uuid],
       );
+      if (trimmed) {
+        $image.$("img").on("click", ($event) => {
+          $event.stopPropagation();
+          const $modal = $(
+            `
+          modal[image]
+            p[img]
+              img[src=$1]
+            button[close] Done
+          modal-bg
+          `,
+            ["/image/" + image_uuid],
+          );
+          const modalCancel = () => {
+            $modal.remove();
+          };
+          $modal.$("[close]").on("click", modalCancel);
+          $modal.$("modal-bg").on("click", modalCancel);
+          $("body").appendChild($modal);
+        });
+      }
       $topic.$("author-tags").after($image);
     }
   }

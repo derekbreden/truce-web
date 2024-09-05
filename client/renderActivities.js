@@ -43,16 +43,6 @@ const renderActivities = (activities) => {
           ],
         ),
       );
-      $("topics [href]")?.forEach(($a) => {
-        const new_path = $a.getAttribute("href");
-        if (new_path.substr(0, 1) === "/") {
-          $a.on("click", ($event) => {
-            $event.preventDefault();
-            $event.stopPropagation();
-            goToPath(new_path);
-          });
-        }
-      });
     }
   }
 
@@ -162,4 +152,17 @@ const renderActivities = (activities) => {
       ...$activities,
     );
   }
+
+  $("activities [href]")?.forEach(($a) => {
+    const new_path = $a.getAttribute("href");
+    $a.on("click", ($event) => {
+      $event.stopPropagation();
+      $event.preventDefault();
+      if (new_path.substr(0, 1) === "/") {
+        goToPath(new_path);
+      } else {
+        window.open(new_path);
+      }
+    });
+  });
 };

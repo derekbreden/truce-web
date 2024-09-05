@@ -55,9 +55,7 @@ const renderTopics = (topics, tag, user) => {
           ),
         );
       }
-    } else if (
-      state.path.substr(0, 6) === "/user/"
-    ) {
+    } else if (state.path.substr(0, 6) === "/user/") {
       $("main-content-wrapper[active] main-content-2").replaceChildren(
         $(
           `
@@ -343,12 +341,14 @@ const renderTopics = (topics, tag, user) => {
   afterDomUpdate();
   $("topics [href]")?.forEach(($a) => {
     const new_path = $a.getAttribute("href");
-    if (new_path.substr(0, 1) === "/") {
-      $a.on("click", ($event) => {
-        $event.preventDefault();
-        $event.stopPropagation();
+    $a.on("click", ($event) => {
+      $event.stopPropagation();
+      $event.preventDefault();
+      if (new_path.substr(0, 1) === "/") {
         goToPath(new_path);
-      });
-    }
+      } else {
+        window.open(new_path);
+      }
+    });
   });
 };

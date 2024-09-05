@@ -480,10 +480,29 @@ modal {
 modal[image] {
   width: 100%;
   max-width: 480px;
-  max-height: calc(100% - 44px);
+  height: 100%;
+  top: 0;
+  padding: 0;
+  gap: 0;
+  border-radius: 0;
+  border: 0;
 }
-modal[image] p[img] {
+modal[image] > p[img] {
   overflow-y: scroll;
+  font-size: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0;
+}
+modal[image] > p[img] img {
+  border-radius: 0;
+}
+modal[image] > button {
+  border-radius: 0;
+  border: 1px solid #fff;
+  border: 1px solid light-dark(#fff, #000);
 }
 modal[confirm] h2 {
   margin: 0;
