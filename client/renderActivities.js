@@ -120,8 +120,10 @@ const renderActivities = (activities) => {
           [activity.parent_topic_title, $comment_wrapper],
         );
         $activity.on("click", ($event) => {
-          $event.preventDefault();
-          goToPath("/comment/" + activity.id);
+          if ($event.target.tagName !== "A") {
+            $event.preventDefault();
+            goToPath("/comment/" + activity.id);
+          }
         });
         activity.$activity = $activity;
         return $activity;
