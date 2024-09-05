@@ -341,14 +341,12 @@ const renderTopics = (topics, tag, user) => {
   afterDomUpdate();
   $("topics [href]")?.forEach(($a) => {
     const new_path = $a.getAttribute("href");
-    $a.on("click", ($event) => {
-      $event.stopPropagation();
-      $event.preventDefault();
-      if (new_path.substr(0, 1) === "/") {
+    if (new_path.substr(0, 1) === "/") {
+      $a.on("click", ($event) => {
+        $event.stopPropagation();
+        $event.preventDefault();
         goToPath(new_path);
-      } else {
-        window.open(new_path);
-      }
-    });
+      });
+    }
   });
 };

@@ -481,8 +481,10 @@ const renderTopic = (topic) => {
   ) {
     $topic.setAttribute("trimmed", "");
     $topic.on("click", ($event) => {
-      $event.preventDefault();
-      goToPath("/topic/" + topic.slug);
+      if ($event.target.tagName !== "A") {
+        $event.preventDefault();
+        goToPath("/topic/" + topic.slug);
+      }
     });
   }
   topic.$topic = $topic;
