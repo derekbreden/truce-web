@@ -14,6 +14,26 @@ const markdownToElements = (text) => {
   return p_contents.map((p_content) => {
     const p_element = document.createElement("p");
 
+    // Support for links not marked down
+    if (p_content.includes("http")) {
+      const matches = p_content.match(/http[^\s]*/)
+      for (match of matches) {
+        if (match.substr(match.length-1, 1) === ".") {
+          match = match.substr(0, match.length-1);
+        }
+        let abbreviated = match.replace(/(https?:\/\/)(www\.)?/, "");
+        if (abbreviated.length > 32) {
+          const possible_extension = abbreviated.split(".").pop();
+          if (possible_extension.length < 5) {
+            abbreviated = abbreviated.substring(0, 27) + "..." + possible_extension;
+          } else {
+            abbreviated = abbreviated.substring(0, 30) + "...";
+          }
+        }
+        p_content = p_content.replace(match, `[${abbreviated}](${match})`)
+      }
+    }
+
     // Support for >
     if (p_content.substr(0, 2) === "> ") {
       p_element.setAttribute("quote", "");
