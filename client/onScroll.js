@@ -11,7 +11,7 @@ const bindScrollEvent = () => {
     // User load older
     if (
       (state.path === "/topics" ||
-       state.path === "/topics/all" ||
+        state.path === "/topics/all" ||
         state.path === "/favorites" ||
         state.path.substr(0, 5) === "/tag/" ||
         state.path.substr(0, 6) === "/user/") &&

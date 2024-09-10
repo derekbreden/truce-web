@@ -270,6 +270,7 @@ h3 {
   justify-content: space-between;
   align-items: center;
 }
+
 display-name-wrapper b,
 comment h3 author {
   display: flex;
@@ -277,26 +278,31 @@ comment h3 author {
   align-items: center;
   font-weight: 700;
 }
-comment h3 + p {
+
+comment h3+p {
   margin-top: 0;
 }
-comment > reply-wrapper {
+
+comment>reply-wrapper {
   margin-left: 40px;
 }
+
 add-new[comment] input[display-name],
 add-new[comment] title-wrapper,
 add-new[comment] image-previews,
 add-new[comment] textarea,
 add-new[comment] button,
-comment > info-wrapper,
-comment > p {
+comment>info-wrapper,
+comment>p {
   margin-left: 50px;
   width: calc(100% - 50px);
 }
+
 comment h3 icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;
 }
+
 comment h3 icon[more] svg {
   height: 30px;
   width: 30px;
@@ -491,7 +497,8 @@ modal[image] {
   border-radius: 0;
   border: 0;
 }
-modal[image] > p[img] {
+
+modal[image]>p[img] {
   overflow-y: scroll;
   font-size: 0;
   display: flex;
@@ -500,31 +507,38 @@ modal[image] > p[img] {
   height: 100%;
   margin: 0;
 }
-modal[image] > p[img] img {
+
+modal[image]>p[img] img {
   border-radius: 0;
 }
-modal[image] > button {
+
+modal[image]>button {
   border-radius: 0;
   border: 1px solid #fff;
   border: 1px solid light-dark(#fff, #000);
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
+
 modal[confirm] h2 {
   margin: 0;
   justify-content: flex-start;
 }
+
 modal[confirm] h2 icon {
   margin: -4px 6px -4px -5px;
 }
+
 modal[confirm] h2 icon[block] {
   margin: -4px 6px -4px -2px;
 }
+
 modal[confirm] h2 icon svg {
   height: 30px;
   width: 30px;
   fill: #000;
   fill: light-dark(#000, #fff);
 }
+
 modal[confirm] button-wrapper {
   margin-top: 10px;
 }
@@ -558,6 +572,7 @@ menu links a {
   border-bottom: 1px solid light-dark(#999, #333);
   position: relative;
 }
+
 menu p[notice] {
   width: 280px;
   border-top: 1px solid #999;
@@ -565,14 +580,17 @@ menu p[notice] {
   padding: 10px 20px;
   margin-top: 0;
 }
+
 p[notice] {
   text-align: center;
   font-size: .786rem;
 }
+
 p[notice] span,
 p[notice] a {
   opacity: .5;
 }
+
 p[notice] a {
   font-weight: 600;
   margin: 0 3px;
@@ -662,8 +680,9 @@ button-wrapper {
   justify-content: space-between;
   gap: 5px;
 }
-action + button-wrapper,
-p + button-wrapper {
+
+action+button-wrapper,
+p+button-wrapper {
   margin-top: 10px;
 }
 
@@ -712,6 +731,7 @@ textarea {
   background: light-dark(#fff, #000);
   padding: 10px;
 }
+
 input:focus,
 textarea:focus {
   outline: none;
@@ -739,6 +759,7 @@ button {
   justify-content: center;
   align-items: center;
 }
+
 button icon {
   font-size: 0;
   margin: 0 5px 0 0;
@@ -746,6 +767,7 @@ button icon {
   justify-content: center;
   align-items: center;
 }
+
 button svg {
   fill: #fff;
   fill: light-dark(#fff, #000);
@@ -761,6 +783,7 @@ button[alt] {
   color: light-dark(#000, #fff);
   border: 1px solid light-dark(#999, #333);
 }
+
 button[alt] svg {
   fill: #000;
   fill: light-dark(#000, #fff);
@@ -1033,16 +1056,19 @@ title-wrapper {
 title-wrapper input {
   display: none;
 }
+
 title-wrapper svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   cursor: pointer;
 }
+
 title-wrapper svg {
   height: 34px;
   width: 34px;
   margin: 0 -3px -5px 5px;
 }
+
 image-previews {
   display: flex;
   flex-direction: row;
@@ -1061,10 +1087,12 @@ image-previews preview {
   margin-right: 5px;
   height: 100px;
 }
+
 add-new[comment] image-previews {
   margin-top: -33px;
   width: calc(100% - 95px);
 }
+
 add-new[comment] image-previews preview {
   width: unset;
   max-width: 100%;
@@ -1193,11 +1221,12 @@ reply-wrapper {
   margin-top: 10px;
   margin: 0 -10px -10px -10px;
 }
+
 reply-wrapper button {
   margin: 0 10px 0 0;
 }
 
-add-new > display-name-wrapper,
+add-new>display-name-wrapper,
 display-name-wrapper {
   flex: 1;
   margin-bottom: 0;
@@ -1244,6 +1273,7 @@ back-forward-wrapper center-wrapper {
   main-content-2 back-forward-wrapper {
     margin-top: 20px;
   }
+
   main-content-2 back-forward-wrapper:before {
     content: "";
     display: flex;
@@ -1454,11 +1484,13 @@ topics topic {
   padding-bottom: 21px;
   position: relative;
 }
+
 topics topic info-wrapper,
 activities activity[topic] info-wrapper {
   display: flex;
   margin-top: 10px;
 }
+
 activities activity {
   display: flex;
   flex-direction: column;
@@ -1472,29 +1504,35 @@ topic author-tags {
   margin: 10px 0 0 0;
   align-items: flex-start;
 }
+
 topic author-tags author profile-picture image {
   width: 20px;
   height: 20px;
 }
+
 topic author-tags author profile-picture svg {
   height: 25px;
   width: 25px;
   margin: -3px;
   opacity: .5;
 }
+
 topic author-tags author {
   display: flex;
   gap: 3px;
   align-items: center;
 }
+
 topic author-tags author by {
   margin-left: 2px;
   opacity: .5;
 }
+
 topic author-tags author name {
   font-weight: 700;
   opacity: .5;
 }
+
 topic author-tags tags {
   display: flex;
   align-items: center;
@@ -1503,14 +1541,17 @@ topic author-tags tags {
   justify-content: flex-end;
   opacity: .5;
 }
+
 topic author-tags tags tag {
   display: flex;
   align-items: center;
   gap: 3px;
 }
+
 topic author-tags tags tag icon {
   font-size: 0;
 }
+
 topic author-tags tags tag svg {
   fill: #000;
   fill: light-dark(#000, #fff);
@@ -1524,6 +1565,7 @@ tags[tags-list] {
   gap: 20px;
   padding-top: 20px;
 }
+
 tags[tags-list] tag {
   display: flex;
   align-items: center;
@@ -1532,21 +1574,25 @@ tags[tags-list] tag {
   margin-right: -10px;
   cursor: pointer;
 }
+
 tags[tags-list] tag tagname-subtitle {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
+
 tags[tags-list] tag tagname {
   display: flex;
   align-items: center;
   gap: 7px;
 }
+
 tags[tags-list] tag tagname name {
   font-size: 1.286rem;
   line-height: 1.286rem;
   font-weight: bold;
 }
+
 tags[tags-list] tag tagname count {
   background: #000;
   color: #f5f5f5;
@@ -1560,17 +1606,21 @@ tags[tags-list] tag tagname count {
   line-height: .786rem;
   font-weight: 600;
 }
+
 @media (prefers-color-scheme: dark) {
   tags[tags-list] tag tagname count {
     font-weight: 400;
   }
 }
+
 tags[tags-list] tag subtitle {
   font-size: .786rem;
 }
+
 tags[tags-list] tag icon {
   font-size: 0;
 }
+
 tags[tags-list] tag svg {
   fill: #000;
   fill: light-dark(#000, #fff);
@@ -1586,11 +1636,13 @@ users user {
   padding: 20px 0;
   gap: 20px;
 }
+
 users author-name {
   display: flex;
   gap: 10px;
   align-items: center;
 }
+
 users author-name name {
   font-weight: 600;
 }
@@ -1669,7 +1721,8 @@ activity>h2 {
   justify-content: space-between;
   gap: 20px;
 }
-activity > h2 > span:last-child {
+
+activity>h2>span:last-child {
   text-align: right;
 }
 
@@ -1677,6 +1730,7 @@ topic>h2>icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;
 }
+
 topic>h2>icon[more] svg {
   height: 30px;
   width: 30px;
@@ -1761,6 +1815,7 @@ topic-details detail {
   align-items: center;
   padding: 10px;
 }
+
 reply-wrapper detail:not([favorited]),
 reply-wrapper detail[favorited] p,
 topic-details detail:not([favorited]),
@@ -1798,7 +1853,7 @@ topic-details p {
   font-weight: 600;
 }
 
-detail[favorites] icon {  
+detail[favorites] icon {
   margin: -3px -1px -4px -7px;
 }
 
@@ -1894,6 +1949,7 @@ p[favorites-empty] icon {
   align-items: center;
   justify-content: center;
 }
+
 h2[tags] svg,
 h2[welcome] svg,
 h2[moderation] svg,
@@ -1904,23 +1960,28 @@ p[favorites-empty] svg {
   fill: light-dark(#000, #fff);
   margin-bottom: -16px;
 }
+
 h2[tags] svg {
   width: 30px;
   height: 30px;
 }
+
 h2[moderation] svg {
   width: 60px;
   height: 60px;
   margin-top: -16px;
 }
+
 h2[favorites] icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 h2[favorites] svg {
   margin: -12px -4px -8px -4px;
 }
+
 h2[favorites] svg:nth-child(2) {
   margin-top: -9px;
 }
@@ -1928,6 +1989,7 @@ h2[favorites] svg:nth-child(2) {
 p[add-to-home] {
   overflow: visible;
 }
+
 p[add-to-home] svg {
   height: 30px;
   width: 30px;
@@ -1945,26 +2007,32 @@ footer dot {
   border-radius: 50%;
   right: 0;
 }
+
 footer dot[index="0"] {
   right: 100%;
   background: #000;
 }
+
 footer dot[index="1"] {
   right: calc(7 * 100% / 8 - 2px);
   background: #000;
 }
+
 footer dot[index="2"] {
   right: calc(7 * 100% / 8 - 2px);
   background: #000;
 }
+
 footer dot[index="3"] {
   right: calc(5 * 100% / 8 - 2px);
   background: #000;
 }
+
 footer dot[index="4"] {
   right: calc(3 * 100% / 8 - 2px);
   background: #fff;
 }
+
 footer dot[index="5"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
@@ -1976,31 +2044,38 @@ action {
   padding: 5px 0;
   cursor: pointer;
 }
+
 action p {
   margin: 0 0 0 5px;
 }
+
 action>icon {
   cursor: pointer;
   margin: 0 0 -4px 0;
 }
+
 action>icon svg {
   height: 24px;
   width: 24px;
   fill: #000;
   fill: light-dark(#000, #fff);
 }
+
 app-store-wrapper {
   padding: 20px 0 0 0;
   display: flex;
   justify-content: center;
 }
+
 app-store-wrapper img[white] {
   display: none;
 }
+
 @media (prefers-color-scheme: dark) {
   app-store-wrapper img[white] {
     display: block;
   }
+
   app-store-wrapper img[black] {
     display: none;
   }
@@ -2018,11 +2093,13 @@ poll-input-wrapper {
   flex-direction: column;
   gap: 5px;
 }
+
 poll-input-wrapper icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 poll-input-wrapper svg {
   fill: #000;
   fill: light-dark(#000, #fff);
@@ -2030,6 +2107,7 @@ poll-input-wrapper svg {
   width: 26px;
   margin: 0 -2px 0 -2px;
 }
+
 poll-input-wrapper poll-text {
   display: flex;
   gap: 8px;
@@ -2037,23 +2115,28 @@ poll-input-wrapper poll-text {
   align-items: center;
   min-height: 30px;
 }
+
 poll-input-wrapper poll-text[add],
 poll-input-wrapper poll-text [remove] {
   cursor: pointer;
 }
+
 poll-input-wrapper poll-text p {
   margin: 0;
 }
+
 poll-input-wrapper poll-text input {
   flex: 1;
 }
+
 poll-vote-wrapper {
   display: flex;
   flex-direction: column;
   gap: 5px;
   margin: 10px 0;
 }
-poll-vote-wrapper > * {
+
+poll-vote-wrapper>* {
   border: 1px solid #000;
   border: 1px solid light-dark(#000, #fff);
   border-radius: 20px;
@@ -2066,9 +2149,11 @@ poll-vote-wrapper > * {
   cursor: pointer;
   font-weight: 600;
 }
+
 poll-wrapper p[results] {
   font-size: .786rem;
 }
+
 poll-counts-actual,
 poll-counts-estimated {
   display: flex;
@@ -2076,22 +2161,25 @@ poll-counts-estimated {
   gap: 5px;
   margin: 5px 0;
 }
-poll-counts-actual > *,
-poll-counts-estimated > * {
+
+poll-counts-actual>*,
+poll-counts-estimated>* {
   display: flex;
   position: relative;
   justify-content: space-between;
   align-items: center;
 }
-poll-counts-actual > * text,
-poll-counts-estimated > * text {
+
+poll-counts-actual>* text,
+poll-counts-estimated>* text {
   flex: 1;
   position: relative;
   padding: 2px 10px;
   margin-right: 10px;
 }
-poll-counts-actual > * bg,
-poll-counts-estimated > * bg {
+
+poll-counts-actual>* bg,
+poll-counts-estimated>* bg {
   position: absolute;
   top: 0;
   left: 0;
@@ -2101,9 +2189,11 @@ poll-counts-estimated > * bg {
   opacity: .2;
   border-radius: 5px;
 }
-poll-counts-actual > * text {
+
+poll-counts-actual>* text {
   padding: 5px 10px;
 }
+
 poll-counts-estimated {
   font-size: .786rem;
 }
@@ -2111,6 +2201,7 @@ poll-counts-estimated {
 p[button] button {
   width: 100%;
 }
+
 p[input] input {
   width: 100%;
 }
@@ -2120,6 +2211,7 @@ profile-picture svg {
   fill: #000;
   fill: light-dark(#000, #fff);
 }
+
 profile-picture image,
 [profile-picture] image {
   display: flex;
@@ -2128,36 +2220,43 @@ profile-picture image,
   border-radius: 50%;
   overflow: hidden;
 }
+
 profile-picture image img,
 [profile-picture] image img {
   width: 100%;
   height: 100%;
 }
+
 profile-picture image,
 [profile-picture] image {
   width: 40px;
   height: 40px;
 }
+
 profile-picture large image,
 [profile-picture][large] image {
   width: 120px;
   height: 120px;
 }
+
 [profile-picture][large] {
   display: flex;
   justify-content: center;
   padding: 20px 20px 0 20px;
 }
+
 profile-picture svg {
   height: 50px;
   width: 50px;
   margin: -5px;
 }
+
 [profile-picture][large] svg {
   height: 150px;
   width: 150px;
   margin: -15px;
 }
+
 [profile-picture] input {
   display: none;
 }
