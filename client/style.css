@@ -55,6 +55,7 @@ main-content-wrapper {
   flex-direction: row;
   -webkit-overflow-scrolling: touch;
   transition: top 0.2s ease-in-out;
+  width: 100%;
 }
 
 main-content-wrapper[inactive] {
