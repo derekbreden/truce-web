@@ -20,6 +20,7 @@
 html {
   font: 14px Open Sans, Arial;
   height: 100%;
+  overflow: hidden;
 }
 
 @supports (font: -apple-system-body) {
