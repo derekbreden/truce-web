@@ -347,12 +347,6 @@ const renderTopics = (topics, tag, user) => {
         $event.preventDefault();
         goToPath(new_path);
       });
-    } else if (window.is_android) {
-      $a.on("click", ($event) => {
-        $event.stopPropagation();
-        $event.preventDefault();
-        window.open(new_path);
-      });
     }
   });
 };
