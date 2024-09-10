@@ -348,9 +348,11 @@ const renderTopics = (topics, tag, user) => {
         goToPath(new_path);
       });
     } else if (window.is_android) {
-      $event.stopPropagation();
-      $event.preventDefault();
-      window.open(new_path);
+      $a.on("click", ($event) => {
+        $event.stopPropagation();
+        $event.preventDefault();
+        window.open(new_path);
+      });
     }
   });
 };
