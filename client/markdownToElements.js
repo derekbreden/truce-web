@@ -12,6 +12,7 @@ const markdownToElements = (text) => {
 
   // Process one <p> tag at a time
   return p_contents.map((p_content) => {
+    p_content = p_content.trim();
     const p_element = document.createElement("p");
 
     // Support for links not marked down
@@ -46,8 +47,26 @@ const markdownToElements = (text) => {
       p_content = p_content.replace(/#{1,} /g, "").replace(/\*{2,}/g, "");
     }
 
+    // Support for **
+    if (p_content.substr(0, 2) === "**") {
+      p_element.setAttribute("bold", "");
+      p_content = p_content.replace(/\*{2,}/g, "");
+    }
+
+    // Support for *
+    if (p_content.substr(0, 1) === "*") {
+      p_element.setAttribute("italic", "");
+      p_content = p_content.replace(/\*{1,}/g, "");
+    }
+
+    // Support for ---
+    if (p_content === "---") {
+      p_element.setAttribute("hr", "");
+      p_content = ""
+    }
+
     // Support for -
-    if (p_content.substr(0, 3) === "- ") {
+    if (p_content.substr(0, 2) === "- ") {
       const li_contents = p_content.split("\n");
       if (li_contents.length > 1) {
         const $ul = document.createElement("ul");
@@ -57,7 +76,7 @@ const markdownToElements = (text) => {
               `
               li $1
               `,
-              [li_content.replace(/^- /g, "")],
+              [li_content.replace(/^- /g, "").replace(/\*\*/g, "")],
             ),
           );
         });

@@ -356,6 +356,14 @@ p[quote]+p[quote] {
 p[bold] {
   font-weight: 600;
 }
+p[italic] {
+  font-style: italic;
+}
+p[hr] {
+  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid light-dark(#ddd, #333);
+  font-size: 0;
+}
 
 p[ellipsis]+button {
   margin-top: 10px;
