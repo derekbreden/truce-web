@@ -2065,6 +2065,12 @@ app-store-wrapper {
   padding: 20px 0 0 0;
   display: flex;
   justify-content: center;
+  gap: 20px;
+  font-size: 0;
+}
+
+app-store-wrapper img {
+  height: 40px;
 }
 
 app-store-wrapper img[white] {

@@ -73,11 +73,14 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
         `,
         [
           $("icons icon[welcome] svg").cloneNode(true),
-          !Boolean(window.webkit) && !Boolean(window.is_android)
+          !Boolean(window.webkit) &&
+          document.referrer !== "android-app://net.truce.twa/"
             ? $(
                 `
               topic
                 app-store-wrapper
+                  a[href=https://play.google.com/store/apps/details?id=net.truce.twa]
+                    img[src=/play_store.png]
                   a[href=https://apps.apple.com/us/app/truce/id6578447172]
                     img[src=/app_store_black.svg][black]
                     img[src=/app_store_white.svg][white]
