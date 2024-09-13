@@ -71,12 +71,43 @@ const markdownToElements = (text) => {
       if (li_contents.length > 1) {
         const $ul = document.createElement("ul");
         li_contents.forEach((li_content) => {
+          li_content = li_content.trim();
           $ul.appendChild(
             $(
               `
               li $1
               `,
               [li_content.replace(/^- /g, "").replace(/\*\*/g, "")],
+            ),
+          );
+        });
+        return $ul;
+      }
+    }
+
+
+    // Support for 1. 2. 3.
+    if (
+      p_content.substr(0, 3) === "1. " ||
+      p_content.substr(0, 3) === "2. " ||
+      p_content.substr(0, 3) === "3. " ||
+      p_content.substr(0, 3) === "4. " ||
+      p_content.substr(0, 3) === "5. " ||
+      p_content.substr(0, 3) === "6. " ||
+      p_content.substr(0, 3) === "7. " ||
+      p_content.substr(0, 3) === "8. " ||
+      p_content.substr(0, 3) === "9. "
+    ) {
+      const li_contents = p_content.split("\n");
+      if (li_contents.length > 0) {
+        const $ul = document.createElement("ol");
+        li_contents.forEach((li_content) => {
+          $ul.appendChild(
+            $(
+              `
+              li $1
+              `,
+              [li_content.replace(/^\d. /g, "").replace(/\*\*/g, "")],
             ),
           );
         });

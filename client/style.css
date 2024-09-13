@@ -297,6 +297,10 @@ comment>p {
   margin-left: 50px;
   width: calc(100% - 50px);
 }
+comment>ol,
+comment>ul {
+  margin: 10px 0 0 67px;
+}
 
 comment h3 icon[more] {
   margin: -4px 0 -8px 0;
@@ -373,8 +377,13 @@ audio {
   width: 100%;
 }
 
+ol,
 ul {
   margin: 10px 0 0 17px;
+}
+
+ol {
+  list-style-type: square;
 }
 
 debug {
