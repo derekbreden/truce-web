@@ -329,18 +329,18 @@ p img {
   border-radius: 10px;
 }
 
-comment p img,
+comment[trimmed] p img,
 topic[trimmed] p img {
   cursor: pointer;
   height: 100px;
 }
 
-comment p[img],
+comment[trimmed] p[img],
 topic[trimmed] p[img] {
   display: inline-flex;
 }
 
-comment p[img]+p[img],
+comment[trimmed] p[img]+p[img],
 topic[trimmed] p[img]+p[img] {
   margin-left: 10px;
 }

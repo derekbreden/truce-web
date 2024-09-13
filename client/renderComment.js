@@ -99,12 +99,15 @@ const renderComment = (comment) => {
   if (!trimmed) {
     $comment.$("detail[more]")?.remove();
   }
+  if (state.path === "/favorites") {
+    $comment.setAttribute("trimmed", "");
+  }
   $comment.$("author").forEach(($author) => {
     $author.on("click", ($event) => {
       $event.stopPropagation();
       const slug = $author.getAttribute("slug");
       goToPath(`/user/${slug}`);
-    })
+    });
   });
   $comment.$("detail[favorites]").on("click", ($event) => {
     $event.stopPropagation();
