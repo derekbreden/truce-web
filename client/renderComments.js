@@ -175,9 +175,9 @@ const renderComments = (comments) => {
     ...[
       ...(showCommentList
         ? [
-            state.active_add_new_comment?.is_root
+            state.active_add_new_comment?.is_root_1
               ? state.active_add_new_comment
-              : showAddNewCommentButton(),
+              : showAddNewCommentButton("1"),
             $(
               `
               expand-wrapper[above-comments]
@@ -191,6 +191,13 @@ const renderComments = (comments) => {
           ]
         : []),
       ...$root_comments,
+      ...(showCommentList && $root_comments.length
+        ? [
+            state.active_add_new_comment?.is_root_2
+              ? state.active_add_new_comment
+              : showAddNewCommentButton("2"),
+          ]
+        : []),
     ],
   );
   if (state.active_add_new_comment?.is_edit) {

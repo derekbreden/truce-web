@@ -1,23 +1,23 @@
-const showAddNewCommentButton = () => {
+const showAddNewCommentButton = (root_index) => {
   const $add_new_button = $(
     `
     p[add-new-comment]
-      button[alt] Add comment
+      button[alt] Reply to topic
     `,
   );
   $add_new_button.on("click", ($event) => {
     $event.preventDefault();
-    $add_new_button.replaceWith(showAddNewComment());
+    $add_new_button.replaceWith(showAddNewComment(null, null, root_index));
     focusAddNewComment();
   });
   return $add_new_button;
 };
-const showAddNewComment = (comment, parent_comment) => {
+const showAddNewComment = (comment, parent_comment, root_index) => {
   const $add_new = $(
     `
     add-new[comment]
       input[display-name][placeholder=Your name][maxlength=50][value=$2]
-      textarea[body][placeholder=Comment][rows=5][maxlength=8000] $3
+      textarea[body][placeholder=Comment][rows=8][maxlength=8000] $3
       title-wrapper
         label[image]
           icon
@@ -49,7 +49,7 @@ const showAddNewComment = (comment, parent_comment) => {
     });
   } else {
     $add_new.$("[cancel]").on("click", () => {
-      $add_new.replaceWith(showAddNewCommentButton());
+      $add_new.replaceWith(showAddNewCommentButton(root_index));
       delete state.active_add_new_comment;
     });
   }
@@ -270,7 +270,7 @@ const showAddNewComment = (comment, parent_comment) => {
   } else if (parent_comment) {
     state.active_add_new_comment.is_reply = parent_comment.comment_id;
   } else {
-    state.active_add_new_comment.is_root = true;
+    state.active_add_new_comment[`is_root_${root_index}`] = true;
   }
   return $add_new;
 };
