@@ -225,26 +225,8 @@ const renderComment = (comment) => {
         `,
         ["/image/" + image_uuid],
       );
-      $image.$("img").on("click", ($event) => {
-        $event.stopPropagation();
-        const $modal = $(
-          `
-          modal[image]
-            p[img]
-              img[src=$1]
-            button[close] Done
-          modal-bg
-          `,
-          ["/image/" + image_uuid],
-        );
-        const modalCancel = () => {
-          $modal.remove();
-        };
-        $modal.$("[close]").on("click", modalCancel);
-        $modal.$("modal-bg").on("click", modalCancel);
-        $("body").appendChild($modal);
-      });
-      $comment.$("h3").after($image);
+      bindImageClick($image);
+      $comment.$("h3").after($image, image_uuid);
     }
   }
   comment.$comment = $comment;

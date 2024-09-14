@@ -22,6 +22,7 @@ html {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  touch-action: none;
 }
 
 @supports (font: -apple-system-body) {
@@ -39,6 +40,7 @@ body {
   background: light-dark(#fff, #000);
   color: light-dark(#000, #f5f5f5);
   overflow: hidden;
+  touch-action: none;
 }
 
 main-content-wrapper {
@@ -515,7 +517,7 @@ modal[image] {
 }
 
 modal[image]>p[img] {
-  overflow-y: scroll;
+  overflow: scroll;
   font-size: 0;
   display: flex;
   flex-direction: column;
@@ -526,6 +528,7 @@ modal[image]>p[img] {
 
 modal[image]>p[img] img {
   border-radius: 0;
+  max-width: unset;
 }
 
 modal[image]>button {

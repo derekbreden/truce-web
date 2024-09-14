@@ -449,25 +449,7 @@ const renderTopic = (topic) => {
         ["/image/" + image_uuid],
       );
       if (trimmed) {
-        $image.$("img").on("click", ($event) => {
-          $event.stopPropagation();
-          const $modal = $(
-            `
-          modal[image]
-            p[img]
-              img[src=$1]
-            button[close] Done
-          modal-bg
-          `,
-            ["/image/" + image_uuid],
-          );
-          const modalCancel = () => {
-            $modal.remove();
-          };
-          $modal.$("[close]").on("click", modalCancel);
-          $modal.$("modal-bg").on("click", modalCancel);
-          $("body").appendChild($modal);
-        });
+        bindImageClick($image, image_uuid);
       }
       $topic.$("author-tags").after($image);
     }
