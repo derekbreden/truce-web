@@ -235,8 +235,8 @@ const renderComment = (comment) => {
         `,
         ["/image/" + image_uuid],
       );
-      bindImageClick($image);
-      $comment.$("h3").after($image, image_uuid);
+      bindImageClick($image, image_uuid);
+      $comment.$("h3").after($image);
     }
   }
   comment.$comment = $comment;
