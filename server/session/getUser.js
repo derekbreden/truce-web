@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         u.user_id,
         u.display_name,
         u.display_name_index,
-        u.slug as user_slug,
+        CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
         u.profile_picture_uuid,
         CASE WHEN s.user_id IS NULL THEN false ELSE true END AS subscribed
       FROM
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
           u.user_id,
           u.display_name,
           u.display_name_index,
-          u.slug as user_slug,
+          CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           CASE WHEN s2.user_id IS NULL THEN false ELSE true END AS subscribed
         FROM
@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
           u.user_id,
           u.display_name,
           u.display_name_index,
-          u.slug as user_slug,
+          CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           CASE WHEN s2.user_id IS NULL THEN false ELSE true END AS subscribed
         FROM

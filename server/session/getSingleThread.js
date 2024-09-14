@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         u.user_id,
         u.display_name,
         u.display_name_index,
-        u.slug AS user_slug,
+        CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
         u.profile_picture_uuid,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
         c.image_uuids,
