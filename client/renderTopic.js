@@ -448,9 +448,7 @@ const renderTopic = (topic) => {
         `,
         ["/image/" + image_uuid],
       );
-      if (trimmed) {
-        bindImageClick($image, image_uuid);
-      }
+      bindImageClick($image, image_uuid);
       $topic.$("author-tags").after($image);
     }
   }
