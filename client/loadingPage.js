@@ -148,6 +148,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
                   info
                     b Judgment
                     p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
+            p[bold][style=margin-top:20px;] A note on censorship:
+            ul
+              li The labels are an effective deterrent
+              li The most effective way to deal with abuse is to respond to it, not censor it, as these automatic labels do
+              li If it ever becomes necessary to ban a user, an update will be posted after this bullet point with more details
         topics
           p[notice]
             a[href="/privacy"] Privacy Policy
