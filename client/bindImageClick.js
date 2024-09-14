@@ -37,7 +37,10 @@ const bindImageClick = ($image, image_uuid) => {
           const new_size = $modal.$("img").clientWidth + moved_distance_scaled;
           const new_scroll_left =
             $modal.$("p[img]").scrollLeft + moved_distance_scaled / 2;
-          if (new_size >= $modal.$("p[img]").clientWidth) {
+          if (
+            new_size >= $modal.$("p[img]").clientWidth
+            && new_size <= $modal.$("p[img]").clientWidth * 6
+             ) {
             $modal.$("img").style.width = new_size + "px";
             $modal.$("p[img]").scrollLeft = new_scroll_left;
           }
