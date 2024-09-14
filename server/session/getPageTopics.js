@@ -20,6 +20,7 @@ module.exports = async (req, res) => {
           t.create_date,
           t.topic_id,
           t.title,
+          u.user_id,
           u.display_name,
           CASE WHEN u.display_name = '' THEN u.user_id ELSE u.display_name_index END as display_name_index,
           CASE WHEN u.slug = '' THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,

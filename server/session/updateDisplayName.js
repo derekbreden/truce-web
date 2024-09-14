@@ -40,6 +40,6 @@ module.exports = async (req, res) => {
       `,
       [slug, req.session.user_id],
     );
-    req.session.slug = slug;
+    req.session.user_slug = slug;
   }
 };

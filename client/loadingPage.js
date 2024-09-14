@@ -249,7 +249,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
             button[remove][alt] Remove Account
       `,
       [
-        state.slug,
+        state.user_slug,
         $("icons icon[profile-picture] svg").cloneNode(true),
         state.profile_picture_uuid
           ? $(
@@ -290,7 +290,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
           if (data.error || !data.success) {
             modalError(data.error || "Server error");
           } else {
-            state.display_name = new_display_name;
+            updateDisplayName(data);
             alertInfo("Display name saved.");
           }
         })

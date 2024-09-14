@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
 
     // Default response if nothing else responded sooner
     if (!res.writableEnded) {
-      req.results.slug = req.session.slug;
+      req.results.user_slug = req.session.user_slug;
       req.results.subscribed_to_users = req.session.subscribed_to_users;
       req.results.user_id = req.session.user_id;
       req.results.email = req.session.email;

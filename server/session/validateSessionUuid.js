@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
         session_results.rows[0].profile_picture_uuid;
       req.session.admin = session_results.rows[0].admin || false;
       req.session.user_id = session_results.rows[0].user_id || "";
-      req.session.slug = session_results.rows[0].slug || "";
+      req.session.user_slug = session_results.rows[0].slug || "";
       req.session.subscribed_to_users = session_results.rows[0].subscribed_to_users || "0";
     }
   }

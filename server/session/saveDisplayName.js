@@ -37,12 +37,21 @@ module.exports = async (req, res) => {
     }
     if (ai_response_parsed.keyword === "OK") {
       await require("./updateDisplayName")(req, res);
+      if (!req.session.user_slug) {
+        res.end(
+          JSON.stringify({
+            error: "Display name was not changed",
+          }),
+        );
+        return;
+      }
       res.end(
         JSON.stringify({
           success: true,
           user_id: req.session.user_id,
           display_name: req.session.display_name,
           display_name_index: req.session.display_name_index,
+          user_slug: req.session.user_slug,
         }),
       );
     } else {

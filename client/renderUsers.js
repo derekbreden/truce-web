@@ -21,7 +21,7 @@ const renderUsers = (users) => {
                 $4
               `,
               [
-                user.slug,
+                user.user_slug,
                 user.profile_picture_uuid
                   ? $(
                       `

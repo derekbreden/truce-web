@@ -8,7 +8,14 @@ const renderBack = () => {
     state.path.substr(0, 8) === "/comment" ||
     state.path.substr(0, 6) === "/user/"
   ) {
-    const previous_path = state.path_history[state.path_history.length - 1];
+    let previous_path = state.path_history[state.path_history.length - 1];
+    if (previous_path === state.path) {
+      state.path_history.pop();
+      previous_path = state.path_history[state.path_history.length - 1];
+    }
+    if (state.path.split("/")[3]) {
+      previous_path = state.path_history[state.path_history.length - 2];
+    }
     const $back_forward = $(
       `
       back-forward-wrapper
@@ -48,7 +55,7 @@ const renderBack = () => {
       goToPath(previous_path, false, true);
     });
 
-    if (!previous_path || previous_path === state.path) {
+    if (!previous_path) {
       $back_forward.remove();
     }
   }

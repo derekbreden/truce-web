@@ -82,8 +82,8 @@ const startSession = (was_same_path) => {
       if (data.subscribed_to_users) {
         state.subscribed_to_users = Number(data.subscribed_to_users);
       }
-      if (data.slug) {
-        state.slug = data.slug;
+      if (data.user_slug) {
+        state.user_slug = data.user_slug;
       }
       if (data.user_id) {
         state.user_id = data.user_id;

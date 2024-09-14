@@ -183,12 +183,8 @@ const showAddNewComment = (comment, parent_comment) => {
           addCommentError(data.error || "Server error");
           state.display_name = "";
         } else {
-          if (data.user_id) {
-            state.user_id = data.user_id;
-          }
-          if (data.display_name) {
-            state.display_name = data.display_name;
-          }
+          updateDisplayName(data);
+          getMoreRecent();
         }
         hideDisplayNameInput();
       })
@@ -253,12 +249,7 @@ const showAddNewComment = (comment, parent_comment) => {
           return;
         }
         delete state.active_add_new_comment;
-        if (data.user_id) {
-          state.user_id = data.user_id;
-        }
-        if (data.display_name) {
-          state.display_name = data.display_name;
-        }
+        updateDisplayName(data);
         getMoreRecent();
       })
       .catch(function (error) {

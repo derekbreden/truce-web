@@ -112,6 +112,7 @@ module.exports = async (req, res) => {
         combined.commented,
         combined.voted,
         combined.favorite_create_date,
+        u.user_id,
         u.display_name,
         CASE WHEN u.display_name = '' THEN u.user_id ELSE u.display_name_index END as display_name_index,
         CASE WHEN u.slug = '' THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
@@ -123,6 +124,7 @@ module.exports = async (req, res) => {
         pc.note AS parent_comment_note,
         pcu.display_name AS parent_comment_display_name,
         pcu.display_name_index AS parent_comment_display_name_index,
+        CASE WHEN pcu.slug = '' THEN pcu.user_id::VARCHAR ELSE pcu.slug END as parent_comment_user_slug,
         pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid,
         combined.tags
       FROM combined

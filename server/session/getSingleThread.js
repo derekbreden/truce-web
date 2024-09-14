@@ -27,6 +27,7 @@ module.exports = async (req, res) => {
         c.note,
         c.favorite_count,
         c.parent_comment_id,
+        u.user_id,
         u.display_name,
         u.display_name_index,
         u.slug AS user_slug,
