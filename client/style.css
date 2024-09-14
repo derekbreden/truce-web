@@ -259,6 +259,20 @@ h2 {
   justify-content: space-between;
   align-items: flex-start;
 }
+h2[user] author {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+h2[user] author icon {
+  font-size: 0;
+}
+h2[user] author icon svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 26px;
+  width: 26px;
+}
 
 h2 button {
   margin-left: 5px;
@@ -278,6 +292,16 @@ comment h3 author {
   gap: 10px;
   align-items: center;
   font-weight: 700;
+}
+comment h3 author icon {
+  font-size: 0;
+}
+comment h3 author icon svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 22px;
+  width: 22px;
+  margin-left: -5px;
 }
 
 comment h3+p {
@@ -1548,8 +1572,23 @@ topic author-tags author by {
 }
 
 topic author-tags author name {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+topic author-tags author name span {
   font-weight: 700;
   opacity: .5;
+}
+topic author-tags author name icon {
+  font-size: 0;
+  opacity: .5;
+}
+topic author-tags author name icon svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 18px;
+  width: 18px;
 }
 
 topic author-tags tags {
@@ -1664,6 +1703,17 @@ users author-name {
 
 users author-name name {
   font-weight: 600;
+}
+
+users author-name icon {
+  font-size: 0;
+}
+users author-name icon svg {
+  fill: #000;
+  fill: light-dark(#000, #fff);
+  height: 22px;
+  width: 22px;
+  margin-left: -5px;
 }
 
 back-forward-wrapper::after,

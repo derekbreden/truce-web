@@ -50,9 +50,11 @@ const renderTopic = (topic) => {
               image
                 $2
             by by
-            name $3
+            name
+              span $3
+              $4
           tags
-            $4
+            $5
         `,
         [
           topic.user_slug,
@@ -65,6 +67,15 @@ const renderTopic = (topic) => {
               )
             : $("icons icon[profile-picture] svg").cloneNode(true),
           renderName(topic.display_name, topic.display_name_index),
+          topic.user_verified
+            ? $(
+                `
+                icon
+                  $1
+                `,
+                [$("icons icon[verified] svg").cloneNode(true)],
+              )
+            : [],
           topic.tags
             .split(",")
             .filter((x) => x)

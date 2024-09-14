@@ -106,15 +106,26 @@ const renderTopics = (topics, tag, user) => {
         `
           topic[user]
             h2[user]
-              span $1
-              $2
+              author
+                span $1
+                $2
+              $3
             label[profile-picture][large]
               image
-                $3
-              $4
+                $4
+              $5
           `,
         [
           renderName(user.display_name, user.display_name_index),
+          user.user_verified
+            ? $(
+                `
+                icon
+                  $1
+                `,
+                [$("icons icon[verified] svg").cloneNode(true)],
+              )
+            : [],
           user.user_id === state.user_id
             ? $(
                 `

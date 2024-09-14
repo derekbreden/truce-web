@@ -8,6 +8,7 @@ module.exports = async (req, res) => {
         u.display_name_index,
         CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
         u.profile_picture_uuid,
+        CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
         TRUE as subscribed
       FROM
         users u

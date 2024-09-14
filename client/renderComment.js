@@ -38,10 +38,11 @@ const renderComment = (comment) => {
             image
               $2
           span $3
-        $4
-      $5
+          $4
+        $5
       $6
       $7
+      $8
     `,
     [
       comment.user_slug,
@@ -53,7 +54,16 @@ const renderComment = (comment) => {
             ["/image/" + comment.profile_picture_uuid],
           )
         : $("icons icon[profile-picture] svg").cloneNode(true),
-      renderName(comment.display_name, comment.display_name_index) + ":",
+      renderName(comment.display_name, comment.display_name_index),
+      comment.user_verified
+        ? $(
+            `
+            icon
+              $1
+            `,
+            [$("icons icon[verified] svg").cloneNode(true)],
+          )
+        : [],
       $(
         `
         icon[more]

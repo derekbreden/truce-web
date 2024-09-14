@@ -18,7 +18,8 @@ const renderUsers = (users) => {
                       image
                         $2
                   name $3
-                $4
+                  $4
+                $5
               `,
               [
                 user.user_slug,
@@ -31,6 +32,15 @@ const renderUsers = (users) => {
                     )
                   : $("icons icon[profile-picture] svg").cloneNode(true),
                 renderName(user.display_name, user.display_name_index),
+                user.user_verified
+                  ? $(
+                      `
+                      icon
+                        $1
+                      `,
+                      [$("icons icon[verified] svg").cloneNode(true)],
+                    )
+                  : [],
                 user.subscribed
                   ? $(
                       `

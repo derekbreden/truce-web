@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
         u.display_name_index,
         CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
         u.profile_picture_uuid,
+        CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
         c.image_uuids,
         CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
