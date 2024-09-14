@@ -119,6 +119,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
   });
   $add_new.$("[body]").on("focus", () => {
     $add_new.$("error")?.remove();
+    $add_new.scrollIntoView();
   });
   const hideDisplayNameInput = () => {
     const $display_name = $add_new.$("[display-name]");
@@ -280,4 +281,5 @@ const focusAddNewComment = () => {
   } else {
     state.active_add_new_comment.$("[body]").focus();
   }
+  state.active_add_new_comment.scrollIntoView();
 };
