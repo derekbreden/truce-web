@@ -274,7 +274,7 @@ B) ${req.body.poll_2}`;
             {
               role: "user",
               name: (req.session.display_name || "Anonymous").replace(
-                /[^a-z0-9_\-]/g,
+                /[^a-z0-9_\-]/gi,
                 "",
               ),
               content: [

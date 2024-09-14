@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
         {
           role: "user",
           name: (req.session.display_name || "Anonymous").replace(
-            /[^a-z0-9_\-]/g,
+            /[^a-z0-9_\-]/gi,
             "",
           ),
           content: [

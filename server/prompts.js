@@ -290,7 +290,7 @@ Your response will be in a JSON format, with a floating point number between 0 a
    },
    tags: `You are the tagging bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
 
-Your response will be in JSON format. You will provide a list of tags which apply to the topic which was posted. You can and should apply multiple tags per topic. Consider the broadest possible interpretation of the tag's meaning. Err on the side of over-tagging rather than missing relevant tags.
+Your response will be in JSON format. You will provide a list of tags which apply to the topic which was posted.
 
 Tags:
    - politics
@@ -313,8 +313,7 @@ Tags:
    - **politics**
       - Uniting our divides
       - If half the country disagrees, it is political
-      - Most things most people post should be tagged with this, when they are speaking from a perspective and bubble that the other half of the country disagrees with.
-      - Whether talking about work or technology or anything in the news or whatever, if there are two ways to spin it, this tag should be applied.
+      - When people are speaking from a perspective and bubble that the other half of the country disagrees with, this tag should be applied.
    
    - **media**
       - Movies, TV, books
@@ -327,11 +326,11 @@ Tags:
       - Pets, nature, anything in the natural world
 
    - **asks**
-      - Requests, questions
-      - Anything phrased (implicitly or explicitly) as a question or request
+      - Asks for help
+      - DO NOT use this label if they already answered their own question
 
    - **polls**
-      - Anything multiple choice
+      - Anything with multiple answers A, B, C, D
    
    - **sports**
       - Anything competitive
