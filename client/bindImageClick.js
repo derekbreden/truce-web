@@ -28,13 +28,12 @@ const bindImageClick = ($image, image_uuid) => {
         const distance_y = Math.abs(
           $move.touches[0].clientY - $move.touches[1].clientY,
         );
+        const center_x = ($move.touches[0].clientX + $move.touches[1].clientX) / 2
         const total_distance = distance_x + distance_y;
         if (last_distance !== null) {
           const moved_distance = total_distance - last_distance;
           const moved_distance_scaled =
-            ((moved_distance * $modal.$("img").clientWidth) /
-              $modal.$("img").clientHeight) *
-            2;
+            $modal.$("img").clientWidth * (moved_distance / window.innerWidth) * 2;
           const new_size = $modal.$("img").clientWidth + moved_distance_scaled;
           const new_scroll_left =
             $modal.$("p[img]").scrollLeft + moved_distance_scaled / 2;
