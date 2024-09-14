@@ -67,7 +67,7 @@ const renderUsers = (users) => {
         $(
           `
           all-clear-wrapper
-            p All clear
+            p Nothing to see here
           `,
         ),
       );

@@ -137,7 +137,7 @@ const renderNotifications = (notifications) => {
       $(
         `
         all-clear-wrapper
-          p All clear
+          p Nothing to see here
         `,
       ),
     ];
@@ -148,7 +148,7 @@ const renderNotifications = (notifications) => {
       $(
         `
       all-clear-wrapper
-        p All clear
+        p Nothing to see here
       `,
       ),
     ];

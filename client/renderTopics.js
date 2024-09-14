@@ -50,7 +50,7 @@ const renderTopics = (topics, tag, user) => {
           $(
             `
             all-clear-wrapper
-              p All clear
+              p Nothing to see here
             `,
           ),
         );
@@ -71,7 +71,7 @@ const renderTopics = (topics, tag, user) => {
           $(
             `
             all-clear-wrapper
-              p All clear
+              p Nothing to see here
             `,
           ),
         );
@@ -83,7 +83,7 @@ const renderTopics = (topics, tag, user) => {
           $(
             `
             all-clear-wrapper
-              p All clear
+              p Nothing to see here
             `,
           ),
         );
