@@ -22,7 +22,7 @@
     "id": "/",
     "description": "No escalations. No judgments",
     "launch_handler": {
-        "client_mode": "focus_existing"
+        "client_mode": "focus-existing"
     },
     "version": "2"
 }
