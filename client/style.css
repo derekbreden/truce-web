@@ -359,6 +359,14 @@ topic[trimmed] p img {
   cursor: pointer;
   height: 100px;
 }
+topic[trimmed] p[img][total-images="1"] {
+  width: 100%;
+  justify-content: center;
+}
+topic[trimmed] p[img][total-images="1"] img {
+  height: unset;
+  max-height: 300px;
+}
 
 comment[trimmed] p[img],
 topic[trimmed] p[img] {

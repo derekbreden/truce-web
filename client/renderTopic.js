@@ -454,10 +454,10 @@ const renderTopic = (topic) => {
     for (const image_uuid of image_uuids) {
       const $image = $(
         `
-        p[img]
-          img[src=$1]
+        p[img][total-images=$1]
+          img[src=$2]
         `,
-        ["/image/" + image_uuid],
+        [image_uuids.length, "/image/" + image_uuid],
       );
       bindImageClick($image, image_uuid);
       $topic.$("author-tags").after($image);
