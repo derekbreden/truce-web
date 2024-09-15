@@ -691,6 +691,7 @@ toggle-wrapper {
 
 toggle-wrapper[disabled] {
   opacity: .5;
+  cursor: default;
 }
 
 toggle-wrapper toggle-button {

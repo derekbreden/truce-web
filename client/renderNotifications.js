@@ -76,7 +76,7 @@ const renderNotifications = (notifications) => {
         topics[notifications-header]
           topic
             h2 Alerts
-            p To enable alerts, please sign in or sign up, using the menu in the top right hand corner.
+            p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.
         `,
       ),
     );
@@ -87,7 +87,7 @@ const renderNotifications = (notifications) => {
         topics[notifications-header]
           topic
             h2 Alerts
-            p When you "Turn on alerts", you will get an alert anytime someone responds to a topic or comment you have posted.
+            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a topic or comment you have posted.
         `,
       ),
     );
@@ -263,7 +263,7 @@ const renderMarkAllAsRead = () => {
     const $toggle_wrapper = $(
       `
       toggle-wrapper[disabled=$1][active=$2]
-        toggle-text Turn on alerts
+        toggle-text Turn on notifications
         toggle-button
           toggle-circle
       `,
@@ -272,66 +272,44 @@ const renderMarkAllAsRead = () => {
         state.push_active || state.fcm_push_active,
       ],
     );
-    $toggle_wrapper.on("click", () => {
-      if (state.push_active) {
-        state.push_active = false;
-        $("toggle-wrapper").removeAttribute("active");
-        navigator.serviceWorker.ready
-          .then((registration) => {
-            return registration.pushManager.getSubscription();
-          })
-          .then((subscription) => {
-            subscription.unsubscribe();
-            fetch("/session", {
-              method: "POST",
-              body: JSON.stringify({
-                remove: true,
-                subscription,
-              }),
+    if (state.email) {
+      $toggle_wrapper.on("click", () => {
+        if (state.push_active) {
+          state.push_active = false;
+          $("toggle-wrapper").removeAttribute("active");
+          navigator.serviceWorker.ready
+            .then((registration) => {
+              return registration.pushManager.getSubscription();
             })
-              .then((response) => response.json())
-              .then((data) => {
-                if (!data || !data.success) {
-                  alertError("Server error saving subscription");
-                }
+            .then((subscription) => {
+              subscription.unsubscribe();
+              fetch("/session", {
+                method: "POST",
+                body: JSON.stringify({
+                  remove: true,
+                  subscription,
+                }),
               })
-              .catch((error) => {
-                alertError("Network error saving subscription");
-              });
-          });
-        return;
-      }
-      if (state.fcm_push_active) {
-        state.fcm_push_active = false;
-        $("toggle-wrapper").removeAttribute("active");
-        fetch("/session", {
-          method: "POST",
-          body: JSON.stringify({
-            fcm_subscription: state.fcm_token,
-            deactivate: true,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (!data || !data.success) {
-              alertError("Server error saving subscription");
-            }
-          })
-          .catch(() => {
-            alertError("Network error saving subscription");
-          });
-        return;
-      }
-      if (state.fcm_push_available) {
-        state.fcm_push_active = true;
-        getUnreadCountUnseenCount();
-        $("toggle-wrapper").setAttribute("active", "");
-        if (state.fcm_token) {
+                .then((response) => response.json())
+                .then((data) => {
+                  if (!data || !data.success) {
+                    alertError("Server error saving subscription");
+                  }
+                })
+                .catch((error) => {
+                  alertError("Network error saving subscription");
+                });
+            });
+          return;
+        }
+        if (state.fcm_push_active) {
+          state.fcm_push_active = false;
+          $("toggle-wrapper").removeAttribute("active");
           fetch("/session", {
             method: "POST",
             body: JSON.stringify({
               fcm_subscription: state.fcm_token,
-              reactivate: true,
+              deactivate: true,
             }),
           })
             .then((response) => response.json())
@@ -343,83 +321,112 @@ const renderMarkAllAsRead = () => {
             .catch(() => {
               alertError("Network error saving subscription");
             });
+          return;
         }
-        window.webkit.messageHandlers["push-permission-request"].postMessage(
-          "push-permission-request",
-        );
-      } else if (state.push_available) {
-        state.push_active = true;
-        $("toggle-wrapper").setAttribute("active", "");
-        navigator.serviceWorker.ready
-          .then(async (registration) => {
-            registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: (function () {
-                const raw = window.atob(
-                  "BP8IxEorl8eTn6QkMCyfKCo5sDdx/AQruapRiq3wWaretKdIegWr3oMXUu2WXIiQvP46DcuoZxdKRHpGNMp+UNc=",
-                );
-                const array = new Uint8Array(new ArrayBuffer(raw.length));
-                for (let i = 0; i < raw.length; i++) {
-                  array[i] = raw.charCodeAt(i);
+        if (state.fcm_push_available) {
+          state.fcm_push_active = true;
+          getUnreadCountUnseenCount();
+          $("toggle-wrapper").setAttribute("active", "");
+          if (state.fcm_token) {
+            fetch("/session", {
+              method: "POST",
+              body: JSON.stringify({
+                fcm_subscription: state.fcm_token,
+                reactivate: true,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data || !data.success) {
+                  alertError("Server error saving subscription");
                 }
-                return array;
-              })(),
-            });
-            let retries = 0;
-            const check_for_success = () => {
-              registration.pushManager
-                .getSubscription()
-                .then((subscription) => {
-                  fetch("/session", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      subscription,
-                    }),
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      if (!data || !data.success) {
+              })
+              .catch(() => {
+                alertError("Network error saving subscription");
+              });
+          }
+          window.webkit.messageHandlers["push-permission-request"].postMessage(
+            "push-permission-request",
+          );
+        } else if (state.push_available) {
+          state.push_active = true;
+          $("toggle-wrapper").setAttribute("active", "");
+          navigator.serviceWorker.ready
+            .then(async (registration) => {
+              registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: (function () {
+                  const raw = window.atob(
+                    "BP8IxEorl8eTn6QkMCyfKCo5sDdx/AQruapRiq3wWaretKdIegWr3oMXUu2WXIiQvP46DcuoZxdKRHpGNMp+UNc=",
+                  );
+                  const array = new Uint8Array(new ArrayBuffer(raw.length));
+                  for (let i = 0; i < raw.length; i++) {
+                    array[i] = raw.charCodeAt(i);
+                  }
+                  return array;
+                })(),
+              });
+              let retries = 0;
+              const check_for_success = () => {
+                registration.pushManager
+                  .getSubscription()
+                  .then((subscription) => {
+                    fetch("/session", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        subscription,
+                      }),
+                    })
+                      .then((response) => response.json())
+                      .then((data) => {
+                        if (!data || !data.success) {
+                          if (retries < 20) {
+                            retries++;
+                            setTimeout(check_for_success, retries * 1000);
+                          } else {
+                            alertError("Server error saving subscription");
+                            state.push_active = false;
+                            $("toggle-wrapper").removeAttribute("active");
+                            subscription.unsubscribe();
+                          }
+                        }
+                      })
+                      .catch(() => {
                         if (retries < 20) {
                           retries++;
                           setTimeout(check_for_success, retries * 1000);
                         } else {
-                          alertError("Server error saving subscription");
+                          modalError("Error enabling notifications");
                           state.push_active = false;
                           $("toggle-wrapper").removeAttribute("active");
                           subscription.unsubscribe();
                         }
-                      }
-                    })
-                    .catch(() => {
-                      if (retries < 20) {
-                        retries++;
-                        setTimeout(check_for_success, retries * 1000);
-                      } else {
-                        modalError("Error enabling notifications");
-                        state.push_active = false;
-                        $("toggle-wrapper").removeAttribute("active");
-                        subscription.unsubscribe();
-                      }
-                    });
-                });
-            };
-            setTimeout(check_for_success, 1000);
-          })
-          .catch(() => {
-            modalError("Subscription error");
-            state.push_active = false;
-            $("toggle-wrapper").removeAttribute("active");
-          });
-      } else {
-        if (state.fcm_push_denied) {
-          modalError(`You must enable notifications in settings.`);
+                      });
+                  });
+              };
+              setTimeout(check_for_success, 1000);
+            })
+            .catch(() => {
+              modalError("Subscription error");
+              state.push_active = false;
+              $("toggle-wrapper").removeAttribute("active");
+            });
         } else {
-          modalError(`You must "Add to Home Screen" to enable notifications.`);
+          if (state.fcm_push_denied) {
+            modalError(`You must enable notifications in settings.`);
+          } else {
+            modalError(
+              `You must "Add to Home Screen" to enable notifications.`,
+            );
+          }
         }
-      }
-    });
-    if (state.email && (state.push_available || state.fcm_push_available)) {
+      });
+    }
+    if (state.push_available || state.fcm_push_available) {
       $("topics[notifications-header] topic").appendChild($toggle_wrapper);
+      if (!state.email) {
+        $toggle_wrapper.setAttribute("disabled", "");
+      }
     }
   }
 };
