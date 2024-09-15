@@ -15,9 +15,9 @@ module.exports = async (req, res) => {
     !res.writableEnded &&
     req.session.user_id &&
     req.body.title &&
-    req.body.body &&
-    req.body.path &&
-    req.body.pngs
+    req.body.pngs &&
+    (req.body.body || req.body.pngs.length) &&
+    req.body.path
   ) {
     const messages = [];
 
