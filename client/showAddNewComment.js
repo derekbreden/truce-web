@@ -210,7 +210,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
       addCommentError("Please enter your name");
       return;
     }
-    if (!body) {
+    if (!body && !pngs.length) {
       addCommentError("Please enter a comment");
       return;
     }

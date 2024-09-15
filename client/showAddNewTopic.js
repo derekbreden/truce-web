@@ -199,11 +199,11 @@ const showAddNewTopic = (topic) => {
       addTopicError("Please enter a title");
       return;
     }
-    if (!body) {
+    if (!body && !pngs.length) {
       addTopicError("Please enter some content");
       return;
     }
-    if (title.length >= body.length) {
+    if (title.length >= body.length && !pngs.length) {
       addTopicError("The content must be longer than the title");
       return;
     }
