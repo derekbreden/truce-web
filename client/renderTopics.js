@@ -191,17 +191,20 @@ const renderTopics = (topics, tag, user) => {
       $("main-content-wrapper[active] main-content topics").prepend(
         $(
           `
-          topic[tag]
-            h2[tags]
-              span $1
+          tags[tags-list][big]
+            tag[tag=$1]
               icon
                 $2
-            p $3
+              tagname-subtitle
+                tagname
+                  name $3
+                subtitle $4
             p There are no topics in this tag yet, head on over to the topics page to add one!
           `,
           [
-            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
+            tag.tag_name,
             $(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
+            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
             tag.subtitle,
           ],
         ),
@@ -210,16 +213,19 @@ const renderTopics = (topics, tag, user) => {
       $("main-content-wrapper[active] main-content topics").prepend(
         $(
           `
-          topic[tag]
-            h2[tags]
-              span $1
+          tags[tags-list][big]
+            tag[tag=$1]
               icon
                 $2
-            p $3
+              tagname-subtitle
+                tagname
+                  name $3
+                subtitle $4
           `,
           [
-            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
+            tag.tag_name,
             $(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
+            tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
             tag.subtitle,
           ],
         ),

@@ -1629,23 +1629,60 @@ topic author-tags tags tag svg {
 tags[tags-list] {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 20px;
   padding-top: 20px;
 }
 
 tags[tags-list] tag {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  min-width: calc(50%);
-  margin-right: -10px;
+  width: calc(50% - 10px);
   cursor: pointer;
+}
+tags[tags-list][big] tag {
+  width: unset;
+  cursor: unset;
+  margin-left: -3px;
+}
+tags[tags-list][big] tag[tag=politics],
+tags[tags-list][big] tag[tag=sports],
+tags[tags-list][big] tag[tag=science] {
+  margin-left: -5px;
+}
+tags[tags-list][big] tag[tag=media],
+tags[tags-list][big] tag[tag=religion],
+tags[tags-list][big] tag[tag=health],
+tags[tags-list][big] tag[tag=work] {
+  margin-left: -4px;
+}
+tags[tags-list] tag[tag=religion] icon {
+  margin-top: 1px;
+}
+tags[tags-list] tag[tag=parenting] icon,
+tags[tags-list] tag[tag=media] icon,
+tags[tags-list] tag[tag=asks] icon {
+  margin-top: 2px;
+}
+tags[tags-list] tag[tag=weather] icon {
+  margin-top: 3px;
+}
+tags[tags-list] tag[tag=food] icon,
+tags[tags-list] tag[tag=health] icon {
+  margin-top: -1px;
+}
+tags[tags-list] tag[tag=history] icon {
+  margin-top: -3px;
+}
+tags[tags-list] tag[tag=polls] icon {
+  margin-top: -5px;
 }
 
 tags[tags-list] tag tagname-subtitle {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 1px;
 }
 
 tags[tags-list] tag tagname {
@@ -1655,9 +1692,11 @@ tags[tags-list] tag tagname {
 }
 
 tags[tags-list] tag tagname name {
+  font-size: 1.143rem;
+  font-weight: 600;
+}
+tags[tags-list][big] tag tagname name {
   font-size: 1.286rem;
-  line-height: 1.286rem;
-  font-weight: bold;
 }
 
 tags[tags-list] tag tagname count {
@@ -1666,7 +1705,7 @@ tags[tags-list] tag tagname count {
   border: 1px solid #000;
   border: 1px solid light-dark(#000, #f5f5f5);
   border-radius: .786rem;
-  padding: 2px 5px;
+  padding: 1px 5px;
   min-width: 15px;
   text-align: center;
   font-size: .786rem;
@@ -1682,6 +1721,9 @@ tags[tags-list] tag tagname count {
 
 tags[tags-list] tag subtitle {
   font-size: .786rem;
+}
+tags[tags-list][big] tag subtitle {
+  font-size: 1rem;
 }
 
 tags[tags-list] tag icon {
@@ -1724,11 +1766,16 @@ users author-name icon svg {
   width: 22px;
   margin-left: -5px;
 }
+tags[tags-list][big] {
+  position: relative;
+  padding-bottom: 20px;
+}
 
 back-forward-wrapper::after,
 activities[favorites] activity::after,
 notifications notification::after,
 users user:after,
+tags[tags-list][big]:after,
 topics topic::before {
   content: "";
   display: flex;
