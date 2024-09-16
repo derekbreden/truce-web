@@ -1696,6 +1696,7 @@ tags[tags-list] tag tagname name {
   font-weight: 600;
 }
 tags[tags-list][big] tag tagname name {
+  margin-top: -1px;
   font-size: 1.286rem;
 }
 
