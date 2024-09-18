@@ -42,6 +42,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     let next_sequence = path_sequence.indexOf(new_path_parsed);
 
     // Slide left and right on user profile sub-pages
+    let sequence_is_user = false
     if (
       state.path.substr(0, 6) === "/user/" &&
       new_path_parsed.substr(0, 6) === "/user/"
@@ -55,6 +56,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       ];
       previous_sequence = user_path_sequence.indexOf(state.path);
       next_sequence = user_path_sequence.indexOf(new_path_parsed);
+      sequence_is_user = true;
     }
 
     // From one main page to another
@@ -68,7 +70,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       // From a sub page (topic / comment) to a main page
     } else if (next_sequence !== -1 && previous_sequence === -1) {
       // Find the main page they were at most recently
-      most_recent_sequence_page = state.path_history
+      const most_recent_sequence_page = state.path_history
         .toReversed()
         .find((p) => path_sequence.indexOf(p) !== -1);
 
@@ -82,7 +84,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
     }
 
     // Dot indicating main page on most recently
-    if (next_sequence !== -1) {
+    if (next_sequence !== -1 && !sequence_is_user) {
       let dot_index = Math.max(next_sequence - 1, 0);
       $("footer dot").setAttribute("index", dot_index);
     }
