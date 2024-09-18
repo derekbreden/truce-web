@@ -166,7 +166,7 @@ module.exports = async (req, res) => {
             `
             : ``
         }
-      LIMIT 5;
+      LIMIT 30;
       `,
       [
         req.session.user_id || 0,
