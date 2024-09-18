@@ -243,6 +243,8 @@ const renderTopics = (topics, tag, user) => {
           back-forward-wrapper
             back-wrapper[topics]
               p Topics
+            back-wrapper[comments]
+              p Replies
             center-wrapper
               span Subscribers
             forward-wrapper[subscribed-to-users]
@@ -255,14 +257,33 @@ const renderTopics = (topics, tag, user) => {
       $("main-content-wrapper[active] main-content-2").prepend(
         $(
           `
-            back-forward-wrapper
-              back-wrapper[topics]
-                p Topics
-              back-wrapper[subscribers]
-                p Subscribers
-              center-wrapper
-                span Subscribed to
-            `,
+          back-forward-wrapper
+            back-wrapper[topics]
+              p Topics
+            back-wrapper[comments]
+              p Replies
+            back-wrapper[subscribers]
+              p Subscribers
+            center-wrapper
+              span Subscribed to
+          `,
+          [],
+        ),
+      );
+    } else if (state.path.split("/")[3] === "comments") {
+      $("main-content-wrapper[active] main-content-2").prepend(
+        $(
+          `
+          back-forward-wrapper
+            back-wrapper[topics]
+              p Topics
+            center-wrapper
+              span Replies
+            forward-wrapper[subscribers]
+              p Subscribers
+            forward-wrapper[subscribed-to-users]
+              p Subscribed to
+          `,
           [],
         ),
       );
@@ -270,14 +291,16 @@ const renderTopics = (topics, tag, user) => {
       $("main-content-wrapper[active] main-content-2").prepend(
         $(
           `
-            back-forward-wrapper
-              center-wrapper
-                span Topics
-              forward-wrapper[subscribers]
-                p Subscribers
-              forward-wrapper[subscribed-to-users]
-                p Subscribed to
-            `,
+          back-forward-wrapper
+            center-wrapper
+              span Topics
+            forward-wrapper[comments]
+              p Replies
+            forward-wrapper[subscribers]
+              p Subscribers
+            forward-wrapper[subscribed-to-users]
+              p Subscribed to
+          `,
           [],
         ),
       );
@@ -288,6 +311,12 @@ const renderTopics = (topics, tag, user) => {
     )?.on("click", ($event) => {
       $event.preventDefault();
       goToPath(`/user/${this_user_slug}`);
+    });
+    $(
+      "main-content-wrapper[active] main-content-2 back-forward-wrapper [comments]",
+    )?.on("click", ($event) => {
+      $event.preventDefault();
+      goToPath(`/user/${this_user_slug}/comments`);
     });
     $(
       "main-content-wrapper[active] main-content-2 back-forward-wrapper [subscribers]",

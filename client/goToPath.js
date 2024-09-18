@@ -49,6 +49,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
       const this_user_slug = state.path.split("/")[2];
       const user_path_sequence = [
         `/user/${this_user_slug}`,
+        `/user/${this_user_slug}/comments`,
         `/user/${this_user_slug}/subscribers`,
         `/user/${this_user_slug}/subscribed_to_users`,
       ];

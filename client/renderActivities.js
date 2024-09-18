@@ -142,7 +142,7 @@ const renderActivities = (activities) => {
         return $activity;
       }
     });
-  if (window.innerWidth > 1000) {
+  if (window.innerWidth > 1000 && state.path === "/favorites") {
     const $activities_1 = $activities.filter((x, i) => i % 2 === 0);
     const $activities_2 = $activities.filter((x, i) => i % 2 === 1);
     $("main-content-wrapper[active] main-content activities")?.replaceChildren(
@@ -151,6 +151,30 @@ const renderActivities = (activities) => {
     $(
       "main-content-wrapper[active] main-content-2 activities",
     )?.replaceChildren(...$activities_2);
+  } else if (
+    state.path.substr(0, 5) === "/user" &&
+    state.path.split("/")[3] === "comments"
+  ) {
+    $("main-content-wrapper[active] main-content-2 activities").replaceChildren(
+      $(
+        `
+        topics
+        `,
+      ),
+    );
+    $("main-content-wrapper[active] main-content-2 topics").replaceChildren(
+      ...$activities,
+    );
+    if ($activities.length === 0) {
+      $("main-content-wrapper[active] main-content-2 topics").appendChild(
+        $(
+          `
+          all-clear-wrapper
+            p Nothing to see here
+          `,
+        ),
+      );
+    }
   } else {
     $("main-content-wrapper[active] main-content activities")?.replaceChildren(
       ...$activities,

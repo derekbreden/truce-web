@@ -1,8 +1,9 @@
 module.exports = async (req, res) => {
   if (
     !res.writableEnded &&
-    req.body.path === "/favorites" &&
-    req.session.user_id
+    ((req.body.path === "/favorites" && req.session.user_id) ||
+      (req.body.path?.substr(0, 6) === "/user/" &&
+        req.body.path?.split("/")[3] === "comments"))
   ) {
     req.results.path = req.body.path;
     const activity_results = await req.client.query(
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
           c.user_id,
           c.parent_comment_id,
           c.parent_topic_id,
-          fc.user_id as favorite_user_id,
+          CASE WHEN fc.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           fc.create_date as favorite_create_date,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           c.image_uuids,
@@ -36,7 +37,7 @@ module.exports = async (req, res) => {
           'comment' AS type,
           '' AS tags
         FROM comments c
-        INNER JOIN favorite_comments fc ON c.comment_id = fc.comment_id
+        LEFT JOIN favorite_comments fc ON c.comment_id = fc.comment_id AND fc.user_id = $1
         LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
         WHERE
@@ -62,7 +63,7 @@ module.exports = async (req, res) => {
           t.user_id,
           NULL as parent_comment_id,
           NULL as parent_topic_id,
-          ft.user_id as favorite_user_id,
+          CASE WHEN ft.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           ft.create_date as favorite_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
           t.image_uuids,
@@ -81,7 +82,7 @@ module.exports = async (req, res) => {
             WHERE tt.topic_id = t.topic_id
           ) as tags
         FROM topics t
-        INNER JOIN favorite_topics ft ON t.topic_id = ft.topic_id
+        LEFT JOIN favorite_topics ft ON t.topic_id = ft.topic_id AND ft.user_id = $1
         LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
@@ -127,29 +128,54 @@ module.exports = async (req, res) => {
         pcu.display_name_index AS parent_comment_display_name_index,
         CASE WHEN pcu.slug = '' THEN pcu.user_id::VARCHAR ELSE pcu.slug END as parent_comment_user_slug,
         pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid,
-        combined.tags
+        CASE WHEN pcf.user_id IS NOT NULL THEN TRUE ELSE FALSE END as parent_comment_favorited,
+        combined.tags,
+        combined.favorited
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id
       LEFT JOIN topics pt ON combined.parent_topic_id = pt.topic_id
       LEFT JOIN users pu ON pt.user_id = pu.user_id
       LEFT JOIN comments pc ON combined.parent_comment_id = pc.comment_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
+      LEFT JOIN favorite_comments pcf ON combined.id = pcf.comment_id AND pcf.user_id = $1
       LEFT JOIN flagged_comments l ON l.comment_id = pc.comment_id
       LEFT JOIN blocked_users b ON b.user_id_blocked = pc.user_id AND b.user_id_blocking = $1
       WHERE
-        combined.favorite_user_id = $1
-        AND (combined.favorite_create_date < $2 OR $2 IS NULL)
-        AND (combined.favorite_create_date > $3 OR $3 IS NULL)
-        AND l.comment_id IS NULL
+        l.comment_id IS NULL
         AND b.user_id_blocked IS NULL
-      ORDER BY combined.favorite_create_date DESC
-      LIMIT 30;
+        ${
+          req.body.path === "/favorites"
+            ? `
+              AND combined.favorited = TRUE
+              AND (combined.favorite_create_date < $2 OR $2 IS NULL)
+              AND (combined.favorite_create_date > $3 OR $3 IS NULL)
+              ORDER BY combined.favorite_create_date DESC
+            `
+            : ``
+        }
+        ${
+          req.body.path.substr(0, 6) === "/user/" &&
+          req.body.path.split("/")[3] === "comments"
+            ? `
+              AND combined.type = 'comment'
+              AND (combined.create_date < $2 OR $2 IS NULL)
+              AND (combined.create_date > $3 OR $3 IS NULL)
+
+              AND ${Number(req.body.path.split("/")[2]) ? `u.user_id = $4` : `u.slug = $4`}
+              ORDER BY combined.create_date DESC
+            `
+            : ``
+        }
+      LIMIT 5;
       `,
       [
         req.session.user_id || 0,
         req.body.max_create_date || null,
         req.body.min_create_date || null,
-      ],
+        req.body.path.substr(0, 6) === "/user/"
+          ? req.body.path.split("/")[2]
+          : undefined,
+      ].filter((x) => x !== undefined),
     );
     req.results.activities.push(...activity_results.rows);
   }

@@ -32,6 +32,22 @@ const bindScrollEvent = () => {
           },
           new Date().toISOString(),
         );
+        let max_create_date = state.cache[state.path].activities.reduce(
+          (min, activity) => {
+            return min < activity.create_date ? min : activity.create_date;
+          },
+          new Date().toISOString(),
+        );
+        if (state.path === "/favorites") {
+          max_create_date = state.cache[state.path].activities.reduce(
+            (min, activity) => {
+              return min < activity.favorite_create_date
+                ? min
+                : activity.favorite_create_date;
+            },
+            new Date().toISOString(),
+          );
+        }
 
         // Use that to load anything older than that (our min is the max of what we want returned)
         state.loading_path = true;
@@ -40,17 +56,29 @@ const bindScrollEvent = () => {
           body: JSON.stringify({
             path: state.path,
             max_topic_create_date,
+            max_create_date,
           }),
         })
           .then((response) => response.json())
           .then(function (data) {
             // Stop when we reach the end (no more results returned)
-            if (data.topics && !data.topics.length) {
-              state.cache[state.path].finished = true;
+            if (
+              state.path === "/favorites" ||
+              (state.path.substr(0, 5) === "/user" &&
+                state.path.split("/")[3] === "comments")
+            ) {
+              if (data.activities && !data.activities.length) {
+                state.cache[state.path].finished = true;
+              }
+            } else {
+              if (data.topics && !data.topics.length) {
+                state.cache[state.path].finished = true;
+              }
             }
 
             // Append what we found to the existing cache
             state.cache[state.path].topics.push(...data.topics);
+            state.cache[state.path].activities.push(...data.activities);
 
             // And re-render if any topics added
             if (data.topics.length) {
@@ -60,6 +88,11 @@ const bindScrollEvent = () => {
                 state.cache[state.path].user,
               );
             }
+            // And re-render if any activities added
+            if (data.activities.length) {
+              renderActivities(state.cache[state.path].activities);
+            }
+
             state.loading_path = false;
           })
           .catch(function (error) {
