@@ -1,8 +1,25 @@
 const showAddNewTopic = (topic) => {
+
+  // If this is the main prompt, show a topic prompt
+  let content_placeholder = `Content`;
+  if (!topic) {
+    let topic_prompts_index = localStorage.getItem(`${window.local_storage_key}:topic_prompts_index`) || -1;
+    topic_prompts_index++;
+    if (topic_prompts_index >= topic_prompts.length) {
+      topic_prompts_index = 0;
+    }
+    localStorage.setItem(`${window.local_storage_key}:topic_prompts_index`, topic_prompts_index);
+    content_placeholder = `Content
+
+
+
+e.g. ${topic_prompts[topic_prompts_index]}`;
+  }
+  
   const $add_new = $(
     `
     add-new[topic]
-      input[title][placeholder=Title][maxlength=140][value=$3]
+      input[title][placeholder=Title][maxlength=140][value=$4]
       title-wrapper
         label[poll]
           icon
@@ -11,13 +28,14 @@ const showAddNewTopic = (topic) => {
           icon
             $2
           input[image][type=file][multiple][accept=image/*]
-      textarea[body][placeholder=Content][rows=10][maxlength=8000] $4
-      button[submit] $5
+      textarea[body][placeholder=$3][rows=10][maxlength=8000] $5
+      button[submit] $6
       button[alt][cancel] Cancel
     `,
     [
       $("icons icon[poll] svg").cloneNode(true),
       $("icons icon[image] svg").cloneNode(true),
+      content_placeholder,
       ...(topic
         ? [topic.title, topic.body, "Save changes"]
         : ["", "", "Add topic"]),
