@@ -138,6 +138,7 @@ if (
                 } else {
                   state.fcm_push_active = true;
                   getUnreadCountUnseenCount();
+                  $("toggle-wrapper")?.setAttribute("active", "");
                 }
               })
               .catch(() => {
@@ -162,6 +163,7 @@ if (
                 } else {
                   state.fcm_push_active = true;
                   getUnreadCountUnseenCount();
+                  $("toggle-wrapper")?.setAttribute("active", "");
                 }
               })
               .catch(() => {
@@ -239,6 +241,7 @@ if (
               } else {
                 state.fcm_push_active = true;
                 getUnreadCountUnseenCount();
+                $("toggle-wrapper")?.setAttribute("active", "");
               }
             })
             .catch(() => {
