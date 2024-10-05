@@ -68,7 +68,7 @@ if (
           // permission not asked
           state.fcm_push_active = false;
           state.fcm_push_not_determined = true;
-          if (state.fcm_token && state.email) {
+          if (state.fcm_token && (state.email || state.session_uuid)) {
             fetch("/session", {
               method: "POST",
               body: JSON.stringify({
@@ -92,7 +92,7 @@ if (
           state.fcm_push_denied = true;
           state.fcm_push_available = false;
           state.fcm_push_active = false;
-          if (state.fcm_token && state.email) {
+          if (state.fcm_token && (state.email || state.session_uuid)) {
             fetch("/session", {
               method: "POST",
               body: JSON.stringify({
@@ -120,7 +120,7 @@ if (
           // state.fcm_push_active = true;
           // window.webkit.messageHandlers["push-token"].postMessage("push-token");
           // getUnreadCountUnseenCount();
-          if (state.fcm_token && state.email && state.fcm_push_active) {
+          if (state.fcm_token && (state.email || state.session_uuid) && state.fcm_push_active) {
             fetch("/session", {
               method: "POST",
               body: JSON.stringify({
@@ -144,6 +144,29 @@ if (
                 alertError("Network error saving subscription");
                 state.fcm_push_active = false;
               });
+          // Check for server remembering state if we have forgotten it?
+          } else if (state.fcm_token && (state.email || state.session_uuid)) {
+            fetch("/session", {
+              method: "POST",
+              body: JSON.stringify({
+                fcm_subscription: state.fcm_token,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (!data || !data.success) {
+                  alertError("Server error saving subscription");
+                  state.fcm_push_active = false;
+                } else if (data.deactivated) {
+                  state.fcm_push_active = false;
+                } else {
+                  state.fcm_push_active = true;
+                  getUnreadCountUnseenCount();
+                }
+              })
+              .catch(() => {
+                alertError("Network error saving subscription");
+              });
           }
           break;
         case "unknown":
@@ -162,7 +185,7 @@ if (
   window.addEventListener("push-token", ($event) => {
     if ($event && $event.detail && !$event.detail.startsWith(`ERROR`)) {
       state.fcm_token = $event.detail;
-      if (state.email) {
+      if ((state.email || state.session_uuid)) {
         if (state.fcm_push_denied) {
           fetch("/session", {
             method: "POST",

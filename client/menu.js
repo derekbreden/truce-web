@@ -86,7 +86,8 @@ const showMenu = () => {
       state.reset_token_uuid = "";
 
       // Workaround for replit Webview not supporting Set-Cookie
-      localStorage.removeItem("session_uuid");
+      localStorage.removeItem(`${window.local_storage_key}:session_uuid`);
+      state.session_uuid = "";
       // END Workaround
 
       // Tell server to clear the cookie and set a new one
@@ -98,6 +99,17 @@ const showMenu = () => {
       })
         .then((response) => response.json())
         .then(function (data) {
+
+          // Workaround for replit Webview not supporting Set-Cookie
+          if (data.session_uuid) {
+            localStorage.setItem(
+              `${window.local_storage_key}:session_uuid`,
+              data.session_uuid,
+            );
+            state.session_uuid = data.session_uuid;
+          }
+          // END Workaround
+
           state.cache = {};
           goToPath("/topics");
           menuCancel();

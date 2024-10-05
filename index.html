@@ -28,6 +28,9 @@
       display_name: "",
       profile_picture_uuid: "",
       email: "",
+      session_uuid: localStorage.getItem(
+        `${window.local_storage_key}:session_uuid`,
+      ) || "",
       expanded_comment_ids: localStorage.getItem(
         `${window.local_storage_key}:expanded_comment_ids`,
       )
