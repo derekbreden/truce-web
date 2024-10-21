@@ -52,7 +52,11 @@ module.exports = {
               }
             } catch (err) {
               console.error("Websocket error", err);
-              delete this.ws_active[ws_uuid].active_topic_id;
+              try {
+                delete this.ws_active[ws_uuid].active_topic_id;
+              } catch (err) {
+                console.error("Websocket error deleting", err);
+              }
             } finally {
               client.release();
             }
