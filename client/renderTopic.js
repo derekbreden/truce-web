@@ -12,14 +12,22 @@ const renderTopic = (topic) => {
     state.path.substr(0, 5) === "/tag/" ||
     state.path.substr(0, 6) === "/user/"
   ) {
-    trimmed = true;
     $topic_body = $topic_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
       if (characters_used < 500) {
         acc.push(child);
+      } else {
+        trimmed = true;
       }
       return acc;
     }, []);
+    if (trimmed) {
+      let $last_tag = $topic_body[$topic_body.length - 1];
+      if ($last_tag.tagName === "UL") {
+        $last_tag = $last_tag.querySelector("li:last-child")
+      }
+      $last_tag.innerText = $last_tag.innerText + "\n...";
+    }
   }
   const $topic = $(
     `
@@ -139,7 +147,7 @@ const renderTopic = (topic) => {
                   bg
                   $4
                 percent
-            p[results] Estimated results:
+            p[results][estimated] Estimated results:
             poll-counts-estimated
               poll-1
                 text
@@ -308,6 +316,8 @@ const renderTopic = (topic) => {
     } else {
       $topic.$("poll-counts-actual").remove();
       $topic.$("[results][actual]").remove();
+      $topic.$("poll-counts-estimated")?.remove();
+      $topic.$("[results][estimated]")?.remove();
     }
     if (!topic.poll_3) {
       $topic.$("poll-vote-wrapper poll-3")?.remove();
