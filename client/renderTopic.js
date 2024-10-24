@@ -23,10 +23,12 @@ const renderTopic = (topic) => {
     }, []);
     if (trimmed) {
       let $last_tag = $topic_body[$topic_body.length - 1];
-      if ($last_tag.tagName === "UL") {
+      if ($last_tag?.tagName === "UL") {
         $last_tag = $last_tag.querySelector("li:last-child")
       }
-      $last_tag.innerText = $last_tag.innerText + "\n...";
+      if ($last_tag) {
+        $last_tag.innerText = $last_tag.innerText + "\n...";
+      }
     }
   }
   const $topic = $(
