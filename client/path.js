@@ -45,10 +45,14 @@ if (
 if (state.path === "/") {
   if (localStorage.getItem(`${window.local_storage_key}:has_visited_topics`)) {
     state.path = "/topics";
+    state.path_index++;
+    history.pushState({ path_index: state.path_index }, "", state.path);
   }
   // Default to last root path
   if (localStorage.getItem(`${window.local_storage_key}:last_root_path`)) {
     state.path = localStorage.getItem(`${window.local_storage_key}:last_root_path`);
+    state.path_index++;
+    history.pushState({ path_index: state.path_index }, "", state.path);
   }
 }
 
