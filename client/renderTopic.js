@@ -5,6 +5,7 @@ const renderTopic = (topic) => {
   let $topic_body = markdownToElements(topic.body);
   let characters_used = 0;
   let trimmed = false;
+  let summary_only = false;
   if (
     state.path === "/topics" ||
     state.path === "/topics/all" ||
@@ -12,6 +13,9 @@ const renderTopic = (topic) => {
     state.path.substr(0, 5) === "/tag/" ||
     state.path.substr(0, 6) === "/user/"
   ) {
+    summary_only = true
+  }
+  if (summary_only) {
     $topic_body = $topic_body.reduce((acc, child) => {
       characters_used += child.textContent.length;
       if (characters_used < 500) {
@@ -387,13 +391,7 @@ const renderTopic = (topic) => {
         focusAddNewTopic();
       });
       $more_modal.$("action[block]").remove();
-      if (
-        state.path === "/topics" ||
-        state.path === "/topics/all" ||
-        state.path === "/favorites" ||
-        state.path.substr(0, 5) === "/tag/" ||
-        state.path.substr(0, 6) === "/user/"
-      ) {
+      if (summary_only) {
         $more_modal.$("action[edit]").remove();
       }
     } else {
@@ -471,17 +469,13 @@ const renderTopic = (topic) => {
         `,
         [image_uuids.length, "/image/" + image_uuid],
       );
-      bindImageClick($image, image_uuid);
+      if (!summary_only) {
+        bindImageClick($image, image_uuid);
+      }
       $topic.$("author-tags").after($image);
     }
   }
-  if (
-    state.path === "/topics" ||
-    state.path === "/topics/all" ||
-    state.path === "/favorites" ||
-    state.path.substr(0, 5) === "/tag/" ||
-    state.path.substr(0, 6) === "/user/"
-  ) {
+  if (summary_only) {
     $topic.setAttribute("trimmed", "");
     $topic.on("click", ($event) => {
       if ($event.target.tagName !== "A") {
