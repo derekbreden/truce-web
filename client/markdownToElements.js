@@ -78,8 +78,11 @@ const markdownToElements = (text) => {
           li_content = li_content.trim();
           $ul.appendChild(
             $(
-              `li $1`,
-              [li_content.replace(/^- /g, "").replace(/\*\*/g, "")],
+              `
+              li $1
+              `, [
+                li_content.replace(/^- /g, "").replace(/\*\*/g, "")
+              ],
             ),
           );
         });
@@ -95,8 +98,11 @@ const markdownToElements = (text) => {
         li_contents.forEach((li_content) => {
           $ol.appendChild(
             $(
-              `li $1`,
-              [li_content.replace(/^\d+\. /g, "").replace(/\*\*/g, "")],
+              `
+              li $1
+              `, [
+                li_content.replace(/^\d+\. /g, "").replace(/\*\*/g, "")
+              ],
             ),
           );
         });
@@ -107,8 +113,11 @@ const markdownToElements = (text) => {
     // Support for /mp3/
     if (p_content.substr(0, 5) === "/mp3/") {
       return $(
-        `audio[controls][src=$1]`,
-        [p_content],
+        `
+        audio[controls][src=$1]
+        `, [
+          p_content
+        ],
       );
     }
 
@@ -135,7 +144,12 @@ const markdownToElements = (text) => {
         const absolute_match_start = current_search_offset + search_space.indexOf(matched_text);
         const absolute_match_end = absolute_match_start + matched_text.length;
 
-        const img_element = $(`img[alt=$1][src=$2]`, [alt_text, src_text]);
+        const img_element = $(
+          `
+          img[alt=$1][src=$2]
+          `,
+          [alt_text, src_text]
+        );
         inserts.push([absolute_match_start, absolute_match_end, img_element]);
         
         p_content_placeholders = p_content_placeholders.substring(0, absolute_match_start) +
@@ -160,7 +174,15 @@ const markdownToElements = (text) => {
         
         // 'big' if link is the entire original content (before any X/Y placeholders)
         const big = Boolean(matched_text === original_p_content_for_spans); 
-        const link_element = $(`a[href=$1][big=$2] $3`, [href_text, big, link_text]);
+        const link_element = $(
+          `
+          a[href=$1][big=$2] $3
+          `, [
+            href_text,
+            big,
+            link_text
+          ]
+        );
         inserts.push([absolute_match_start, absolute_match_end, link_element]);
 
         p_content_placeholders = p_content_placeholders.substring(0, absolute_match_start) +
@@ -176,7 +198,13 @@ const markdownToElements = (text) => {
     inserts.forEach((insert) => {
       const text_before_insert = original_p_content_for_spans.slice(current_offset_in_original, insert[0]);
       if (text_before_insert.length > 0) {
-        p_element.appendChild($(`span $1`, [text_before_insert]));
+        p_element.appendChild($(
+          `
+          span $1
+          `, [
+            text_before_insert
+          ]
+        ));
       }
       p_element.appendChild(insert[2]); // Append the img/a element
       current_offset_in_original = insert[1];
@@ -185,7 +213,13 @@ const markdownToElements = (text) => {
     // Append any remaining text from the original content
     const remaining_text_after_all_inserts = original_p_content_for_spans.slice(current_offset_in_original);
     if (remaining_text_after_all_inserts.length > 0) {
-      p_element.appendChild($(`span $1`, [remaining_text_after_all_inserts]));
+      p_element.appendChild($(
+        `
+        span $1
+        `, [
+          remaining_text_after_all_inserts
+        ]
+      ));
     }
     
     // If after all processing, p_element has no children AND original_p_content_for_spans was not empty
