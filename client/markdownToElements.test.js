@@ -1,12 +1,14 @@
 // --- Imports ---
-const fs = require('fs');
+// fs is no longer directly needed for loading the main script
 const path = require('path');
 const { assertEquals, runTests: runTestsFromUtils } = require('./testUtils');
+const { loadClientScript } = require('./testHelpers.js'); // Added
 
-// Global variable for the function, loaded synchronously
+// Global variable for the function, will be loaded by loadClientScript
 let markdownToElements;
 
 // --- Mocks ---
+// mockDocument and mockDollarUtil remain unchanged as per instructions
 const mockDocument = {
     _elementsToString: function(elements) {
         return elements.map(el => el.toString()).join('');
@@ -79,7 +81,6 @@ const mockDollarUtil = (htmlString, values = []) => {
           element.appendChild(String(values[0]));
         }
     } else {
-        // console.warn(`Unhandled mockDollarUtil case: ${htmlString}`); // Reduce noise for now
         element = mockDocument.createElement('div'); 
         element.innerText = htmlString;
     }
@@ -87,16 +88,26 @@ const mockDollarUtil = (htmlString, values = []) => {
 };
 
 // --- Load Function Under Test ---
+// Setup global mocks needed for the function under test *before loading*
+// These globals are still set for consistency or if any test utility directly uses them,
+// but loadClientScript is the primary mechanism for injecting them into the script's scope.
+global.document = mockDocument;
+global.$ = mockDollarUtil;
+
 try {
-    // console.log("Attempting to load markdownToElements.js using fs.readFileSync and new Function..."); // Reduced logging
-    const markdownToElementsPath = path.join(__dirname, 'markdownToElements.js'); 
-    const markdownToElementsFileContent = fs.readFileSync(markdownToElementsPath, 'utf8');
-    markdownToElements = new Function('document', '$', `${markdownToElementsFileContent}; return markdownToElements;`)(mockDocument, mockDollarUtil);
-    // console.log("markdownToElements.js loaded successfully via new Function."); // Reduced logging
+  markdownToElements = loadClientScript(
+    path.join(__dirname, 'markdownToElements.js'),
+    {
+      // These are the globals markdownToElements.js expects
+      "document": mockDocument, 
+      "$": mockDollarUtil    
+    }
+  );
 } catch (e) {
-    console.error("Failed to load markdownToElements.js using new Function:", e);
-    process.exit(1); 
+  console.error("Failed to load markdownToElements.js using testHelpers:", e);
+  process.exit(1); 
 }
+
 
 // Helper function for stringifying results before assertion
 function elementsToString(elements) {
@@ -104,9 +115,7 @@ function elementsToString(elements) {
 }
 
 // --- Test Cases ---
-// Using only the "current" test cases as requested by subtask, plus any distinct "prev" ones.
-// For this run, I'll use the combined list as it was before, ensuring all requested tests are present.
-
+// (Test cases remain unchanged)
 function prevTestParagraphs() {
     const result = markdownToElements("Hello world");
     const p = mockDocument.createElement('p');
@@ -161,7 +170,7 @@ function prevTestHorizontalRule() {
 }
 
 function prevTestUnorderedList() {
-    const input = "- item1\n- item2"; // Corrected from prompt, original test used $util
+    const input = "- item1\n- item2"; 
     const result = markdownToElements(input); 
     const ul = mockDocument.createElement('ul');
     ul.appendChild(mockDollarUtil("li $1", ["item1"])); 
@@ -170,7 +179,7 @@ function prevTestUnorderedList() {
 }
 
 function prevTestOrderedList() {
-    const input = "1. item1\n2. item2"; // Corrected from prompt
+    const input = "1. item1\n2. item2"; 
     const result = markdownToElements(input); 
     const ol = mockDocument.createElement('ol');
     ol.appendChild(mockDollarUtil("li $1", ["item1"])); 
@@ -178,7 +187,7 @@ function prevTestOrderedList() {
     assertEquals(elementsToString(result), elementsToString([ol]), "Prev: Ordered list");
 }
 
-function prevTestImages() { // This is the version of image test that passed previously
+function prevTestImages() { 
     const input = "Look ![alt text](image.png) this";
     const result = markdownToElements(input);
     const p = mockDocument.createElement('p');
@@ -241,7 +250,6 @@ function prevTestOrderedListWithBold() {
     assertEquals(elementsToString(result), elementsToString([ol]), "Prev: Bold within ordered list items");
 }
 
-// --- New Test Cases to Add (as per subtask) ---
 function testParagraphs() {
     const input = "Hello world";
     const p = mockDocument.createElement('p');
@@ -357,23 +365,22 @@ function testLinks() {
 function testAutomaticUrlLinking() {
     const input = "Check http://example.com out";
     const expected_p = mockDocument.createElement('p');
-    const span1 = mockDocument.createElement('span'); // Direct creation for precise expectation
+    const span1 = mockDocument.createElement('span'); 
     span1.appendChild('Check ');
     expected_p.appendChild(span1);
 
-    const a = mockDocument.createElement('a'); // Direct creation
+    const a = mockDocument.createElement('a'); 
     a.setAttribute('href', 'http://example.com');
     a.setAttribute('big', "false"); 
     a.appendChild('example.com'); 
     expected_p.appendChild(a);
 
-    const span2 = mockDocument.createElement('span'); // Direct creation
+    const span2 = mockDocument.createElement('span'); 
     span2.appendChild(' out');
     expected_p.appendChild(span2);
 
     assertEquals(elementsToString(markdownToElements(input)), elementsToString([expected_p]), "Should automatically link URLs and process them correctly with surrounding text");
 }
-// --- End: Test Cases to Add ---
 
 // Stores all test functions
 const allTestFunctions = [
@@ -405,13 +412,9 @@ const allTestFunctions = [
 ];
 
 // --- Main execution ---
-// Setup global mocks needed for the function under test
-global.document = mockDocument;
-global.$ = mockDollarUtil;
-
-// Run tests using the utility
-// The runTestsFromUtils function handles console logging, summary, and process.exit
+// The global assignments of document and $ are done before loading the script
+// and also passed to loadClientScript, ensuring the script uses these mocks.
 runTestsFromUtils("markdownToElements.test.js", allTestFunctions).catch(err => {
   console.error("\nCritical Error during test execution:", err);
-  process.exit(1); // Ensure exit on critical error
+  process.exit(1); 
 });
