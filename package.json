@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node client/markdownToElements.test.js && node client/imageToPng.test.js"
+    "test": "node runAllTests.js"
   },
   "keywords": [],
   "author": "",
