@@ -1,6 +1,7 @@
 // --- Imports ---
 const fs = require('fs');
 const path = require('path');
+const { assertEquals, runTests: runTestsFromUtils } = require('./testUtils');
 
 // Global variable for the function, loaded synchronously
 let markdownToElements;
@@ -87,42 +88,19 @@ const mockDollarUtil = (htmlString, values = []) => {
 
 // --- Load Function Under Test ---
 try {
-    console.log("Attempting to load markdownToElements.js using fs.readFileSync and new Function...");
+    // console.log("Attempting to load markdownToElements.js using fs.readFileSync and new Function..."); // Reduced logging
     const markdownToElementsPath = path.join(__dirname, 'markdownToElements.js'); 
     const markdownToElementsFileContent = fs.readFileSync(markdownToElementsPath, 'utf8');
     markdownToElements = new Function('document', '$', `${markdownToElementsFileContent}; return markdownToElements;`)(mockDocument, mockDollarUtil);
-    console.log("markdownToElements.js loaded successfully via new Function.");
+    // console.log("markdownToElements.js loaded successfully via new Function."); // Reduced logging
 } catch (e) {
     console.error("Failed to load markdownToElements.js using new Function:", e);
     process.exit(1); 
 }
 
-// --- Test Runner & Assertions ---
-const testResults = {
-    passed: 0,
-    failed: 0,
-    details: []
-};
-
-function assertEqual(actual, expected, message) {
-    const actualStr = Array.isArray(actual) ? mockDocument._elementsToString(actual) : (actual ? actual.toString() : String(actual));
-    const expectedStr = Array.isArray(expected) ? mockDocument._elementsToString(expected) : (expected ? expected.toString() : String(expected));
-
-    if (actualStr !== expectedStr) {
-        testResults.failed++;
-        testResults.details.push({
-            status: 'FAIL',
-            message,
-            expected: expectedStr,
-            actual: actualStr
-        });
-    } else {
-        testResults.passed++;
-        testResults.details.push({
-            status: 'PASS',
-            message
-        });
-    }
+// Helper function for stringifying results before assertion
+function elementsToString(elements) {
+    return Array.isArray(elements) ? mockDocument._elementsToString(elements) : (elements ? elements.toString() : String(elements));
 }
 
 // --- Test Cases ---
@@ -133,14 +111,14 @@ function prevTestParagraphs() {
     const result = markdownToElements("Hello world");
     const p = mockDocument.createElement('p');
     p.appendChild(mockDollarUtil("span $1", ["Hello world"]));
-    assertEqual(result, [p], "Prev: Single paragraph with a span");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Single paragraph with a span");
 
     const resultMulti = markdownToElements("First line.\n\nSecond line.");
     const p1 = mockDocument.createElement('p');
     p1.appendChild(mockDollarUtil("span $1", ["First line."]));
     const p2 = mockDocument.createElement('p');
     p2.appendChild(mockDollarUtil("span $1", ["Second line."]));
-    assertEqual(resultMulti, [p1, p2], "Prev: Two paragraphs for double line breaks");
+    assertEquals(elementsToString(resultMulti), elementsToString([p1, p2]), "Prev: Two paragraphs for double line breaks");
 }
 
 function prevTestBlockquotes() {
@@ -148,7 +126,7 @@ function prevTestBlockquotes() {
     const p = mockDocument.createElement('p');
     p.setAttribute("quote", "");
     p.appendChild(mockDollarUtil("span $1", ["This is a quote"]));
-    assertEqual(result, [p], "Prev: Paragraph with quote attribute");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with quote attribute");
 }
 
 function prevTestHeadersBold() { 
@@ -156,7 +134,7 @@ function prevTestHeadersBold() {
     const p = mockDocument.createElement('p');
     p.setAttribute("bold", "");
     p.appendChild(mockDollarUtil("span $1", ["This is a heading"]));
-    assertEqual(result, [p], "Prev: Paragraph with bold attribute for # heading");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with bold attribute for # heading");
 }
 
 function prevTestBoldDoubleAsterisk() {
@@ -164,7 +142,7 @@ function prevTestBoldDoubleAsterisk() {
     const p = mockDocument.createElement('p');
     p.setAttribute("bold", "");
     p.appendChild(mockDollarUtil("span $1", ["This is bold"]));
-    assertEqual(result, [p], "Prev: Paragraph with bold attribute for **bold**");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with bold attribute for **bold**");
 }
 
 function prevTestItalicsSingleAsterisk() {
@@ -172,14 +150,14 @@ function prevTestItalicsSingleAsterisk() {
     const p = mockDocument.createElement('p');
     p.setAttribute("italic", "");
     p.appendChild(mockDollarUtil("span $1", ["This is italic"]));
-    assertEqual(result, [p], "Prev: Paragraph with italic attribute for *italic*");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with italic attribute for *italic*");
 }
 
 function prevTestHorizontalRule() {
     const result = markdownToElements("---");
     const p = mockDocument.createElement('p');
     p.setAttribute("hr", "");
-    assertEqual(result, [p], "Prev: Paragraph with hr attribute (no empty span)");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with hr attribute (no empty span)");
 }
 
 function prevTestUnorderedList() {
@@ -188,7 +166,7 @@ function prevTestUnorderedList() {
     const ul = mockDocument.createElement('ul');
     ul.appendChild(mockDollarUtil("li $1", ["item1"])); 
     ul.appendChild(mockDollarUtil("li $1", ["item2"]));
-    assertEqual(result, [ul], "Prev: Unordered list");
+    assertEquals(elementsToString(result), elementsToString([ul]), "Prev: Unordered list");
 }
 
 function prevTestOrderedList() {
@@ -197,7 +175,7 @@ function prevTestOrderedList() {
     const ol = mockDocument.createElement('ol');
     ol.appendChild(mockDollarUtil("li $1", ["item1"])); 
     ol.appendChild(mockDollarUtil("li $1", ["item2"]));
-    assertEqual(result, [ol], "Prev: Ordered list");
+    assertEquals(elementsToString(result), elementsToString([ol]), "Prev: Ordered list");
 }
 
 function prevTestImages() { // This is the version of image test that passed previously
@@ -207,7 +185,7 @@ function prevTestImages() { // This is the version of image test that passed pre
     p.appendChild(mockDollarUtil("span $1", ["Look "]));
     p.appendChild(mockDollarUtil("img[alt=$1][src=$2]", ["alt text", "image.png"]));
     p.appendChild(mockDollarUtil("span $1", [" this"])); 
-    assertEqual(result, [p], "Prev: Paragraph with an image");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with an image");
 }
 
 function prevTestLinks() {
@@ -217,7 +195,7 @@ function prevTestLinks() {
     p.appendChild(mockDollarUtil("span $1", ["Click "]));
     p.appendChild(mockDollarUtil("a[href=$1][big=$2] $3", ["http://example.com", false, "link text"]));
     p.appendChild(mockDollarUtil("span $1", [" here"]));
-    assertEqual(result, [p], "Prev: Paragraph with a link");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Paragraph with a link");
 }
 
 function prevTestAutomaticUrlLinking() {
@@ -227,7 +205,7 @@ function prevTestAutomaticUrlLinking() {
     p.appendChild(mockDollarUtil("span $1", ["Check "]));
     p.appendChild(mockDollarUtil("a[href=$1][big=$2] $3", ["http://example.com", false, "example.com"]));
     p.appendChild(mockDollarUtil("span $1", [" out"]));
-    assertEqual(result, [p], "Prev: Auto-linked URLs");
+    assertEquals(elementsToString(result), elementsToString([p]), "Prev: Auto-linked URLs");
 }
 
 function prevTestCombinedFeatures() {
@@ -242,7 +220,7 @@ function prevTestCombinedFeatures() {
     p2.appendChild(mockDollarUtil("a[href=$1][big=$2] $3", ["url.com", false, "link"]));
     p2.appendChild(mockDollarUtil("span $1", [" and an "]));
     p2.appendChild(mockDollarUtil("img[alt=$1][src=$2]", ["image", "img.png"]));
-    assertEqual(results, [p1, p2], "Prev: Combined markdown features");
+    assertEquals(elementsToString(results), elementsToString([p1, p2]), "Prev: Combined markdown features");
 }
 
 function prevTestListWithBold() {
@@ -251,7 +229,7 @@ function prevTestListWithBold() {
     const ul = mockDocument.createElement('ul');
     ul.appendChild(mockDollarUtil("li $1", ["bold item"]));
     ul.appendChild(mockDollarUtil("li $1", ["normal item"]));
-    assertEqual(result, [ul], "Prev: Bold within unordered list items");
+    assertEquals(elementsToString(result), elementsToString([ul]), "Prev: Bold within unordered list items");
 }
 
 function prevTestOrderedListWithBold() {
@@ -260,7 +238,7 @@ function prevTestOrderedListWithBold() {
     const ol = mockDocument.createElement('ol');
     ol.appendChild(mockDollarUtil("li $1", ["bold item"]));
     ol.appendChild(mockDollarUtil("li $1", ["normal item"]));
-    assertEqual(result, [ol], "Prev: Bold within ordered list items");
+    assertEquals(elementsToString(result), elementsToString([ol]), "Prev: Bold within ordered list items");
 }
 
 // --- New Test Cases to Add (as per subtask) ---
@@ -270,7 +248,7 @@ function testParagraphs() {
     const span = mockDocument.createElement('span');
     span.appendChild('Hello world');
     p.appendChild(span);
-    assertEqual(markdownToElements(input), [p], "Should create a single paragraph");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create a single paragraph");
 
     const input2 = "Line 1\n\nLine 2";
     const p1 = mockDocument.createElement('p');
@@ -281,7 +259,7 @@ function testParagraphs() {
     const span2 = mockDocument.createElement('span');
     span2.appendChild('Line 2');
     p2.appendChild(span2);
-    assertEqual(markdownToElements(input2), [p1, p2], "Should create two paragraphs for double newline");
+    assertEquals(elementsToString(markdownToElements(input2)), elementsToString([p1, p2]), "Should create two paragraphs for double newline");
 }
 
 function testBlockquotes() {
@@ -291,7 +269,7 @@ function testBlockquotes() {
     const span = mockDocument.createElement('span');
     span.appendChild('This is a quote');
     p.appendChild(span);
-    assertEqual(markdownToElements(input), [p], "Should create a blockquote paragraph");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create a blockquote paragraph");
 }
 
 function testHeaders() {
@@ -301,7 +279,7 @@ function testHeaders() {
     const span = mockDocument.createElement('span');
     span.appendChild('Heading 1');
     p.appendChild(span);
-    assertEqual(markdownToElements(input), [p], "Should create a header (bold p-tag)");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create a header (bold p-tag)");
 }
 
 function testBold() {
@@ -311,7 +289,7 @@ function testBold() {
     const span = mockDocument.createElement('span');
     span.appendChild('bold text');
     p.appendChild(span);
-    assertEqual(markdownToElements(input), [p], "Should create bold text (bold p-tag)");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create bold text (bold p-tag)");
 }
 
 function testItalic() {
@@ -321,14 +299,14 @@ function testItalic() {
     const span = mockDocument.createElement('span');
     span.appendChild('italic text');
     p.appendChild(span);
-    assertEqual(markdownToElements(input), [p], "Should create italic text (italic p-tag)");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create italic text (italic p-tag)");
 }
 
 function testHorizontalRule() {
     const input = "---";
     const hr_mock = mockDocument.createElement('p');
     hr_mock.setAttribute('hr', '');
-    assertEqual(markdownToElements(input), [hr_mock], "Should create a horizontal rule element (p with hr attribute)");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([hr_mock]), "Should create a horizontal rule element (p with hr attribute)");
 }
 
 function testUnorderedList() {
@@ -340,7 +318,7 @@ function testUnorderedList() {
     li2.appendChild('item 2');
     ul.appendChild(li1);
     ul.appendChild(li2);
-    assertEqual(markdownToElements(input), [ul], "Should create an unordered list");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([ul]), "Should create an unordered list");
 }
 
 function testOrderedList() {
@@ -352,7 +330,7 @@ function testOrderedList() {
     li2.appendChild('item 2');
     ol.appendChild(li1);
     ol.appendChild(li2);
-    assertEqual(markdownToElements(input), [ol], "Should create an ordered list");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([ol]), "Should create an ordered list");
 }
 
 function testImages() {
@@ -362,7 +340,7 @@ function testImages() {
     img.setAttribute('alt', 'alt text');
     img.setAttribute('src', 'image.png');
     p.appendChild(img); 
-    assertEqual(markdownToElements(input), [p], "Should create an image directly in paragraph if it's the only content");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create an image directly in paragraph if it's the only content");
 }
 
 function testLinks() {
@@ -373,7 +351,7 @@ function testLinks() {
     a.setAttribute('big', "true"); 
     a.appendChild('link text');
     p.appendChild(a); 
-    assertEqual(markdownToElements(input), [p], "Should create a link directly in paragraph if it's the only content");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([p]), "Should create a link directly in paragraph if it's the only content");
 }
 
 function testAutomaticUrlLinking() {
@@ -393,106 +371,47 @@ function testAutomaticUrlLinking() {
     span2.appendChild(' out');
     expected_p.appendChild(span2);
 
-    assertEqual(markdownToElements(input), [expected_p], "Should automatically link URLs and process them correctly with surrounding text");
+    assertEquals(elementsToString(markdownToElements(input)), elementsToString([expected_p]), "Should automatically link URLs and process them correctly with surrounding text");
 }
 // --- End: Test Cases to Add ---
 
 // Stores all test functions
-let testsToRun = [];
-
-function runAllTests() {
-    console.log("Test script starting (runAllTests)...");
-    global.document = mockDocument;
-    global.$ = mockDollarUtil;
-    
-    testsToRun = []; 
-    
-    // Add PREVIOUS test functions (if any are distinct and still desired)
-    // For this subtask, the prompt asks to add the *new* test cases.
-    // I'll include the "prev" tests as they were there before the file "disappeared"
-    // and ensure the new ones are also added.
-    testsToRun.push(prevTestParagraphs);
-    testsToRun.push(prevTestBlockquotes);
-    testsToRun.push(prevTestHeadersBold);
-    testsToRun.push(prevTestBoldDoubleAsterisk);
-    testsToRun.push(prevTestItalicsSingleAsterisk);
-    testsToRun.push(prevTestHorizontalRule);
-    testsToRun.push(prevTestUnorderedList); // Note: prev uses $util for li, new uses direct append
-    testsToRun.push(prevTestOrderedList);   // Note: prev uses $util for li, new uses direct append
-    testsToRun.push(prevTestImages);        // Note: prev tests image with surrounding text
-    testsToRun.push(prevTestLinks);         // Note: prev tests link with surrounding text
-    testsToRun.push(prevTestAutomaticUrlLinking); // Note: prev uses $util for expected structure
-    testsToRun.push(prevTestCombinedFeatures);
-    testsToRun.push(prevTestListWithBold);
-    testsToRun.push(prevTestOrderedListWithBold);
-
-    // Add NEW test functions (from current subtask)
-    // Some of these might test similar things as "prev" but are defined as per the prompt
-    testsToRun.push(testParagraphs);
-    testsToRun.push(testBlockquotes);
-    testsToRun.push(testHeaders);
-    testsToRun.push(testBold);
-    testsToRun.push(testItalic);
-    testsToRun.push(testHorizontalRule);
-    testsToRun.push(testUnorderedList); // New version with direct append
-    testsToRun.push(testOrderedList);   // New version with direct append
-    testsToRun.push(testImages);        // New version for sole image
-    testsToRun.push(testLinks);         // New version for sole link
-    testsToRun.push(testAutomaticUrlLinking); // New version with direct creation of expected elements
-
-    console.log(`Starting execution of ${testsToRun.length} test suites.`);
-    for (const testFn of testsToRun) {
-        try {
-            testFn();
-        } catch (e) {
-            testResults.failed++;
-            testResults.details.push({
-                status: 'ERROR',
-                message: `Error during test: ${testFn.name}`,
-                error: e.toString(),
-                stack: e.stack
-            });
-        }
-    }
-    logResults();
-}
-
-function logResults() {
-    console.log("\n--- Test Results ---");
-    testResults.details.forEach(detail => {
-        if (detail.status === 'PASS') {
-            console.log(`\x1b[32mPASS\x1b[0m: ${detail.message}`);
-        } else if (detail.status === 'FAIL') {
-            console.error(`\x1b[31mFAIL\x1b[0m: ${detail.message}`);
-            console.error(`  Expected: ${detail.expected}`);
-            console.error(`  Actual:   ${detail.actual}`);
-        } else if (detail.status === 'ERROR') {
-            console.error(`\x1b[31mERROR\x1b[0m: ${detail.message}`);
-            if (detail.error) console.error(`  Error: ${detail.error}`);
-            if (detail.stack) console.error(`  Stack: ${detail.stack}`);
-        }
-    });
-    console.log("--------------------");
-    console.log(`Total Passed: ${testResults.passed}`);
-    console.log(`Total Failed: ${testResults.failed}`);
-    console.log("--------------------");
-
-    if (testResults.failed > 0 || testResults.details.some(d => d.status === 'ERROR')) {
-        console.error(`\x1b[31m${testResults.failed} tests failed and/or errors occurred.\x1b[0m`);
-    } else {
-        console.log("\x1b[32mAll tests passed!\x1b[0m");
-    }
-}
+const allTestFunctions = [
+    prevTestParagraphs,
+    prevTestBlockquotes,
+    prevTestHeadersBold,
+    prevTestBoldDoubleAsterisk,
+    prevTestItalicsSingleAsterisk,
+    prevTestHorizontalRule,
+    prevTestUnorderedList,
+    prevTestOrderedList,
+    prevTestImages,
+    prevTestLinks,
+    prevTestAutomaticUrlLinking,
+    prevTestCombinedFeatures,
+    prevTestListWithBold,
+    prevTestOrderedListWithBold,
+    testParagraphs,
+    testBlockquotes,
+    testHeaders,
+    testBold,
+    testItalic,
+    testHorizontalRule,
+    testUnorderedList,
+    testOrderedList,
+    testImages,
+    testLinks,
+    testAutomaticUrlLinking,
+];
 
 // --- Main execution ---
-console.log("Setting up to call runAllTests() (synchronous)...");
-try {
-    runAllTests();
-} catch (err) {
-    console.error("Unhandled error during test execution main catch block:", err);
-    if (testResults.details.length === 0) { 
-         testResults.failed++; 
-         testResults.details.push({ status: 'ERROR', message: 'runAllTests aborted', error: err.toString() });
-    }
-    logResults(); 
-}
+// Setup global mocks needed for the function under test
+global.document = mockDocument;
+global.$ = mockDollarUtil;
+
+// Run tests using the utility
+// The runTestsFromUtils function handles console logging, summary, and process.exit
+runTestsFromUtils("markdownToElements.test.js", allTestFunctions).catch(err => {
+  console.error("\nCritical Error during test execution:", err);
+  process.exit(1); // Ensure exit on critical error
+});

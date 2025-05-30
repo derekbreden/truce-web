@@ -56,36 +56,8 @@ try {
   process.exit(1); 
 }
 
-// Test Results Storage and Assertion Function
-const testResults = [];
-let testsPassed = 0; 
-let testsFailed = 0; 
-
-function assertEquals(expected, actual, message) {
-  if (expected === actual) {
-    testResults.push({ status: 'PASS', message });
-  } else {
-    testResults.push({ status: 'FAIL', message, expected, actual });
-  }
-}
-
-// Function to log results in the desired format
-function logResults() {
-  testsPassed = 0;
-  testsFailed = 0;
-  // console.log('\n--- Test Results ---'); // This will be done by runTests before calling this
-  testResults.forEach(detail => {
-    if (detail.status === 'PASS') {
-      testsPassed++;
-      console.log(`\x1b[32mPASS\x1b[0m: ${detail.message}`);
-    } else {
-      testsFailed++;
-      console.error(`\x1b[31mFAIL\x1b[0m: ${detail.message}`);
-      console.error(`  Expected: ${detail.expected}`);
-      console.error(`  Actual: ${detail.actual}`);
-    }
-  });
-}
+// Use the new testUtils
+const { assertEquals, runTests: runTestsFromUtils } = require('./testUtils');
 
 // --- Test Case Helper ---
 function runImageTest({
@@ -129,8 +101,13 @@ function runImageTest({
         }
         resolve();
       } catch (e) {
-        testResults.push({ status: 'FAIL', message: `${testName}: Error during callback assertions: ${e.message}`, expected: 'No error', actual: e.toString() });
-        reject(e);
+        // This error is within a specific test's callback.
+        // We want runTestsFromUtils to handle overall test failure reporting.
+        // So, we re-throw the error to be caught by runTestsFromUtils's try-catch block around testFn().
+        // Or, ensure assertEquals correctly reports failures that runTestsFromUtils can see.
+        // For now, let's make sure assertEquals is called for failures.
+        assertEquals(true, false, `${testName}: Error during callback assertions: ${e.message}`);
+        reject(e); // Keep reject to stop this specific Promise chain
       } finally {
         mockCanvas.toDataURL = originalToDataURL; // Restore original
       }
@@ -139,7 +116,9 @@ function runImageTest({
     imageToPng(inputSrc, callback, targetSize, crop);
 
     if (!global.Image.lastInstance) {
-      testResults.push({ status: 'FAIL', message: `[${testName}]: No image instance was created.`, expected: 'Image instance', actual: 'null/undefined' });
+      // This indicates a fundamental issue with the test setup or the Image mock.
+      // Report it as a failed assertion.
+      assertEquals(true, false, `[${testName}]: No image instance was created.`);
       return reject(new Error(`[${testName}] No image instance created.`));
     }
     
@@ -152,7 +131,7 @@ function runImageTest({
       global.Image.lastInstance.height = imgHeight;
       global.Image.lastInstance.onload();
     } else {
-      testResults.push({ status: 'FAIL', message: `[${testName}]: Image onload was not set or lastInstance is not available.`, expected: 'function', actual: typeof global.Image.lastInstance.onload });
+      assertEquals(true, false, `[${testName}]: Image onload was not set or lastInstance is not available.`);
       return reject(new Error(`[${testName}] Image onload not set.`));
     }
   });
@@ -163,7 +142,7 @@ function testImageToPngLoaded() {
   assertEquals(typeof imageToPng, "function", "imageToPng should be a function");
 }
 
-async function runAllImageProcessingTests() {
+async function testAllImageProcessingScenarios() { // Renamed to avoid conflict and clarify it's a test function
   await runImageTest({
     testName: "NoCrop: Larger landscape (2000x1000) to size 1024",
     imgWidth: 2000, imgHeight: 1000, targetSize: 1024, crop: false,
@@ -239,39 +218,22 @@ async function runAllImageProcessingTests() {
   });
 }
 
-// --- Test Runner ---
-async function runTests() {
-  console.log('\n--- Running imageToPng.test.js ---');
-  testResults.length = 0; // Clear results for the run
+// --- Organize tests for the new runner ---
+const allTests = [
+  testImageToPngLoaded,
+  testAllImageProcessingScenarios // This will run all the runImageTest calls
+];
 
-  testImageToPngLoaded(); 
-
-  try {
-    await runAllImageProcessingTests();
-  } catch (error) {
-    // This catch is for unexpected errors during the orchestration of tests,
-    // individual test failures (promise rejections from runImageTest) are handled by pushing to testResults.
-    if (!testResults.find(r => r.message && r.message.includes(error.message))) { // Avoid duplicate error logging
-        testResults.push({ status: 'FAIL', message: `Unexpected error during test suite execution: ${error.message || error}`, expected: 'Successful suite execution', actual: error.toString() });
-    }
-  }
-  
-  console.log('\n--- Test Results ---');
-  logResults(); 
-
-  console.log('\n--- Test Summary ---');
-  console.log(`Total assertions: ${testResults.length}`);
-  console.log(`Passed: ${testsPassed}`);
-  console.log(`Failed: ${testsFailed}`);
-
-  if (testsFailed > 0) {
-    process.exit(1); 
-  }
-}
-
-runTests().catch(err => {
+// --- Run tests using the utility ---
+// The runTestsFromUtils function handles console logging, summary, and process.exit
+runTestsFromUtils("imageToPng.test.js", allTests).catch(err => {
+  // This catch is for truly unexpected errors in runTestsFromUtils itself or during its setup.
+  // Individual test failures are handled within runTestsFromUtils.
   console.error("\nCritical Error during test execution:", err);
-  process.exit(1);
+  process.exit(1); // Ensure exit on critical error
 });
 
-module.exports = { assertEquals }; // Export for potential use if other files run tests this way
+// No need to export assertEquals as it's now imported from testUtils by any file that needs it.
+// If other files were *relying* on this specific file's export, that would be a different refactoring concern.
+// For now, assuming test files are self-contained or use the central testUtils.
+// module.exports = { assertEquals }; 

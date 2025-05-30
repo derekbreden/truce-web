@@ -58,6 +58,50 @@ const user = { name: "John" };
 alert("Success");
 ```
 
+## Testing
+
+### How to run tests
+To run all automated tests, use the following command from the project root:
+```bash
+npm test
+```
+This will execute all test files located in the `client/` directory that end with `.test.js`.
+
+### How to write new tests
+Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `client/` directory or its subdirectories.
+
+Tests are written in Node.js.
+
+Use the provided test utilities in `client/testUtils.js` for assertions and test structure. Import them as needed:
+```javascript
+const { assertEquals, runTests } = require('./testUtils'); // Adjust path if needed
+```
+
+A typical test file structure looks like this:
+```javascript
+const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path
+// Import the module to be tested
+// const myModule = require('./myModule');
+
+// Define your test functions
+function testFeatureOne() {
+  // Setup and assertions
+  // assertEquals(expected, myModule.featureOne(), 'Feature one should work');
+}
+
+function testFeatureTwo() {
+  // Setup and assertions
+}
+
+// Run all tests in this file
+runTests('myModule.test.js', [
+  testFeatureOne,
+  testFeatureTwo
+  // Add more test functions here
+]);
+```
+If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), ensure these are appropriately mocked within your test file, as the tests run in a Node.js environment. See existing tests like `client/imageToPng.test.js` for examples of mocking.
+
 ## Flint.js DOM Manipulation
 
 ### Variable Naming
