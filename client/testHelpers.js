@@ -142,7 +142,12 @@ function createMockDollar() {
       $: function(subSelector, subArgs) { // Chained call
         // console.log(`Mock element '${this.selector}' chained $ call with selector: '${subSelector}'`);
         return mockDollar(subSelector, subArgs); // Uses the parent mockDollar to ensure tracking
-      }
+      },
+      // Add setAttribute as an alias for attr to handle tests for code using either
+      setAttribute: function(attributeName, value) {
+        return this.attr(attributeName, value);
+      },
+      scrollTop: 0, // Add a default scrollTop property to all mock elements
     };
     
     mockDollar.calls.push({ 
