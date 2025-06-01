@@ -177,7 +177,121 @@ function createMockDollar() {
   return mockDollar;
 }
 
+// Mock DOM Implementation (copied and adapted from flint.test.js)
+
+const createMockElement = (tagName) => {
+  const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
+
+  return {
+    constructor: { name: tagName === '#text' ? "TextMock" : (tagName === '#document-fragment' ? "DocumentFragmentMock" : MOCK_ELEMENT_CONSTRUCTOR_NAME) },
+    tagName: tagName.toUpperCase(),
+    attributes: {},
+    children: [],
+    style: {},
+    innerText: "",
+    value: "",
+    parentNode: null,
+    eventListeners: {},
+    appendChild: function(child) {
+      let childIdentifier = child.tagName || child.textContent;
+      if (child.nodeType === 11) childIdentifier = "#document-fragment"; // Explicitly log fragment
+      this.children.push(child);
+      child.parentNode = this; // Set parentNode
+    },
+    setAttribute: function(name, value) {
+      this.attributes[name] = String(value); // Store as string, like HTML
+      if (name === "style") {
+        value.split(';').forEach(style => {
+          if (style.trim() === '') return;
+          const [prop, val] = style.split(':');
+          this.style[prop.trim()] = (val || '').trim();
+        });
+      }
+    },
+    getAttribute: function(name) {
+      return this.attributes[name];
+    },
+    addEventListener: function(type, listener) {
+      if (!this.eventListeners[type]) {
+        this.eventListeners[type] = [];
+      }
+      this.eventListeners[type].push(listener);
+    },
+    querySelectorAll: function(selector) {
+      const results = this.children.filter(child => child.tagName && child.tagName === selector.toUpperCase());
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
+      return results;
+    },
+    remove: function() {  },
+    focus: function() {  },
+  };
+};
+
+function createMockDocument() {
+  const mockDocumentObject = {
+    constructor: { name: "HTMLDocumentMock" },
+    _elements: [], // For global querySelectorAll, if needed
+    createElement: function(tagName) {
+      const el = createMockElement(tagName);
+      this._elements.push(el); // Track elements for global queries
+      return el;
+    },
+    createTextNode: function(text) {
+      const textNode = createMockElement('#text');
+      textNode.nodeType = 3;
+      textNode.textContent = text;
+      textNode.innerText = text;
+
+      textNode.appendChild = () => { throw new Error("Cannot appendChild to a text node"); };
+      textNode.setAttribute = () => { throw new Error("Cannot setAttribute on a text node"); };
+      textNode.querySelectorAll = function(selector) {
+          const results = [];
+          results.forEach = Array.prototype.forEach;
+          return results;
+      };
+      return textNode;
+    },
+    createDocumentFragment: function() {
+      const fragment = createMockElement('#document-fragment');
+      fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
+      return fragment;
+    },
+    querySelectorAll: function(selector) {
+      const results = this._elements.filter(el => {
+        if (el.tagName === selector.toUpperCase()) return true;
+        if (selector.startsWith('.') && el.attributes.class && el.attributes.class.includes(selector.substring(1))) return true;
+        if (selector.startsWith('#') && el.attributes.id === selector.substring(1)) return true;
+        return false;
+      });
+      results.forEach = Array.prototype.forEach;
+      return results;
+    },
+    body: null, // Initialized below
+    readyState: 'complete',
+    getElementById: function(id) {
+      return this._elements.find(el => el.getAttribute('id') === id) || null;
+    }
+  };
+  mockDocumentObject.body = mockDocumentObject.createElement('body'); // Initialize body
+  return mockDocumentObject;
+}
+
+function createMockWindow(mockDocument) {
+  return {
+    constructor: { name: "WindowMock" },
+    document: mockDocument,
+    navigator: { userAgent: "NodeTestEnvironment/1.0" },
+    addEventListener: function(type, listener) {
+    },
+    removeEventListener: function(type, listener) {
+    }
+  };
+}
+
 module.exports = {
   loadClientScript,
   createMockDollar,
+  createMockElement,
+  createMockDocument,
+  createMockWindow,
 };

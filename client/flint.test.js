@@ -1,134 +1,18 @@
 const path = require('path');
-const { loadClientScript } = require('./testHelpers');
+const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers');
 const { assertEquals, runTests } = require('./testUtils');
 
-// Mock DOM Implementation
+// Initialize Mock DOM using Imported Utilities
+let mockDocumentInstance = createMockDocument();
+let mockWindowInstance = createMockWindow(mockDocumentInstance);
 
-const createMockElement = (tagName) => {
-  const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
-
-  return {
-    constructor: { name: tagName === '#text' ? "TextMock" : (tagName === '#document-fragment' ? "DocumentFragmentMock" : MOCK_ELEMENT_CONSTRUCTOR_NAME) },
-    tagName: tagName.toUpperCase(),
-    attributes: {},
-    children: [],
-    style: {},
-    innerText: "",
-    value: "",
-    parentNode: null,
-    eventListeners: {},
-    appendChild: function(child) {
-      let childIdentifier = child.tagName || child.textContent;
-      if (child.nodeType === 11) childIdentifier = "#document-fragment"; // Explicitly log fragment
-      this.children.push(child);
-      child.parentNode = this; // Set parentNode
-    },
-    setAttribute: function(name, value) {
-      this.attributes[name] = String(value); // Store as string, like HTML
-      if (name === "style") {
-        value.split(';').forEach(style => {
-          if (style.trim() === '') return;
-          const [prop, val] = style.split(':');
-          this.style[prop.trim()] = (val || '').trim();
-        });
-      }
-    },
-    getAttribute: function(name) {
-      return this.attributes[name];
-    },
-    addEventListener: function(type, listener) {
-      if (!this.eventListeners[type]) {
-        this.eventListeners[type] = [];
-      }
-      this.eventListeners[type].push(listener);
-    },
-    querySelectorAll: function(selector) {
-      const results = this.children.filter(child => child.tagName && child.tagName === selector.toUpperCase());
-      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
-      return results;
-    },
-    remove: function() {  },
-    focus: function() {  },
-  };
-};
-
-let mockDocumentObject = {
-  constructor: { name: "HTMLDocumentMock" },
-  _elements: [], // For global querySelectorAll, if needed
-  createElement: function(tagName) {
-    const el = createMockElement(tagName);
-    this._elements.push(el); // Track elements for global queries
-    return el;
-  },
-  createTextNode: function(text) {
-    // Return a more element-like text node to prevent errors if flint tries to add helpers
-    // that expect methods like querySelectorAll, even if they don't make sense for a text node.
-    const textNode = createMockElement('#text'); // Use a special tagName for identification
-    textNode.nodeType = 3;
-    textNode.textContent = text;
-    textNode.innerText = text; // Flint might use innerText
-
-    // Override methods that don't make sense for a text node or should behave differently
-    textNode.appendChild = () => { throw new Error("Cannot appendChild to a text node"); };
-    textNode.setAttribute = () => { throw new Error("Cannot setAttribute on a text node"); };
-    // querySelectorAll on a text node should probably return an empty list
-    textNode.querySelectorAll = function(selector) {
-        const results = [];
-        results.forEach = Array.prototype.forEach;
-        return results;
-    };
-    return textNode;
-  },
-  createDocumentFragment: function() {
-    const fragment = createMockElement('#document-fragment'); // Use a special tagName for fragments
-    fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
-    return fragment;
-  },
-  querySelectorAll: function(selector) {
-    // This is a simplified global querySelectorAll.
-    // It searches all elements ever created by mockDocument.createElement.
-    // For more complex scenarios, this might need to search a specific "root" element or structure.
-    const results = this._elements.filter(el => {
-      // Simple tag selector
-      if (el.tagName === selector.toUpperCase()) return true;
-      // Simple class selector (e.g., ".my-class")
-      if (selector.startsWith('.') && el.attributes.class && el.attributes.class.includes(selector.substring(1))) return true;
-      // Simple ID selector (e.g., "#my-id")
-      if (selector.startsWith('#') && el.attributes.id === selector.substring(1)) return true;
-      return false;
-    });
-    results.forEach = Array.prototype.forEach;
-    return results;
-  },
-  // Add other document properties or methods if flint.js uses them.
-  // e.g., document.body, document.getElementById
-  body: createMockElement('body'), // Mock body
-  readyState: 'complete', // Add readyState
-  getElementById: function(id) {
-    return this._elements.find(el => el.getAttribute('id') === id) || null;
-  }
-};
-const mockDocument = () => mockDocumentObject; // Make it callable
-Object.assign(mockDocument, mockDocumentObject); // Assign properties to the function object
-global.document = mockDocument; // global.document is now a callable function
-
-let mockWindowObject = {
-  constructor: { name: "WindowMock" },
-  document: mockDocument, // Use the callable mockDocument
-  navigator: { userAgent: "NodeTestEnvironment/1.0" },
-  addEventListener: function(type, listener) {
-  },
-  removeEventListener: function(type, listener) {
-  }
-};
-const mockWindow = () => mockWindowObject; // Make it callable
-Object.assign(mockWindow, mockWindowObject); // Assign properties to the function object
-global.window = mockWindow; // Make mockWindow globally available as well
+global.document = mockDocumentInstance;
+global.window = mockWindowInstance;
 
 const flintPath = path.resolve(__dirname, './flint.js');
 const $ = loadClientScript(
   flintPath,
-  { document: mockDocument, window: mockWindow }, // Pass callable versions
+  { document: mockDocumentInstance, window: mockWindowInstance }, // New instances
   "$"
 );
 
@@ -229,9 +113,9 @@ function testCreateMultipleRootElements() {
 }
 
 function testArrayArgument() {
-  const mockChild1 = mockDocument.createElement('span'); // Assuming mockDocument is in scope
+  const mockChild1 = mockDocumentInstance.createElement('span'); // Assuming mockDocument is in scope
   mockChild1.innerText = "Child 1";
-  const mockChild2 = mockDocument.createElement('span');
+  const mockChild2 = mockDocumentInstance.createElement('span');
   mockChild2.innerText = "Child 2";
 
   const $div = $("\n  div $1", [[mockChild1, mockChild2]]);
@@ -267,17 +151,17 @@ function testArrayArgument() {
 
 function testTextNodeArgument() {
   let createTextNodeCalledWithText = null;
-  const originalCreateTextNode = mockDocument.createTextNode;
-  mockDocument.createTextNode = function(text) {
+  const originalCreateTextNode = mockDocumentInstance.createTextNode;
+  mockDocumentInstance.createTextNode = function(text) {
     createTextNodeCalledWithText = text;
     return originalCreateTextNode.call(this, text);
   };
 
   $("\n  $1", ["Direct Text Content"]);
 
-  assertEquals(createTextNodeCalledWithText, "Direct Text Content", "Test Text Node Arg: mockDocument.createTextNode should be called with the correct text.");
+  assertEquals(createTextNodeCalledWithText, "Direct Text Content", "Test Text Node Arg: mockDocumentInstance.createTextNode should be called with the correct text.");
 
-  mockDocument.createTextNode = originalCreateTextNode;
+  mockDocumentInstance.createTextNode = originalCreateTextNode;
 
   const $returnedNode = $("\n  $1", ["My Text Content"]);
   assertEquals(!!$returnedNode, true, "Test Text Node Arg Return: A node should be returned.");
@@ -292,28 +176,28 @@ function testTextNodeArgument() {
 }
 
 // Store original querySelectorAll to reset after tests if modified globally
-const originalQSA = mockDocument.querySelectorAll;
-// const originalElementQSA = mockDocument.createElement('div').querySelectorAll; // Not strictly needed due to mock element's own QSA
+const originalQSA = mockDocumentInstance.querySelectorAll;
+// const originalElementQSA = mockDocumentInstance.createElement('div').querySelectorAll; // Not strictly needed due to mock element's own QSA
 
 function setupMockQuerySelectorAll() {
-  // Clear mockDocument's element list before each selection test that uses global queries.
+  // Clear mockDocumentInstance's element list before each selection test that uses global queries.
   // Individual tests are responsible for populating the elements they need.
-  mockDocument._elements = [];
+  mockDocumentInstance._elements = [];
 }
 
 function teardownMockQuerySelectorAll() {
   // Also clear after the test for good measure, though setup should handle it for the next test.
-  mockDocument._elements = [];
+  mockDocumentInstance._elements = [];
 }
 
 function testSelectSingleElement() {
   setupMockQuerySelectorAll();
 
   // Create the specific element this test will try to select.
-  const mockSingleGlobal = mockDocument.createElement('div');
+  const mockSingleGlobal = mockDocumentInstance.createElement('div');
   mockSingleGlobal.setAttribute('id', 'singleElement');
   mockSingleGlobal.innerText = "Single";
-  // mockDocument.createElement automatically adds it to mockDocument._elements
+  // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#singleElement");
   assertEquals(!!$el, true, "Test Select Single: Element should be found");
@@ -332,14 +216,14 @@ function testSelectMultipleElements() {
   setupMockQuerySelectorAll(); // Clears _elements
 
   // Create the specific elements this test will try to select.
-  const mockMultiple1Global = mockDocument.createElement('span');
+  const mockMultiple1Global = mockDocumentInstance.createElement('span');
   mockMultiple1Global.setAttribute('class', 'multipleElements');
   mockMultiple1Global.innerText = "Multiple 1";
 
-  const mockMultiple2Global = mockDocument.createElement('span');
+  const mockMultiple2Global = mockDocumentInstance.createElement('span');
   mockMultiple2Global.setAttribute('class', 'multipleElements');
   mockMultiple2Global.innerText = "Multiple 2";
-  // mockDocument.createElement automatically adds these to mockDocument._elements
+  // mockDocumentInstance.createElement automatically adds these to mockDocumentInstance._elements
 
   const $els = $(".multipleElements");
   assertEquals(!!$els, true, "Test Select Multiple: Elements should be found");
@@ -372,12 +256,12 @@ function testNestedSelection() {
   setupMockQuerySelectorAll(); // Clears _elements
 
   // Create the specific elements this test will use.
-  const parentEl = mockDocument.createElement('div');
+  const parentEl = mockDocumentInstance.createElement('div');
   parentEl.setAttribute('id', 'parentForNested');
-  const childEl = mockDocument.createElement('p');
+  const childEl = mockDocumentInstance.createElement('p');
   childEl.setAttribute('id', 'childInNested');
   parentEl.appendChild(childEl);
-  // parentEl is now in mockDocument._elements due to createElement.
+  // parentEl is now in mockDocumentInstance._elements due to createElement.
 
   const $parent = $("#parentForNested");
   assertEquals(!!$parent, true, "Test Nested Selection: Parent element should be found");
@@ -408,9 +292,9 @@ function testHelperOnMethod() {
   setupMockQuerySelectorAll(); // Clears _elements
 
   // Create the specific element this test will use.
-  const mockElement = mockDocument.createElement('button');
+  const mockElement = mockDocumentInstance.createElement('button');
   mockElement.setAttribute('id', 'testButtonForOn');
-  // mockDocument.createElement automatically adds it to mockDocument._elements
+  // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#testButtonForOn"); // Select the element just created
 
@@ -457,9 +341,9 @@ function testHelperForEachSingleElement() {
   setupMockQuerySelectorAll(); // Clears _elements
 
   // Create the specific element this test will use.
-  const mockElement = mockDocument.createElement('div');
+  const mockElement = mockDocumentInstance.createElement('div');
   mockElement.setAttribute('id', 'testDivForForEachSingle');
-  // mockDocument.createElement automatically adds it to mockDocument._elements
+  // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#testDivForForEachSingle");
   assertEquals(!!$el, true, "Test .forEach() Single: Element should be found");
@@ -489,13 +373,13 @@ function testHelperForEachMultipleElements() {
   setupMockQuerySelectorAll(); // Clears _elements
 
   // Create the specific elements this test will use.
-  const el1 = mockDocument.createElement('p');
+  const el1 = mockDocumentInstance.createElement('p');
   el1.setAttribute('class', 'testClassForForEach');
   el1.innerText = "Item 1";
-  const el2 = mockDocument.createElement('p');
+  const el2 = mockDocumentInstance.createElement('p');
   el2.setAttribute('class', 'testClassForForEach');
   el2.innerText = "Item 2";
-  // mockDocument.createElement automatically adds them to mockDocument._elements
+  // mockDocumentInstance.createElement automatically adds them to mockDocumentInstance._elements
 
   const $els = $(".testClassForForEach");
   assertEquals(!!$els && typeof $els.forEach === 'function', true, "Test .forEach() Multiple: NodeList-like object should be returned");
