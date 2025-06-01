@@ -1,34 +1,6 @@
-const { loadClientScript, createMockDollar, createMockDocument, createMockWindow } = require('./testHelpers');
+const { loadClientScript, createMockDollar, createMockDocument, createMockWindow, createMockFunction } = require('./testHelpers');
 const { assertEquals, runTests } = require('./testUtils');
 const path = require('path'); // Needed for path.resolve if used, though not directly in this refactor immediately
-
-// --- Mock Implementations ---
-const createMockFunction = (name = 'mockFunction') => {
-  const mock = (...args) => {
-    mock.called = true;
-    mock.callCount++;
-    mock.calls.push(args);
-    // For functions that need to return a value based on input:
-    if (mock.customBehavior) {
-      return mock.customBehavior(...args);
-    }
-    return mock.returnValue;
-  };
-  mock.called = false;
-  mock.callCount = 0;
-  mock.calls = [];
-  mock.returnValue = undefined;
-  mock.customBehavior = null; // Function to define custom return logic
-  mock.mockName = name; // Store the name for debugging or identification
-  mock.reset = () => { // Renamed from clearHistory to reset to avoid confusion
-    mock.called = false;
-    mock.callCount = 0;
-    mock.calls = [];
-    // mock.returnValue = undefined; // Usually, returnValue is set once
-    // mock.customBehavior = null; // And customBehavior is set once
-  };
-  return mock;
-};
 
 // --- Mock Instances (created once) ---
 const mockLocalStorage = {
