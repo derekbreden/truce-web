@@ -93,6 +93,7 @@ function createMockDollar() {
       value: '',
       scrollTop: 0, // Default scrollTop property
       focused: false,
+      _tag: undefined, // Initialize _tag property
       
       remove: function() { 
         this.removed = true; 
@@ -147,6 +148,14 @@ function createMockDollar() {
         return this.attr(attributeName, value);
       },
     };
+
+    // Extract tag from selector
+    if (typeof processedSelector === 'string') {
+      const match = processedSelector.match(/^[a-zA-Z0-9]+/);
+      if (match && !processedSelector.startsWith('.') && !processedSelector.startsWith('#')) {
+        elementProperties._tag = match[0];
+      }
+    }
 
     // Check if there are primed properties for this selector
     if (mockDollar.primedProperties && mockDollar.primedProperties[processedSelector]) {
