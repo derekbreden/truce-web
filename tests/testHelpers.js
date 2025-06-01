@@ -288,12 +288,13 @@ function createEmptyMockElement() {
 // their rationale, and the long-term refactoring goals, please refer to the
 // "Mocking Inconsistencies for $ (Flint)" section in README.md.
 
-const createMockElement = (tagName) => {
+const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
 
   const element = {
     constructor: { name: tagName === '#text' ? "TextMock" : (tagName === '#document-fragment' ? "DocumentFragmentMock" : MOCK_ELEMENT_CONSTRUCTOR_NAME) },
     tagName: tagName.toUpperCase(),
+    ownerDocument: ownerDoc, // Set ownerDocument
     attributes: {},
     children: [],
     // style: {}, // Let style be created dynamically if setAttribute or direct access occurs
@@ -315,6 +316,16 @@ const createMockElement = (tagName) => {
         // This is complex to model perfectly. For now, focus on direct text node children.
         // if (child.textContent) { this.textContent += child.textContent; }
       }
+    },
+    prepend: function(...nodes) { // Added prepend method
+      const currentChildren = [...this.children];
+      this.children = [];
+      nodes.forEach(node => {
+        // If node is a string, convert it to a text node (simplified)
+        const childNode = typeof node === 'string' ? this.ownerDocument.createTextNode(node) : node;
+        this.appendChild(childNode); // Use existing appendChild logic
+      });
+      currentChildren.forEach(child => this.appendChild(child));
     },
     setAttribute: function(name, value) {
       this.attributes[name] = String(value); // Store as string, like HTML
@@ -373,11 +384,13 @@ const createMockElement = (tagName) => {
         const index = this.parentNode.children.indexOf(this);
         if (index > -1) {
           this.parentNode.children.splice(index, 1);
-          // Also update parent's innerText if this node contributed to it (simplified)
-          if (this.nodeType === 3 && this.textContent) {
-            // This is tricky; true DOM innerText re-evaluates.
-            // For simplicity, we'll assume parent's innerText might need manual recalculation in tests if needed.
-          }
+        }
+      }
+      // Also remove from ownerDocument._elements to prevent re-selection by global queries
+      if (this.ownerDocument && this.ownerDocument._elements) {
+        const docIndex = this.ownerDocument._elements.indexOf(this);
+        if (docIndex > -1) {
+          this.ownerDocument._elements.splice(docIndex, 1);
         }
       }
     },
@@ -398,12 +411,12 @@ function createMockDocument() {
     constructor: { name: "HTMLDocumentMock" },
     _elements: [], // For global querySelectorAll, if needed
     createElement: function(tagName) {
-      const el = createMockElement(tagName);
+      const el = createMockElement(tagName, this); // Pass this (mockDocument) as ownerDocument
       this._elements.push(el); // Track elements for global queries
       return el;
     },
     createTextNode: function(text) {
-      const textNode = createMockElement('#text');
+      const textNode = createMockElement('#text', this); // Pass this (mockDocument) as ownerDocument
       textNode.nodeType = 3;
       textNode.textContent = text; // textContent is primary for text nodes
       textNode.nodeValue = text; // Another property real text nodes have
