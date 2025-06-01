@@ -108,53 +108,82 @@ Client-side files included directly in `index.html` (and not structured as ES6 m
 The `loadClientScript` function works as follows:
 - It reads the target script file.
 - It accepts an object of `globalMocks` (e.g., for `document`, `window`, custom global functions).
-- It executes the script within a context where these mocks are available globally.
-- It returns the primary export of the script (conventionally, a function or object named like the file itself, e.g., `myScript.js` would export `myScript`).
+- It optionally accepts a third argument, `constNamesToReturn`, which can be a string or an array of strings. This argument specifies which constant(s) defined within the script should be returned.
+- It executes the script within a context where the `globalMocks` are available globally.
+- It returns the requested constant(s):
+  - If `constNamesToReturn` is omitted, it defaults to returning the constant that has the same name as the file (e.g., `myScript.js` would lead to `myScript` being returned). This maintains backward compatibility.
+  - If `constNamesToReturn` is a string, it returns the value of that specific constant.
+  - If `constNamesToReturn` is an array of strings, it returns an object where keys are the names from the array and values are the corresponding constants from the script.
 
-Here’s a code example:
+Here’s an updated code example:
+
 ```javascript
-// In your yourModule.test.js
+// In your test.js
 const path = require('path');
-const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path
-const { loadClientScript } = require('./testHelpers'); // Or appropriate path
+// Assuming testUtils.js and testHelpers.js are in the same directory or adjust path.
+// For Truce.net, they are typically in client/
+const { assertEquals, runTests } = require('./testUtils');
+const { loadClientScript } = require('./testHelpers');
 
-// 1. Define any global mocks your script needs
+// Mock objects needed for the scripts under test
 const mockDocument = {
-  getElementById: (id) => {
-    // simple mock
-    return { id: id, value: 'mockValue' };
-  }
+  getElementById: (id) => ({ id: id, value: 'mockValue', /* other methods */ }),
+  // ... other document mocks
 };
 const mockWindow = {
   innerWidth: 1024,
-  // ... other window properties or methods
-};
-const mockGlobalFunction = (message) => {
-  // console.log('mockGlobalFunction called with:', message);
-  return `mocked: ${message}`;
+  // ... other window mocks
 };
 
-// 2. Load the client script using loadClientScript
-//    Assuming 'client/myClientScript.js' exports a function named 'myClientScript'
-const myClientScript = loadClientScript(
-  path.resolve(__dirname, './myClientScript.js'), // Adjust path to your script
-  {
-    document: mockDocument,
-    window: mockWindow,
-    anotherGlobal: mockGlobalFunction // Name used inside myClientScript.js
-    // Add other globals your script expects
-  }
+// --- Scenario 1: Default behavior (backward compatible) ---
+// Assuming 'client/myOldScript.js' defines 'const myOldScript = ...;'
+// and it might use global document or window objects.
+const myOldScript = loadClientScript(
+  path.resolve(__dirname, './client/myOldScript.js'), // Path to the script
+  { document: mockDocument, window: mockWindow } // Global mocks
 );
+// myOldScript can now be used.
+// Example test:
+// function testOldScript() {
+//   assertEquals('expected', myOldScript.someFunction(), 'Test for old script');
+// }
 
-// 3. Now you can test the loaded script
-function testMyClientScriptFunctionality() {
-  const result = myClientScript('test input');
-  assertEquals('expected output', result, 'Test one for myClientScript');
-}
+// --- Scenario 2: Loading a script and fetching a specific named constant ---
+// Useful for scripts like 'client/flint.js' which defines 'const $ = ...;'
+// flint.js might need document/window, so pass mocks.
+const $ = loadClientScript(
+  path.resolve(__dirname, './client/flint.js'), // Path to flint.js
+  { document: mockDocument, window: mockWindow },
+  "$" // Name of the constant to return
+);
+// $ can now be used for testing flint.js functionality.
+// Example test:
+// function testFlintDollar() {
+//   const $el = $('div');
+//   assertEquals('DIV', $el.tagName, 'Flint $ should create elements');
+// }
 
-runTests('myClientScript.test.js', [
-  testMyClientScriptFunctionality
-]);
+// --- Scenario 3: Loading a script and fetching multiple specific constants ---
+// Assuming 'client/myMultiConstScript.js' defines 'const foo = ...;' and 'const bar = ...;'
+const myConstants = loadClientScript(
+  path.resolve(__dirname, './client/myMultiConstScript.js'), // Path to script
+  { /* globalMocks, if any */ },
+  ["foo", "bar"] // Array of constant names to return
+);
+// myConstants would be { foo: /* value of foo */, bar: /* value of bar */ }
+// You can then access myConstants.foo and myConstants.bar.
+// Example test:
+// function testMultiConst() {
+//   assertEquals('fooValue', myConstants.foo, 'Test for foo');
+//   assertEquals('barValue', myConstants.bar, 'Test for bar');
+// }
+
+// Example of running tests (assuming you have defined test functions)
+// runTests('UpdatedLoadClientScriptTests', [
+//   testOldScript,
+//   testFlintDollar,
+//   testMultiConst
+// ]);
 ```
 The test file `client/imageToPng.test.js` uses a manual version of this script loading mechanism. However, `loadClientScript` is the recommended approach for new tests.
 
