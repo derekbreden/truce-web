@@ -61,8 +61,14 @@ function loadClientScript(filePath, globalMocks, constNamesToReturn) {
  * This mock is intended for tests where flint.js itself is not the direct subject under test,
  * but rather its interactions need to be simulated.
  * The returned mockDollar function tracks its calls and the behavior of created elements.
- * This is one of two primary methods used in this codebase for testing Flint-dependent code;
- * see the comment block starting with 'Mock DOM Implementation for testing flint.js itself' for a comparison with the alternative approach.
+ *
+ * This is one of two primary methods used in this codebase for testing Flint-dependent code.
+ * For a detailed explanation of these approaches and the long-term refactoring goals,
+ * please refer to the "Mocking Inconsistencies for $ (Flint)" section in README.md.
+ * This function is used when flint.js itself is NOT the System Under Test.
+ * The alternative approach (using the real flint.js with a mock DOM) is detailed further down in this file
+ * (see the comment block starting with "Mock DOM Implementation for testing flint.js itself")
+ * and is used for testing flint.js itself (e.g., in client/flint.test.js).
  * @returns {Function} The mockDollar function, which also has a .calls array and .reset() method.
  */
 function createMockDollar() {
