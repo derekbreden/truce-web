@@ -43,6 +43,9 @@ const mockModalInfo = createMockFunction('modalInfo');
 const mockLoadingPage = createMockFunction('loadingPage');
 const mockStartSession = createMockFunction('startSession');
 const mock$ = createMockDollar(); // From testHelpers.js
+// This mock$ is for simulating Flint's `$` library. It's distinct from
+// mockWindow and mockDocument, which are manually created below to mock the
+// global browser environment for the goToPath.js script.
 
 const mockState = {
   path: '', // Initialized in setupMocksAndState

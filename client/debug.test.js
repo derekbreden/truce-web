@@ -2,7 +2,8 @@ const { assertEquals, runTests } = require('./testUtils');
 const { loadClientScript, createMockDollar, createMockDocument, createMockWindow } = require('./testHelpers');
 const path = require('path');
 
-// --- Mock DOM Environment ---
+// --- Mock Environment Setup ---
+// Mock for Flint's `$` functionality
 const mock$ = createMockDollar();
 let setTimeoutCallback = null;
 let setTimeoutDuration = 0;
@@ -11,7 +12,9 @@ let setTimeoutDuration = 0;
 let expectedRenderedArrayForAssertions = [];
 
 // Initialize Mock DOM using Imported Utilities
+// Provides the global `document` object required by `loadClientScript` for `debug.js`
 const mockDocumentInstance = createMockDocument();
+// Provides the global `window` object required by `loadClientScript` for `debug.js`
 const mockWindowInstance = createMockWindow(mockDocumentInstance);
 
 // Retain existing mock setTimeout logic by adding it to the mockWindowInstance
