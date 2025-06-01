@@ -285,12 +285,14 @@ function createMockDocument() {
       results.forEach = Array.prototype.forEach;
       return results;
     },
+    head: null, // Initialized below
     body: null, // Initialized below
     readyState: 'complete',
     getElementById: function(id) {
       return this._elements.find(el => el.getAttribute('id') === id) || null;
     }
   };
+  mockDocumentObject.head = mockDocumentObject.createElement('head'); // Initialize head
   mockDocumentObject.body = mockDocumentObject.createElement('body'); // Initialize body
   return mockDocumentObject;
 }
