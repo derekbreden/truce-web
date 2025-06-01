@@ -1,4 +1,4 @@
-const { loadClientScript, createMockDollar } = require('./testHelpers');
+const { loadClientScript, createMockDollar, createMockDocument, createMockWindow } = require('./testHelpers');
 const { assertEquals, runTests } = require('./testUtils');
 const path = require('path'); // Needed for path.resolve if used, though not directly in this refactor immediately
 
@@ -60,8 +60,9 @@ const mockState = {
 };
 
 let mockPathSequence = []; // Initialized in setupMocksAndState
-let mockWindow = {}; // Initialized in setupMocksAndState
-let mockDocument = {}; // Initialized in setupMocksAndState
+// mockWindow and mockDocument will be initialized by helper functions in setupMocksAndState
+let mockWindow;
+let mockDocument;
 
 
 // Function to reset all mocks and state before each test
@@ -99,37 +100,47 @@ const setupMocksAndState = () => {
   mockPathSequence.length = 0;
   mockPathSequence.push(...['/', '/topics', '/tags']); // Default
 
-  mockWindow = { // Assign to the object in the outer scope
-    local_storage_key: 'test_storage_key',
-    location: {
-      pathname: '/initial-path', // Will be reset by tests if needed
-      hash: '',
-      search: '',
-    },
-    addEventListener: createMockFunction('window.addEventListener'), // These are new functions each time
-    removeEventListener: createMockFunction('window.removeEventListener'), // but window itself is the same object
-    scrollTo: createMockFunction('window.scrollTo'),
-    $: mock$, // mock$ is the same instance, reset by mock$.reset()
+  // Initialize with helpers
+  mockDocument = createMockDocument();
+  mockWindow = createMockWindow(mockDocument);
+
+  // Augment mockWindow with specific properties needed for goToPath.test.js
+  mockWindow.local_storage_key = 'test_storage_key';
+  mockWindow.location = {
+    pathname: '/initial-path', // Will be reset by tests if needed
+    hash: '',
+    search: '',
+  };
+  // Override basic addEventListener/removeEventListener from createMockWindow if createMockFunction's tracking is preferred
+  mockWindow.addEventListener = createMockFunction('window.addEventListener');
+  mockWindow.removeEventListener = createMockFunction('window.removeEventListener');
+  mockWindow.scrollTo = createMockFunction('window.scrollTo');
+  mockWindow.$ = mock$;
+  mockWindow.jQuery = mock$; // Alias
+
+  // Augment mockDocument with specific properties needed for goToPath.test.js
+  // createMockDocument provides createElement, getElementById, querySelectorAll, body, head.
+  // Override addEventListener/removeEventListener if createMockFunction's tracking is preferred
+  mockDocument.addEventListener = createMockFunction('document.addEventListener');
+  mockDocument.removeEventListener = createMockFunction('document.removeEventListener');
+
+  // Potentially override methods on document.body and document.head if specific mock function instances are needed
+  // createMockDocument().body and .head are mock elements from createMockElement.
+  // We need to ensure their methods are the createMockFunction instances for test assertions.
+  mockDocument.head.appendChild = createMockFunction('document.head.appendChild');
+
+  mockDocument.body.appendChild = createMockFunction('document.body.appendChild');
+  mockDocument.body.removeChild = createMockFunction('document.body.removeChild');
+  mockDocument.body.classList = { // createMockElement does not provide classList
+      add: createMockFunction('document.body.classList.add'),
+      remove: createMockFunction('document.body.classList.remove'),
   };
 
-  mockDocument = { // Assign to the object in the outer scope
-      addEventListener: createMockFunction('document.addEventListener'),
-      removeEventListener: createMockFunction('document.removeEventListener'),
-      getElementById: createMockFunction('document.getElementById'),
-      querySelectorAll: createMockFunction('document.querySelectorAll'),
-      createElement: createMockFunction('document.createElement'),
-      head: { appendChild: createMockFunction('document.head.appendChild') },
-      body: {
-          appendChild: createMockFunction('document.body.appendChild'),
-          removeChild: createMockFunction('document.body.removeChild'),
-          classList: {
-              add: createMockFunction('document.body.classList.add'),
-              remove: createMockFunction('document.body.classList.remove'),
-          }
-      },
-  };
-  // Ensure mock functions on mockWindow and mockDocument are also reset if they were created outside setup
-  // For now, they are created inside, which is fine as mockWindow and mockDocument are reassigned.
+  // Ensure other document methods used by the script are available if not covered by createMockDocument
+  // For example, if querySelectorAll from createMockFunction is preferred (it's not in this case, createMockDocument's is fine)
+  // mockDocument.querySelectorAll = createMockFunction('document.querySelectorAll');
+  // mockDocument.getElementById = createMockFunction('document.getElementById'); // Already provided by createMockDocument
+  // mockDocument.createElement = createMockFunction('document.createElement'); // Already provided by createMockDocument
 };
 
 // Initial call to setupMocksAndState to populate mocks before loading the script
