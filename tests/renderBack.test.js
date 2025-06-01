@@ -27,7 +27,7 @@ let renderBack;
 
 try {
   renderBack = loadClientScript(
-    path.join(__dirname, 'renderBack.js'),
+    path.join(__dirname, '../client/renderBack.js'),
     {
       "$": mock$, 
       "state": global.state, 

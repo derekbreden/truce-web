@@ -57,7 +57,7 @@ global.document = mockDocument;
 
 try {
   markdownToElements = loadClientScript(
-    path.join(__dirname, 'markdownToElements.js'),
+    path.join(__dirname, '../client/markdownToElements.js'),
     {
       // These are the globals markdownToElements.js expects
       "document": mockDocument, 

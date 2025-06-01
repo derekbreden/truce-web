@@ -9,7 +9,7 @@ let mockWindowInstance = createMockWindow(mockDocumentInstance);
 global.document = mockDocumentInstance;
 global.window = mockWindowInstance;
 
-const flintPath = path.resolve(__dirname, './flint.js');
+const flintPath = path.resolve(__dirname, '../client/flint.js');
 const $ = loadClientScript(
   flintPath,
   { document: mockDocumentInstance, window: mockWindowInstance }, // New instances

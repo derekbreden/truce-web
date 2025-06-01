@@ -119,7 +119,7 @@ const setupMocksAndState = () => {
 setupMocksAndState();
 
 const goToPath = loadClientScript(
-  __dirname + '/goToPath.js', // Use __dirname for robustness
+  __dirname + '/../client/goToPath.js', // Use __dirname for robustness
   {
     localStorage: mockLocalStorage, // Pass the single instance
     history: mockHistory,           // Pass the single instance
