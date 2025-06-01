@@ -53,13 +53,13 @@ function testBackButtonNotRendered_RootPath() {
   renderBack();
 
   const removeCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content back-forward-wrapper");
-  assertEquals(true, removeCall?.element.removed, "Test Case 1: Back button wrapper is removed for root path.");
+  assertEquals(removeCall?.element.removed, true, "Test Case 1: Back button wrapper is removed for root path.");
   
   const mainContentAreaCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content");
   const prependedToMain = mainContentAreaCall?.element.prependedChildren.some(
     child => typeof child.selector === 'string' && child.selector.includes("back-forward-wrapper")
   );
-  assertEquals(false, !!prependedToMain, "Test Case 1: No new back-forward-wrapper is prepended for root path.");
+  assertEquals(!!prependedToMain, false, "Test Case 1: No new back-forward-wrapper is prepended for root path.");
 }
 
 function testBackButtonNotRendered_TopicsPath() {
@@ -72,13 +72,13 @@ function testBackButtonNotRendered_TopicsPath() {
   renderBack();
 
   const removeCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content back-forward-wrapper");
-  assertEquals(true, removeCall?.element.removed, "Test Case 2: Back button wrapper is removed for /topics path if it's the only history.");
+  assertEquals(removeCall?.element.removed, true, "Test Case 2: Back button wrapper is removed for /topics path if it's the only history.");
 
   const mainContentAreaCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content");
    const prependedToMain = mainContentAreaCall?.element.prependedChildren.some(
     child => typeof child.selector === 'string' && child.selector.includes("back-forward-wrapper")
   );
-  assertEquals(false, !!prependedToMain, "Test Case 2: No new back-forward-wrapper is prepended for /topics path if it's the only history.");
+  assertEquals(!!prependedToMain, false, "Test Case 2: No new back-forward-wrapper is prepended for /topics path if it's the only history.");
 }
 
 function testBackButtonRendered_TopicPath_DisplaysTitle() {
@@ -92,13 +92,13 @@ function testBackButtonRendered_TopicPath_DisplaysTitle() {
   renderBack();
 
   const prependCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content");
-  assertEquals(true, prependCall?.element.prependedChildren.length > 0, "Test Case 3: Back button wrapper is prepended.");
+  assertEquals(prependCall?.element.prependedChildren.length > 0, true, "Test Case 3: Back button wrapper is prepended.");
   
   const buttonCreationCall = mock$.calls.find(call => call.selector.includes("Topics") && call.originalSelector.includes("p $1"));
-  assertEquals(true, !!buttonCreationCall, "Test Case 3: Button text includes 'Topics'.");
+  assertEquals(!!buttonCreationCall, true, "Test Case 3: Button text includes 'Topics'.");
 
   if (prependCall?.element.prependedChildren.length > 0) {
-     assertEquals(true, prependCall.element.prependedChildren[0].selector.includes("back-forward-wrapper"), "Test Case 3: Correct wrapper is prepended.");
+     assertEquals(prependCall.element.prependedChildren[0].selector.includes("back-forward-wrapper"), true, "Test Case 3: Correct wrapper is prepended.");
   }
 }
 
@@ -113,21 +113,21 @@ function testBackButtonRendered_TopicPath_ClickNavigates() {
   renderBack();
   
   const backWrapperElementCall = mock$.calls.find(call => call.selector === "back-wrapper");
-  assertEquals(true, !!backWrapperElementCall, "Test Case 4: 'back-wrapper' element is selected by chained call.");
+  assertEquals(!!backWrapperElementCall, true, "Test Case 4: 'back-wrapper' element is selected by chained call.");
   
   const clickHandler = backWrapperElementCall?.element.eventHandlers.click?.[0];
-  assertEquals('function', typeof clickHandler, "Test Case 4: Click handler is registered on 'back-wrapper'.");
+  assertEquals(typeof clickHandler, 'function', "Test Case 4: Click handler is registered on 'back-wrapper'.");
 
   if (clickHandler) {
     clickHandler(); 
   }
 
-  assertEquals("/topics", global.goToPath.lastCall.path, "Test Case 4: goToPath is called with correct path.");
-  assertEquals(false, global.goToPath.lastCall.skip_state, "Test Case 4: goToPath is called with skip_state false.");
-  assertEquals(true, global.goToPath.lastCall.clicked_back, "Test Case 4: goToPath is called with clicked_back true.");
+  assertEquals(global.goToPath.lastCall.path, "/topics", "Test Case 4: goToPath is called with correct path.");
+  assertEquals(global.goToPath.lastCall.skip_state, false, "Test Case 4: goToPath is called with skip_state false.");
+  assertEquals(global.goToPath.lastCall.clicked_back, true, "Test Case 4: goToPath is called with clicked_back true.");
   
-  assertEquals(1 - 2, global.state.path_index, "Test Case 4: path_index is decremented twice.");
-  assertEquals(0, global.state.path_history.length, "Test Case 4: path_history is sliced by two elements.");
+  assertEquals(global.state.path_index, 1 - 2, "Test Case 4: path_index is decremented twice.");
+  assertEquals(global.state.path_history.length, 0, "Test Case 4: path_history is sliced by two elements.");
 }
 
 function testBackButtonRendered_CommentPath_DisplaysGenericText() {
@@ -141,7 +141,7 @@ function testBackButtonRendered_CommentPath_DisplaysGenericText() {
   renderBack();
 
   const buttonCreationCall = mock$.calls.find(call => call.selector.includes("Some Topic") && call.originalSelector.includes("p $1"));
-  assertEquals(true, !!buttonCreationCall, "Test Case 5: Button text is 'Some Topic'.");
+  assertEquals(!!buttonCreationCall, true, "Test Case 5: Button text is 'Some Topic'.");
 }
 
 function testBackButtonRendered_UserPath_DisplaysRenderName() {
@@ -155,7 +155,7 @@ function testBackButtonRendered_UserPath_DisplaysRenderName() {
   renderBack();
 
   const buttonCreationCall = mock$.calls.find(call => call.selector.includes("Topics") && call.originalSelector.includes("p $1"));
-  assertEquals(true, !!buttonCreationCall, "Test Case 6: Button text includes 'Topics'.");
+  assertEquals(!!buttonCreationCall, true, "Test Case 6: Button text includes 'Topics'.");
 }
 
 function testBackButtonRendered_PathWithThreeSegments_CorrectPreviousPath() {
@@ -169,14 +169,14 @@ function testBackButtonRendered_PathWithThreeSegments_CorrectPreviousPath() {
   renderBack();
 
   const buttonCreationCall = mock$.calls.find(call => call.selector.includes("p Back") && call.originalSelector.includes("p $1"));
-  assertEquals(true, !!buttonCreationCall, "Test Case 7: Button text contains 'Back'.");
+  assertEquals(!!buttonCreationCall, true, "Test Case 7: Button text contains 'Back'.");
 
   const backWrapperElementCall = mock$.calls.find(call => call.selector === "back-wrapper");
   const clickHandler = backWrapperElementCall?.element.eventHandlers.click?.[0];
   if (clickHandler) {
     clickHandler();
   }
-  assertEquals("/first", global.goToPath.lastCall.path, "Test Case 7: Click navigates to '/first'.");
+  assertEquals(global.goToPath.lastCall.path, "/first", "Test Case 7: Click navigates to '/first'.");
 }
 
 function testBackButtonRemoved_IfPreviousPathBecomesUndefined() {
@@ -189,14 +189,14 @@ function testBackButtonRemoved_IfPreviousPathBecomesUndefined() {
   renderBack();
   
   const initialRemoveCall = mock$.calls.find(call => call.selector === "main-content-wrapper[active] main-content back-forward-wrapper");
-  assertEquals(true, initialRemoveCall?.element.removed, "Test Case 8: Initial back button is removed.");
+  assertEquals(initialRemoveCall?.element.removed, true, "Test Case 8: Initial back button is removed.");
 
   const creationCallRecord = mock$.calls.find(c => Array.isArray(c.args) && c.originalSelector.includes("p $1"));
   
   if (creationCallRecord) {
-    assertEquals(true, creationCallRecord.element.removed, "Test Case 8: Newly created back button is removed if previous_path is undefined.");
+    assertEquals(creationCallRecord.element.removed, true, "Test Case 8: Newly created back button is removed if previous_path is undefined.");
   } else {
-    assertEquals(true, false, "Test Case 8: Button creation call (the one with template args) was expected but not found.");
+    assertEquals(false, true, "Test Case 8: Button creation call (the one with template args) was expected but not found.");
   }
 }
 

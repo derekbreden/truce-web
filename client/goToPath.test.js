@@ -164,21 +164,21 @@ function testNavigateToNewPath() {
 
   goToPath('/new-path', false, false);
 
-  assertEquals('/new-path', mockState.path, 'Should update state.path');
-  assertEquals(true, mockHistory.pushState.called, 'history.pushState should be called');
-  assertEquals(1, mockHistory.pushState.callCount, 'history.pushState call count');
-  assertEquals('/new-path', mockHistory.pushState.calls[0][2], 'history.pushState path argument');
-  assertEquals(1, mockState.path_index, 'state.path_index should increment');
+  assertEquals(mockState.path, '/new-path', 'Should update state.path');
+  assertEquals(mockHistory.pushState.called, true, 'history.pushState should be called');
+  assertEquals(mockHistory.pushState.callCount, 1, 'history.pushState call count');
+  assertEquals(mockHistory.pushState.calls[0][2], '/new-path', 'history.pushState path argument');
+  assertEquals(mockState.path_index, 1, 'state.path_index should increment');
 
 
-  assertEquals(true, mockLoadingPage.called, 'loadingPage should be called');
-  assertEquals(JSON.stringify([false, false, false]), JSON.stringify(mockLoadingPage.calls[0]), 'loadingPage arguments');
+  assertEquals(mockLoadingPage.called, true, 'loadingPage should be called');
+  assertEquals(JSON.stringify(mockLoadingPage.calls[0]), JSON.stringify([false, false, false]), 'loadingPage arguments');
 
-  assertEquals(true, mockStartSession.called, 'startSession should be called');
-  assertEquals(JSON.stringify([false]), JSON.stringify(mockStartSession.calls[0]), 'startSession arguments (was_same_path false)');
+  assertEquals(mockStartSession.called, true, 'startSession should be called');
+  assertEquals(JSON.stringify(mockStartSession.calls[0]), JSON.stringify([false]), 'startSession arguments (was_same_path false)');
 
-  assertEquals(true, mockState.ws.send.called, 'ws.send should be called');
-  assertEquals(JSON.stringify({ path: '/new-path' }), mockState.ws.send.calls[0][0], 'ws.send arguments');
+  assertEquals(mockState.ws.send.called, true, 'ws.send should be called');
+  assertEquals(mockState.ws.send.calls[0][0], JSON.stringify({ path: '/new-path' }), 'ws.send arguments');
 }
 
 function testModalShownIfTermsNotAgreed() {
@@ -190,11 +190,11 @@ function testModalShownIfTermsNotAgreed() {
 
   goToPath('/some-restricted-path', false, false);
 
-  assertEquals(true, mockModalInfo.called, 'modalInfo should be called for restricted path without agreement');
-  assertEquals('Please tap "Join the Discussion" to agree to these terms.', mockModalInfo.calls[0][0], 'modalInfo message');
-  assertEquals(false, mockHistory.pushState.called, 'history.pushState should NOT be called');
-  assertEquals(false, mockLoadingPage.called, 'loadingPage should NOT be called');
-  assertEquals(false, mockStartSession.called, 'startSession should NOT be called');
+  assertEquals(mockModalInfo.called, true, 'modalInfo should be called for restricted path without agreement');
+  assertEquals(mockModalInfo.calls[0][0], 'Please tap "Join the Discussion" to agree to these terms.', 'modalInfo message');
+  assertEquals(mockHistory.pushState.called, false, 'history.pushState should NOT be called');
+  assertEquals(mockLoadingPage.called, false, 'loadingPage should NOT be called');
+  assertEquals(mockStartSession.called, false, 'startSession should NOT be called');
 }
 
 function testUsesTopicsPreferenceFromLocalStorage() {
@@ -208,9 +208,9 @@ function testUsesTopicsPreferenceFromLocalStorage() {
 
   goToPath('/topics', false, false);
 
-  assertEquals(preferredPath, mockState.path, 'state.path should be the preferred topics path');
-  assertEquals(true, mockHistory.pushState.called, 'history.pushState should be called for preferred path');
-  assertEquals(preferredPath, mockHistory.pushState.calls[0][2], 'history.pushState path argument for preferred path');
+  assertEquals(mockState.path, preferredPath, 'state.path should be the preferred topics path');
+  assertEquals(mockHistory.pushState.called, true, 'history.pushState should be called for preferred path');
+  assertEquals(mockHistory.pushState.calls[0][2], preferredPath, 'history.pushState path argument for preferred path');
 }
 
 function testUpdatesScrollTopOfCachedPath() {
@@ -229,7 +229,7 @@ function testUpdatesScrollTopOfCachedPath() {
   goToPath('/new-path-after-cache', false, false);
 
   // This assertion is now expected to pass due to the priming mechanism.
-  assertEquals(100, mockState.cache['/cached-path'].scroll_top, 'Scroll top of cached path should be updated to 100');
+  assertEquals(mockState.cache['/cached-path'].scroll_top, 100, 'Scroll top of cached path should be updated to 100');
 }
 
 
@@ -249,12 +249,12 @@ function testHandlesTagPathAsActionTags() {
 
   goToPath('/tag/some-tag', false, false);
 
-  assertEquals(true, mockLoadingPage.called, 'loadingPage should be called for /tag/ path');
+  assertEquals(mockLoadingPage.called, true, 'loadingPage should be called for /tag/ path');
   // Arguments: loadingPage(false, skip_state, clicked_back)
-  assertEquals(false, mockLoadingPage.calls[0][0], 'loadingPage arg1 (show_loading_animation) should be false');
-  assertEquals(false, mockLoadingPage.calls[0][1], 'loadingPage arg2 (skip_state) should be false');
-  assertEquals(false, mockLoadingPage.calls[0][2], 'loadingPage arg3 (clicked_back) should be false for this /tag/ scenario');
-  assertEquals('/tag/some-tag', mockState.path, 'state.path should be the new /tag/some-tag path');
+  assertEquals(mockLoadingPage.calls[0][0], false, 'loadingPage arg1 (show_loading_animation) should be false');
+  assertEquals(mockLoadingPage.calls[0][1], false, 'loadingPage arg2 (skip_state) should be false');
+  assertEquals(mockLoadingPage.calls[0][2], false, 'loadingPage arg3 (clicked_back) should be false for this /tag/ scenario');
+  assertEquals(mockState.path, '/tag/some-tag', 'state.path should be the new /tag/some-tag path');
 }
 
 function testClickedBackTrueForBackwardNavigationInSequence() {
@@ -270,8 +270,8 @@ function testClickedBackTrueForBackwardNavigationInSequence() {
 
   goToPath('/', false, false); // Navigate to '/' (index 0)
 
-  assertEquals(true, mockLoadingPage.called, 'loadingPage should be called');
-  assertEquals(true, mockLoadingPage.calls[0][2], 'loadingPage clicked_back argument should be true for backward navigation');
+  assertEquals(mockLoadingPage.called, true, 'loadingPage should be called');
+  assertEquals(mockLoadingPage.calls[0][2], true, 'loadingPage clicked_back argument should be true for backward navigation');
 }
 
 function testClickedBackFalseForForwardNavigationInSequence() {
@@ -286,8 +286,8 @@ function testClickedBackFalseForForwardNavigationInSequence() {
 
   goToPath('/topics', false, false); // Navigate to '/topics' (index 1)
 
-  assertEquals(true, mockLoadingPage.called, 'loadingPage should be called');
-  assertEquals(false, mockLoadingPage.calls[0][2], 'loadingPage clicked_back argument should be false for forward navigation');
+  assertEquals(mockLoadingPage.called, true, 'loadingPage should be called');
+  assertEquals(mockLoadingPage.calls[0][2], false, 'loadingPage clicked_back argument should be false for forward navigation');
 }
 
 function testFooterDotIndexSetCorrectly() {
@@ -312,9 +312,9 @@ function testFooterDotIndexSetCorrectly() {
   // The mock$ instance used by goToPath is the one from its closure.
   // Elements created by it now have a setAttribute method (alias to attr).
   let footerDotCall = mock$.calls.find(call => call.originalSelector === 'footer dot');
-  assertEquals(true, !!footerDotCall, 'call to $("footer dot") should have happened for /topics');
+  assertEquals(!!footerDotCall, true, 'call to $("footer dot") should have happened for /topics');
   if (footerDotCall) {
-    assertEquals(0, footerDotCall.element.attributes['index'], 'footer dot index attribute for /topics should be 0');
+    assertEquals(footerDotCall.element.attributes['index'], 0, 'footer dot index attribute for /topics should be 0');
   }
 
   // Reset mock$.calls for the next part of the test, or filter more carefully.
@@ -337,10 +337,10 @@ function testFooterDotIndexSetCorrectly() {
   goToPath('/another', false, false); // '/another' is at index 3
 
   footerDotCall = mock$.calls.find(call => call.originalSelector === 'footer dot');
-  assertEquals(true, !!footerDotCall, 'call to $("footer dot") should have happened for /another');
+  assertEquals(!!footerDotCall, true, 'call to $("footer dot") should have happened for /another');
   if (footerDotCall) {
     // dot_index = Math.max(3 - 1, 0) = 2
-    assertEquals(2, footerDotCall.element.attributes['index'], 'footer dot index attribute for /another should be 2');
+    assertEquals(footerDotCall.element.attributes['index'], 2, 'footer dot index attribute for /another should be 2');
   }
 }
 
@@ -352,16 +352,16 @@ function testStoresLastRootPathInLocalStorage() {
   };
 
   goToPath('/topics', false, false);
-  assertEquals(true, mockLocalStorage.setItem.called, 'localStorage.setItem should be called');
+  assertEquals(mockLocalStorage.setItem.called, true, 'localStorage.setItem should be called');
   const setItemCall = mockLocalStorage.setItem.calls.find(call => call[0] === `${mockWindow.local_storage_key}:last_root_path`);
-  assertEquals(true, !!setItemCall, 'last_root_path should be set in localStorage');
-  assertEquals('/topics', setItemCall[1], 'last_root_path value');
+  assertEquals(!!setItemCall, true, 'last_root_path should be set in localStorage');
+  assertEquals(setItemCall[1], '/topics', 'last_root_path value');
 
   mockLocalStorage.setItem.reset();
   goToPath('/tag/a-tag', false, false);
   const setItemCallTag = mockLocalStorage.setItem.calls.find(call => call[0] === `${mockWindow.local_storage_key}:last_root_path`);
-  assertEquals(true, !!setItemCallTag, 'last_root_path should be set for /tag/ paths');
-  assertEquals('/tag/a-tag', setItemCallTag[1], 'last_root_path value for /tag/a-tag');
+  assertEquals(!!setItemCallTag, true, 'last_root_path should be set for /tag/ paths');
+  assertEquals(setItemCallTag[1], '/tag/a-tag', 'last_root_path value for /tag/a-tag');
 
 }
 
@@ -377,8 +377,8 @@ function testClearsActiveCommentAndTopicOnPathChange() {
 
   goToPath('/new-path-different', false, false);
 
-  assertEquals(undefined, mockState.active_add_new_comment, 'active_add_new_comment should be undefined');
-  assertEquals(undefined, mockState.active_add_new_topic, 'active_add_new_topic should be undefined');
+  assertEquals(mockState.active_add_new_comment, undefined, 'active_add_new_comment should be undefined');
+  assertEquals(mockState.active_add_new_topic, undefined, 'active_add_new_topic should be undefined');
 }
 
 function testDoesNotClearItemsIfPathIsSame() {
@@ -395,10 +395,10 @@ function testDoesNotClearItemsIfPathIsSame() {
 
   goToPath('/current-path', false, false); // Navigate to the *same* path
 
-  assertEquals(comment, mockState.active_add_new_comment, 'active_add_new_comment should not be cleared');
-  assertEquals(topic, mockState.active_add_new_topic, 'active_add_new_topic should not be cleared');
-  assertEquals(true, mockStartSession.called, 'startSession should be called');
-  assertEquals(true, mockStartSession.calls[0][0], 'startSession was_same_path argument should be true');
+  assertEquals(mockState.active_add_new_comment, comment, 'active_add_new_comment should not be cleared');
+  assertEquals(mockState.active_add_new_topic, topic, 'active_add_new_topic should not be cleared');
+  assertEquals(mockStartSession.called, true, 'startSession should be called');
+  assertEquals(mockStartSession.calls[0][0], true, 'startSession was_same_path argument should be true');
 }
 
 

@@ -54,21 +54,21 @@ function testDebug_rendersSingleStringArgument() {
   expectedRenderedArrayForAssertions.push(testMessage); // As per debug.js logic for single arg
 
   const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(true, !!prependCall, "Prepend should have been called on main-content-wrapper.");
+  assertEquals(!!prependCall, true, "Prepend should have been called on main-content-wrapper.");
   if (prependCall) {
     const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(true, !!prependedElement, "A child element should have been prepended.");
+    assertEquals(!!prependedElement, true, "A child element should have been prepended.");
     if (prependedElement) {
       const prependedContentString = prependedElement.selector; // The string content is in the 'selector' of the mock element
       const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
       const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(expectedPayload, prependedContentString, "Rendered output for single string incorrect.");
+      assertEquals(prependedContentString, expectedPayload, "Rendered output for single string incorrect.");
     }
   }
 
-  assertEquals(5000, setTimeoutDuration, "setTimeout duration for single string incorrect.");
+  assertEquals(setTimeoutDuration, 5000, "setTimeout duration for single string incorrect.");
   const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(true, !!removeCall, "$('debug').remove() for single string incorrect.");
+  assertEquals(!!removeCall, true, "$('debug').remove() for single string incorrect.");
 }
 
 function testDebug_rendersMultipleStringArguments() {
@@ -81,21 +81,21 @@ function testDebug_rendersMultipleStringArguments() {
   expectedRenderedArrayForAssertions.push([msg1, msg2]); // As per debug.js logic for multiple args
 
   const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(true, !!prependCall, "Prepend should have been called for multiple args.");
+  assertEquals(!!prependCall, true, "Prepend should have been called for multiple args.");
   if (prependCall) {
     const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(true, !!prependedElement, "A child element should have been prepended for multiple args.");
+    assertEquals(!!prependedElement, true, "A child element should have been prepended for multiple args.");
     if (prependedElement) {
       const prependedContentString = prependedElement.selector;
       const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
       const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(expectedPayload, prependedContentString, "Rendered output for multiple strings incorrect.");
+      assertEquals(prependedContentString, expectedPayload, "Rendered output for multiple strings incorrect.");
     }
   }
 
-  assertEquals(5000, setTimeoutDuration, "setTimeout duration for multiple strings incorrect.");
+  assertEquals(setTimeoutDuration, 5000, "setTimeout duration for multiple strings incorrect.");
   const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(true, !!removeCall, "$('debug').remove() for multiple strings incorrect.");
+  assertEquals(!!removeCall, true, "$('debug').remove() for multiple strings incorrect.");
 }
 
 function testDebug_rendersErrorObject() {
@@ -107,21 +107,21 @@ function testDebug_rendersErrorObject() {
   expectedRenderedArrayForAssertions.push(expectedRenderedError); // As per debug.js logic for error-like
 
   const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(true, !!prependCall, "Prepend for error object incorrect.");
+  assertEquals(!!prependCall, true, "Prepend for error object incorrect.");
   if (prependCall) {
     const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(true, !!prependedElement, "A child element should have been prepended for error object.");
+    assertEquals(!!prependedElement, true, "A child element should have been prepended for error object.");
     if (prependedElement) {
       const prependedContentString = prependedElement.selector;
       const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
       const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(expectedPayload, prependedContentString, "Rendered output for error object incorrect.");
+      assertEquals(prependedContentString, expectedPayload, "Rendered output for error object incorrect.");
     }
   }
 
-  assertEquals(5000, setTimeoutDuration, "setTimeout for error object incorrect.");
+  assertEquals(setTimeoutDuration, 5000, "setTimeout for error object incorrect.");
   const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(true, !!removeCall, "$('debug').remove() for error object incorrect.");
+  assertEquals(!!removeCall, true, "$('debug').remove() for error object incorrect.");
 }
 
 function testDebug_rendersSimpleObject() {
@@ -131,21 +131,21 @@ function testDebug_rendersSimpleObject() {
   expectedRenderedArrayForAssertions.push(testObj); // As per debug.js for single object
 
   const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(true, !!prependCall, "Prepend for simple object incorrect.");
+  assertEquals(!!prependCall, true, "Prepend for simple object incorrect.");
   if (prependCall) {
     const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(true, !!prependedElement, "A child element should have been prepended for simple object.");
+    assertEquals(!!prependedElement, true, "A child element should have been prepended for simple object.");
     if (prependedElement) {
       const prependedContentString = prependedElement.selector;
       const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
       const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(expectedPayload, prependedContentString, "Rendered output for simple object incorrect.");
+      assertEquals(prependedContentString, expectedPayload, "Rendered output for simple object incorrect.");
     }
   }
 
-  assertEquals(5000, setTimeoutDuration, "setTimeout for simple object incorrect.");
+  assertEquals(setTimeoutDuration, 5000, "setTimeout for simple object incorrect.");
   const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(true, !!removeCall, "$('debug').remove() for simple object incorrect.");
+  assertEquals(!!removeCall, true, "$('debug').remove() for simple object incorrect.");
 }
 
 function testDebug_setTimeoutCallbackRemovesElement() {
@@ -153,14 +153,14 @@ function testDebug_setTimeoutCallbackRemovesElement() {
   debug("Testing setTimeout callback");
   // We don't need to check expectedRenderedArrayForAssertions for this specific test's main goal.
 
-  assertEquals(true, typeof setTimeoutCallback === 'function', "setTimeout callback not a function.");
+  assertEquals(typeof setTimeoutCallback === 'function', true, "setTimeout callback not a function.");
 
   mock$.reset(); // Reset calls before invoking the callback to isolate its effect.
 
   setTimeoutCallback(); // Execute the callback.
 
   const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(true, !!removeCall, "$('debug').remove() by timeout callback incorrect.");
+  assertEquals(!!removeCall, true, "$('debug').remove() by timeout callback incorrect.");
 }
 
 // --- End Test Cases ---
