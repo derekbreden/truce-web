@@ -1,30 +1,60 @@
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Loads a client-side JavaScript file, makes specified global mocks available to it,
- * and returns the primary export of the script.
- * Assumes the script exports a function or object with the same name as the file (minus .js).
- *
- * @param {string} filePath - Absolute path to the client-side JavaScript file.
- * @param {object} globalMocks - Object mapping global variable names to their mock implementations.
- * @returns {*} The primary export of the loaded script.
- * @throws {Error} If loading or execution fails.
- */
-function loadClientScript(filePath, globalMocks) {
+// New loadClientScript function
+function loadClientScript(filePath, globalMocks, constNamesToReturn) {
   try {
     const scriptContent = fs.readFileSync(filePath, 'utf8');
     const mockNames = Object.keys(globalMocks);
     const mockValues = Object.values(globalMocks);
     const scriptName = path.basename(filePath, '.js');
-    const functionConstructorArgs = [...mockNames, scriptContent + `;\nreturn ${scriptName};`];
+
+    let returnStatement = "";
+
+    if (constNamesToReturn === undefined ||
+        (typeof constNamesToReturn === 'string' && constNamesToReturn === scriptName)) {
+      returnStatement = `return ${scriptName};`;
+    } else if (typeof constNamesToReturn === 'string') {
+      returnStatement = `return ${constNamesToReturn};`;
+    } else if (Array.isArray(constNamesToReturn)) {
+      if (constNamesToReturn.length === 0) {
+        returnStatement = "return {};";
+      } else {
+        // Correctly quote property names if they are not simple identifiers,
+        // but here 'name' is a variable containing the string name, which is valid as a key.
+        const assignments = constNamesToReturn.map(name => `${name}: ${name}`);
+        returnStatement = `return { ${assignments.join(', ')} };`;
+      }
+    } else {
+      console.warn(`Invalid constNamesToReturn type: ${typeof constNamesToReturn}. Defaulting to returning const matching script name (${scriptName}).`);
+      returnStatement = `return ${scriptName};`;
+    }
+
+    const scriptToExecute = scriptContent + "\n" + returnStatement; // Ensure newline before return
+
+    const functionConstructorArgs = [...mockNames, scriptToExecute];
     const dynamicallyCreatedFunction = new Function(...functionConstructorArgs);
     return dynamicallyCreatedFunction.apply(null, mockValues);
   } catch (e) {
-    console.error(`Failed to load or execute client script: ${filePath}`, e);
-    throw new Error(`Failed to load or execute client script: ${filePath}. Reason: ${e.message}`);
+    let attemptedReturn = "Error determining return statement";
+    // Safely stringify constNamesToReturn for the error message
+    try {
+      if (typeof returnStatement === 'string' && returnStatement.length > 0) {
+          attemptedReturn = returnStatement;
+      } else if (constNamesToReturn !== undefined) {
+          attemptedReturn = `Input constNamesToReturn: ${JSON.stringify(constNamesToReturn)}`;
+      }
+    } catch (jsonError) {
+        attemptedReturn = "Input constNamesToReturn could not be stringified."
+    }
+
+    console.error(`Failed to load or execute client script: ${filePath}.`);
+    console.error(`Attempted to construct return statement: ${attemptedReturn}`);
+    console.error(`Error details: ${e.message}`); // Log the original error message
+    throw new Error(`Failed to load or execute client script: ${filePath}. Reason: ${e.message}. (Attempted return: ${attemptedReturn})`);
   }
 }
+// End of new loadClientScript function
 
 /**
  * Creates a mock $ (dollar) function similar to jQuery, for testing purposes.
