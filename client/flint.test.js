@@ -3,7 +3,7 @@ const { loadClientScript } = require('./testHelpers');
 const { assertEquals, runTests } = require('./testUtils');
 
 // Mock DOM Implementation
-const log = (message) => console.log(`[MockDOM] ${message}`);
+const log = (message) => {}; // console.log(`[MockDOM] ${message}`);
 
 const createMockElement = (tagName) => {
   log(`createMockElement called for: ${tagName}`);
@@ -22,12 +22,12 @@ const createMockElement = (tagName) => {
     appendChild: function(child) {
       let childIdentifier = child.tagName || child.textContent;
       if (child.nodeType === 11) childIdentifier = "#document-fragment"; // Explicitly log fragment
-      log(`${this.tagName} appendChild called with child: ${childIdentifier} (nodeType: ${child.nodeType})`);
+      // log(`${this.tagName} appendChild called with child: ${childIdentifier} (nodeType: ${child.nodeType})`);
       this.children.push(child);
       child.parentNode = this; // Set parentNode
     },
     setAttribute: function(name, value) {
-      log(`${this.tagName} setAttribute called with name: ${name}, value: ${value}`);
+      // log(`${this.tagName} setAttribute called with name: ${name}, value: ${value}`);
       this.attributes[name] = String(value); // Store as string, like HTML
       if (name === "style") {
         value.split(';').forEach(style => {
@@ -38,24 +38,24 @@ const createMockElement = (tagName) => {
       }
     },
     getAttribute: function(name) {
-      log(`${this.tagName} getAttribute called for name: ${name}`);
+      // log(`${this.tagName} getAttribute called for name: ${name}`);
       return this.attributes[name];
     },
     addEventListener: function(type, listener) {
-      log(`${this.tagName} addEventListener called for type: ${type}`);
+      // log(`${this.tagName} addEventListener called for type: ${type}`);
       if (!this.eventListeners[type]) {
         this.eventListeners[type] = [];
       }
       this.eventListeners[type].push(listener);
     },
     querySelectorAll: function(selector) {
-      log(`${this.tagName} querySelectorAll called with selector: ${selector}`);
+      // log(`${this.tagName} querySelectorAll called with selector: ${selector}`);
       const results = this.children.filter(child => child.tagName && child.tagName === selector.toUpperCase());
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       return results;
     },
-    remove: function() { log(`${this.tagName} remove called`); },
-    focus: function() { log(`${this.tagName} focus called`); },
+    remove: function() { /* log(`${this.tagName} remove called`); */ },
+    focus: function() { /* log(`${this.tagName} focus called`); */ },
   };
 };
 
@@ -63,13 +63,13 @@ let mockDocumentObject = {
   constructor: { name: "HTMLDocumentMock" },
   _elements: [], // For global querySelectorAll, if needed
   createElement: function(tagName) {
-    log(`mockDocument.createElement called for: ${tagName}`);
+    // log(`mockDocument.createElement called for: ${tagName}`);
     const el = createMockElement(tagName);
     this._elements.push(el); // Track elements for global queries
     return el;
   },
   createTextNode: function(text) {
-    log(`mockDocument.createTextNode called with text: "${text}"`);
+    // log(`mockDocument.createTextNode called with text: "${text}"`);
     // Return a more element-like text node to prevent errors if flint tries to add helpers
     // that expect methods like querySelectorAll, even if they don't make sense for a text node.
     const textNode = createMockElement('#text'); // Use a special tagName for identification
@@ -89,7 +89,7 @@ let mockDocumentObject = {
     return textNode;
   },
   createDocumentFragment: function() {
-    log('mockDocument.createDocumentFragment called');
+    // log('mockDocument.createDocumentFragment called');
     const fragment = createMockElement('#document-fragment'); // Use a special tagName for fragments
     fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
     return fragment;
@@ -127,10 +127,10 @@ let mockWindowObject = {
   document: mockDocument, // Use the callable mockDocument
   navigator: { userAgent: "NodeTestEnvironment/1.0" },
   addEventListener: function(type, listener) {
-    log(`mockWindow.addEventListener called for type: ${type}`);
+    // log(`mockWindow.addEventListener called for type: ${type}`);
   },
   removeEventListener: function(type, listener) {
-    log(`mockWindow.removeEventListener called for type: ${type}`);
+    // log(`mockWindow.removeEventListener called for type: ${type}`);
   }
 };
 const mockWindow = () => mockWindowObject; // Make it callable
@@ -146,13 +146,13 @@ const $ = loadClientScript(
 
 function testCreateSimpleDiv() {
   if (typeof $ !== 'function') {
-    console.error(`[TEST DEBUG] Flint $ is not a function. Actual type: ${typeof $}. Value: ${String($)}`);
+    // console.error(`[TEST DEBUG] Flint $ is not a function. Actual type: ${typeof $}. Value: ${String($)}`);
     // This will cause the test to fail, but gives a clear reason.
     assertEquals('function', typeof $, "Flint $ should be a function");
     return;
   }
   const $div = $("\n  div"); // Changed to standard string with escaped newline
-  console.log(`[TEST DEBUG] testCreateSimpleDiv: $div type is ${typeof $div}, value is ${String($div)}`);
+  // console.log(`[TEST DEBUG] testCreateSimpleDiv: $div type is ${typeof $div}, value is ${String($div)}`);
   assertEquals(true, !!$div, "Test Simple Div: element should be created");
   if (!$div) return; // Guard against further errors if creation failed
   assertEquals("DIV", $div.tagName, "Test Simple Div: tagName should be DIV");
@@ -249,7 +249,7 @@ function testArrayArgument() {
   mockChild2.innerText = "Child 2";
 
   const $div = $("\n  div $1", [[mockChild1, mockChild2]]);
-  console.log(`[TEST DEBUG] testArrayArgument: $div type is ${typeof $div}, value is ${String($div)}, tagName is ${$div ? $div.tagName : 'N/A'}, children count is ${$div ? ($div.children || []).length : 'N/A'}`);
+  // console.log(`[TEST DEBUG] testArrayArgument: $div type is ${typeof $div}, value is ${String($div)}, tagName is ${$div ? $div.tagName : 'N/A'}, children count is ${$div ? ($div.children || []).length : 'N/A'}`);
   assertEquals(true, !!$div, "Test Array Argument: DIV element should be created");
   if (!$div) return;
 
@@ -437,7 +437,7 @@ function testHelperOnMethod() {
 
   // Ensure eventListeners and addEventListener are present (they should be from createMockElement)
   if (!$el.eventListeners || typeof $el.addEventListener !== 'function') {
-    console.error("Mock element from selector doesn't have event listener capabilities from createMockElement.");
+    // console.error("Mock element from selector doesn't have event listener capabilities from createMockElement.");
     // This would indicate an issue with how mock elements are retrieved or created by selectors.
     // For now, we'll add them if missing, but this signals a deeper mock setup problem.
     $el.eventListeners = $el.eventListeners || {};

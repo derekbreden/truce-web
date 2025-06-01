@@ -1,5 +1,5 @@
-const fs = require('fs');
 const path = require('path');
+const { loadClientScript } = require('./testHelpers');
 
 // Mocking browser environment
 let lastDrawImageArgs = null;
@@ -58,15 +58,14 @@ global.Image = function() {
 let imageToPng;
 
 try {
-  const imageToPngPath = path.resolve(__dirname, './imageToPng.js');
-  const imageToPngCode = fs.readFileSync(imageToPngPath, 'utf8');
-  imageToPng = new Function('Image', 'document', `${imageToPngCode}; return imageToPng;`)(
-    global.Image,
-    global.document
+  imageToPng = loadClientScript(
+    path.resolve(__dirname, './imageToPng.js'),
+    { Image: global.Image, document: global.document },
+    "imageToPng"
   );
 } catch (error) {
-  console.error("Failed to load imageToPng.js:", error);
-  process.exit(1); 
+  console.error("Failed to load imageToPng.js using loadClientScript:", error);
+  process.exit(1);
 }
 
 // Use the new testUtils
