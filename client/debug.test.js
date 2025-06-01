@@ -1,5 +1,5 @@
 const { assertEquals, runTests } = require('./testUtils');
-const { loadClientScript, createMockDollar } = require('./testHelpers');
+const { loadClientScript, createMockDollar, createMockDocument, createMockWindow } = require('./testHelpers');
 const path = require('path');
 
 // --- Mock DOM Environment ---
@@ -10,18 +10,14 @@ let setTimeoutDuration = 0;
 // This global array will mimic the 'rendered' array inside debug.js for assertion purposes
 let expectedRenderedArrayForAssertions = [];
 
-const mockDocument = {
-  getElementById: (id) => ({ id: id, value: 'mockValue' }),
-  createElement: (tagName) => ({ tagName: tagName }),
-  querySelector: (selector) => null,
-};
+// Initialize Mock DOM using Imported Utilities
+const mockDocumentInstance = createMockDocument();
+const mockWindowInstance = createMockWindow(mockDocumentInstance);
 
-const mockWindow = {
-  setTimeout: (callback, duration) => {
-    setTimeoutCallback = callback;
-    setTimeoutDuration = duration;
-  },
-  addEventListener: (type, listener) => {},
+// Retain existing mock setTimeout logic by adding it to the mockWindowInstance
+mockWindowInstance.setTimeout = (callback, duration) => {
+  setTimeoutCallback = callback;
+  setTimeoutDuration = duration;
 };
 
 const resetMocksAndExpectedRenderedArray = () => {
@@ -39,7 +35,7 @@ const resetMocksAndExpectedRenderedArray = () => {
 const scriptPath = path.resolve(__dirname, './debug.js');
 const { debug } = loadClientScript(
   scriptPath,
-  { $: mock$, document: mockDocument, window: mockWindow, setTimeout: mockWindow.setTimeout },
+  { $: mock$, document: mockDocumentInstance, window: mockWindowInstance, setTimeout: mockWindowInstance.setTimeout },
   ["debug"]
 );
 // --- End Load Script Under Test ---
