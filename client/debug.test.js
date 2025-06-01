@@ -1,30 +1,22 @@
 const { assertEquals, runTests } = require('./testUtils');
-const { loadClientScript, createMockDollar, createMockDocument, createMockWindow } = require('./testHelpers');
+const { setupClientScriptTest } = require('./testHelpers');
 const path = require('path');
 
 // --- Mock Environment Setup ---
-// Mock for Flint's `$` functionality
-const mock$ = createMockDollar();
+const { mock$, loadScript } = setupClientScriptTest(); // mockDocument and mockWindow are also available if needed directly
+
 let setTimeoutCallback = null;
 let setTimeoutDuration = 0;
-
-// This global array will mimic the 'rendered' array inside debug.js for assertion purposes
-let expectedRenderedArrayForAssertions = [];
-
-// Initialize Mock DOM using Imported Utilities
-// Provides the global `document` object required by `loadClientScript` for `debug.js`
-const mockDocumentInstance = createMockDocument();
-// Provides the global `window` object required by `loadClientScript` for `debug.js`
-const mockWindowInstance = createMockWindow(mockDocumentInstance);
-
-// Retain existing mock setTimeout logic by adding it to the mockWindowInstance
-mockWindowInstance.setTimeout = (callback, duration) => {
+const mockSetTimeout = (callback, duration) => {
   setTimeoutCallback = callback;
   setTimeoutDuration = duration;
 };
 
+// This global array will mimic the 'rendered' array inside debug.js for assertion purposes
+let expectedRenderedArrayForAssertions = [];
+
 const resetMocksAndExpectedRenderedArray = () => {
-  mock$.reset(); // Reset calls for createMockDollar
+  mock$.reset(); // Reset calls for the mock$ from setupClientScriptTest
   setTimeoutCallback = null;
   setTimeoutDuration = 0;
   // Crucially, reset the expectedRenderedArrayForAssertions for each test that implies a "fresh start"
@@ -36,9 +28,9 @@ const resetMocksAndExpectedRenderedArray = () => {
 // --- Load Script Under Test ---
 // debug.js is loaded once. Its internal 'rendered' array will accumulate.
 const scriptPath = path.resolve(__dirname, './debug.js');
-const { debug } = loadClientScript(
+const { debug } = loadScript(
   scriptPath,
-  { $: mock$, document: mockDocumentInstance, window: mockWindowInstance, setTimeout: mockWindowInstance.setTimeout },
+  { setTimeout: mockSetTimeout }, // Pass mockSetTimeout as an additional global mock
   ["debug"]
 );
 // --- End Load Script Under Test ---

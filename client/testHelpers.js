@@ -336,4 +336,26 @@ module.exports = {
   createMockElement,
   createMockDocument,
   createMockWindow,
+  setupClientScriptTest,
 };
+
+function setupClientScriptTest() {
+  const mock$ = createMockDollar();
+  const mockDocument = createMockDocument();
+  const mockWindow = createMockWindow(mockDocument);
+
+  return {
+    mock$,
+    mockDocument,
+    mockWindow,
+    loadScript: (filePath, additionalGlobalMocks, constNamesToReturn) => {
+      const globalMocks = {
+        $: mock$,
+        document: mockDocument,
+        window: mockWindow,
+        ...additionalGlobalMocks,
+      };
+      return loadClientScript(filePath, globalMocks, constNamesToReturn);
+    },
+  };
+}
