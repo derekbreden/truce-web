@@ -92,28 +92,23 @@ function createMockDollar() {
       
       remove: function() { 
         this.removed = true; 
-        // console.log(`Mock element '${this.selector}' remove called`);
       },
       prepend: function(childElement) { 
         // Child might be a string or another mockElement
         this.prependedChildren.push(childElement); 
-        // console.log(`Mock element '${this.selector}' prepend called with:`, childElement);
       },
       append: function(childElement) { 
         this.appendedChildren.push(childElement); 
-        // console.log(`Mock element '${this.selector}' append called with:`, childElement);
       },
       on: function(eventName, handler) { 
         this.eventHandlers[eventName] = this.eventHandlers[eventName] || [];
         this.eventHandlers[eventName].push(handler); 
-        // console.log(`Mock element '${this.selector}' on '${eventName}' handler added`);
       },
       attr: function(attributeName, value) { 
         if (value === undefined) {
           return this.attributes[attributeName];
         }
         this.attributes[attributeName] = value;
-        // console.log(`Mock element '${this.selector}' attr '${attributeName}' set to:`, value);
         return this; // for chaining
       },
       text: function(content) {
@@ -121,7 +116,6 @@ function createMockDollar() {
           return this.textContent;
         }
         this.textContent = String(content); // Ensure content is stringified
-        // console.log(`Mock element '${this.selector}' text set to:`, content);
         return this;
       },
       val: function(v_content) { // Renamed to avoid conflict with 'value' property
@@ -129,23 +123,19 @@ function createMockDollar() {
           return this.value;
         }
         this.value = v_content;
-        // console.log(`Mock element '${this.selector}' val set to:`, v_content);
         return this;
       },
       focus: function() { 
         this.focused = true; 
-        // console.log(`Mock element '${this.selector}' focus called`);
       },
       empty: function() { 
         this.prependedChildren = []; 
         this.appendedChildren = []; 
         this.textContent = ''; 
         // Potentially clear other fields like attributes or value if needed by tests
-        // console.log(`Mock element '${this.selector}' empty called`);
         return this;
       },
       $: function(subSelector, subArgs) { // Chained call
-        // console.log(`Mock element '${this.selector}' chained $ call with selector: '${subSelector}'`);
         return mockDollar(subSelector, subArgs); // Uses the parent mockDollar to ensure tracking
       },
       // Add setAttribute as an alias for attr to handle tests for code using either
@@ -178,7 +168,6 @@ function createMockDollar() {
   mockDollar.reset = () => {
     mockDollar.calls = [];
     mockDollar.primedProperties = {}; // Reset primed properties as well
-    // console.log('mockDollar.calls reset');
   };
 
   mockDollar.primeElementProperties = function(selector, properties) {
