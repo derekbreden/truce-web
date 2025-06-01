@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const clientDir = path.join(__dirname, 'client');
+const testDir = path.join(__dirname, 'tests');
 let testFilesFound = [];
 
 /**
@@ -59,10 +59,10 @@ function executeTestFile(filePath) {
  */
 async function main() {
   console.log('--- Searching for test files ---');
-  findTestFiles(clientDir);
+  findTestFiles(testDir);
 
   if (testFilesFound.length === 0) {
-    console.log('No test files found in client/ ending with .test.js.');
+    console.log('No test files found in tests/ ending with .test.js.');
     process.exit(0); // Exit successfully as per requirement
     return;
   }

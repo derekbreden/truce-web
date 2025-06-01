@@ -27,7 +27,7 @@ const resetMocksAndExpectedRenderedArray = () => {
 
 // --- Load Script Under Test ---
 // debug.js is loaded once. Its internal 'rendered' array will accumulate.
-const scriptPath = path.resolve(__dirname, './debug.js');
+const scriptPath = path.resolve(__dirname, '../client/debug.js');
 const { debug } = loadScript(
   scriptPath,
   { setTimeout: mockSetTimeout }, // Pass mockSetTimeout as an additional global mock

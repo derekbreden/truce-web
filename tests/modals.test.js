@@ -242,7 +242,7 @@ const resetMocks = () => {
 
 // Load the modals.js script and attach its functions
 // modals.js is in the same directory as this test file.
-const scriptPath = path.join(__dirname, "modals.js")
+const scriptPath = path.join(__dirname, "../client/modals.js")
 
 //Globals that flint.js and modals.js expect
 const flintGlobal = $ // flint.js assigns itself to window.$

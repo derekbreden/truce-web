@@ -59,7 +59,7 @@ let imageToPng;
 
 try {
   imageToPng = loadClientScript(
-    path.resolve(__dirname, './imageToPng.js'),
+    path.resolve(__dirname, '../client/imageToPng.js'),
     { Image: global.Image, document: global.document },
     "imageToPng"
   );
