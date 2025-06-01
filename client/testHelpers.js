@@ -57,7 +57,9 @@ function loadClientScript(filePath, globalMocks, constNamesToReturn) {
 // End of new loadClientScript function
 
 /**
- * Creates a mock $ (dollar) function similar to jQuery, for testing purposes.
+ * Creates a mock $ (dollar) function similar to flint.js, for testing purposes.
+ * This mock is used in various tests to simulate the behavior of the flint.js $ function,
+ * which is used for DOM manipulation and element creation in the client-side code.
  * The returned mockDollar function tracks its calls and the behavior of created elements.
  * @returns {Function} The mockDollar function, which also has a .calls array and .reset() method.
  */
