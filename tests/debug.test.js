@@ -1,9 +1,25 @@
 const { assertEquals, runTests } = require('./testUtils');
-const { setupClientScriptTest } = require('./testHelpers');
+const { createMockDocument, createMockWindow, loadClientScript } = require('./testHelpers'); // Updated imports
 const path = require('path');
 
 // --- Mock Environment Setup ---
-const { mock$, loadScript } = setupClientScriptTest(); // mockDocument and mockWindow are also available if needed directly
+// Removed: const { mock$, loadScript } = setupClientScriptTest();
+
+// Instantiate mockDocument and mockWindow
+const mockDocument = createMockDocument();
+const mockWindow = createMockWindow(mockDocument);
+
+// Create and append main-content-wrapper
+const mainContentWrapper = mockDocument.createElement('div');
+mainContentWrapper.setAttribute('id', 'main-content-wrapper');
+mockDocument.body.appendChild(mainContentWrapper);
+
+// Load flint.js using loadClientScript to get the real $ function
+const $ = loadClientScript(
+  path.resolve(__dirname, '../client/flint.js'),
+  { document: mockDocument, window: mockWindow },
+  "$"
+);
 
 let setTimeoutCallback = null;
 let setTimeoutDuration = 0;
@@ -15,143 +31,152 @@ const mockSetTimeout = (callback, duration) => {
 // This global array will mimic the 'rendered' array inside debug.js for assertion purposes
 let expectedRenderedArrayForAssertions = [];
 
-const resetMocksAndExpectedRenderedArray = () => {
-  mock$.reset(); // Reset calls for the mock$ from setupClientScriptTest
+// Refactored function: Renamed and updated logic
+const resetDOMAndTimeoutMocks = () => {
   setTimeoutCallback = null;
   setTimeoutDuration = 0;
-  // Crucially, reset the expectedRenderedArrayForAssertions for each test that implies a "fresh start"
-  // This relies on tests being run in order by runTests for the accumulation to be predictable.
-  // Or, if debug.js's 'rendered' array was also reset, this would be simpler.
-  // For now, each test will manage its contribution to expectedRenderedArrayForAssertions.
+
+  // Clear any DEBUG elements from mainContentWrapper
+  const debugElements = mainContentWrapper.querySelectorAll('debug');
+  debugElements.forEach(el => el.remove());
 };
 
 // --- Load Script Under Test ---
 // debug.js is loaded once. Its internal 'rendered' array will accumulate.
 const scriptPath = path.resolve(__dirname, '../client/debug.js');
-const { debug } = loadScript(
+// Modified loadClientScript call for debug.js
+const { debug } = loadClientScript(
   scriptPath,
-  { setTimeout: mockSetTimeout }, // Pass mockSetTimeout as an additional global mock
+  {
+    document: mockDocument,
+    $: $, // Pass the real $
+    setTimeout: mockSetTimeout
+  },
   ["debug"]
 );
 // --- End Load Script Under Test ---
 
 // --- Test Cases ---
 function testDebug_rendersSingleStringArgument() {
-  resetMocksAndExpectedRenderedArray(); // Resets global assertion array
+  resetDOMAndTimeoutMocks(); // Call renamed function
   expectedRenderedArrayForAssertions = []; // Explicitly start fresh for this test sequence
 
   const testMessage = "Hello, world!";
   debug(testMessage);
-  expectedRenderedArrayForAssertions.push(testMessage); // As per debug.js logic for single arg
+  expectedRenderedArrayForAssertions.push(testMessage);
 
-  const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(!!prependCall, true, "Prepend should have been called on main-content-wrapper.");
-  if (prependCall) {
-    const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(!!prependedElement, true, "A child element should have been prepended.");
-    if (prependedElement) {
-      const prependedContentString = prependedElement.selector; // The string content is in the 'selector' of the mock element
-      const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
-      const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(prependedContentString, expectedPayload, "Rendered output for single string incorrect.");
-    }
+  // Query the DOM for the prepended debug element
+  const debugElements = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElements.length, 1, "A debug element should have been prepended to main-content-wrapper.");
+
+  if (debugElements.length > 0) {
+    const prependedElement = debugElements[0];
+    const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
+    assertEquals(prependedElement.innerText.trim(), expectedJsonInPayload.trim(), "Rendered output for single string incorrect.");
   }
 
   assertEquals(setTimeoutDuration, 5000, "setTimeout duration for single string incorrect.");
-  const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(!!removeCall, true, "$('debug').remove() for single string incorrect.");
+
+  // Check element removal after setTimeoutCallback
+  if (typeof setTimeoutCallback === 'function') {
+    setTimeoutCallback();
+  }
+  const debugElementsAfterTimeout = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElementsAfterTimeout.length, 0, "$('debug').remove() by timeout callback incorrect. Element should be gone from main-content-wrapper.");
 }
 
 function testDebug_rendersMultipleStringArguments() {
-  resetMocksAndExpectedRenderedArray(); // Reset test-side trackers
+  resetDOMAndTimeoutMocks(); // Call renamed function
   // expectedRenderedArrayForAssertions is managed by the test suite runner below for accumulation.
 
   const msg1 = "First message";
   const msg2 = "Second message";
   debug(msg1, msg2);
-  expectedRenderedArrayForAssertions.push([msg1, msg2]); // As per debug.js logic for multiple args
+  expectedRenderedArrayForAssertions.push([msg1, msg2]);
 
-  const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(!!prependCall, true, "Prepend should have been called for multiple args.");
-  if (prependCall) {
-    const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(!!prependedElement, true, "A child element should have been prepended for multiple args.");
-    if (prependedElement) {
-      const prependedContentString = prependedElement.selector;
-      const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
-      const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(prependedContentString, expectedPayload, "Rendered output for multiple strings incorrect.");
-    }
+  const debugElements = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElements.length, 1, "A debug element should have been prepended for multiple args.");
+
+  if (debugElements.length > 0) {
+    const prependedElement = debugElements[0];
+    const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
+    assertEquals(prependedElement.innerText.trim(), expectedJsonInPayload.trim(), "Rendered output for multiple strings incorrect.");
   }
 
   assertEquals(setTimeoutDuration, 5000, "setTimeout duration for multiple strings incorrect.");
-  const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(!!removeCall, true, "$('debug').remove() for multiple strings incorrect.");
+
+  if (typeof setTimeoutCallback === 'function') {
+    setTimeoutCallback();
+  }
+  const debugElementsAfterTimeout = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElementsAfterTimeout.length, 0, "$('debug').remove() by timeout callback for multiple strings incorrect.");
 }
 
 function testDebug_rendersErrorObject() {
-  resetMocksAndExpectedRenderedArray();
+  resetDOMAndTimeoutMocks(); // Call renamed function
   const errorEventLike = { message: "Test error message", lineno: 10, colno: 5 };
   debug(errorEventLike);
 
   const expectedRenderedError = { message: "Test error message", lineno: 10, colno: 5 };
-  expectedRenderedArrayForAssertions.push(expectedRenderedError); // As per debug.js logic for error-like
+  expectedRenderedArrayForAssertions.push(expectedRenderedError);
 
-  const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(!!prependCall, true, "Prepend for error object incorrect.");
-  if (prependCall) {
-    const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(!!prependedElement, true, "A child element should have been prepended for error object.");
-    if (prependedElement) {
-      const prependedContentString = prependedElement.selector;
-      const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
-      const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(prependedContentString, expectedPayload, "Rendered output for error object incorrect.");
-    }
+  const debugElements = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElements.length, 1, "A debug element should have been prepended for error object.");
+
+  if (debugElements.length > 0) {
+    const prependedElement = debugElements[0];
+    const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
+    assertEquals(prependedElement.innerText.trim(), expectedJsonInPayload.trim(), "Rendered output for error object incorrect.");
   }
 
   assertEquals(setTimeoutDuration, 5000, "setTimeout for error object incorrect.");
-  const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(!!removeCall, true, "$('debug').remove() for error object incorrect.");
+
+  if (typeof setTimeoutCallback === 'function') {
+    setTimeoutCallback();
+  }
+  const debugElementsAfterTimeout = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElementsAfterTimeout.length, 0, "$('debug').remove() by timeout callback for error object incorrect.");
 }
 
 function testDebug_rendersSimpleObject() {
-  resetMocksAndExpectedRenderedArray();
+  resetDOMAndTimeoutMocks(); // Call renamed function
   const testObj = { key: "value", nested: { num: 123 } };
   debug(testObj);
-  expectedRenderedArrayForAssertions.push(testObj); // As per debug.js for single object
+  expectedRenderedArrayForAssertions.push(testObj);
 
-  const prependCall = mock$.calls.find(call => call.originalSelector === 'main-content-wrapper' && call.element.prependedChildren.length > 0);
-  assertEquals(!!prependCall, true, "Prepend for simple object incorrect.");
-  if (prependCall) {
-    const prependedElement = prependCall.element.prependedChildren[0];
-    assertEquals(!!prependedElement, true, "A child element should have been prepended for simple object.");
-    if (prependedElement) {
-      const prependedContentString = prependedElement.selector;
-      const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
-      const expectedPayload = `\n    debug ${expectedJsonInPayload}\n    `;
-      assertEquals(prependedContentString, expectedPayload, "Rendered output for simple object incorrect.");
-    }
+  const debugElements = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElements.length, 1, "A debug element should have been prepended for simple object.");
+
+  if (debugElements.length > 0) {
+    const prependedElement = debugElements[0];
+    const expectedJsonInPayload = JSON.stringify(expectedRenderedArrayForAssertions, null, 2);
+    assertEquals(prependedElement.innerText.trim(), expectedJsonInPayload.trim(), "Rendered output for simple object incorrect.");
   }
 
   assertEquals(setTimeoutDuration, 5000, "setTimeout for simple object incorrect.");
-  const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(!!removeCall, true, "$('debug').remove() for simple object incorrect.");
+
+  if (typeof setTimeoutCallback === 'function') {
+    setTimeoutCallback();
+  }
+  const debugElementsAfterTimeout = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElementsAfterTimeout.length, 0, "$('debug').remove() by timeout callback for simple object incorrect.");
 }
 
 function testDebug_setTimeoutCallbackRemovesElement() {
-  resetMocksAndExpectedRenderedArray();
+  resetDOMAndTimeoutMocks(); // Call renamed function
   debug("Testing setTimeout callback");
   // We don't need to check expectedRenderedArrayForAssertions for this specific test's main goal.
 
   assertEquals(typeof setTimeoutCallback === 'function', true, "setTimeout callback not a function.");
 
-  mock$.reset(); // Reset calls before invoking the callback to isolate its effect.
+  // mock$.reset(); // Removed: mock$ is no longer used
 
-  setTimeoutCallback(); // Execute the callback.
+  if (typeof setTimeoutCallback === 'function') {
+    setTimeoutCallback(); // Execute the callback.
+  }
 
-  const removeCall = mock$.calls.find(call => call.originalSelector === 'debug' && call.element.removed);
-  assertEquals(!!removeCall, true, "$('debug').remove() by timeout callback incorrect.");
+  const debugElementsAfterTimeout = mainContentWrapper.querySelectorAll('debug');
+  assertEquals(debugElementsAfterTimeout.length, 0, "$('debug').remove() by timeout callback incorrect. Element should be gone from main-content-wrapper.");
 }
 
 // --- End Test Cases ---

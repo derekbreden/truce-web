@@ -13,7 +13,7 @@ const debug = function () {
   }
   rendered.push(to_render);
   $("debug")?.remove();
-  $("main-content-wrapper").prepend(
+  $("#main-content-wrapper").prepend( // Added # for ID selector
     $(
       `
     debug $1
@@ -26,6 +26,8 @@ const debug = function () {
   }, 5000);
 };
 
-window.addEventListener("error", ($error) => {
-  // debug($error);
-});
+if (typeof window !== 'undefined') {
+  window.addEventListener("error", ($error) => {
+    // debug($error);
+  });
+}
