@@ -177,11 +177,18 @@ function createMockDollar() {
   return mockDollar;
 }
 
-// Mock DOM Implementation
-// The following functions (createMockDocument, createMockWindow, createMockElement)
-// are used to build a simulated DOM environment. This mock DOM is notably used in
-// client/flint.test.js to test the *actual* flint.js script, which is a different
-// approach from using createMockDollar where flint.js's $ function is mocked.
+// Mock DOM Implementation for testing flint.js itself
+// The functions createMockDocument, createMockWindow, and createMockElement build a
+// simulated DOM. This setup is used in tests like client/flint.test.js to test
+// the *actual* flint.js script.
+//
+// This is one of two approaches currently used for testing code involving flint.js:
+// 1. Mocking flint.js's $ function directly using `createMockDollar` (for when flint.js
+//    itself is not the System Under Test, but its interactions need to be simulated).
+// 2. Using this mock DOM with the actual flint.js script (for testing flint.js itself).
+//
+// This divergence is a known area for future refactoring, aiming for a more unified
+// testing strategy for flint.js and its DOM interactions, as noted in README.md.
 
 const createMockElement = (tagName) => {
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
