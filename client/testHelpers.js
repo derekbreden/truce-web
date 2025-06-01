@@ -177,7 +177,7 @@ function createMockDollar() {
   return mockDollar;
 }
 
-// Mock DOM Implementation (copied and adapted from flint.test.js)
+// Mock DOM Implementation
 
 const createMockElement = (tagName) => {
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
