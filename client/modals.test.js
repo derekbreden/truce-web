@@ -353,7 +353,7 @@ const testsToRun = [
 
     // Defensive check
     if (typeof modalInfo !== 'function') {
-      assertEquals(false, true, "TestModalInfo_Basic: modalInfo function was not loaded correctly.");
+      assertEquals(true, false, "TestModalInfo_Basic: modalInfo function was not loaded correctly.");
       return false; // Stop test if essential function is missing
     }
 
@@ -364,8 +364,8 @@ const testsToRun = [
 
     // 1. Check if modal wrapper was created and appended to body
     const modalWrapper = mockDocument.body._children.find(child => child._tag === "modal-wrapper")
-    assertEquals(modalWrapper !== null && modalWrapper !== undefined, true, "TestModalInfo_Basic: Modal wrapper should be created.")
-    assertEquals(modalWrapper._children.length > 0, true, "TestModalInfo_Basic: Modal should have content.")
+    assertEquals(true, modalWrapper !== null && modalWrapper !== undefined, "TestModalInfo_Basic: Modal wrapper should be created.")
+    assertEquals(true, modalWrapper._children.length > 0, "TestModalInfo_Basic: Modal should have content.")
 
     // 2. Check for title and message (simplistic check based on current mock capabilities)
     //    A more robust check would involve inspecting the actual content structure if $find supported text content or classes.
@@ -380,7 +380,7 @@ const testsToRun = [
     //          button[ok]
 
     const modalDiv = modalWrapper._children.find(child => child._tag === "modal" && child._attributes.info) // Flint creates <modal info> not <div>
-    assertEquals(modalDiv !== null && modalDiv !== undefined, true, "TestModalInfo_Basic: Modal content element (modal[info]) should exist in wrapper.")
+    assertEquals(true, modalDiv !== null && modalDiv !== undefined, "TestModalInfo_Basic: Modal content element (modal[info]) should exist in wrapper.")
 
     // We need to adjust how we check title and message.
     // The mock $ doesn't deeply parse and structure template content with $1, $2.
@@ -394,15 +394,15 @@ const testsToRun = [
     const titleElement = modalDiv._children.find(child => child._tag === 'h2')
     const messageElement = modalDiv._children.find(child => child._tag === 'p')
 
-    // assertEquals(titleElement && titleElement._content === title, true, "TestModalInfo_Basic: Title should be displayed.");
-    // assertEquals(messageElement && messageElement._content === message, true, "TestModalInfo_Basic: Message should be displayed.");
+    // assertEquals(true, titleElement && titleElement._content === title, "TestModalInfo_Basic: Title should be displayed.");
+    // assertEquals(true, messageElement && messageElement._content === message, "TestModalInfo_Basic: Message should be displayed.");
     // These assertions are commented out as the current mock $ doesn't populate _content of children based on $1, $2 from parent template.
     // We'll rely on the presence of the modal and its buttons for now.
 
     // 3. Check for "Close" button (modalInfo has a "close" button, not "ok")
     const closeButton = modalDiv.$("button[close]")
-    assertEquals(closeButton !== null && closeButton !== undefined, true, "TestModalInfo_Basic: Close button should exist.")
-    assertEquals(closeButton._attributes.hasOwnProperty("close"), true, "TestModalInfo_Basic: Close button should have 'close' attribute.")
+    assertEquals(true, closeButton !== null && closeButton !== undefined, "TestModalInfo_Basic: Close button should exist.")
+    assertEquals(true, closeButton._attributes.hasOwnProperty("close"), "TestModalInfo_Basic: Close button should have 'close' attribute.")
 
 
     // 4. Simulate click on "Close" button
@@ -410,8 +410,8 @@ const testsToRun = [
 
     // 5. Assert that the modal is removed
     // The modal-wrapper should be removed from the body
-    assertEquals(modalWrapper._removed, true, "TestModalInfo_Basic: Modal wrapper should be marked as removed.")
-    assertEquals(mockDocument.body._children.includes(modalWrapper), false, "TestModalInfo_Basic: Modal wrapper should be removed from body children.")
+    assertEquals(true, modalWrapper._removed, "TestModalInfo_Basic: Modal wrapper should be marked as removed.")
+    assertEquals(false, mockDocument.body._children.includes(modalWrapper), "TestModalInfo_Basic: Modal wrapper should be removed from body children.")
 
     return true // Test passed
   },
@@ -421,7 +421,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof modalConfirm !== 'function') {
-      assertEquals(false, true, "TestModalConfirm_ConfirmAction: modalConfirm function was not loaded.");
+      assertEquals(true, false, "TestModalConfirm_ConfirmAction: modalConfirm function was not loaded.");
       return false;
     }
 
@@ -434,18 +434,18 @@ const testsToRun = [
     modalConfirm(message, mockCallback);
 
     const modalWrapper = mockDocument.body._children.find(child => child._tag === "modal-wrapper");
-    assertEquals(modalWrapper !== null, true, "TestModalConfirm_ConfirmAction: Modal wrapper should be created.");
+    assertEquals(true, modalWrapper !== null, "TestModalConfirm_ConfirmAction: Modal wrapper should be created.");
 
     const modalDiv = modalWrapper._children.find(child => child._tag === "modal" && child._attributes.confirm);
-    assertEquals(modalDiv !== null, true, "TestModalConfirm_ConfirmAction: Modal content (modal[confirm]) should exist.");
+    assertEquals(true, modalDiv !== null, "TestModalConfirm_ConfirmAction: Modal content (modal[confirm]) should exist.");
 
     const confirmButton = modalDiv.$("button[confirm]");
-    assertEquals(confirmButton !== null, true, "TestModalConfirm_ConfirmAction: Confirm button should exist.");
+    assertEquals(true, confirmButton !== null, "TestModalConfirm_ConfirmAction: Confirm button should exist.");
 
     confirmButton.click();
 
-    assertEquals(modalWrapper._removed, true, "TestModalConfirm_ConfirmAction: Modal wrapper should be removed after confirm.");
-    assertEquals(callbackCalled, true, "TestModalConfirm_ConfirmAction: Callback should be called after confirm.");
+    assertEquals(true, modalWrapper._removed, "TestModalConfirm_ConfirmAction: Modal wrapper should be removed after confirm.");
+    assertEquals(true, callbackCalled, "TestModalConfirm_ConfirmAction: Callback should be called after confirm.");
 
     return true;
   },
@@ -455,7 +455,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof modalConfirm !== 'function') {
-      assertEquals(false, true, "TestModalConfirm_CancelAction: modalConfirm function was not loaded.");
+      assertEquals(true, false, "TestModalConfirm_CancelAction: modalConfirm function was not loaded.");
       return false;
     }
 
@@ -468,26 +468,26 @@ const testsToRun = [
     modalConfirm(message, mockCallback);
 
     const modalWrapper = mockDocument.body._children.find(child => child._tag === "modal-wrapper");
-    assertEquals(modalWrapper !== null, true, "TestModalConfirm_CancelAction: Modal wrapper should be created.");
+    assertEquals(true, modalWrapper !== null, "TestModalConfirm_CancelAction: Modal wrapper should be created.");
 
     const modalDiv = modalWrapper._children.find(child => child._tag === "modal" && child._attributes.confirm);
-    assertEquals(modalDiv !== null, true, "TestModalConfirm_CancelAction: Modal content (modal[confirm]) should exist.");
+    assertEquals(true, modalDiv !== null, "TestModalConfirm_CancelAction: Modal content (modal[confirm]) should exist.");
 
     // In modals.js, the cancel button is button[cancel][close][alt]
     // My simple parser for attributes in $ mock might only get the first one.
     // Let's try finding by [cancel] attribute.
     const cancelButton = modalDiv.$("button[cancel]");
-    assertEquals(cancelButton !== null, true, "TestModalConfirm_CancelAction: Cancel button should exist.");
+    assertEquals(true, cancelButton !== null, "TestModalConfirm_CancelAction: Cancel button should exist.");
 
     // Optional: Check if it also has 'close' and 'alt' if the parser/mock was more advanced
-    // assertEquals(cancelButton._attributes.hasOwnProperty("close"), true, "TestModalConfirm_CancelAction: Cancel button should have 'close' attribute.");
-    // assertEquals(cancelButton._attributes.hasOwnProperty("alt"), true, "TestModalConfirm_CancelAction: Cancel button should have 'alt' attribute.");
+    // assertEquals(true, cancelButton._attributes.hasOwnProperty("close"), "TestModalConfirm_CancelAction: Cancel button should have 'close' attribute.");
+    // assertEquals(true, cancelButton._attributes.hasOwnProperty("alt"), "TestModalConfirm_CancelAction: Cancel button should have 'alt' attribute.");
 
 
     cancelButton.click();
 
-    assertEquals(modalWrapper._removed, true, "TestModalConfirm_CancelAction: Modal wrapper should be removed after cancel.");
-    assertEquals(callbackCalled, false, "TestModalConfirm_CancelAction: Callback should NOT be called after cancel.");
+    assertEquals(true, modalWrapper._removed, "TestModalConfirm_CancelAction: Modal wrapper should be removed after cancel.");
+    assertEquals(false, callbackCalled, "TestModalConfirm_CancelAction: Callback should NOT be called after cancel.");
 
     return true;
   },
@@ -497,7 +497,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof modalError !== 'function') {
-      assertEquals(false, true, "TestModalError_Basic: modalError function was not loaded.");
+      assertEquals(true, false, "TestModalError_Basic: modalError function was not loaded.");
       return false;
     }
 
@@ -505,10 +505,10 @@ const testsToRun = [
     modalError(errorMessage);
 
     const modalWrapper = mockDocument.body._children.find(child => child._tag === "modal-wrapper");
-    assertEquals(modalWrapper !== null, true, "TestModalError_Basic: Modal wrapper should be created.");
+    assertEquals(true, modalWrapper !== null, "TestModalError_Basic: Modal wrapper should be created.");
 
     const modalDiv = modalWrapper._children.find(child => child._tag === "modal" && child._attributes.error);
-    assertEquals(modalDiv !== null, true, "TestModalError_Basic: Modal content (modal[error]) should exist.");
+    assertEquals(true, modalDiv !== null, "TestModalError_Basic: Modal content (modal[error]) should exist.");
 
     // Check for content (simplified)
     // The actual message "error $1" is processed by flint. My mock $ puts args[0] into _content of currentParent.
@@ -516,19 +516,19 @@ const testsToRun = [
     // This depends on how the simple parser handles "error $1" line.
     // Current parser: currentParent._content = (currentParent._content || "") + args[0];
     if (modalDiv) {
-         assertEquals(modalDiv._content && modalDiv._content.includes(errorMessage), true, "TestModalError_Basic: Error message should be in modal content.");
+         assertEquals(true, modalDiv._content && modalDiv._content.includes(errorMessage), "TestModalError_Basic: Error message should be in modal content.");
     }
 
 
     const closeButton = modalDiv.$("button[close]");
-    assertEquals(closeButton !== null, true, "TestModalError_Basic: Close button should exist.");
-    assertEquals(closeButton._attributes.hasOwnProperty("close"), true, "TestModalError_Basic: Close button should have 'close' attribute.");
-    // assertEquals(closeButton._content === "Okay", true, "TestModalError_Basic: Close button should have text 'Okay'."); // My parser puts this in _content
+    assertEquals(true, closeButton !== null, "TestModalError_Basic: Close button should exist.");
+    assertEquals(true, closeButton._attributes.hasOwnProperty("close"), "TestModalError_Basic: Close button should have 'close' attribute.");
+    // assertEquals(true, closeButton._content === "Okay", "TestModalError_Basic: Close button should have text 'Okay'."); // My parser puts this in _content
 
     closeButton.click();
 
-    assertEquals(modalWrapper._removed, true, "TestModalError_Basic: Modal wrapper should be removed after close.");
-    assertEquals(mockDocument.body._children.includes(modalWrapper), false, "TestModalError_Basic: Modal wrapper should be removed from body children.");
+    assertEquals(true, modalWrapper._removed, "TestModalError_Basic: Modal wrapper should be removed after close.");
+    assertEquals(false, mockDocument.body._children.includes(modalWrapper), "TestModalError_Basic: Modal wrapper should be removed from body children.");
 
     return true;
   },
@@ -538,7 +538,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof alertInfo !== 'function') {
-      assertEquals(false, true, "TestAlertInfo_Single: alertInfo function was not loaded.");
+      assertEquals(true, false, "TestAlertInfo_Single: alertInfo function was not loaded.");
       return false;
     }
 
@@ -546,21 +546,21 @@ const testsToRun = [
     alertInfo(message);
 
     const alertWrapper = mockDocument.body._children.find(child => child._tag === "alert-wrapper");
-    assertEquals(alertWrapper !== null, true, "TestAlertInfo_Single: Alert wrapper should be created.");
+    assertEquals(true, alertWrapper !== null, "TestAlertInfo_Single: Alert wrapper should be created.");
 
     const alertElement = alertWrapper._children.find(child => child._tag === "alert");
-    assertEquals(alertElement !== null, true, "TestAlertInfo_Single: Alert element should exist in wrapper.");
+    assertEquals(true, alertElement !== null, "TestAlertInfo_Single: Alert element should exist in wrapper.");
     // Based on simplified parser, message should be in alertElement._content
-    assertEquals(alertElement._content && alertElement._content.includes(message), true, "TestAlertInfo_Single: Alert message should be in alert element.");
+    assertEquals(true, alertElement._content && alertElement._content.includes(message), "TestAlertInfo_Single: Alert message should be in alert element.");
 
-    assertEquals(typeof mockSetTimeoutCallback, 'function', "TestAlertInfo_Single: setTimeout should have been called.");
+    assertEquals('function', typeof mockSetTimeoutCallback, "TestAlertInfo_Single: setTimeout should have been called.");
 
     // Simulate timeout
     if (mockSetTimeoutCallback) {
       mockSetTimeoutCallback();
     }
-    assertEquals(alertWrapper._removed, true, "TestAlertInfo_Single: Alert wrapper should be removed after timeout.");
-    assertEquals(mockDocument.body._children.includes(alertWrapper), false, "TestAlertInfo_Single: Alert wrapper should be removed from body children.");
+    assertEquals(true, alertWrapper._removed, "TestAlertInfo_Single: Alert wrapper should be removed after timeout.");
+    assertEquals(false, mockDocument.body._children.includes(alertWrapper), "TestAlertInfo_Single: Alert wrapper should be removed from body children.");
 
     return true;
   },
@@ -570,7 +570,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof alertInfo !== 'function') {
-      assertEquals(false, true, "TestAlertInfo_Multiple: alertInfo function was not loaded.");
+      assertEquals(true, false, "TestAlertInfo_Multiple: alertInfo function was not loaded.");
       return false;
     }
 
@@ -578,9 +578,9 @@ const testsToRun = [
     alertInfo(message1);
 
     const alertWrapper1 = mockDocument.body._children.find(child => child._tag === "alert-wrapper");
-    assertEquals(alertWrapper1 !== null, true, "TestAlertInfo_Multiple: First alert wrapper should be created.");
+    assertEquals(true, alertWrapper1 !== null, "TestAlertInfo_Multiple: First alert wrapper should be created.");
     const alertElement1 = alertWrapper1._children.find(child => child._tag === "alert");
-    assertEquals(alertElement1 !== null, true, "TestAlertInfo_Multiple: First alert element should exist.");
+    assertEquals(true, alertElement1 !== null, "TestAlertInfo_Multiple: First alert element should exist.");
 
     const firstTimeoutId = mockTimeoutId; // mockSetTimeout returns this
     const oldSetTimeoutCallback = mockSetTimeoutCallback; // Save the first callback
@@ -589,28 +589,28 @@ const testsToRun = [
     alertInfo(message2); // This should clear the first timeout and set a new one
 
     const alertWrapper2 = mockDocument.body._children.find(child => child._tag === "alert-wrapper");
-    assertEquals(alertWrapper1 === alertWrapper2, true, "TestAlertInfo_Multiple: Alert wrapper should be the same for multiple alerts.");
+    assertEquals(true, alertWrapper1 === alertWrapper2, "TestAlertInfo_Multiple: Alert wrapper should be the same for multiple alerts.");
 
     // Corrected assertion: Expect 2 children. If this fails, it means appendChild on existing wrapper failed.
-    assertEquals(alertWrapper2._children.length, 2, "TestAlertInfo_Multiple: Alert wrapper should contain two alert elements.");
+    assertEquals(2, alertWrapper2._children.length, "TestAlertInfo_Multiple: Alert wrapper should contain two alert elements.");
 
     const alertElement2 = alertWrapper2._children.length === 2 ? alertWrapper2._children[1] : undefined; // Second alert, handle if not found
-    assertEquals(alertElement2 !== undefined, true, "TestAlertInfo_Multiple: Second alert element object should exist.");
+    assertEquals(true, alertElement2 !== undefined, "TestAlertInfo_Multiple: Second alert element object should exist.");
     if (alertElement2) { // Only access properties if alertElement2 exists
-        assertEquals(alertElement2._tag === "alert", true, "TestAlertInfo_Multiple: Second alert element should have correct tag.");
-        assertEquals(alertElement2._content && alertElement2._content.includes(message2), true, "TestAlertInfo_Multiple: Second alert message should be correct.");
+        assertEquals(true, alertElement2._tag === "alert", "TestAlertInfo_Multiple: Second alert element should have correct tag.");
+        assertEquals(true, alertElement2._content && alertElement2._content.includes(message2), "TestAlertInfo_Multiple: Second alert message should be correct.");
     }
 
-    assertEquals(lastClearedTimeoutId, firstTimeoutId, "TestAlertInfo_Multiple: Previous timeout should have been cleared.");
-    assertEquals(typeof mockSetTimeoutCallback, 'function', "TestAlertInfo_Multiple: New setTimeout should have been called for the second alert.");
-    assertEquals(mockSetTimeoutCallback !== oldSetTimeoutCallback, true, "TestAlertInfo_Multiple: A new timeout callback should be set.");
+    assertEquals(firstTimeoutId, lastClearedTimeoutId, "TestAlertInfo_Multiple: Previous timeout should have been cleared.");
+    assertEquals('function', typeof mockSetTimeoutCallback, "TestAlertInfo_Multiple: New setTimeout should have been called for the second alert.");
+    assertEquals(true, mockSetTimeoutCallback !== oldSetTimeoutCallback, "TestAlertInfo_Multiple: A new timeout callback should be set.");
 
 
     // Simulate new timeout for the second alert
     if (mockSetTimeoutCallback) {
       mockSetTimeoutCallback();
     }
-    assertEquals(alertWrapper2._removed, true, "TestAlertInfo_Multiple: Alert wrapper should be removed after the latest timeout.");
+    assertEquals(true, alertWrapper2._removed, "TestAlertInfo_Multiple: Alert wrapper should be removed after the latest timeout.");
 
     return true;
   },
@@ -620,7 +620,7 @@ const testsToRun = [
     setupLoadedFunctions();
 
     if (typeof alertError !== 'function') {
-      assertEquals(false, true, "TestAlertError_Basic: alertError function was not loaded.");
+      assertEquals(true, false, "TestAlertError_Basic: alertError function was not loaded.");
       return false;
     }
 
@@ -632,30 +632,30 @@ const testsToRun = [
     alertError(testErrorMessageContent);
 
     const alertWrapper = mockDocument.body._children.find(child => child._tag === "alert-wrapper");
-    assertEquals(alertWrapper !== null, true, "TestAlertError_Basic: Alert wrapper should be created.");
+    assertEquals(true, alertWrapper !== null, "TestAlertError_Basic: Alert wrapper should be created.");
 
     const alertElement = alertWrapper._children.find(child => child._tag === "alert");
-    assertEquals(alertElement !== null, true, "TestAlertError_Basic: Alert element should exist in wrapper.");
+    assertEquals(true, alertElement !== null, "TestAlertError_Basic: Alert element should exist in wrapper.");
 
     // Check content. The template is "alert \n error $1".
     // Parser makes 'alert' the newElement. Then processes "error $1".
     // currentParent for "error $1" should be 'alert' element itself.
-    assertEquals(alertElement._content && alertElement._content.includes(testErrorMessageContent), true, "TestAlertError_Basic: Alert error message content should be correct.");
+    assertEquals(true, alertElement._content && alertElement._content.includes(testErrorMessageContent), "TestAlertError_Basic: Alert error message content should be correct.");
 
     // Simulate click on the alert element
     alertElement.click();
-    assertEquals(mockDebugLog.length, 1, "TestAlertError_Basic: debug should have been called once after click.");
+    assertEquals(1, mockDebugLog.length, "TestAlertError_Basic: debug should have been called once after click.");
     if (mockDebugLog.length > 0) {
-      assertEquals(mockDebugLog[0][0], testStateError, "TestAlertError_Basic: debug should be called with state.most_recent_error.");
+      assertEquals(testStateError, mockDebugLog[0][0], "TestAlertError_Basic: debug should be called with state.most_recent_error.");
     }
 
     // Check timeout behavior (same as alertInfo)
-    assertEquals(typeof mockSetTimeoutCallback, 'function', "TestAlertError_Basic: setTimeout should have been called.");
+    assertEquals('function', typeof mockSetTimeoutCallback, "TestAlertError_Basic: setTimeout should have been called.");
     if (mockSetTimeoutCallback) {
       mockSetTimeoutCallback();
     }
-    assertEquals(alertWrapper._removed, true, "TestAlertError_Basic: Alert wrapper should be removed after timeout.");
-    assertEquals(mockDocument.body._children.includes(alertWrapper), false, "TestAlertError_Basic: Alert wrapper should be removed from body children.");
+    assertEquals(true, alertWrapper._removed, "TestAlertError_Basic: Alert wrapper should be removed after timeout.");
+    assertEquals(false, mockDocument.body._children.includes(alertWrapper), "TestAlertError_Basic: Alert wrapper should be removed from body children.");
 
     return true;
   }
