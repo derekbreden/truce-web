@@ -669,6 +669,7 @@ const allTestFunctions = [
     testImages,
     testLinks,
     testAutomaticUrlLinking,
+    testMockDollarTagProperty,
 ];
 
 // --- Main execution ---
@@ -678,3 +679,34 @@ runTestsFromUtils("markdownToElements.test.js", allTestFunctions).catch(err => {
   console.error("\nCritical Error during test execution:", err);
   process.exit(1); 
 });
+
+function testMockDollarTagProperty() {
+    const dollar = createMockDollar(); // Use the imported createMockDollar
+
+    let element = dollar("div[id=test]");
+    assertEquals(element._tag, "div", "Test mockDollar _tag: div[id=test]");
+
+    element = dollar("span.myClass");
+    assertEquals(element._tag, "span", "Test mockDollar _tag: span.myClass");
+
+    element = dollar("button");
+    assertEquals(element._tag, "button", "Test mockDollar _tag: button");
+
+    element = dollar("#myId");
+    assertEquals(element._tag, undefined, "Test mockDollar _tag: #myId");
+
+    element = dollar(".myClass");
+    assertEquals(element._tag, undefined, "Test mockDollar _tag: .myClass");
+
+    // Test with template string
+    element = dollar("h1 $1", ["Test Title"]);
+    assertEquals(element._tag, "h1", "Test mockDollar _tag: h1 $1");
+
+    // Test with an empty string selector
+    element = dollar("");
+    assertEquals(element._tag, undefined, "Test mockDollar _tag: empty string");
+
+    // Test with a selector that is only special characters (edge case for regex)
+    element = dollar("[attr=val]");
+    assertEquals(element._tag, undefined, "Test mockDollar _tag: [attr=val]");
+}
