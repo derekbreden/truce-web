@@ -72,7 +72,19 @@ function createMockDollar() {
   const mockDollar = (selector, args = []) => { // args defaults to empty array if not provided
     // Simulate template processing if args are provided (simple $1, $2 replacement)
     let processedSelector = selector;
-    if (args && Array.isArray(args) && typeof selector === 'string' && args.length > 0) {
+    let idFromHtml = null;
+
+    if (typeof selector === 'string' && selector.trim().startsWith('<')) {
+      const idMatch = selector.match(/id\s*=\s*["']([^"']+)["']/);
+      if (idMatch && idMatch[1]) {
+        idFromHtml = idMatch[1];
+        // For call logging, we might want to use #id if tests search this way
+        // processedSelector = `#${idFromHtml}`;
+        // However, elementProperties.selector should remain the original for consistency of the element itself
+      }
+    }
+
+    if (args && Array.isArray(args) && typeof selector === 'string' && args.length > 0 && !idFromHtml) { // only process if not already identified as HTML string with ID
       args.forEach((arg, index) => {
         const placeholder = new RegExp(`\\$${index + 1}`, 'g');
         processedSelector = processedSelector.replace(placeholder, String(arg));
@@ -85,67 +97,95 @@ function createMockDollar() {
       originalSelector: selector,  // Store the original selector for reference
       args: args,                  // Store the arguments for reference
       removed: false,
-      prependedChildren: [],
-      appendedChildren: [],
-      eventHandlers: {},
-      attributes: {},
-      textContent: '',
-      value: '',
+      _children: [],
+      prependedChildren: [], // For test compatibility
+      appendedChildren: [], // For test compatibility (if append is used similarly in tests)
+      _eventHandlers: {},
+      _attributes: {},
+      _content: '',
+      value: '', // Keep value for val() compatibility
       scrollTop: 0, // Default scrollTop property
       focused: false,
       _tag: undefined, // Initialize _tag property
+      id: idFromHtml, // Store extracted ID
+      _parent: null, // Add _parent property
+      style: {}, // Add style property
+      length: 1, // Mimic jQuery object; 0 for empty
+      index: 0, // For test compatibility (goToPath.test.js)
       
-      remove: function() { 
-        this.removed = true; 
-      },
-      prepend: function(childElement) { 
-        // Child might be a string or another mockElement
-        this.prependedChildren.push(childElement); 
-      },
-      append: function(childElement) { 
-        this.appendedChildren.push(childElement); 
-      },
-      on: function(eventName, handler) { 
-        this.eventHandlers[eventName] = this.eventHandlers[eventName] || [];
-        this.eventHandlers[eventName].push(handler); 
-      },
-      attr: function(attributeName, value) { 
-        if (value === undefined) {
-          return this.attributes[attributeName];
+      remove: function() {
+        this.removed = true;
+        if (this._parent && this._parent._children) {
+          const index = this._parent._children.indexOf(this);
+          if (index > -1) {
+            this._parent._children.splice(index, 1);
+          }
         }
-        this.attributes[attributeName] = value;
+      },
+      appendChild: function(childElement) {
+        this._children.push(childElement);
+        this.appendedChildren.push(childElement); // For test compatibility
+        childElement._parent = this;
+        return this; // for chaining
+      },
+      prepend: function(childElement) {
+        // Child might be a string or another mockElement
+        this._children.unshift(childElement);
+        this.prependedChildren.unshift(childElement); // For test compatibility
+        // If childElement is a mock element, set its parent
+        if (childElement && typeof childElement === 'object') {
+            childElement._parent = this;
+        }
+        return this; // for chaining
+      },
+      on: function(eventName, handler) {
+        this._eventHandlers[eventName] = this._eventHandlers[eventName] || [];
+        this._eventHandlers[eventName].push(handler);
+      },
+      attr: function(attributeName, value) {
+        if (value === undefined) {
+          return this._attributes[attributeName];
+        }
+        this._attributes[attributeName] = value;
         return this; // for chaining
       },
       text: function(content) {
         if (content === undefined) {
-          return this.textContent;
+          return this._content;
         }
-        this.textContent = String(content); // Ensure content is stringified
+        this._content = String(content); // Ensure content is stringified
         return this;
       },
-      val: function(v_content) { // Renamed to avoid conflict with 'value' property
+      val: function(v_content) {
         if (v_content === undefined) {
           return this.value;
         }
         this.value = v_content;
         return this;
       },
-      focus: function() { 
-        this.focused = true; 
+      focus: function() {
+        this.focused = true;
       },
-      empty: function() { 
-        this.prependedChildren = []; 
-        this.appendedChildren = []; 
-        this.textContent = ''; 
-        // Potentially clear other fields like attributes or value if needed by tests
+      empty: function() {
+        this._children = [];
+        this.prependedChildren = []; // Also clear these for test consistency
+        this.appendedChildren = [];  // Also clear these for test consistency
+        this._content = '';
         return this;
       },
       $: function(subSelector, subArgs) { // Chained call
-        return mockDollar(subSelector, subArgs); // Uses the parent mockDollar to ensure tracking
+        //This was the original behavior: uses the parent mockDollar to ensure tracking & creation
+        return mockDollar(subSelector, subArgs);
       },
       // Add setAttribute as an alias for attr to handle tests for code using either
       setAttribute: function(attributeName, value) {
         return this.attr(attributeName, value);
+      },
+      click: function() {
+        // Simulate click event
+        if (this._eventHandlers && this._eventHandlers.click) {
+          this._eventHandlers.click.forEach(handler => handler.call(this));
+        }
       },
     };
 
@@ -165,9 +205,14 @@ function createMockDollar() {
     }
 
     const element = elementProperties; // Assign to element after potential modification
-    
+    element.attributes = element._attributes; // Ensure attributes property points to _attributes for test compatibility
+    element.eventHandlers = element._eventHandlers; // Ensure eventHandlers property points to _eventHandlers for test compatibility
+    if (idFromHtml) {
+      element._attributes.id = idFromHtml; // Also ensure it's in _attributes
+    }
+
     mockDollar.calls.push({ 
-        selector: processedSelector, // Use processed selector for easier matching in tests
+        selector: idFromHtml || processedSelector, // Use raw id for selector in calls if extracted, to match test
         originalSelector: selector, 
         args, 
         element 
@@ -188,6 +233,50 @@ function createMockDollar() {
   };
 
   return mockDollar;
+}
+
+// Helper to create an empty mock element for $ results (Might not be strictly needed if $ always returns full mock)
+function createEmptyMockElement() {
+  const emptyElement = {
+    selector: 'empty-mock-element', // Make it identifiable
+    originalSelector: '',
+    args: [],
+    removed: false,
+    _children: [],
+    prependedChildren: [], // For test compatibility
+    appendedChildren: [], // For test compatibility
+    _eventHandlers: {},
+    _attributes: {},
+    _content: '',
+    value: '',
+    scrollTop: 0,
+    focused: false,
+    _tag: undefined,
+    _parent: null,
+    style: {},
+    length: 0, // Key property to indicate it's an empty collection
+
+    remove: function() { this.removed = true; return this; },
+    appendChild: function(childElement) { return this; },
+    prepend: function(childElement) { return this; },
+    on: function(eventName, handler) { return this; },
+    attr: function(attributeName, value) { if (value === undefined) return undefined; return this; },
+    text: function(content) { if (content === undefined) return ''; return this; },
+    val: function(v_content) { if (v_content === undefined) return ''; return this; },
+    focus: function() { this.focused = true; return this; },
+    empty: function() {
+      this._children = [];
+      this.prependedChildren = [];
+      this.appendedChildren = [];
+      this._content = '';
+      return this;
+    },
+    $: function(subSelector, subArgs) { return createEmptyMockElement(); },
+    setAttribute: function(attributeName, value) { return this.attr(attributeName, value); },
+    click: function() { return this; },
+    index: function() { return 0; }
+  };
+  return emptyElement;
 }
 
 // Mock DOM Implementation for testing flint.js itself
