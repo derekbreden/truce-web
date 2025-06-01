@@ -32,7 +32,7 @@ global.document = {
 };
 
 global.Image = function() {
-  this.src = '';
+  let _src = ''; // Use a private variable to store src
   this.naturalWidth = 0;
   this.naturalHeight = 0;
   this.width = 0;
@@ -40,6 +40,19 @@ global.Image = function() {
   this.onload = null;
   this.onerror = null;
   global.Image.lastInstance = this;
+
+  Object.defineProperty(this, 'src', {
+    get: () => _src,
+    set: (value) => {
+      _src = value;
+      if (_src === 'invalid-image-source' && typeof this.onerror === 'function') {
+        // Call onerror asynchronously to mimic real browser behavior
+        setTimeout(() => this.onerror(new Event('error')), 0);
+      }
+      // Existing onload logic should also be considered here if it's triggered by src change
+      // For now, focusing on onerror as per the task.
+    },
+  });
 };
 
 let imageToPng;
@@ -142,6 +155,68 @@ function testImageToPngLoaded() {
   assertEquals(typeof imageToPng, "function", "imageToPng should be a function");
 }
 
+async function testImageLoadError() {
+  const testName = "ImageLoadError: Handles invalid image source and calls callback with error";
+  let mainCallbackArgs = null;
+  let mainCallbackCalled = false;
+
+  // This promise resolves when the main callback (from imageToPng) is called.
+  const callbackPromise = new Promise((resolve, reject) => {
+    imageToPng("invalid-image-source", (args) => {
+      mainCallbackCalled = true;
+      mainCallbackArgs = args;
+      resolve(); // Resolve when imageToPng's callback is invoked
+    }, 1024, false); // targetSize and crop are arbitrary
+
+    if (!global.Image.lastInstance) {
+        // This check is mostly for the integrity of the test setup itself,
+        // ensuring imageToPng attempted to create an Image.
+        return reject(new Error(`[${testName}]: No image instance was created by imageToPng.`));
+    }
+    // We expect the mock's src setter to trigger its onerror,
+    // which in turn should make imageToPng call its main callback with an error.
+
+    // Safety timeout if the main callback isn't called
+    setTimeout(() => {
+      if (!mainCallbackCalled) {
+        let errMessage = `[${testName}]: Main callback was not called within the timeout period.`;
+        if (global.Image.lastInstance && global.Image.lastInstance.src !== "invalid-image-source") {
+            errMessage += ` Expected src 'invalid-image-source' but got '${global.Image.lastInstance.src}'.`;
+        } else if (!global.Image.lastInstance) {
+            errMessage += " global.Image.lastInstance was null.";
+        }
+        reject(new Error(errMessage));
+      }
+    }, 200); // Increased timeout slightly
+  });
+
+  try {
+    await callbackPromise; // Wait for the main callback from imageToPng
+
+    assertEquals(true, mainCallbackCalled, `${testName}: Main callback should have been called.`);
+    assertEquals("object", typeof mainCallbackArgs, `${testName}: Callback argument should be an object.`);
+    if (mainCallbackArgs === null || typeof mainCallbackArgs === 'undefined') {
+      // Fail explicitly if mainCallbackArgs is null/undefined, to avoid error on next lines
+      assertEquals(true, false, `${testName}: mainCallbackArgs is null or undefined.`);
+      return; // Stop further execution in this test
+    }
+    assertEquals(true, mainCallbackArgs.error, `${testName}: Callback argument should have 'error: true'.`);
+    assertEquals("Image failed to load", mainCallbackArgs.message, `${testName}: Callback argument should have correct error message.`);
+
+    // Check that the image src was indeed set to the invalid source on the mock
+    if (global.Image.lastInstance) {
+      assertEquals("invalid-image-source", global.Image.lastInstance.src, `${testName}: Image src should be set to invalid-image-source on the mock.`);
+    } else {
+      // This should ideally be caught by the reject in the Promise if !global.Image.lastInstance
+      assertEquals(true, false, `${testName}: global.Image.lastInstance was unexpectedly null after test execution.`);
+    }
+
+  } catch (error) {
+    // If callbackPromise rejected (e.g. timeout or explicit reject), it will be caught here.
+    assertEquals(true, false, `${testName}: Test failed: ${error.message}`);
+  }
+}
+
 async function testAllImageProcessingScenarios() { // Renamed to avoid conflict and clarify it's a test function
   await runImageTest({
     testName: "NoCrop: Larger landscape (2000x1000) to size 1024",
@@ -221,7 +296,8 @@ async function testAllImageProcessingScenarios() { // Renamed to avoid conflict 
 // --- Organize tests for the new runner ---
 const allTests = [
   testImageToPngLoaded,
-  testAllImageProcessingScenarios // This will run all the runImageTest calls
+  testAllImageProcessingScenarios, // This will run all the runImageTest calls
+  testImageLoadError
 ];
 
 // --- Run tests using the utility ---
