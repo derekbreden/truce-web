@@ -12,7 +12,7 @@ All client-side JavaScript files are included in `index.html` using server-side 
 // <!--#include file="client/markdownToElements.js" -->
 ```
 
-These files are processed by `server/server.js` and concatenated into a single `<script>` block, meaning all `const` and `let` declarations are available globally across all client files.
+These files are processed by `server/server.js` and concatenated into a single `<script>` block, meaning all `const` and `let` declarations are available globally across all client files. This non-standard method of including and scoping client-side files is why a special utility like `loadClientScript` (detailed in the 'Testing' section) is often necessary when writing tests for them, as they are not typical JavaScript modules.
 
 ### Server-Side Structure
 - `server/session/` - Middleware functions for handling session requests
@@ -59,6 +59,7 @@ alert("Success");
 ```
 
 ## Testing
+This project contains both standard server-side Node.js modules and client-side JavaScript files that are handled in a unique, non-modular way. The testing approach varies slightly depending on what you are testing. Server-side code and any client-side code structured as standard modules can be tested using typical Node.js testing patterns. However, for client-side scripts that are globally included (as described in 'Client-Side File Organization'), a special approach is needed.
 
 ### How to run tests
 To run all automated tests, use the following command from the project root:
@@ -100,7 +101,64 @@ runTests('myModule.test.js', [
   // Add more test functions here
 ]);
 ```
-If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), ensure these are appropriately mocked within your test file, as the tests run in a Node.js environment. See existing tests like `client/imageToPng.test.js` for examples of mocking.
+
+### Testing Non-Modular Client-Side Scripts
+Client-side files included directly in `index.html` (and not structured as ES6 modules) require a special approach for testing due to their reliance on a global scope and browser-specific APIs. For these situations, use the `loadClientScript` utility from `client/testHelpers.js`.
+
+The `loadClientScript` function works as follows:
+- It reads the target script file.
+- It accepts an object of `globalMocks` (e.g., for `document`, `window`, custom global functions).
+- It executes the script within a context where these mocks are available globally.
+- It returns the primary export of the script (conventionally, a function or object named like the file itself, e.g., `myScript.js` would export `myScript`).
+
+Here’s a code example:
+```javascript
+// In your yourModule.test.js
+const path = require('path');
+const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path
+const { loadClientScript } = require('./testHelpers'); // Or appropriate path
+
+// 1. Define any global mocks your script needs
+const mockDocument = {
+  getElementById: (id) => {
+    // simple mock
+    return { id: id, value: 'mockValue' };
+  }
+};
+const mockWindow = {
+  innerWidth: 1024,
+  // ... other window properties or methods
+};
+const mockGlobalFunction = (message) => {
+  // console.log('mockGlobalFunction called with:', message);
+  return `mocked: ${message}`;
+};
+
+// 2. Load the client script using loadClientScript
+//    Assuming 'client/myClientScript.js' exports a function named 'myClientScript'
+const myClientScript = loadClientScript(
+  path.resolve(__dirname, './myClientScript.js'), // Adjust path to your script
+  {
+    document: mockDocument,
+    window: mockWindow,
+    anotherGlobal: mockGlobalFunction // Name used inside myClientScript.js
+    // Add other globals your script expects
+  }
+);
+
+// 3. Now you can test the loaded script
+function testMyClientScriptFunctionality() {
+  const result = myClientScript('test input');
+  assertEquals('expected output', result, 'Test one for myClientScript');
+}
+
+runTests('myClientScript.test.js', [
+  testMyClientScriptFunctionality
+]);
+```
+The test file `client/imageToPng.test.js` uses a manual version of this script loading mechanism. However, `loadClientScript` is the recommended approach for new tests.
+
+If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
 
 ## Flint.js DOM Manipulation
 
