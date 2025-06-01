@@ -45,5 +45,9 @@ const imageToPng = (src, callback, size, crop) => {
       height: canvas.height,
     });
   };
+  img.onerror = () => {
+    // Call the callback with an error object
+    callback({ error: true, message: "Image failed to load" });
+  };
   img.src = src;
 };
