@@ -57,18 +57,14 @@ function loadClientScript(filePath, globalMocks, constNamesToReturn) {
 // End of new loadClientScript function
 
 /**
- * Creates a mock implementation of flint.js's $ (dollar) function, for testing purposes.
- * This mock is intended for tests where flint.js itself is not the direct subject under test,
- * but rather its interactions need to be simulated.
+ * Creates a mock implementation of flint.js's $ (dollar) function for testing purposes.
+ * This mock is intended for tests where flint.js itself is NOT the System Under Test (SUT),
+ * but its interactions need to be simulated (e.g., in client/goToPath.test.js or client/debug.test.js).
  * The returned mockDollar function tracks its calls and the behavior of created elements.
  *
  * This is one of two primary methods used in this codebase for testing Flint-dependent code.
- * For a detailed explanation of these approaches and the long-term refactoring goals,
- * please refer to the "Mocking Inconsistencies for $ (Flint)" section in README.md.
- * This function is used when flint.js itself is NOT the System Under Test.
- * The alternative approach (using the real flint.js with a mock DOM) is detailed further down in this file
- * (see the comment block starting with "Mock DOM Implementation for testing flint.js itself")
- * and is used for testing flint.js itself (e.g., in client/flint.test.js).
+ * For a comprehensive explanation of these approaches, their rationale, and the long-term
+ * refactoring goals, please refer to the "Mocking Inconsistencies for $ (Flint)" section in README.md.
  * @returns {Function} The mockDollar function, which also has a .calls array and .reset() method.
  */
 function createMockDollar() {
@@ -186,17 +182,13 @@ function createMockDollar() {
 }
 
 // Mock DOM Implementation for testing flint.js itself
-// The functions createMockDocument, createMockWindow, and createMockElement build a
-// simulated DOM. This setup is used in tests like client/flint.test.js to test
-// the *actual* flint.js script.
+// The functions createMockDocument, createMockWindow, and createMockElement (below)
+// build a simulated DOM environment. This setup is used when the *actual* flint.js
+// script is the System Under Test (SUT), for example, in client/flint.test.js.
 //
-// This is one of two approaches currently used for testing code involving flint.js:
-// 1. Mocking flint.js's $ function directly using `createMockDollar` (for when flint.js
-//    itself is not the System Under Test, but its interactions need to be simulated).
-// 2. Using this mock DOM with the actual flint.js script (for testing flint.js itself).
-//
-// This divergence is a known area for future refactoring, aiming for a more unified
-// testing strategy for flint.js and its DOM interactions, as noted in README.md.
+// For a comprehensive explanation of the different Flint testing approaches,
+// their rationale, and the long-term refactoring goals, please refer to the
+// "Mocking Inconsistencies for $ (Flint)" section in README.md.
 
 const createMockElement = (tagName) => {
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
