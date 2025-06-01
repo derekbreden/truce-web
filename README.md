@@ -185,7 +185,7 @@ const myConstants = loadClientScript(
 //   testMultiConst
 // ]);
 ```
-The test file `client/imageToPng.test.js` uses a manual version of this script loading mechanism. However, `loadClientScript` is the recommended approach for new tests.
+The test file `client/imageToPng.test.js` uses `loadClientScript` to load the script for testing, along with providing its own mocks for browser APIs. `loadClientScript` is the recommended approach for loading client scripts in new tests.
 
 If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
 
