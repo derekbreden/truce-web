@@ -339,7 +339,7 @@ function testSelectSingleElement() {
 
   assertEquals("DIV", $el.tagName, "Test Select Single: tagName should be DIV");
   assertEquals("Single", $el.innerText, "Test Select Single: innerText should be 'Single'");
-  assertEquals(undefined, $el.forEach, "Test Select Single: Should be a single element, not NodeList-like");
+  assertEquals("function", typeof $el.forEach, "Test Select Single: Should have a .forEach helper method");
   teardownMockQuerySelectorAll();
 }
 
