@@ -189,6 +189,15 @@ The test file `client/imageToPng.test.js` uses a manual version of this script l
 
 If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
 
+### Mocking Inconsistencies for `$` (Flint)
+
+Currently, there are multiple approaches used within the codebase to mock the `$` function (from `flint.js`) for testing purposes. This inconsistency can be confusing and is slated for future refactoring.
+
+*   **`createMockDollar` Utility:** Many tests (e.g., `debug.test.js`, `goToPath.test.js`) utilize the `createMockDollar` function found in `client/testHelpers.js`. This function provides a simplified mock of the `flint.js` API, tracking calls and simulating element behavior.
+*   **Mock DOM with Real `flint.js`:** The test file `client/flint.test.js` takes a different approach by creating a more comprehensive mock of the DOM environment and then running the actual `flint.js` script against this mock DOM.
+
+The long-term goal is to consolidate these varying methods into a single, consistent strategy for mocking `flint.js` and its interactions with the DOM. The immediate changes made in this area (such as correcting comments) are intended to reduce confusion and prepare for this larger refactoring effort.
+
 ## Flint.js DOM Manipulation
 
 ### Variable Naming
