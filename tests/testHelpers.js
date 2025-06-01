@@ -291,29 +291,44 @@ function createEmptyMockElement() {
 const createMockElement = (tagName) => {
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
 
-  return {
+  const element = {
     constructor: { name: tagName === '#text' ? "TextMock" : (tagName === '#document-fragment' ? "DocumentFragmentMock" : MOCK_ELEMENT_CONSTRUCTOR_NAME) },
     tagName: tagName.toUpperCase(),
     attributes: {},
     children: [],
-    style: {},
+    // style: {}, // Let style be created dynamically if setAttribute or direct access occurs
     innerText: "",
+    textContent: "", // Add textContent property
     value: "",
     parentNode: null,
     eventListeners: {},
     appendChild: function(child) {
-      let childIdentifier = child.tagName || child.textContent;
-      if (child.nodeType === 11) childIdentifier = "#document-fragment"; // Explicitly log fragment
       this.children.push(child);
       child.parentNode = this; // Set parentNode
+      if (child.nodeType === 3) { // Node.TEXT_NODE
+        // Simplest form: directly append. Make sure parent textContent is also updated.
+        const newText = child.textContent || "";
+        this.innerText += newText;
+        this.textContent += newText; // Also update textContent
+      } else {
+        // For non-text nodes, their own innerText/textContent might contribute to parent's textContent in real DOM.
+        // This is complex to model perfectly. For now, focus on direct text node children.
+        // if (child.textContent) { this.textContent += child.textContent; }
+      }
     },
     setAttribute: function(name, value) {
       this.attributes[name] = String(value); // Store as string, like HTML
-      if (name === "style") {
-        value.split(';').forEach(style => {
-          if (style.trim() === '') return;
-          const [prop, val] = style.split(':');
-          this.style[prop.trim()] = (val || '').trim();
+      if (name.toLowerCase() === "style") {
+        if (!this.style) this.style = {}; // Initialize style if not present
+        // console.log(`setAttribute style: ${value} on ${this.tagName}`);
+        // this.style = {}; // Clear previous styles set by attribute - NO, merge them.
+        value.split(';').forEach(styleRule => {
+          if (styleRule.trim() === '') return;
+          const [prop, valPart] = styleRule.split(':');
+          if (prop && valPart) {
+            const propFormatted = prop.trim().replace(/-([a-z])/g, g => g[1].toUpperCase()); // css-case to camelCase
+            this.style[propFormatted] = valPart.trim();
+          }
         });
       }
     },
@@ -327,13 +342,55 @@ const createMockElement = (tagName) => {
       this.eventListeners[type].push(listener);
     },
     querySelectorAll: function(selector) {
-      const results = this.children.filter(child => child.tagName && child.tagName === selector.toUpperCase());
+      // Simplified querySelectorAll: by tag name, by id, or by class
+      const results = [];
+      const directChildren = this.children; // Search only direct children for now as per flint's typical usage
+
+      for (const child of directChildren) {
+        if (!child.tagName) continue; // Skip text nodes or other non-elements
+
+        if (selector.startsWith('#')) { // ID selector
+          if (child.getAttribute('id') === selector.substring(1)) {
+            results.push(child);
+          }
+        } else if (selector.startsWith('.')) { // Class selector
+          const className = selector.substring(1);
+          const classes = child.getAttribute('class');
+          if (classes && classes.split(' ').includes(className)) {
+            results.push(child);
+          }
+        } else { // Tag name selector
+          if (child.tagName === selector.toUpperCase()) {
+            results.push(child);
+          }
+        }
+      }
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       return results;
     },
-    remove: function() {  },
-    focus: function() {  },
+    remove: function() {
+      if (this.parentNode && this.parentNode.children) {
+        const index = this.parentNode.children.indexOf(this);
+        if (index > -1) {
+          this.parentNode.children.splice(index, 1);
+          // Also update parent's innerText if this node contributed to it (simplified)
+          if (this.nodeType === 3 && this.textContent) {
+            // This is tricky; true DOM innerText re-evaluates.
+            // For simplicity, we'll assume parent's innerText might need manual recalculation in tests if needed.
+          }
+        }
+      }
+    },
+    focus: function() { this.focused = true; /* Basic mock */ },
   };
+  // Ensure style property exists for direct assignment like el.style.zIndex
+  Object.defineProperty(element, 'style', {
+    value: {},
+    writable: true,
+    configurable: true,
+    enumerable: true
+  });
+  return element;
 };
 
 function createMockDocument() {
@@ -348,8 +405,10 @@ function createMockDocument() {
     createTextNode: function(text) {
       const textNode = createMockElement('#text');
       textNode.nodeType = 3;
-      textNode.textContent = text;
-      textNode.innerText = text;
+      textNode.textContent = text; // textContent is primary for text nodes
+      textNode.nodeValue = text; // Another property real text nodes have
+      textNode.data = text; // And another
+      // textNode.innerText = text; // innerText on a text node itself is not standard as on elements
 
       textNode.appendChild = () => { throw new Error("Cannot appendChild to a text node"); };
       textNode.setAttribute = () => { throw new Error("Cannot setAttribute on a text node"); };
@@ -366,13 +425,28 @@ function createMockDocument() {
       return fragment;
     },
     querySelectorAll: function(selector) {
-      const results = this._elements.filter(el => {
-        if (el.tagName === selector.toUpperCase()) return true;
-        if (selector.startsWith('.') && el.attributes.class && el.attributes.class.includes(selector.substring(1))) return true;
-        if (selector.startsWith('#') && el.attributes.id === selector.substring(1)) return true;
-        return false;
-      });
-      results.forEach = Array.prototype.forEach;
+      // Global querySelectorAll: by tag name, by id, or by class from all created elements
+      const results = [];
+      for (const el of this._elements) {
+          if (!el.tagName) continue;
+
+          if (selector.startsWith('#')) { // ID selector
+              if (el.getAttribute('id') === selector.substring(1)) {
+                  results.push(el);
+              }
+          } else if (selector.startsWith('.')) { // Class selector
+              const className = selector.substring(1);
+              const classes = el.getAttribute('class');
+              if (classes && classes.split(' ').includes(className)) {
+                  results.push(el);
+              }
+          } else { // Tag name selector
+              if (el.tagName === selector.toUpperCase()) {
+                  results.push(el);
+              }
+          }
+      }
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       return results;
     },
     head: null, // Initialized below
