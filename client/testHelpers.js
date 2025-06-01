@@ -62,6 +62,7 @@ function loadClientScript(filePath, globalMocks, constNamesToReturn) {
  * @returns {Function} The mockDollar function, which also has a .calls array and .reset() method.
  */
 function createMockDollar() {
+  // primedProperties stores properties to be merged for specific selectors
   const mockDollar = (selector, args = []) => { // args defaults to empty array if not provided
     // Simulate template processing if args are provided (simple $1, $2 replacement)
     let processedSelector = selector;
@@ -72,7 +73,8 @@ function createMockDollar() {
       });
     }
 
-    const element = {
+    // Default properties for the element
+    let elementProperties = {
       selector: processedSelector, // Store the (potentially processed) selector
       originalSelector: selector,  // Store the original selector for reference
       args: args,                  // Store the arguments for reference
@@ -83,6 +85,7 @@ function createMockDollar() {
       attributes: {},
       textContent: '',
       value: '',
+      scrollTop: 0, // Default scrollTop property
       focused: false,
       
       remove: function() { 
@@ -147,8 +150,16 @@ function createMockDollar() {
       setAttribute: function(attributeName, value) {
         return this.attr(attributeName, value);
       },
-      scrollTop: 0, // Add a default scrollTop property to all mock elements
     };
+
+    // Check if there are primed properties for this selector
+    if (mockDollar.primedProperties && mockDollar.primedProperties[processedSelector]) {
+      // Merge primed properties, potentially overriding defaults (especially scrollTop)
+      elementProperties = { ...elementProperties, ...mockDollar.primedProperties[processedSelector] };
+      delete mockDollar.primedProperties[processedSelector]; // Use once
+    }
+
+    const element = elementProperties; // Assign to element after potential modification
     
     mockDollar.calls.push({ 
         selector: processedSelector, // Use processed selector for easier matching in tests
@@ -160,9 +171,16 @@ function createMockDollar() {
   };
 
   mockDollar.calls = [];
+  mockDollar.primedProperties = {}; // Initialize primedProperties store
+
   mockDollar.reset = () => {
     mockDollar.calls = [];
+    mockDollar.primedProperties = {}; // Reset primed properties as well
     // console.log('mockDollar.calls reset');
+  };
+
+  mockDollar.primeElementProperties = function(selector, properties) {
+    this.primedProperties[selector] = properties;
   };
 
   return mockDollar;

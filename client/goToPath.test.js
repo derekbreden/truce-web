@@ -223,64 +223,13 @@ function testUpdatesScrollTopOfCachedPath() {
     return null;
   };
 
-  // The `$` in goToPath's closure is `mock$`.
-  // We need `mock$(selector)` to return an element with `scrollTop = 100`
-  // when selector is 'main-content-wrapper[active]'.
-  // `mock$` is the function returned by `createMockDollar()`.
-  // Let's store the original `mock$` (the function itself) and temporarily replace it
-  // with a new function that has the desired behavior for this specific selector.
-
-  const originalMockDollarFunc = mock$; // mock$ is the function instance from createMockDollar()
-
-  // Temporarily override the behavior of the mock$ function specifically for this test.
-  // This is complex because mock$ is not just one function but one returned by createMockDollar.
-  // The `loadClientScript` takes the `mock$` function object.
-  // We cannot simply reassign `mock$` here to a new function and expect `goToPath` to see it.
-  // `goToPath` has the *original* `mock$` function in its closure.
-
-  // What we *can* modify is properties of the `mock$` function object, if it were designed for that,
-  // or properties of the elements it returns, if we can intercept their creation.
-
-  // Since `testHelpers.js` now makes all elements have `scrollTop: 0` by default:
-  // We need the *specific element instance* that `goToPath` receives for
-  // `$("main-content-wrapper[active]")` to have its `scrollTop` changed to 100.
-  // This requires `createMockDollar` to be stateful or configurable per call.
-
-  // A workaround: We know `goToPath` will call `mock$("main-content-wrapper[active]")`.
-  // We can't change what `scrollTop` it *reads* easily without modifying `createMockDollar` further.
-  // However, we can check *after the fact* that the call was made,
-  // and then assert based on what `scrollTop` *would have been* (i.e., 0 from the default).
-  // This means the test `assertEquals(100, ...)` will fail if `scrollTop` is always 0.
-
-  // To make it 100, `createMockDollar` needs to be smarter.
-  // Let's try to modify the *next* element created by the *original* `mockDollar` for a specific selector.
-  // This would require `createMockDollar` to expose a way to prime its next created element.
-  // e.g., `mock$.primeNextElement({ scrollTop: 100 }, 'main-content-wrapper[active]')`
-  // This functionality doesn't exist.
-
-  // For now, to make progress, I will assume `scrollTop` will be `0` due to the default in `testHelpers.js`.
-  // The test will fail this specific assertion, but other parts of it might pass.
-  // To truly fix this, `testHelpers.js` `createMockDollar` needs to be enhanced.
-  // I will adjust the expectation for this test to 0 to see if the rest of the logic flows.
-  // This is a temporary measure to check other parts of the test.
-  // The actual requirement is that it should be 100.
-
-  // The code `mockWrapperElement.scrollTop = 100;` from previous attempts is ineffective
-  // because `mockWrapperElement` is not the same object instance that `goToPath` will get.
-
-  // The only way to control the value that `goToPath` *reads* for `scrollTop` using the current `testHelpers.js`
-  // (which now provides a default `scrollTop: 0`) is if `goToPath` were to call a *function* for `scrollTop`,
-  // like `el.getScrollTop()`, which we could then mock. But it's direct property access.
-
-  // Let's proceed with the expectation that this will be 0, due to the default.
-  // This means the original test intent (value 100) cannot be met without helper changes.
-  // I will leave the expectation at 100 and let it fail to highlight the limitation.
+  // Prime the mock$ to return an element with scrollTop: 100 for the specific selector
+  mock$.primeElementProperties('main-content-wrapper[active]', { scrollTop: 100 });
 
   goToPath('/new-path-after-cache', false, false);
 
-  // This assertion will likely fail (Expected 100, Actual 0), which is a known limitation
-  // of the current mocking capabilities for direct property reads.
-  assertEquals(100, mockState.cache['/cached-path'].scroll_top, 'Scroll top of cached path should be updated');
+  // This assertion is now expected to pass due to the priming mechanism.
+  assertEquals(100, mockState.cache['/cached-path'].scroll_top, 'Scroll top of cached path should be updated to 100');
 }
 
 
