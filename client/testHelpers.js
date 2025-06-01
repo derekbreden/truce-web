@@ -57,9 +57,9 @@ function loadClientScript(filePath, globalMocks, constNamesToReturn) {
 // End of new loadClientScript function
 
 /**
- * Creates a mock $ (dollar) function similar to flint.js, for testing purposes.
- * This mock is used in various tests to simulate the behavior of the flint.js $ function,
- * which is used for DOM manipulation and element creation in the client-side code.
+ * Creates a mock implementation of flint.js's $ (dollar) function, for testing purposes.
+ * This mock is intended for tests where flint.js itself is not the direct subject under test,
+ * but rather its interactions need to be simulated.
  * The returned mockDollar function tracks its calls and the behavior of created elements.
  * @returns {Function} The mockDollar function, which also has a .calls array and .reset() method.
  */
@@ -178,6 +178,10 @@ function createMockDollar() {
 }
 
 // Mock DOM Implementation
+// The following functions (createMockDocument, createMockWindow, createMockElement)
+// are used to build a simulated DOM environment. This mock DOM is notably used in
+// client/flint.test.js to test the *actual* flint.js script, which is a different
+// approach from using createMockDollar where flint.js's $ function is mocked.
 
 const createMockElement = (tagName) => {
   const MOCK_ELEMENT_CONSTRUCTOR_NAME = "HTMLMockElement"; // Or specific like HTMLDivElementMock
