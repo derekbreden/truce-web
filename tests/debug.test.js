@@ -21,45 +21,66 @@ const $ = loadClientScript(
   "$"
 );
 
+// Mock for window.setTimeout used by debug.js
+// Captures the callback and duration for manual execution and assertion.
+// debug.js only sets one timeout at a time and doesn't clear it,
+// so a simple capture is sufficient.
 let setTimeoutCallback = null;
 let setTimeoutDuration = 0;
 const mockSetTimeout = (callback, duration) => {
-  setTimeoutCallback = callback;
-  setTimeoutDuration = duration;
+  setTimeoutCallback = callback; // Store the callback
+  setTimeoutDuration = duration; // Store the duration
+  // Does not return a timeoutId as debug.js doesn't use it.
 };
 
 // This global array will mimic the 'rendered' array inside debug.js for assertion purposes
 let expectedRenderedArrayForAssertions = [];
+// This will be reassigned in setupTestEnvironment
+let debug;
 
 // Refactored function: Renamed and updated logic
-const resetDOMAndTimeoutMocks = () => {
+const setupTestEnvironment = () => {
+  expectedRenderedArrayForAssertions = [];
   setTimeoutCallback = null;
   setTimeoutDuration = 0;
 
   // Clear any DEBUG elements from mainContentWrapper
   const debugElements = mainContentWrapper.querySelectorAll('debug');
   debugElements.forEach(el => el.remove());
+
+  // Reload debug.js to reset its internal state, including the 'rendered' array
+  const scriptPath = path.resolve(__dirname, '../client/debug.js');
+  const loadedDebugModule = loadClientScript(
+    scriptPath,
+    {
+      document: mockDocument,
+      $: $, // Pass the real $
+      setTimeout: mockSetTimeout
+    },
+    ["debug"] // Ensure we are asking for the 'debug' export
+  );
+  debug = loadedDebugModule.debug; // Re-assign the debug function
 };
 
 // --- Load Script Under Test ---
 // debug.js is loaded once. Its internal 'rendered' array will accumulate.
-const scriptPath = path.resolve(__dirname, '../client/debug.js');
+// const scriptPath = path.resolve(__dirname, '../client/debug.js'); // Moved into setupTestEnvironment
 // Modified loadClientScript call for debug.js
-const { debug } = loadClientScript(
-  scriptPath,
-  {
-    document: mockDocument,
-    $: $, // Pass the real $
-    setTimeout: mockSetTimeout
-  },
-  ["debug"]
-);
+// const { debug } = loadClientScript( // Moved into setupTestEnvironment
+// scriptPath,
+// {
+// document: mockDocument,
+// $: $, // Pass the real $
+// setTimeout: mockSetTimeout
+// },
+// ["debug"]
+// );
 // --- End Load Script Under Test ---
 
 // --- Test Cases ---
 function testDebug_rendersSingleStringArgument() {
-  resetDOMAndTimeoutMocks(); // Call renamed function
-  expectedRenderedArrayForAssertions = []; // Explicitly start fresh for this test sequence
+  setupTestEnvironment(); // Call renamed function
+  // expectedRenderedArrayForAssertions = []; // Explicitly start fresh for this test sequence // Now handled by setupTestEnvironment
 
   const testMessage = "Hello, world!";
   debug(testMessage);
@@ -86,7 +107,7 @@ function testDebug_rendersSingleStringArgument() {
 }
 
 function testDebug_rendersMultipleStringArguments() {
-  resetDOMAndTimeoutMocks(); // Call renamed function
+  setupTestEnvironment(); // Call renamed function
   // expectedRenderedArrayForAssertions is managed by the test suite runner below for accumulation.
 
   const msg1 = "First message";
@@ -113,7 +134,7 @@ function testDebug_rendersMultipleStringArguments() {
 }
 
 function testDebug_rendersErrorObject() {
-  resetDOMAndTimeoutMocks(); // Call renamed function
+  setupTestEnvironment(); // Call renamed function
   const errorEventLike = { message: "Test error message", lineno: 10, colno: 5 };
   debug(errorEventLike);
 
@@ -139,7 +160,7 @@ function testDebug_rendersErrorObject() {
 }
 
 function testDebug_rendersSimpleObject() {
-  resetDOMAndTimeoutMocks(); // Call renamed function
+  setupTestEnvironment(); // Call renamed function
   const testObj = { key: "value", nested: { num: 123 } };
   debug(testObj);
   expectedRenderedArrayForAssertions.push(testObj);
@@ -163,7 +184,7 @@ function testDebug_rendersSimpleObject() {
 }
 
 function testDebug_setTimeoutCallbackRemovesElement() {
-  resetDOMAndTimeoutMocks(); // Call renamed function
+  setupTestEnvironment(); // Call renamed function
   debug("Testing setTimeout callback");
   // We don't need to check expectedRenderedArrayForAssertions for this specific test's main goal.
 
@@ -188,7 +209,7 @@ function testDebug_setTimeoutCallbackRemovesElement() {
 // Here, we manage a shared 'expectedRenderedArrayForAssertions' to match debug.js's behavior.
 
 // Resetting the array at the start of the whole test suite run.
-expectedRenderedArrayForAssertions = [];
+// expectedRenderedArrayForAssertions = []; // Now handled by setupTestEnvironment in each test
 
 runTests('debug.test.js', [
   testDebug_rendersSingleStringArgument,

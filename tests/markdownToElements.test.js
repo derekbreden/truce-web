@@ -11,6 +11,41 @@ let $; // To store the real flint's $
 const mockDocument = createMockDocument();
 const mockWindow = createMockWindow(mockDocument);
 
+// --- Per-Test Setup Function ---
+function beforeEachMarkdownTest() {
+  // Clear any children added to head or body from previous tests
+  if (mockDocument && mockDocument.body) {
+    mockDocument.body.children = [];
+    mockDocument.body.innerHTML = "";
+    mockDocument.body.innerText = "";
+  }
+  if (mockDocument && mockDocument.head) {
+    mockDocument.head.children = [];
+    mockDocument.head.innerHTML = "";
+    mockDocument.head.innerText = "";
+  }
+  // Also reset the _elements array used by mockDocument.querySelectorAll
+  // to ensure test isolation for any selector logic that might be used
+  // or if elements were added to _elements without being parented to body/head.
+  if (mockDocument) {
+    mockDocument._elements = [];
+    // Re-add essential elements like html, head, body as createMockDocument does,
+    // as clearing _elements removes them.
+    // This is a simplified re-initialization; ideally, createMockDocument would be callable per test.
+    if (!mockDocument.head) mockDocument.head = mockDocument.createElement('head'); else mockDocument.head.children = [];
+    if (!mockDocument.body) mockDocument.body = mockDocument.createElement('body'); else mockDocument.body.children = [];
+    if (!mockDocument.documentElement) {
+        mockDocument.documentElement = mockDocument.createElement('html');
+        mockDocument.documentElement.appendChild(mockDocument.head);
+        mockDocument.documentElement.appendChild(mockDocument.body);
+    }
+    // Ensure these base elements are in _elements if not already due to createElement logic
+    if (!mockDocument._elements.includes(mockDocument.documentElement)) mockDocument._elements.push(mockDocument.documentElement);
+    if (!mockDocument._elements.includes(mockDocument.head)) mockDocument._elements.push(mockDocument.head);
+    if (!mockDocument._elements.includes(mockDocument.body)) mockDocument._elements.push(mockDocument.body);
+  }
+}
+
 // --- Load Flint ---
 try {
   $ = loadClientScript(
@@ -43,6 +78,7 @@ try {
 
 // --- Test Cases ---
 function testParagraphs() {
+    beforeEachMarkdownTest();
     const input = "Hello world";
     const result = markdownToElements(input);
 
@@ -76,6 +112,7 @@ function testParagraphs() {
 }
 
 function testBlockquotes() {
+    beforeEachMarkdownTest();
     const input = "> This is a quote";
     const result = markdownToElements(input);
 
@@ -90,6 +127,7 @@ function testBlockquotes() {
 }
 
 function testHeaders() {
+    beforeEachMarkdownTest();
     const input = "# Heading 1";
     const result = markdownToElements(input);
 
@@ -104,6 +142,7 @@ function testHeaders() {
 }
 
 function testBold() {
+    beforeEachMarkdownTest();
     const input = "**bold text**";
     const result = markdownToElements(input);
 
@@ -118,6 +157,7 @@ function testBold() {
 }
 
 function testItalic() {
+    beforeEachMarkdownTest();
     const input = "*italic text*";
     const result = markdownToElements(input);
 
@@ -132,6 +172,7 @@ function testItalic() {
 }
 
 function testHorizontalRule() {
+    beforeEachMarkdownTest();
     const input = "---";
     const result = markdownToElements(input);
 
@@ -143,6 +184,7 @@ function testHorizontalRule() {
 }
 
 function testUnorderedList() {
+    beforeEachMarkdownTest();
     const input = "- item 1\n- item 2";
     const result = markdownToElements(input);
 
@@ -161,6 +203,7 @@ function testUnorderedList() {
 }
 
 function testOrderedList() {
+    beforeEachMarkdownTest();
     const input = "1. item 1\n2. item 2";
     const result = markdownToElements(input);
 
@@ -179,6 +222,7 @@ function testOrderedList() {
 }
 
 function testImages() {
+    beforeEachMarkdownTest();
     const input = "![alt text](image.png)";
     const result = markdownToElements(input);
 
@@ -215,6 +259,7 @@ function testImages() {
 }
 
 function testLinks() {
+    beforeEachMarkdownTest();
     const input = "[link text](http://example.com)";
     const result = markdownToElements(input);
 
@@ -253,6 +298,7 @@ function testLinks() {
 }
 
 function testAutomaticUrlLinking() {
+    beforeEachMarkdownTest();
     const input = "Check http://example.com out";
     const result = markdownToElements(input);
 

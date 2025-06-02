@@ -16,7 +16,30 @@ const $ = loadClientScript(
   "$"
 );
 
+// --- Per-Test Setup Function ---
+function beforeEachFlintTest() {
+  // Reset _elements for global query selections
+  setupMockQuerySelectorAll();
+
+  // Clear any children added to head or body from previous tests
+  if (mockDocumentInstance && mockDocumentInstance.body) {
+    mockDocumentInstance.body.children = [];
+    // Also reset innerHTML/innerText if necessary, though children = [] is usually sufficient for mock
+    mockDocumentInstance.body.innerHTML = "";
+    mockDocumentInstance.body.innerText = "";
+  }
+  if (mockDocumentInstance && mockDocumentInstance.head) {
+    mockDocumentInstance.head.children = [];
+    mockDocumentInstance.head.innerHTML = "";
+    mockDocumentInstance.head.innerText = "";
+  }
+  // Note: mockDocumentInstance.createElement() in testHelpers.js adds to _elements
+  // but does not automatically append to body/head. Tests would do that explicitly if needed.
+  // This cleanup is a safeguard.
+}
+
 function testCreateSimpleDiv() {
+  beforeEachFlintTest();
   if (typeof $ !== 'function') {
     // This will cause the test to fail, but gives a clear reason.
     assertEquals(typeof $, 'function', "Flint $ should be a function");
@@ -32,6 +55,7 @@ function testCreateSimpleDiv() {
 }
 
 function testCreateParagraphWithText() {
+  beforeEachFlintTest();
   const $p = $("\n  p Hello World");
   assertEquals(!!$p, true, "Test P with Text: element should be created");
   if (!$p) return;
@@ -40,6 +64,7 @@ function testCreateParagraphWithText() {
 }
 
 function testCreateInputWithAttributes() {
+  beforeEachFlintTest();
   const $input = $("\n  input[type=text][name=testInput]");
   assertEquals(!!$input, true, "Test Input with Attributes: element should be created");
   if (!$input) return;
@@ -49,6 +74,7 @@ function testCreateInputWithAttributes() {
 }
 
 function testCreateNestedElements() {
+  beforeEachFlintTest();
   const $ul = $("\n  ul\n    li Item 1");
   assertEquals(!!$ul, true, "Test Nested Elements: UL element should be created");
   if (!$ul) return;
@@ -63,6 +89,7 @@ function testCreateNestedElements() {
 }
 
 function testArgSubstitutionText() {
+  beforeEachFlintTest();
   const $h1 = $("\n  h1 $1", ["Test Title"]);
   assertEquals(!!$h1, true, "Test Arg Substitution Text: element should be created");
   if (!$h1) return;
@@ -71,6 +98,7 @@ function testArgSubstitutionText() {
 }
 
 function testArgSubstitutionAttrValue() {
+  beforeEachFlintTest();
   const $a = $("\n  a[href=$1][target=_blank]", ["/test-path"]);
   assertEquals(!!$a, true, "Test Arg Substitution Attr Value: element should be created");
   if (!$a) return;
@@ -80,6 +108,7 @@ function testArgSubstitutionAttrValue() {
 }
 
 function testArgSubstitutionAttrKey() {
+  beforeEachFlintTest();
   const $div = $("\n  div[$1=value]", ["data-dynamic-attr"]);
   assertEquals(!!$div, true, "Test Arg Substitution Attr Key: element should be created");
   if (!$div) return;
@@ -88,6 +117,7 @@ function testArgSubstitutionAttrKey() {
 }
 
 function testCreateMultipleRootElements() {
+  beforeEachFlintTest();
   const $container = $("\n  div[id=one]\n  p[id=two]");
   assertEquals(!!$container, true, "Test Multiple Roots: Container should be created");
   if (!$container) return;
@@ -113,6 +143,7 @@ function testCreateMultipleRootElements() {
 }
 
 function testArrayArgument() {
+  beforeEachFlintTest();
   const mockChild1 = mockDocumentInstance.createElement('span'); // Assuming mockDocument is in scope
   mockChild1.innerText = "Child 1";
   const mockChild2 = mockDocumentInstance.createElement('span');
@@ -138,49 +169,14 @@ function testArrayArgument() {
   // This test confirms the current behavior where the div has no children.
   assertEquals(($div.children || []).length, 0, "Test Array Argument: DIV should have 0 children due to array being set to innerText.");
 
-  // The following assertions are commented out as they would fail because flint.js does not
-  // append the elements from the array argument as children in this specific template scenario.
-  // Expected behavior (if flint.js were to append children from array args in this context):
-  // - The DIV should contain the elements from the array (mockChild1, mockChild2).
-  // - Or, it might wrap them in a DocumentFragment which is then appended (though direct append is more likely desired).
-  /*
-  assertEquals(($div.children || []).length, 2, "Test Array Argument: DIV should have 2 children (expected).");
-  if (($div.children || []).length < 2) return; // Guard for expected behavior
-
-  const child1 = $div.children[0];
-  assertEquals(!!child1, true, "Test Array Argument: First child (mockChild1) should exist.");
-  if(child1) {
-    assertEquals("SPAN", child1.tagName, "Test Array Argument: First child should be SPAN.");
-    assertEquals("Child 1", child1.innerText, "Test Array Argument: First child's text.");
-  }
-
-  const child2 = $div.children[1];
-  assertEquals(!!child2, true, "Test Array Argument: Second child (mockChild2) should exist.");
-  if(child2) {
-    assertEquals("SPAN", child2.tagName, "Test Array Argument: Second child should be SPAN.");
-    assertEquals("Child 2", child2.innerText, "Test Array Argument: Second child's text.");
-  }
-
-  // Original commented out assertions expecting a fragment wrapper (less likely for "div $1" scenario):
-  // The following lines were part of a deeper nested comment block and are already individually commented or part of the outer block.
-  // if (($div.children || []).length === 0) return; // Old comment
-  // const fragmentWrapper = $div.children[0]; // This line would be part of the old commented section // Old comment
-  // assertEquals(true, !!fragmentWrapper, "Test Array Argument: Fragment wrapper should exist"); // Old comment
-  // if(!fragmentWrapper) return; // Old comment
-  //
-  // assertEquals("#document-fragment", fragmentWrapper.tagName, "Test Array Argument: Child should be a document fragment"); // Old comment
-  // assertEquals(2, (fragmentWrapper.children || []).length, "Test Array Argument: Fragment should contain two children"); // Old comment
-  //
-  // if ((fragmentWrapper.children || []).length < 2) return; // Old comment
-  //
-  // assertEquals("SPAN", fragmentWrapper.children[0].tagName, "Test Array Argument: First span in fragment"); // Old comment
-  // assertEquals("Child 1", fragmentWrapper.children[0].innerText, "Test Array Argument: First span text"); // Old comment
-  // assertEquals("SPAN", fragmentWrapper.children[1].tagName, "Test Array Argument: Second span in fragment"); // Old comment
-  // assertEquals("Child 2", fragmentWrapper.children[1].innerText, "Test Array Argument: Second span text"); // Old comment
-  */
+  // The large commented-out block of assertions, which described a hypothetical alternative behavior
+  // for array arguments (direct child appending), has been removed to clean up the test file.
+  // The current behavior (setting innerText to the string representation of the array)
+  // is correctly asserted above and documented in the preceding comments.
 }
 
 function testTextNodeArgument() {
+  beforeEachFlintTest();
   let createTextNodeCalledWithText = null;
   const originalCreateTextNode = mockDocumentInstance.createTextNode;
   mockDocumentInstance.createTextNode = function(text) {
@@ -210,19 +206,33 @@ function testTextNodeArgument() {
 const originalQSA = mockDocumentInstance.querySelectorAll;
 // const originalElementQSA = mockDocumentInstance.createElement('div').querySelectorAll; // Not strictly needed due to mock element's own QSA
 
+// --- Query SelectorAll Mocking Setup for Flint Selection Tests ---
+// The global `mockDocumentInstance` (from `testHelpers.js`) has its own `querySelectorAll` method
+// which operates on an internal `_elements` array. Elements created via `mockDocumentInstance.createElement()`
+// are automatically added to this `_elements` array.
+//
+// Since `mockDocumentInstance` is initialized globally for all tests in this file,
+// `setupMockQuerySelectorAll` is crucial for tests that perform global selections (e.g., `$("#id")`).
+// It resets `mockDocumentInstance._elements` to ensure that each such test starts with a clean slate
+// and is not affected by elements created in previous tests.
+//
+// The actual query selection logic (matching selectors against elements) is handled by
+// `mockDocumentInstance.querySelectorAll` and `mockElement._matchesSelector` from `testHelpers.js`.
+// This function (`setupMockQuerySelectorAll`) is primarily for state management (test isolation)
+// in the context of these flint.js selection tests.
 function setupMockQuerySelectorAll() {
   // Clear mockDocumentInstance's element list before each selection test that uses global queries.
-  // Individual tests are responsible for populating the elements they need.
+  // `mockDocumentInstance.createElement()` (from testHelpers.js) will then populate this list
+  // for the current test. `mockDocumentInstance.querySelectorAll()` (from testHelpers.js)
+  // will use this list.
   mockDocumentInstance._elements = [];
 }
 
-function teardownMockQuerySelectorAll() {
-  // Also clear after the test for good measure, though setup should handle it for the next test.
-  mockDocumentInstance._elements = [];
-}
+// `teardownMockQuerySelectorAll` was removed as it's redundant.
+// `setupMockQuerySelectorAll()` handles cleaning before each relevant test.
 
 function testSelectSingleElement() {
-  setupMockQuerySelectorAll();
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific element this test will try to select.
   const mockSingleGlobal = mockDocumentInstance.createElement('div');
@@ -233,18 +243,18 @@ function testSelectSingleElement() {
   const $el = $("#singleElement");
   assertEquals(!!$el, true, "Test Select Single: Element should be found");
   if (!$el) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here as setup handles the next test.
     return;
   }
 
   assertEquals($el.tagName, "DIV", "Test Select Single: tagName should be DIV");
   assertEquals($el.innerText, "Single", "Test Select Single: innerText should be 'Single'");
   assertEquals(typeof $el.forEach, "function", "Test Select Single: Should have a .forEach helper method");
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 function testSelectMultipleElements() {
-  setupMockQuerySelectorAll(); // Clears _elements
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific elements this test will try to select.
   const mockMultiple1Global = mockDocumentInstance.createElement('span');
@@ -259,7 +269,7 @@ function testSelectMultipleElements() {
   const $els = $(".multipleElements");
   assertEquals(!!$els, true, "Test Select Multiple: Elements should be found");
   if (!$els) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
 
@@ -273,18 +283,18 @@ function testSelectMultipleElements() {
     assertEquals(sortedEls[1].tagName, "SPAN", "Test Select Multiple: Second element tagName");
     assertEquals(sortedEls[1].innerText, "Multiple 2", "Test Select Multiple: Second element text");
   }
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 function testSelectNonExistentElement() {
-  setupMockQuerySelectorAll(); // Ensures _elements is empty
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
   const $el = $("#nonExistent");
   assertEquals($el, null, "Test Select Non-Existent: Should return null");
-  teardownMockQuerySelectorAll(); // Cleans up for good measure
+  // No teardown needed here
 }
 
 function testNestedSelection() {
-  setupMockQuerySelectorAll(); // Clears _elements
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific elements this test will use.
   const parentEl = mockDocumentInstance.createElement('div');
@@ -297,17 +307,17 @@ function testNestedSelection() {
   const $parent = $("#parentForNested");
   assertEquals(!!$parent, true, "Test Nested Selection: Parent element should be found");
   if (!$parent) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
   assertEquals($parent.tagName, "DIV", "Test Nested Selection: Parent tagName");
 
-  // The mockElement.querySelectorAll (from createMockElement in step 3) should handle this.
-  // It filters direct children by tagName.
+  // The mockElement.querySelectorAll (from createMockElement in testHelpers.js) should handle this.
+  // It filters children of the $parent element.
   const $child = $parent.$("p");
   assertEquals(!!$child, true, "Test Nested Selection: Child element should be found");
   if (!$child) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
 
@@ -316,11 +326,11 @@ function testNestedSelection() {
 
   const $nonExistentChild = $parent.$("span");
   assertEquals($nonExistentChild, null, "Test Nested Selection: Non-existent child should be null");
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 function testHelperOnMethod() {
-  setupMockQuerySelectorAll(); // Clears _elements
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific element this test will use.
   const mockElement = mockDocumentInstance.createElement('button');
@@ -331,7 +341,7 @@ function testHelperOnMethod() {
 
   assertEquals(!!$el, true, "Test .on(): Element should be found for testing .on()");
   if (!$el) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
 
@@ -365,11 +375,11 @@ function testHelperOnMethod() {
     assertEquals($el.eventListeners['mouseover'].length, 1, "Test .on(): One mouseover handler should be registered.");
     assertEquals($el.eventListeners['mouseover'][0], mockMouseOverHandler, "Test .on(): Correct mouseover handler should be registered.");
   }
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 function testHelperForEachSingleElement() {
-  setupMockQuerySelectorAll(); // Clears _elements
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific element this test will use.
   const mockElement = mockDocumentInstance.createElement('div');
@@ -379,7 +389,7 @@ function testHelperForEachSingleElement() {
   const $el = $("#testDivForForEachSingle");
   assertEquals(!!$el, true, "Test .forEach() Single: Element should be found");
   if (!$el) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
 
@@ -397,11 +407,11 @@ function testHelperForEachSingleElement() {
   assertEquals(callbackCount, 1, "Test .forEach() Single: Callback should be called once.");
   assertEquals(receivedElement, $el, "Test .forEach() Single: Callback received the correct element.");
   assertEquals(receivedIndex, 0, "Test .forEach() Single: Index should be 0 for single element.");
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 function testHelperForEachMultipleElements() {
-  setupMockQuerySelectorAll(); // Clears _elements
+  beforeEachFlintTest(); // Calls setupMockQuerySelectorAll and clears body/head
 
   // Create the specific elements this test will use.
   const el1 = mockDocumentInstance.createElement('p');
@@ -415,12 +425,12 @@ function testHelperForEachMultipleElements() {
   const $els = $(".testClassForForEach");
   assertEquals(!!$els && typeof $els.forEach === 'function', true, "Test .forEach() Multiple: NodeList-like object should be returned");
   if (!$els || typeof $els.forEach !== 'function') {
-     teardownMockQuerySelectorAll();
+     // No teardown needed here
      return;
   }
   assertEquals($els.length, 2, "Test .forEach() Multiple: Elements should be found (length 2)");
    if ($els.length !== 2) {
-    teardownMockQuerySelectorAll();
+    // No teardown needed here
     return;
   }
 
@@ -442,7 +452,7 @@ function testHelperForEachMultipleElements() {
 
   assertEquals(sortedReceived[0], sortedOriginals[0], "Test .forEach() Multiple: First element in callback matches.");
   assertEquals(sortedReceived[1], sortedOriginals[1], "Test .forEach() Multiple: Second element in callback matches.");
-  teardownMockQuerySelectorAll();
+  // No teardown needed here
 }
 
 const flintTestFunctions = [

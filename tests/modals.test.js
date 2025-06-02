@@ -12,15 +12,26 @@ let mockDebugLog = [];
 
 // --- Mocks ---
 const mockDebug = (...args) => mockDebugLog.push(args);
+
+// Mock for window.setTimeout used by modals.js (specifically for alerts)
+// Captures the most recent callback and returns a static ID.
+// Assumes modals.js clears any existing alert timeout before setting a new one,
+// meaning only one alert-related timeout is active at a time.
 const mockSetTimeout = (callback, duration) => {
-  mockSetTimeoutCallback = callback;
-  return mockTimeoutId;
+  mockSetTimeoutCallback = callback; // Store the callback
+  // duration is not stored as tests manually trigger the callback
+  return mockTimeoutId; // Return a consistent, fake ID
 };
+
+// Mock for window.clearTimeout used by modals.js
+// Nullifies the stored callback if the provided ID matches the static mockTimeoutId.
+// Records the ID passed to it for assertion.
 const mockClearTimeout = (id) => {
   if (id === mockTimeoutId) {
+    // If the ID matches, simulate clearing by nullifying the callback
     mockSetTimeoutCallback = null;
   }
-  lastClearedTimeoutId = id;
+  lastClearedTimeoutId = id; // Record the ID that was attempted to be cleared
 };
 
 // --- Initial Setup (executed once) ---
