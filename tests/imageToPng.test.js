@@ -1,6 +1,24 @@
 const path = require('path');
 const { loadClientScript } = require('./testHelpers');
 
+// --- Per-Test Setup Function ---
+function beforeEachImageTest() {
+  // Reset canvas dimensions
+  mockCanvas.width = 0;
+  mockCanvas.height = 0;
+
+  // Reset mock context state
+  lastDrawImageArgs = null;
+
+  // Reset Image mock state
+  if (global.Image) { // Ensure Image mock is defined
+    global.Image.lastInstance = null;
+  }
+  // If individual Image instances stored more state that needed reset,
+  // that would be more complex, potentially requiring a new Image mock per test
+  // or a reset method on the mock Image instances. For now, only lastInstance is reset.
+}
+
 // Mocking browser environment
 let lastDrawImageArgs = null;
 const mockCtx = {
@@ -82,10 +100,12 @@ function runImageTest({
   expectedCanvasHeight,
   expectedDrawImageArgs, 
 }) {
+  beforeEachImageTest(); // Reset global mocks for this specific test run
+
   return new Promise((resolve, reject) => {
     const inputSrc = `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7?w=${imgWidth}&h=${imgHeight}`;
     const expectedDataUrl = 'data:image/png;base64,mockpngdata';
-    lastDrawImageArgs = null; 
+    // lastDrawImageArgs = null; // Now handled by beforeEachImageTest
 
     let toDataURLCalled = false;
     const originalToDataURL = mockCanvas.toDataURL; // Save original
@@ -155,6 +175,8 @@ function testImageToPngLoaded() {
 }
 
 async function testImageLoadError() {
+  beforeEachImageTest(); // Reset global mocks
+
   const testName = "ImageLoadError: Handles invalid image source and calls callback with error";
   let mainCallbackArgs = null;
   let mainCallbackCalled = false;
