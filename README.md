@@ -189,14 +189,28 @@ The test file `client/imageToPng.test.js` uses `loadClientScript` to load the sc
 
 If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
 
-### Mocking Inconsistencies for `$` (Flint)
+### Testing `flint.js` and Dependent Code
 
-Currently, there are multiple approaches used within the codebase to mock the `$` function (from `flint.js`) for testing purposes. This inconsistency can be confusing and is slated for future refactoring.
+To test `flint.js` itself or any client-side scripts that depend on `flint.js`, the standard approach is to use the `loadClientScript` utility. This utility, found in `tests/testHelpers.js`, allows the real `flint.js` code to be loaded and executed within a controlled test environment.
 
-*   **`createMockDollar` Utility:** Many tests (e.g., `debug.test.js`, `goToPath.test.js`) utilize the `createMockDollar` function found in `client/testHelpers.js`. This function provides a simplified mock of the `flint.js` API, tracking calls and simulating element behavior.
-*   **Mock DOM with Real `flint.js`:** The test file `client/flint.test.js` takes a different approach by creating a more comprehensive mock of the DOM environment and then running the actual `flint.js` script against this mock DOM.
+When using `loadClientScript` for this purpose, you should provide mock implementations for browser-specific globals like `document` and `window`. This creates a mock DOM environment, enabling `flint.js` to operate as it would in a browser, but with predictable and controllable behavior for testing.
 
-The long-term goal is to consolidate these varying methods into a single, consistent strategy for mocking `flint.js` and its interactions with the DOM. The immediate changes made in this area (such as correcting comments) are intended to reduce confusion and prepare for this larger refactoring effort.
+The example provided in the "Testing Non-Modular Client-Side Scripts" section demonstrates how to use `loadClientScript` to load `flint.js` by requesting the `$` constant, along with providing necessary mock DOM objects:
+
+```javascript
+// In your test.js
+// ... (ensure mockDocument and mockWindow are defined as per the earlier example) ...
+
+const $ = loadClientScript(
+  path.resolve(__dirname, './client/flint.js'), // Path to flint.js
+  { document: mockDocument, window: mockWindow },
+  "$" // Name of the constant to return
+);
+// $ can now be used for testing flint.js functionality or for testing
+// other client scripts that require $ to be in their scope.
+```
+
+This approach ensures that tests are run against the actual `flint.js` implementation, providing more accurate and reliable test results. It is the recommended method for all new tests involving `flint.js`.
 
 ## Flint.js DOM Manipulation
 
