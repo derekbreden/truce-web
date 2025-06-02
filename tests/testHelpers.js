@@ -352,27 +352,54 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
       }
       this.eventListeners[type].push(listener);
     },
-    querySelectorAll: function(selector) {
-      // Simplified querySelectorAll: by tag name, by id, or by class
+    querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
       const results = [];
-      const directChildren = this.children; // Search only direct children for now as per flint's typical usage
+      // For mockElement, elementsToSearch is always its direct children.
+      // It won't handle multi-level descendant selectors like "A B C" passed directly to it.
+      // It assumes it's being called to find direct children matching a simple selector part.
+      const elementsToSearch = this.children;
 
-      for (const child of directChildren) {
-        if (!child.tagName) continue; // Skip text nodes or other non-elements
+      for (const el of elementsToSearch) {
+        if (!el.tagName) continue;
 
-        if (selector.startsWith('#')) { // ID selector
-          if (child.getAttribute('id') === selector.substring(1)) {
-            results.push(child);
+        // Attribute selector regex: Optional_Tag_Or_Star ([*.a-zA-Z0-9_-]+)? then [attributeName(=value)?]
+        const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
+
+        if (attrSelectorMatch) {
+          const tagName = attrSelectorMatch[1] || '*';
+          const attrName = attrSelectorMatch[2];
+          const attrValue = attrSelectorMatch[3];
+
+          let tagMatch = false;
+          if (tagName === '*' || el.tagName === tagName.toUpperCase()) {
+            tagMatch = true;
+          }
+
+          if (tagMatch) {
+            const elAttrValue = el.getAttribute(attrName);
+            if (attrValue !== undefined) { // Check for attribute value equality
+              if (elAttrValue === attrValue) {
+                results.push(el);
+              }
+            } else { // Check for attribute existence
+              if (elAttrValue !== undefined && elAttrValue !== null) {
+                results.push(el);
+              }
+            }
+          }
+        } else if (selector.startsWith('#')) { // ID selector
+          if (el.getAttribute('id') === selector.substring(1)) {
+            results.push(el);
           }
         } else if (selector.startsWith('.')) { // Class selector
           const className = selector.substring(1);
-          const classes = child.getAttribute('class');
+          const classes = el.getAttribute('class');
           if (classes && classes.split(' ').includes(className)) {
-            results.push(child);
+            results.push(el);
           }
-        } else { // Tag name selector
-          if (child.tagName === selector.toUpperCase()) {
-            results.push(child);
+        } else { // Tag name selector (no attribute)
+          if (el.tagName === selector.toUpperCase()) {
+            results.push(el);
           }
         }
       }
@@ -437,40 +464,131 @@ function createMockDocument() {
       fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
       return fragment;
     },
-    querySelectorAll: function(selector) {
-      // Global querySelectorAll: by tag name, by id, or by class from all created elements
-      const results = [];
-      for (const el of this._elements) {
-          if (!el.tagName) continue;
+    querySelectorAll: function(selector) { // Applies to mockDocument.querySelectorAll
+      let results = [];
+      let elementsToSearch = this._elements;
 
-          if (selector.startsWith('#')) { // ID selector
-              if (el.getAttribute('id') === selector.substring(1)) {
-                  results.push(el);
-              }
-          } else if (selector.startsWith('.')) { // Class selector
-              const className = selector.substring(1);
-              const classes = el.getAttribute('class');
-              if (classes && classes.split(' ').includes(className)) {
-                  results.push(el);
-              }
-          } else { // Tag name selector
-              if (el.tagName === selector.toUpperCase()) {
-                  results.push(el);
-              }
-          }
+      // Simple descendant selector support: "ancestor descendant"
+      const parts = selector.trim().split(/\s+/);
+      if (parts.length > 2) {
+        // console.warn(`Mock querySelectorAll only supports up to one level of descendant selector. Query: "${selector}"`);
+        // Fallback to trying the full selector - might work if it's not a descendant or only 2 parts.
       }
-      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
-      return results;
+
+      if (parts.length === 2) {
+        const ancestorSelector = parts[0];
+        const descendantSelector = parts[1];
+        const ancestors = this.querySelectorAll(ancestorSelector); // Recursive call for ancestor part
+        elementsToSearch = [];
+        ancestors.forEach(ancestor => {
+          // Search within the children of each found ancestor
+          // We need a way to search within a specific element's children using the descendantSelector.
+          // This means mockElement needs a querySelectorAll that can be called with its children.
+          // The existing mockElement.querySelectorAll does this.
+          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector));
+        });
+        // Results are already populated by the recursive calls and collected in elementsToSearch
+        results = [...new Set(elementsToSearch)]; // Remove duplicates
+        results.forEach = Array.prototype.forEach;
+        return results;
+      }
+
+      // Original logic for simple selectors (ID, class, tag, attribute)
+      // This part now processes a single selector part (e.g., parts[0]) or the full selector if not descendant.
+      const currentSelectorPart = parts[0]; // Process the first (or only) part of the selector
+      for (const el of elementsToSearch) { // elementsToSearch is this._elements if not a descendant query handled above
+        if (!el.tagName) continue;
+
+        const attrSelectorMatch = currentSelectorPart.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
+
+        if (attrSelectorMatch) {
+          const tagName = attrSelectorMatch[1] || '*'; // Tag part of attribute selector
+          const attrName = attrSelectorMatch[2];
+          const attrValue = attrSelectorMatch[3];
+
+          // Corrected: Keep only the second, more comprehensive tagMatch logic
+          let tagMatch = false;
+          // Check against element's tag name; tagName can be empty for universal selector like *[attr]
+          if (tagName === '*' || tagName === '' || el.tagName === tagName.toUpperCase()) {
+            tagMatch = true;
+          }
+
+          if (tagMatch) {
+            const elAttrValue = el.getAttribute(attrName);
+            if (attrValue !== undefined) {
+              if (elAttrValue === attrValue) results.push(el);
+            } else {
+              if (elAttrValue !== undefined && elAttrValue !== null) results.push(el);
+            }
+          }
+        } else if (currentSelectorPart.startsWith('#')) {
+          if (el.getAttribute('id') === currentSelectorPart.substring(1)) results.push(el);
+        } else if (currentSelectorPart.startsWith('.')) {
+          const className = currentSelectorPart.substring(1);
+          const classes = el.getAttribute('class');
+          if (classes && classes.split(' ').includes(className)) results.push(el);
+        } else { // Tag name selector
+          if (el.tagName === currentSelectorPart.toUpperCase()) results.push(el);
+        }
+      }
+
+      // Special handling for direct queries of 'html' or 'body' if they weren't found typically
+      // (e.g. if they are not in _elements but are direct properties like this.body)
+      // This is more of a fallback; ideally, they are in _elements.
+      if (currentSelectorPart.toLowerCase() === 'html' && this.documentElement && !results.includes(this.documentElement)) {
+        results.push(this.documentElement);
+      }
+      if (currentSelectorPart.toLowerCase() === 'body' && this.body && !results.includes(this.body)) {
+        results.push(this.body);
+      }
+
+      // Deduplicate results before returning
+      const uniqueResults = [...new Set(results)];
+      uniqueResults.forEach = Array.prototype.forEach;
+      return uniqueResults;
     },
-    head: null, // Initialized below
+    head: null,
     body: null, // Initialized below
     readyState: 'complete',
     getElementById: function(id) {
       return this._elements.find(el => el.getAttribute('id') === id) || null;
+    },
+    getElementsByTagName: function(tagNameLC) {
+      const lowerCaseTagName = tagNameLC.toLowerCase();
+      const results = this._elements.filter(el => el.tagName && el.tagName.toLowerCase() === lowerCaseTagName);
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
+      // Also make it behave like a live HTMLCollection by adding a namedItem method (simplified)
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
+      return results;
+    },
+    getElementsByClassName: function(className) {
+      const results = this._elements.filter(el => {
+        const classes = el.getAttribute('class');
+        return classes && classes.split(' ').includes(className);
+      });
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
+      return results;
     }
   };
-  mockDocumentObject.head = mockDocumentObject.createElement('head'); // Initialize head
-  mockDocumentObject.body = mockDocumentObject.createElement('body'); // Initialize body
+  mockDocumentObject.head = mockDocumentObject.createElement('head');
+  mockDocumentObject.body = mockDocumentObject.createElement('body');
+  // Add html element (documentElement)
+  mockDocumentObject.documentElement = mockDocumentObject.createElement('html');
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.head);
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.body);
+  // Ensure documentElement is also part of _elements so it can be found by generic queries if needed
+  // although specific 'html' query should handle it.
+  if (!mockDocumentObject._elements.includes(mockDocumentObject.documentElement)) {
+    mockDocumentObject._elements.push(mockDocumentObject.documentElement);
+  }
+   if (!mockDocumentObject._elements.includes(mockDocumentObject.body)) {
+    mockDocumentObject._elements.push(mockDocumentObject.body);
+  }
+   if (!mockDocumentObject._elements.includes(mockDocumentObject.head)) {
+    mockDocumentObject._elements.push(mockDocumentObject.head);
+  }
+
   return mockDocumentObject;
 }
 
