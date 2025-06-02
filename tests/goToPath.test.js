@@ -428,4 +428,4 @@ const allTests = [
 // It's an array, so it's passed by reference. Tests can modify `mockPathSequence.length = 0; mockPathSequence.push(...);`
 // which will affect the instance used by the loaded `goToPath` function.
 
-runTests('client/goToPath.test.js', allTests);
+runTests('goToPath.test.js', allTests);

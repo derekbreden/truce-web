@@ -94,14 +94,17 @@ async function main() {
       failedFileNames.push(`${fileName} (execution error)`);
     }
     // Add a small visual separator in the main runner's log after a file finishes.
-    console.log(`--- Finished: ${fileName} ---\n`);
+    // console.log(`--- Finished: ${fileName} ---\n`);
   }
 
   // --- Report Final Summary ---
   console.log('\n--- Overall Test Summary ---');
-  console.log(`Total test files found: ${testFilesFound.length}`);
-  console.log(`Test files passed: ${passedCount}`);
-  console.log(`Test files failed: ${failedCount}`);
+  console.log(`\x1b[32mTEST FILES PASSED:\x1b[0m ${passedCount}`);
+  if (failedCount) {
+    console.log(`\x1b[31mTEST FILES FAILED:\x1b[0m ${failedCount}`);
+  } else {
+    console.log(`TEST FILES FAILED: ${failedCount}`);
+  }
 
   if (failedCount > 0) {
     console.log('\nFailed test files:');

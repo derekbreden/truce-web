@@ -20,7 +20,7 @@ function clearTestResults() {
 
 async function runTests(testFileName, testFunctions) {
   clearTestResults();
-  console.log(`--- Running ${testFileName} ---`);
+  console.log(`\n--- Test Results for ${testFileName} ---`);
 
   for (const testFn of testFunctions) {
     try {
@@ -43,10 +43,11 @@ async function runTests(testFileName, testFunctions) {
   let passedCount = 0;
   let failedCount = 0;
 
-  console.log("\n--- Test Results ---");
   testResults.forEach(result => {
     if (result.pass) {
-      console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`);
+      // Individual passes are not super relevant information.
+      // We only want to see total passes and any failures.
+      // console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`);
       passedCount++;
     } else {
       console.log(`\x1b[31mFAIL:\x1b[0m ${result.message}`);
@@ -56,10 +57,12 @@ async function runTests(testFileName, testFunctions) {
     }
   });
 
-  console.log(`\n--- Test Summary for ${testFileName} ---`);
-  console.log(`Total assertions: ${testResults.length}`);
-  console.log(`Passed: ${passedCount}`);
-  console.log(`Failed: ${failedCount}`);
+  console.log(`\x1b[32mPASSED:\x1b[0m ${passedCount}`);
+  if (failedCount) {
+    console.log(`\x1b[31mFAILED:\x1b[0m ${failedCount}`);
+  } else {
+    console.log(`FAILED: ${failedCount}`);
+  }
 
   if (failedCount > 0) {
     console.log("\x1b[31mSome tests failed. Exiting with status 1.\x1b[0m");
