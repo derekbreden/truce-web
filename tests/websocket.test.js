@@ -1,6 +1,6 @@
 const path = require('path');
 const { assertEquals, runTests } = require('./testUtils');
-const { loadClientScript, createMockFunction } = require('./testHelpers');
+const { loadClientScript, createMockFunction, createMockDocument, createMockWindow } = require('./testHelpers');
 
 // Mock global dependencies
 let mockState;
@@ -18,11 +18,10 @@ const setupMocks = () => {
     path: '/initial-path',
   };
 
-  mockWindow = {
-    location: {
-      host: 'testhost.com',
-    },
-  };
+  const mockDocument = createMockDocument(); // Create a mock document
+  mockWindow = createMockWindow(mockDocument); // Create mock window, passing the document
+  mockWindow.location = {}; // Initialize location object
+  mockWindow.location.host = 'testhost.com';
 
   // Mock WebSocket instance methods
   const mockAddEventListener = createMockFunction('websocket.addEventListener');
