@@ -66,21 +66,21 @@ To run all automated tests, use the following command from the project root:
 ```bash
 npm test
 ```
-This will execute all test files located in the `client/` directory that end with `.test.js`.
+This will execute all test files located in the `tests/` directory that end with `.test.js`.
 
 ### How to write new tests
-Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `client/` directory or its subdirectories.
+Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `tests/` directory or its subdirectories.
 
 Tests are written in Node.js.
 
-Use the provided test utilities in `client/testUtils.js` for assertions and test structure. Import them as needed:
+Use the provided test utilities in `tests/testUtils.js` for assertions and test structure. Import them as needed:
 ```javascript
-const { assertEquals, runTests } = require('./testUtils'); // Adjust path if needed
+const { assertEquals, runTests } = require('./testUtils'); // Adjust path if needed if testUtils is in a different sub-directory of tests/
 ```
 
 A typical test file structure looks like this:
 ```javascript
-const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path
+const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path e.g. require('../testUtils') if in a sub-directory of tests/
 // Import the module to be tested
 // const myModule = require('./myModule');
 
@@ -103,7 +103,7 @@ runTests('myModule.test.js', [
 ```
 
 ### Testing Non-Modular Client-Side Scripts
-Client-side files included directly in `index.html` (and not structured as ES6 modules) require a special approach for testing due to their reliance on a global scope and browser-specific APIs. For these situations, use the `loadClientScript` utility from `client/testHelpers.js`.
+Client-side files included directly in `index.html` (and not structured as ES6 modules) require a special approach for testing due to their reliance on a global scope and browser-specific APIs. For these situations, use the `loadClientScript` utility from `tests/testHelpers.js`.
 
 The `loadClientScript` function works as follows:
 - It reads the target script file.
@@ -120,10 +120,10 @@ Here’s an updated code example:
 ```javascript
 // In your test.js
 const path = require('path');
-// Assuming testUtils.js and testHelpers.js are in the same directory or adjust path.
-// For Truce.net, they are typically in client/
-const { assertEquals, runTests } = require('./testUtils');
-const { loadClientScript } = require('./testHelpers');
+// Assuming testUtils.js and testHelpers.js are in the tests/ directory or a subdirectory.
+// Adjust path if they are in different locations.
+const { assertEquals, runTests } = require('./testUtils'); // e.g. require('../testUtils') if in a sub-directory of tests/
+const { loadClientScript } = require('./testHelpers'); // e.g. require('../testHelpers') if in a sub-directory of tests/
 
 // Mock objects needed for the scripts under test
 const mockDocument = {
@@ -139,7 +139,7 @@ const mockWindow = {
 // Assuming 'client/myOldScript.js' defines 'const myOldScript = ...;'
 // and it might use global document or window objects.
 const myOldScript = loadClientScript(
-  path.resolve(__dirname, './client/myOldScript.js'), // Path to the script
+  path.resolve(__dirname, '../client/myOldScript.js'), // Path to the script from tests/ dir
   { document: mockDocument, window: mockWindow } // Global mocks
 );
 // myOldScript can now be used.
@@ -152,7 +152,7 @@ const myOldScript = loadClientScript(
 // Useful for scripts like 'client/flint.js' which defines 'const $ = ...;'
 // flint.js might need document/window, so pass mocks.
 const $ = loadClientScript(
-  path.resolve(__dirname, './client/flint.js'), // Path to flint.js
+  path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
   { document: mockDocument, window: mockWindow },
   "$" // Name of the constant to return
 );
@@ -166,7 +166,7 @@ const $ = loadClientScript(
 // --- Scenario 3: Loading a script and fetching multiple specific constants ---
 // Assuming 'client/myMultiConstScript.js' defines 'const foo = ...;' and 'const bar = ...;'
 const myConstants = loadClientScript(
-  path.resolve(__dirname, './client/myMultiConstScript.js'), // Path to script
+  path.resolve(__dirname, '../client/myMultiConstScript.js'), // Path to script from tests/ dir
   { /* globalMocks, if any */ },
   ["foo", "bar"] // Array of constant names to return
 );
@@ -185,7 +185,7 @@ const myConstants = loadClientScript(
 //   testMultiConst
 // ]);
 ```
-The test file `client/imageToPng.test.js` uses `loadClientScript` to load the script for testing, along with providing its own mocks for browser APIs. `loadClientScript` is the recommended approach for loading client scripts in new tests.
+The test file `tests/imageToPng.test.js` uses `loadClientScript` to load the script for testing, along with providing its own mocks for browser APIs. `loadClientScript` is the recommended approach for loading client scripts in new tests.
 
 If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
 
@@ -202,7 +202,7 @@ The example provided in the "Testing Non-Modular Client-Side Scripts" section de
 // ... (ensure mockDocument and mockWindow are defined as per the earlier example) ...
 
 const $ = loadClientScript(
-  path.resolve(__dirname, './client/flint.js'), // Path to flint.js
+  path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
   { document: mockDocument, window: mockWindow },
   "$" // Name of the constant to return
 );
