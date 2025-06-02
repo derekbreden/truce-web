@@ -352,30 +352,61 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
       }
       this.eventListeners[type].push(listener);
     },
-    querySelectorAll: function(selector) {
-      // Simplified querySelectorAll: by tag name, by id, or by class
-      const results = [];
-      const directChildren = this.children; // Search only direct children for now as per flint's typical usage
+    _matchesSelector: function(selector) { // `this` refers to the element being checked
+      if (!this.tagName) return false;
 
-      for (const child of directChildren) {
-        if (!child.tagName) continue; // Skip text nodes or other non-elements
+      const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
 
-        if (selector.startsWith('#')) { // ID selector
-          if (child.getAttribute('id') === selector.substring(1)) {
-            results.push(child);
-          }
-        } else if (selector.startsWith('.')) { // Class selector
-          const className = selector.substring(1);
-          const classes = child.getAttribute('class');
-          if (classes && classes.split(' ').includes(className)) {
-            results.push(child);
-          }
-        } else { // Tag name selector
-          if (child.tagName === selector.toUpperCase()) {
-            results.push(child);
+      if (attrSelectorMatch) {
+        const tagNamePart = attrSelectorMatch[1] || '*';
+        const attrName = attrSelectorMatch[2];
+        const attrValue = attrSelectorMatch[3];
+
+        let tagMatch = false;
+        if (tagNamePart === '*' || tagNamePart === '' || this.tagName === tagNamePart.toUpperCase()) {
+          tagMatch = true;
+        }
+
+        if (tagMatch) {
+          const elAttrValue = this.getAttribute(attrName);
+          if (attrValue !== undefined) {
+            return elAttrValue === attrValue;
+          } else {
+            return elAttrValue !== undefined && elAttrValue !== null;
           }
         }
+        return false;
+      } else if (selector.startsWith('#')) {
+        return this.getAttribute('id') === selector.substring(1);
+      } else if (selector.startsWith('.')) {
+        const className = selector.substring(1);
+        const classes = this.getAttribute('class');
+        return classes && classes.split(' ').includes(className);
+      } else {
+        return this.tagName === selector.toUpperCase();
       }
+    },
+    querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
+      const results = [];
+
+      const findRecursively = (currentElement, currentSelector) => {
+        for (const child of currentElement.children) {
+          if (!child.tagName) {
+            continue;
+          }
+          if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(currentSelector)) {
+            results.push(child);
+          } else if (!child._matchesSelector || typeof child._matchesSelector !== 'function') {
+            // Element doesn't have the method, which is unexpected for valid mock elements.
+            // This case can be logged or handled if necessary, but for now, we just don't match.
+          }
+          if (child.children && child.children.length > 0) {
+            findRecursively(child, currentSelector);
+          }
+        }
+      };
+
+      findRecursively(this, selector);
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       return results;
     },
@@ -437,40 +468,111 @@ function createMockDocument() {
       fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
       return fragment;
     },
-    querySelectorAll: function(selector) {
-      // Global querySelectorAll: by tag name, by id, or by class from all created elements
-      const results = [];
-      for (const el of this._elements) {
-          if (!el.tagName) continue;
+    querySelectorAll: function(selector) { // Applies to mockDocument.querySelectorAll
+      const lowerCaseSelector = selector.toLowerCase();
 
-          if (selector.startsWith('#')) { // ID selector
-              if (el.getAttribute('id') === selector.substring(1)) {
-                  results.push(el);
-              }
-          } else if (selector.startsWith('.')) { // Class selector
-              const className = selector.substring(1);
-              const classes = el.getAttribute('class');
-              if (classes && classes.split(' ').includes(className)) {
-                  results.push(el);
-              }
-          } else { // Tag name selector
-              if (el.tagName === selector.toUpperCase()) {
-                  results.push(el);
-              }
-          }
+      if (lowerCaseSelector === 'html') {
+        const results = [];
+        if (this.documentElement) {
+          results.push(this.documentElement);
+        }
+        results.forEach = Array.prototype.forEach;
+        return results;
       }
-      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
-      return results;
+
+      if (lowerCaseSelector === 'body') {
+        const results = [];
+        if (this.body) {
+          results.push(this.body);
+        }
+        results.forEach = Array.prototype.forEach;
+        return results;
+      }
+
+      let results = [];
+      let elementsToSearch = this._elements;
+
+      const parts = selector.trim().split(/\s+/);
+
+      if (parts.length > 1) {
+        const ancestorSelector = parts[0];
+        const descendantSelector = parts.slice(1).join(' ');
+
+        const ancestors = this.querySelectorAll(ancestorSelector);
+
+        elementsToSearch = [];
+        ancestors.forEach(ancestor => {
+          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector));
+        });
+
+        results = [...new Set(elementsToSearch)];
+        results.forEach = Array.prototype.forEach;
+        return results;
+      }
+
+      const currentSelectorPart = parts[0];
+      for (const el of elementsToSearch) {
+        if (!el.tagName) {
+          continue;
+        }
+        if (el._matchesSelector && typeof el._matchesSelector === 'function' && el._matchesSelector(currentSelectorPart)) {
+          results.push(el);
+        } else if (!el._matchesSelector || typeof el._matchesSelector !== 'function') {
+          // Element doesn't have the method - potentially an issue if it's supposed to be a full mock element.
+        }
+      }
+      if (currentSelectorPart.toLowerCase() === 'html' && this.documentElement && !results.includes(this.documentElement)) {
+        results.push(this.documentElement);
+      }
+      if (currentSelectorPart.toLowerCase() === 'body' && this.body && !results.includes(this.body)) {
+        results.push(this.body);
+      }
+      const uniqueResults = [...new Set(results)];
+      uniqueResults.forEach = Array.prototype.forEach;
+      return uniqueResults;
     },
-    head: null, // Initialized below
+    head: null,
     body: null, // Initialized below
     readyState: 'complete',
     getElementById: function(id) {
       return this._elements.find(el => el.getAttribute('id') === id) || null;
+    },
+    getElementsByTagName: function(tagNameLC) {
+      const lowerCaseTagName = tagNameLC.toLowerCase();
+      const results = this._elements.filter(el => el.tagName && el.tagName.toLowerCase() === lowerCaseTagName);
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
+      // Also make it behave like a live HTMLCollection by adding a namedItem method (simplified)
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
+      return results;
+    },
+    getElementsByClassName: function(className) {
+      const results = this._elements.filter(el => {
+        const classes = el.getAttribute('class');
+        return classes && classes.split(' ').includes(className);
+      });
+      results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
+      return results;
     }
   };
-  mockDocumentObject.head = mockDocumentObject.createElement('head'); // Initialize head
-  mockDocumentObject.body = mockDocumentObject.createElement('body'); // Initialize body
+  mockDocumentObject.head = mockDocumentObject.createElement('head');
+  mockDocumentObject.body = mockDocumentObject.createElement('body');
+  // Add html element (documentElement)
+  mockDocumentObject.documentElement = mockDocumentObject.createElement('html');
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.head);
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.body);
+  // Ensure documentElement is also part of _elements so it can be found by generic queries if needed
+  // although specific 'html' query should handle it.
+  if (!mockDocumentObject._elements.includes(mockDocumentObject.documentElement)) {
+    mockDocumentObject._elements.push(mockDocumentObject.documentElement);
+  }
+   if (!mockDocumentObject._elements.includes(mockDocumentObject.body)) {
+    mockDocumentObject._elements.push(mockDocumentObject.body);
+  }
+   if (!mockDocumentObject._elements.includes(mockDocumentObject.head)) {
+    mockDocumentObject._elements.push(mockDocumentObject.head);
+  }
+
   return mockDocumentObject;
 }
 
