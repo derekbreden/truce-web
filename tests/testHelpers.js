@@ -388,27 +388,62 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
     },
     querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
       const results = [];
+      const parts = selector.trim().split(/\s+/);
 
-      const findRecursively = (currentElement, currentSelector) => {
-        for (const child of currentElement.children) {
-          if (!child.tagName) {
-            continue;
-          }
-          if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(currentSelector)) {
-            results.push(child);
-          } else if (!child._matchesSelector || typeof child._matchesSelector !== 'function') {
-            // Element doesn't have the method, which is unexpected for valid mock elements.
-            // This case can be logged or handled if necessary, but for now, we just don't match.
-          }
-          if (child.children && child.children.length > 0) {
-            findRecursively(child, currentSelector);
-          }
-        }
-      };
+      if (parts.length > 1) {
+        const firstPart = parts[0];
+        const remainingPartsString = parts.slice(1).join(' ');
 
-      findRecursively(this, selector);
+        // Find all descendants of 'this' (current context element) that match 'firstPart'
+        const firstLevelMatches = [];
+        const collectDescendantsMatchingFirstPart = (currentElement) => {
+          for (const child of currentElement.children) {
+            if (!child.tagName) continue;
+            if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(firstPart)) {
+              if (!firstLevelMatches.includes(child)) {
+                firstLevelMatches.push(child);
+              }
+            }
+            // Continue searching deeper within this child for the firstPart
+            if (child.children && child.children.length > 0) {
+              collectDescendantsMatchingFirstPart(child);
+            }
+          }
+        };
+        collectDescendantsMatchingFirstPart(this);
+
+        // For each element that matched the firstPart, call its querySelectorAll with the remaining parts
+        firstLevelMatches.forEach(matchedElement => {
+          if (matchedElement.querySelectorAll && typeof matchedElement.querySelectorAll === 'function') {
+            const deeperMatches = matchedElement.querySelectorAll(remainingPartsString);
+            deeperMatches.forEach(dm => {
+              if (!results.includes(dm)) { // Ensure uniqueness
+                results.push(dm);
+              }
+            });
+          }
+        });
+      } else { // Single selector part (no spaces)
+        const singleSelector = parts[0];
+        const findRecursively = (currentElement) => {
+          for (const child of currentElement.children) {
+            if (!child.tagName) continue;
+            if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(singleSelector)) {
+              if (!results.includes(child)) { // Ensure uniqueness
+                results.push(child);
+              }
+            }
+            // Continue searching deeper within this child
+            if (child.children && child.children.length > 0) {
+              findRecursively(child);
+            }
+          }
+        };
+        findRecursively(this);
+      }
+
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
-      return results;
+      return [...new Set(results)]; // Return a unique set of results
     },
     remove: function() {
       if (this.parentNode && this.parentNode.children) {
