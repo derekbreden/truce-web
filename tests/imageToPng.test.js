@@ -1,11 +1,24 @@
 const path = require('path');
-const { loadClientScript } = require('./testHelpers');
+const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers');
+
+// --- Mocking browser environment ---
+const mockDocument = createMockDocument();
+const mockWindow = createMockWindow(mockDocument);
+
+global.document = mockDocument;
+global.window = mockWindow;
 
 // --- Per-Test Setup Function ---
 function beforeEachImageTest() {
   // Reset canvas dimensions
-  mockCanvas.width = 0;
-  mockCanvas.height = 0;
+  // Re-create mockCanvas before each test to ensure it's clean,
+  // especially if its properties are modified by tests.
+  // However, the core mockCanvas definition is now outside.
+  // For this refactor, let's assume mockCanvas is defined once and its properties are reset.
+  if (mockCanvas) {
+    mockCanvas.width = 0;
+    mockCanvas.height = 0;
+  }
 
   // Reset mock context state
   lastDrawImageArgs = null;
@@ -19,7 +32,6 @@ function beforeEachImageTest() {
   // or a reset method on the mock Image instances. For now, only lastInstance is reset.
 }
 
-// Mocking browser environment
 let lastDrawImageArgs = null;
 const mockCtx = {
   drawImage: (...args) => {
@@ -28,26 +40,32 @@ const mockCtx = {
   getImageData: () => ({ data: new Uint8ClampedArray(4) }), // Minimal mock for alpha check
 };
 
-const mockCanvas = {
-  width: 0,
-  height: 0,
-  getContext: () => mockCtx,
-  toDataURL: (type) => {
-    if (type === 'image/png') {
-      return 'data:image/png;base64,mockpngdata';
-    }
-    return 'data:image/jpeg;base64,mockjpegdata';
-  },
+// Create a specific mockCanvas instance that will be returned by mockDocument.createElement
+const mockCanvas = mockDocument.createElement('canvas'); // Still use this to get a base mock element
+mockCanvas.width = 0;
+mockCanvas.height = 0;
+mockCanvas.getContext = () => mockCtx;
+mockCanvas.toDataURL = (type) => {
+  if (type === 'image/png') {
+    return 'data:image/png;base64,mockpngdata';
+  }
+  return 'data:image/jpeg;base64,mockjpegdata';
 };
 
-global.document = {
-  createElement: (elementName) => {
-    if (elementName === 'canvas') {
-      return mockCanvas;
-    }
-    return {};
-  },
+// Override mockDocument.createElement to return our specific mockCanvas
+// when 'canvas' is requested.
+const originalCreateElement = mockDocument.createElement;
+mockDocument.createElement = (elementName) => {
+  if (elementName === 'canvas') {
+    // Ensure mockCanvas is reset for each call if tests expect fresh canvas state
+    // This is currently handled in beforeEachImageTest by resetting properties.
+    return mockCanvas;
+  }
+  // For any other element, use the original implementation
+  return originalCreateElement.call(mockDocument, elementName);
 };
+
+// global.document assignment is now at the top with createMockDocument
 
 global.Image = function() {
   let _src = ''; // Use a private variable to store src

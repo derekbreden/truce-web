@@ -123,24 +123,26 @@ const path = require('path');
 // Assuming testUtils.js and testHelpers.js are in the tests/ directory or a subdirectory.
 // Adjust path if they are in different locations.
 const { assertEquals, runTests } = require('./testUtils'); // e.g. require('../testUtils') if in a sub-directory of tests/
-const { loadClientScript } = require('./testHelpers'); // e.g. require('../testHelpers') if in a sub-directory of tests/
+const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers'); // e.g. require('../testHelpers') if in a sub-directory of tests/
 
-// Mock objects needed for the scripts under test
-const mockDocument = {
-  getElementById: (id) => ({ id: id, value: 'mockValue', /* other methods */ }),
-  // ... other document mocks
-};
-const mockWindow = {
-  innerWidth: 1024,
-  // ... other window mocks
-};
+// For browser-specific globals like `document` and `window`, use the helper functions
+// from `tests/testHelpers.js` to create mock objects:
+const mockDocument = createMockDocument();
+const mockWindow = createMockWindow(mockDocument);
+
+// These can then be passed to loadClientScript's globalMocks argument:
+// const globalMocks = {
+//   document: mockDocument,
+//   window: mockWindow,
+//   // ... any other custom global mocks your script might need (e.g., Image, navigator)
+// };
 
 // --- Scenario 1: Default behavior (backward compatible) ---
 // Assuming 'client/myOldScript.js' defines 'const myOldScript = ...;'
 // and it might use global document or window objects.
 const myOldScript = loadClientScript(
   path.resolve(__dirname, '../client/myOldScript.js'), // Path to the script from tests/ dir
-  { document: mockDocument, window: mockWindow } // Global mocks
+  { document: mockDocument, window: mockWindow /*, ...otherMocks */ } // Global mocks
 );
 // myOldScript can now be used.
 // Example test:
@@ -153,7 +155,7 @@ const myOldScript = loadClientScript(
 // flint.js might need document/window, so pass mocks.
 const $ = loadClientScript(
   path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
-  { document: mockDocument, window: mockWindow },
+  { document: mockDocument, window: mockWindow /*, ...otherMocks */ },
   "$" // Name of the constant to return
 );
 // $ can now be used for testing flint.js functionality.
@@ -167,7 +169,7 @@ const $ = loadClientScript(
 // Assuming 'client/myMultiConstScript.js' defines 'const foo = ...;' and 'const bar = ...;'
 const myConstants = loadClientScript(
   path.resolve(__dirname, '../client/myMultiConstScript.js'), // Path to script from tests/ dir
-  { /* globalMocks, if any */ },
+  { document: mockDocument, window: mockWindow /*, globalMocks, if any */ },
   ["foo", "bar"] // Array of constant names to return
 );
 // myConstants would be { foo: /* value of foo */, bar: /* value of bar */ }
@@ -185,9 +187,9 @@ const myConstants = loadClientScript(
 //   testMultiConst
 // ]);
 ```
-The test file `tests/imageToPng.test.js` uses `loadClientScript` to load the script for testing, along with providing its own mocks for browser APIs. `loadClientScript` is the recommended approach for loading client scripts in new tests.
+The `loadClientScript` utility is the recommended approach for loading client scripts in new tests. It helps in injecting mock objects into the global scope for your script during testing.
 
-If your client-side code relies on browser-specific APIs (like `document`, `window`, `Image`, etc.), you will still need to *create* these mocks. The `loadClientScript` utility primarily helps in *injecting* these mocks into the global scope for your script during testing. See existing tests like `client/imageToPng.test.js` for examples of creating such mocks.
+For creating `document` and `window` mocks, use the `createMockDocument()` and `createMockWindow()` helper functions from `tests/testHelpers.js`. For other global browser APIs not covered by these helpers (e.g., `Image`, `navigator`), you might still need to create your own mocks. For examples of creating other mocks (like `Image`), see `tests/imageToPng.test.js`.
 
 ### Testing `flint.js` and Dependent Code
 
@@ -199,11 +201,11 @@ The example provided in the "Testing Non-Modular Client-Side Scripts" section de
 
 ```javascript
 // In your test.js
-// ... (ensure mockDocument and mockWindow are defined as per the earlier example) ...
+// ... (ensure mockDocument and mockWindow are created using createMockDocument and createMockWindow as shown above) ...
 
 const $ = loadClientScript(
   path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
-  { document: mockDocument, window: mockWindow },
+  { document: mockDocument, window: mockWindow /*, ...otherMocks */ },
   "$" // Name of the constant to return
 );
 // $ can now be used for testing flint.js functionality or for testing
