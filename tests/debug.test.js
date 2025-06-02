@@ -80,7 +80,7 @@ const setupTestEnvironment = () => {
 // --- Test Cases ---
 function testDebug_rendersSingleStringArgument() {
   setupTestEnvironment(); // Call renamed function
-  // expectedRenderedArrayForAssertions = []; // Explicitly start fresh for this test sequence // Now handled by setupTestEnvironment
+  expectedRenderedArrayForAssertions = []; // Reset for this test case
 
   const testMessage = "Hello, world!";
   debug(testMessage);
@@ -108,7 +108,7 @@ function testDebug_rendersSingleStringArgument() {
 
 function testDebug_rendersMultipleStringArguments() {
   setupTestEnvironment(); // Call renamed function
-  // expectedRenderedArrayForAssertions is managed by the test suite runner below for accumulation.
+  expectedRenderedArrayForAssertions = []; // Reset for this test case
 
   const msg1 = "First message";
   const msg2 = "Second message";
@@ -135,6 +135,7 @@ function testDebug_rendersMultipleStringArguments() {
 
 function testDebug_rendersErrorObject() {
   setupTestEnvironment(); // Call renamed function
+  expectedRenderedArrayForAssertions = []; // Reset for this test case
   const errorEventLike = { message: "Test error message", lineno: 10, colno: 5 };
   debug(errorEventLike);
 
@@ -161,6 +162,7 @@ function testDebug_rendersErrorObject() {
 
 function testDebug_rendersSimpleObject() {
   setupTestEnvironment(); // Call renamed function
+  expectedRenderedArrayForAssertions = []; // Reset for this test case
   const testObj = { key: "value", nested: { num: 123 } };
   debug(testObj);
   expectedRenderedArrayForAssertions.push(testObj);
