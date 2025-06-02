@@ -352,57 +352,61 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
       }
       this.eventListeners[type].push(listener);
     },
-    querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
-      const results = [];
-      // For mockElement, elementsToSearch is always its direct children.
-      // It won't handle multi-level descendant selectors like "A B C" passed directly to it.
-      // It assumes it's being called to find direct children matching a simple selector part.
-      const elementsToSearch = this.children;
+    _matchesSelector: function(selector) { // `this` refers to the element being checked
+      if (!this.tagName) return false;
 
-      for (const el of elementsToSearch) {
-        if (!el.tagName) continue;
+      const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
 
-        // Attribute selector regex: Optional_Tag_Or_Star ([*.a-zA-Z0-9_-]+)? then [attributeName(=value)?]
-        const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
+      if (attrSelectorMatch) {
+        const tagNamePart = attrSelectorMatch[1] || '*';
+        const attrName = attrSelectorMatch[2];
+        const attrValue = attrSelectorMatch[3];
 
-        if (attrSelectorMatch) {
-          const tagName = attrSelectorMatch[1] || '*';
-          const attrName = attrSelectorMatch[2];
-          const attrValue = attrSelectorMatch[3];
+        let tagMatch = false;
+        if (tagNamePart === '*' || tagNamePart === '' || this.tagName === tagNamePart.toUpperCase()) {
+          tagMatch = true;
+        }
 
-          let tagMatch = false;
-          if (tagName === '*' || el.tagName === tagName.toUpperCase()) {
-            tagMatch = true;
-          }
-
-          if (tagMatch) {
-            const elAttrValue = el.getAttribute(attrName);
-            if (attrValue !== undefined) { // Check for attribute value equality
-              if (elAttrValue === attrValue) {
-                results.push(el);
-              }
-            } else { // Check for attribute existence
-              if (elAttrValue !== undefined && elAttrValue !== null) {
-                results.push(el);
-              }
-            }
-          }
-        } else if (selector.startsWith('#')) { // ID selector
-          if (el.getAttribute('id') === selector.substring(1)) {
-            results.push(el);
-          }
-        } else if (selector.startsWith('.')) { // Class selector
-          const className = selector.substring(1);
-          const classes = el.getAttribute('class');
-          if (classes && classes.split(' ').includes(className)) {
-            results.push(el);
-          }
-        } else { // Tag name selector (no attribute)
-          if (el.tagName === selector.toUpperCase()) {
-            results.push(el);
+        if (tagMatch) {
+          const elAttrValue = this.getAttribute(attrName);
+          if (attrValue !== undefined) {
+            return elAttrValue === attrValue;
+          } else {
+            return elAttrValue !== undefined && elAttrValue !== null;
           }
         }
+        return false;
+      } else if (selector.startsWith('#')) {
+        return this.getAttribute('id') === selector.substring(1);
+      } else if (selector.startsWith('.')) {
+        const className = selector.substring(1);
+        const classes = this.getAttribute('class');
+        return classes && classes.split(' ').includes(className);
+      } else {
+        return this.tagName === selector.toUpperCase();
       }
+    },
+    querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
+      const results = [];
+
+      const findRecursively = (currentElement, currentSelector) => {
+        for (const child of currentElement.children) {
+          if (!child.tagName) {
+            continue;
+          }
+          if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(currentSelector)) {
+            results.push(child);
+          } else if (!child._matchesSelector || typeof child._matchesSelector !== 'function') {
+            // Element doesn't have the method, which is unexpected for valid mock elements.
+            // This case can be logged or handled if necessary, but for now, we just don't match.
+          }
+          if (child.children && child.children.length > 0) {
+            findRecursively(child, currentSelector);
+          }
+        }
+      };
+
+      findRecursively(this, selector);
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       return results;
     },
@@ -465,84 +469,64 @@ function createMockDocument() {
       return fragment;
     },
     querySelectorAll: function(selector) { // Applies to mockDocument.querySelectorAll
-      let results = [];
-      let elementsToSearch = this._elements;
+      const lowerCaseSelector = selector.toLowerCase();
 
-      // Simple descendant selector support: "ancestor descendant"
-      const parts = selector.trim().split(/\s+/);
-      if (parts.length > 2) {
-        // console.warn(`Mock querySelectorAll only supports up to one level of descendant selector. Query: "${selector}"`);
-        // Fallback to trying the full selector - might work if it's not a descendant or only 2 parts.
-      }
-
-      if (parts.length === 2) {
-        const ancestorSelector = parts[0];
-        const descendantSelector = parts[1];
-        const ancestors = this.querySelectorAll(ancestorSelector); // Recursive call for ancestor part
-        elementsToSearch = [];
-        ancestors.forEach(ancestor => {
-          // Search within the children of each found ancestor
-          // We need a way to search within a specific element's children using the descendantSelector.
-          // This means mockElement needs a querySelectorAll that can be called with its children.
-          // The existing mockElement.querySelectorAll does this.
-          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector));
-        });
-        // Results are already populated by the recursive calls and collected in elementsToSearch
-        results = [...new Set(elementsToSearch)]; // Remove duplicates
+      if (lowerCaseSelector === 'html') {
+        const results = [];
+        if (this.documentElement) {
+          results.push(this.documentElement);
+        }
         results.forEach = Array.prototype.forEach;
         return results;
       }
 
-      // Original logic for simple selectors (ID, class, tag, attribute)
-      // This part now processes a single selector part (e.g., parts[0]) or the full selector if not descendant.
-      const currentSelectorPart = parts[0]; // Process the first (or only) part of the selector
-      for (const el of elementsToSearch) { // elementsToSearch is this._elements if not a descendant query handled above
-        if (!el.tagName) continue;
-
-        const attrSelectorMatch = currentSelectorPart.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
-
-        if (attrSelectorMatch) {
-          const tagName = attrSelectorMatch[1] || '*'; // Tag part of attribute selector
-          const attrName = attrSelectorMatch[2];
-          const attrValue = attrSelectorMatch[3];
-
-          // Corrected: Keep only the second, more comprehensive tagMatch logic
-          let tagMatch = false;
-          // Check against element's tag name; tagName can be empty for universal selector like *[attr]
-          if (tagName === '*' || tagName === '' || el.tagName === tagName.toUpperCase()) {
-            tagMatch = true;
-          }
-
-          if (tagMatch) {
-            const elAttrValue = el.getAttribute(attrName);
-            if (attrValue !== undefined) {
-              if (elAttrValue === attrValue) results.push(el);
-            } else {
-              if (elAttrValue !== undefined && elAttrValue !== null) results.push(el);
-            }
-          }
-        } else if (currentSelectorPart.startsWith('#')) {
-          if (el.getAttribute('id') === currentSelectorPart.substring(1)) results.push(el);
-        } else if (currentSelectorPart.startsWith('.')) {
-          const className = currentSelectorPart.substring(1);
-          const classes = el.getAttribute('class');
-          if (classes && classes.split(' ').includes(className)) results.push(el);
-        } else { // Tag name selector
-          if (el.tagName === currentSelectorPart.toUpperCase()) results.push(el);
+      if (lowerCaseSelector === 'body') {
+        const results = [];
+        if (this.body) {
+          results.push(this.body);
         }
+        results.forEach = Array.prototype.forEach;
+        return results;
       }
 
-      // Special handling for direct queries of 'html' or 'body' if they weren't found typically
-      // (e.g. if they are not in _elements but are direct properties like this.body)
-      // This is more of a fallback; ideally, they are in _elements.
+      let results = [];
+      let elementsToSearch = this._elements;
+
+      const parts = selector.trim().split(/\s+/);
+
+      if (parts.length > 1) {
+        const ancestorSelector = parts[0];
+        const descendantSelector = parts.slice(1).join(' ');
+
+        const ancestors = this.querySelectorAll(ancestorSelector);
+
+        elementsToSearch = [];
+        ancestors.forEach(ancestor => {
+          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector));
+        });
+
+        results = [...new Set(elementsToSearch)];
+        results.forEach = Array.prototype.forEach;
+        return results;
+      }
+
+      const currentSelectorPart = parts[0];
+      for (const el of elementsToSearch) {
+        if (!el.tagName) {
+          continue;
+        }
+        if (el._matchesSelector && typeof el._matchesSelector === 'function' && el._matchesSelector(currentSelectorPart)) {
+          results.push(el);
+        } else if (!el._matchesSelector || typeof el._matchesSelector !== 'function') {
+          // Element doesn't have the method - potentially an issue if it's supposed to be a full mock element.
+        }
+      }
       if (currentSelectorPart.toLowerCase() === 'html' && this.documentElement && !results.includes(this.documentElement)) {
         results.push(this.documentElement);
       }
       if (currentSelectorPart.toLowerCase() === 'body' && this.body && !results.includes(this.body)) {
         results.push(this.body);
       }
-
-      // Deduplicate results before returning
       const uniqueResults = [...new Set(results)];
       uniqueResults.forEach = Array.prototype.forEach;
       return uniqueResults;

@@ -19,7 +19,9 @@ const mockStartSession = createMockFunction('startSession');
 // mockWindow and mockDocument, which are manually created below to mock the
 // global browser environment for the goToPath.js script.
 
-let $; // Will hold the flint.js instance
+let $;
+let goToPath;
+// Will hold the flint.js instance and goToPath function after loading in setupMocksAndState
 
 const mockState = {
   path: '', // Initialized in setupMocksAndState
@@ -115,36 +117,48 @@ const setupMocksAndState = () => {
   // mockDocument.querySelectorAll = createMockFunction('document.querySelectorAll');
   // mockDocument.getElementById = createMockFunction('document.getElementById'); // Already provided by createMockDocument
   // mockDocument.createElement = createMockFunction('document.createElement'); // Already provided by createMockDocument
+
+  // Ensure footer and dot elements exist for tests that might interact with them via goToPath
+  const globalFooterElement = mockDocument.createElement('footer'); // Renamed to avoid conflict if tests define their own
+  const globalDotElement = mockDocument.createElement('dot');     // Renamed
+  globalFooterElement.appendChild(globalDotElement);
+  mockDocument.body.appendChild(globalFooterElement);
+  mockDocument.globalDotElement = globalDotElement; // Attach to mockDocument for test access
+
+  // Load flint.js and goToPath.js at the end of setup, so they use the fresh mocks
+  $ = loadClientScript(
+    path.resolve(__dirname, '../client/flint.js'),
+    { document: mockDocument, window: mockWindow }, // Provide the created mockDocument and mockWindow
+    "$" // flint.js exports $
+  );
+
+  goToPath = loadClientScript(
+    __dirname + '/../client/goToPath.js', // Use __dirname for robustness
+    {
+      localStorage: mockLocalStorage, // Pass the single instance
+      history: mockHistory,           // Pass the single instance
+      modalInfo: mockModalInfo,         // Pass the single instance
+      loadingPage: mockLoadingPage,       // Pass the single instance
+      startSession: mockStartSession,     // Pass the single instance
+      state: mockState,               // Pass the single instance
+      path_sequence: mockPathSequence,   // Pass the single instance (array reference)
+      window: mockWindow,             // Pass the single instance
+      $: $,                       // Pass the real $ from flint.js
+      jQuery: $,                  // Pass the real $ from flint.js
+      document: mockDocument,           // Pass the single instance
+    },
+    'goToPath'
+  );
 };
 
-// Initial call to setupMocksAndState to populate mocks
-setupMocksAndState();
-
-// Load flint.js AFTER mockDocument and mockWindow are initialized by setupMocksAndState
-$ = loadClientScript(
-  path.resolve(__dirname, '../client/flint.js'),
-  { document: mockDocument, window: mockWindow }, // Provide the created mockDocument and mockWindow
-  "$" // flint.js exports $
-);
-
-// Now load goToPath.js, providing the real $ from flint.js
-const goToPath = loadClientScript(
-  __dirname + '/../client/goToPath.js', // Use __dirname for robustness
-  {
-    localStorage: mockLocalStorage, // Pass the single instance
-    history: mockHistory,           // Pass the single instance
-    modalInfo: mockModalInfo,         // Pass the single instance
-    loadingPage: mockLoadingPage,       // Pass the single instance
-    startSession: mockStartSession,     // Pass the single instance
-    state: mockState,               // Pass the single instance
-    path_sequence: mockPathSequence,   // Pass the single instance (array reference)
-    window: mockWindow,             // Pass the single instance
-    $: $,                       // Pass the real $ from flint.js
-    jQuery: $,                  // Pass the real $ from flint.js
-    document: mockDocument,           // Pass the single instance
-  },
-  'goToPath'
-);
+// Initial call to setupMocksAndState to populate mocks for the first time (e.g. if any top-level describe needs them, though not here)
+// Or, this can be removed if all tests ensure it's called first.
+// For safety and current structure, let's keep one initial call, though its loaded scripts will be overridden by test-specific setups.
+// However, given the new model, each test *must* call setupMocksAndState.
+// So, a top-level call to setupMocksAndState() might load scripts that are then orphaned if not all tests use them.
+// Better to remove the top-level call if each test manages its own setup.
+// Let's remove it to ensure each test gets a cleanly scoped $, goToPath.
+// setupMocksAndState(); // REMOVED - Each test will call it.
 
 // --- Test Cases ---
 function testNavigateToNewPath() {
@@ -298,14 +312,11 @@ function testClickedBackFalseForForwardNavigationInSequence() {
 }
 
 function testFooterDotIndexSetCorrectly() {
-  setupMocksAndState(); // Reset state, including mockDocument.body.children
+  setupMocksAndState(); // This now creates global footer & dot. mockDocument.globalDotElement is available.
 
-  // Create footer and dot elements in the mockDocument BEFORE goToPath is called.
-  // Flint's $("footer dot") implies it will find/create a 'dot' inside a 'footer'.
-  const footerElement = mockDocument.createElement('footer');
-  const dotElement = mockDocument.createElement('dot');
-  footerElement.appendChild(dotElement);
-  mockDocument.body.appendChild(footerElement); // Add footer (with dot inside) to body
+  // Footer and dot elements are now created globally in setupMocksAndState.
+  // We will use mockDocument.globalDotElement for assertions.
+  const dotElement = mockDocument.globalDotElement; // Use the globally created dot element
 
   // Configure mockPathSequence for this test
   mockPathSequence.length = 0;
@@ -403,24 +414,12 @@ const allTests = [
   testNavigateToNewPath,
   testModalShownIfTermsNotAgreed,
   testUsesTopicsPreferenceFromLocalStorage,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // the 'main-content-wrapper[active]' selector used by goToPath.js. Flint's $ returns null.
-  // testUpdatesScrollTopOfCachedPath,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // complex/descendant selectors (e.g., "footer dot") used by goToPath.js. Flint's $ returns null.
-  // testHandlesTagPathAsActionTags,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // complex/descendant selectors (e.g., "footer dot") used by goToPath.js. Flint's $ returns null.
-  // testClickedBackTrueForBackwardNavigationInSequence,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // complex/descendant selectors (e.g., "footer dot") used by goToPath.js. Flint's $ returns null.
-  // testClickedBackFalseForForwardNavigationInSequence,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // the "footer dot" descendant selector used by goToPath.js. Flint's $ returns null.
-  // testFooterDotIndexSetCorrectly,
-  // SKIPPED: Test fails with real flint.js due to mock DOM limitations in resolving
-  // complex/descendant selectors (e.g., "html", "body", "footer dot") used by goToPath.js. Flint's $ returns null.
-  // testStoresLastRootPathInLocalStorage,
+  testUpdatesScrollTopOfCachedPath,
+  testHandlesTagPathAsActionTags,
+  testClickedBackTrueForBackwardNavigationInSequence,
+  testClickedBackFalseForForwardNavigationInSequence,
+  testFooterDotIndexSetCorrectly,
+  testStoresLastRootPathInLocalStorage,
   testClearsActiveCommentAndTopicOnPathChange,
   testDoesNotClearItemsIfPathIsSame,
 ];
