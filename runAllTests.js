@@ -225,7 +225,7 @@ async function main() {
           console.log('  Failed files:');
           results[catKey].failedFiles.forEach(name => console.log(`  - ${name}`));
         } else {
-          // console.log(`  \x1b[31mFAILED:\x1b[0m ${results[catKey].failed}`); // No need to print 0 failed
+          console.log(`  FAILED: ${results[catKey].failed}`); // No need to print 0 failed
         }
       }
     });
@@ -234,13 +234,17 @@ async function main() {
     if (totalFailedOverall > 0) {
       console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`);
     } else {
-      // console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`); // No need to print 0 failed
+      console.log(`  TOTAL FILES FAILED: ${totalFailedOverall}`); // No need to print 0 failed
     }
   } else { // 'unit', 'integration', or 'single' run
     const cat = filesToRun[0].category; // Should be only one group for these modes
     // The main header is already specific, e.g., "Running Unit Tests Summary" or "Running Single Test File: path/to/file.test.js Summary"
     console.log(`\x1b[32mPASSED:\x1b[0m ${results[cat].passed}`);
-    console.log(`\x1b[31mFAILED:\x1b[0m ${results[cat].failed}`);
+    if (results[cat].failed) {
+      console.log(`\x1b[31mFAILED:\x1b[0m ${results[cat].failed}`);
+    } else {
+      console.log(`FAILED: ${results[cat].failed}`);
+    }
     if (results[cat].failed > 0) {
       console.log('\nFailed files:');
       results[cat].failedFiles.forEach(name => console.log(`- ${name}`));
