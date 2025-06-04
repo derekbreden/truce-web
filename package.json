@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node runAllTests.js all",
+    "test": "node runAllTests.js",
     "test:unit": "node runAllTests.js unit",
     "test:integration": "node runAllTests.js integration"
   },
