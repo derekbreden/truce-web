@@ -73,7 +73,7 @@ The primary way to run automated tests is using the `npm test` command from the 
 *   **To run a specific test file:**
     Provide the path to the test file relative to the project root:
     ```bash
-    npm test tests/server/unit/example.test.js
+    npm test tests/client/integration/example.test.js
     ```
 
 *   **To run specific categories of tests:**
@@ -82,17 +82,9 @@ The primary way to run automated tests is using the `npm test` command from the 
         ```bash
         npm test unit
         ```
-        Alternatively, you can also use the more specific script:
-        ```bash
-        npm run test:unit
-        ```
     *   **Integration Tests** (tests located in any subdirectory named `integration` within `tests/`):
         ```bash
         npm test integration
-        ```
-        Alternatively, you can also use the more specific script:
-        ```bash
-        npm run test:integration
         ```
 
 Make sure you have run `npm install` at least once to install all necessary dependencies, including those required for testing (like `jsdom`).
