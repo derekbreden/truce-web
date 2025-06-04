@@ -503,9 +503,48 @@ function loadAllClientScripts(customIndexPath) { // Added customIndexPath parame
       url: "http://localhost", // Necessary for some scripts that might use location/history
       pretendToBeVisual: true, // Helps with some DOM manipulations if needed
       includeNodeLocations: true,
+      beforeParse(window) {
+        if (!window.matchMedia) {
+          window.matchMedia = function(query) {
+            return {
+              matches: false, // Or true, depending on what's more suitable for general tests
+              media: query,
+              onchange: null,
+              addListener: function() {}, // Deprecated
+              removeListener: function() {}, // Deprecated
+              addEventListener: function() {},
+              removeEventListener: function() {},
+              dispatchEvent: function() {}
+            };
+          };
+        }
+
+        if (!window.fetch) {
+          window.fetch = async function(url, options) {
+            // Log the fetch call for debugging during tests if needed
+            // console.log(`Mock fetch called for URL: ${url}`, options);
+            return {
+              ok: true,
+              status: 200,
+              statusText: "OK",
+              headers: {
+                get: function(headerName) {
+                  if (headerName === "Content-Type") {
+                    return "application/json";
+                  }
+                  return null;
+                }
+              },
+              json: async () => ({ success: true, message: "Mocked fetch response" }),
+              text: async () => JSON.stringify({ success: true, message: "Mocked fetch response" })
+            };
+          };
+        }
+      }
     })
     // console.warn(dom)
     const { window } = dom
+
     console.warn(window.is_android)
 
     return window
