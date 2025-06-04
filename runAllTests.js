@@ -174,16 +174,22 @@ async function main() {
       if (categorizedFiles[group.category].length > 0 || (testTypeArg === 'all' && (group.category === 'unit' || group.category === 'integration' || group.category === 'other'))) {
         console.log(`\n  --- ${group.header} Summary ---`);
         console.log(`  \x1b[32mPASSED:\x1b[0m ${results[group.category].passed}`);
-        console.log(`  \x1b[31mFAILED:\x1b[0m ${results[group.category].failed}`);
         if (results[group.category].failed > 0) {
+          console.log(`  \x1b[31mFAILED:\x1b[0m ${results[group.category].failed}`);
           console.log('  Failed files:');
           results[group.category].failedFiles.forEach(name => console.log(`  - ${name}`));
+        } else {
+          // console.log(`  \x1b[31mFAILED:\x1b[0m ${results[group.category].failed}`);
         }
       }
     }
     console.log('\n  --- Totals for All Categories ---');
     console.log(`  \x1b[32mTOTAL FILES PASSED:\x1b[0m ${totalPassedOverall}`);
-    console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`);
+    if (totalFailedOverall) {
+      console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`);
+    } else {
+      // console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`);
+    }
   } else { // Specific test type run
     const cat = filesToRun[0].category; // Should be only one group
     console.log(`\x1b[32mPASSED:\x1b[0m ${results[cat].passed}`);

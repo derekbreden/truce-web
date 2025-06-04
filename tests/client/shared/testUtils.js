@@ -62,7 +62,7 @@ async function runTests(testFileName, testFunctions, includeTimer) {
   if (failedCount) {
     console.log(`\x1b[31mFAILED:\x1b[0m ${failedCount}`);
   } else {
-    console.log(`FAILED: ${failedCount}`);
+    // console.log(`FAILED: ${failedCount}`);
   }
   const endTime = new Date()
   if (includeTimer) {

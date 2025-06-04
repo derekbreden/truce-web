@@ -534,7 +534,7 @@ function loadAllClientScripts() {
 
       if (!window.fetch) {
         window.fetch = async function(url, options) {
-          console.log(`MOCK FETCH CALLED: URL=${url}, Options=${JSON.stringify(options)}`); // Debug log
+          // console.log(`MOCK FETCH CALLED: URL=${url}, Options=${JSON.stringify(options)}`); // Debug log
           // Log the fetch call for debugging during tests if needed
           // console.log(`Mock fetch called for URL: ${url}`, options);
           return {
