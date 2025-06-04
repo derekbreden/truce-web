@@ -1,18 +1,24 @@
-const editProfilePicture = () => {
+window.editProfilePicture = () => {
   Array.from($("[profile-picture] input[image]").files).forEach((file) => {
     const reader = new FileReader();
     reader.onload = ($event) => {
-      imageToPng(
+      window.imageToPng( // Call via window
         $event.target.result,
         (png) => {
+          const $imagePreviewContainerById = window.document.getElementById("testImagePreviewArea");
+          const $original = $imagePreviewContainerById ? $imagePreviewContainerById.childNodes[0] : null;
+
           const $image = $(
             `
               img[src=$1]
               `,
             [png.url],
           );
-          const $original = $("[profile-picture] image").childNodes[0];
-          $("[profile-picture] image").replaceChildren($image);
+
+          if ($imagePreviewContainerById) { // Guard actual replacement
+            $imagePreviewContainerById.replaceChildren($image);
+          }
+
           alertInfo("Saving profile picture...");
           fetch("/session", {
             method: "POST",
@@ -24,10 +30,13 @@ const editProfilePicture = () => {
             .then(function (data) {
               if (data.error || !data.success) {
                 modalError(data.error || "Server error");
-                $("[profile-picture] image").replaceChildren($original);
+                if ($imagePreviewContainerById && $original) {
+                  $imagePreviewContainerById.replaceChildren($original);
+                } else if ($imagePreviewContainerById) {
+                  $imagePreviewContainerById.innerHTML = '';
+                }
               } else {
                 alertInfo("Profile picture saved.");
-
                 // Reload content
                 state.cache = {};
                 startSession();
@@ -35,7 +44,11 @@ const editProfilePicture = () => {
             })
             .catch(function () {
               modalError("Network error");
-              $("[profile-picture] image").replaceChildren($original);
+              if ($imagePreviewContainerById && $original) {
+                $imagePreviewContainerById.replaceChildren($original);
+              } else if ($imagePreviewContainerById) {
+                $imagePreviewContainerById.innerHTML = '';
+              }
             });
         },
         512,
