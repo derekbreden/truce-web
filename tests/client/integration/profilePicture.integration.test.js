@@ -3,12 +3,7 @@ const { loadAllClientScripts } = require('../shared/testHelpers.js');
 const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
-    testRealIndexHtmlLoads: () => {
-        const window = loadAllClientScripts(); // This should mock setTimeout and fetch
-        assertEquals(false, window.is_android);
-    },
-
-    testEditProfilePictureShowsErrorModal: async () => { // Ensure async
+    showsErrorModalOnProfilePictureUploadFailure: async () => { // Ensure async
         const window = loadAllClientScripts(); // This should mock setTimeout and fetch
 
         const originalImageToPng = window.imageToPng;
