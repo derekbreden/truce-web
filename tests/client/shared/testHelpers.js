@@ -499,7 +499,7 @@ function loadAllClientScripts() {
   const firstPassHtmlContent = parseIncludes(indexHtmlContent)
   // Parse the includes of includes
   const finalIndexHtmlContent = parseIncludes(firstPassHtmlContent)
-  // console.warn(finalIndexHtmlContent)
+  // console.warn("Final HTML content loaded into JSDOM:", finalIndexHtmlContent) // DEBUGGING: Log the final HTML
   const virtualConsole = new VirtualConsole()
   virtualConsole.sendTo(console)
   const dom = new JSDOM(finalIndexHtmlContent, {
@@ -509,7 +509,25 @@ function loadAllClientScripts() {
     includeNodeLocations: true,
     virtualConsole: virtualConsole,
     beforeParse(window) {
-      window.is_test = true
+      // window.is_test = true; // This prevents WebSocket initialization if not mocked
+
+      // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
+      window.WebSocket = function(url) {
+        console.log(`Mock WebSocket attempting to connect to: ${url}`);
+        this.send = function(data) {
+          console.log(`Mock WebSocket send: ${data}`);
+        };
+        this.close = function() {
+          console.log("Mock WebSocket close");
+        };
+        this.addEventListener = function(event, callback) {
+          console.log(`Mock WebSocket addEventListener for ${event}`);
+          // Store listeners if needed for more complex simulation, e.g., this['on'+event] = callback;
+        };
+        // Simulate open and close events if necessary for client logic, though likely not for this test
+        // setTimeout(() => { if (this.onopen) this.onopen(); }, 10); // Example: simulate open
+        // setTimeout(() => { if (this.onclose) this.onclose(); }, 20); // Example: simulate close
+      };
 
       // Force setTimeout to be faster, to avoid delays
       //   (add conditional logic here if we need to not do this later)
@@ -534,15 +552,39 @@ function loadAllClientScripts() {
 
       if (!window.fetch) {
         window.fetch = async function(url, options) {
-          // console.log(`MOCK FETCH CALLED: URL=${url}, Options=${JSON.stringify(options)}`); // Debug log
-          // Log the fetch call for debugging during tests if needed
-          // console.log(`Mock fetch called for URL: ${url}`, options);
+          console.log(`Mock fetch called for URL: ${url}`, options);
+          if (url === "/session") {
+            const body = options && options.body ? JSON.parse(options.body) : {};
+            if (body.path === "/topics") {
+              console.log("Mock fetch returning success for /topics");
+              return {
+                ok: true,
+                status: 200,
+                statusText: "OK",
+                json: async () => ({
+                  success: true,
+                  path: "/topics",
+                  topics: [], // Empty is fine for this test
+                  comments: [],
+                  activities: [],
+                  notifications: [],
+                  user: {}, // Basic user object
+                  tag: {},   // Basic tag object
+                  subscribed_to_users: 0,
+                  // Add any other essential fields that renderPage might expect
+                }),
+                text: async () => JSON.stringify({ success: true, path: "/topics", topics: [] /* ... */ })
+              };
+            }
+          }
+          // Default mock fetch for other URLs or unhandled session paths
+          console.log("Mock fetch returning default error");
           return {
             ok: false,
             status: 500,
             statusText: "Internal Server Error",
-            json: async () => ({ success: false, error: "Test error" }),
-            text: async () => JSON.stringify({ success: false, error: "Test error" })
+            json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
+            text: async () => JSON.stringify({ success: false, error: "Test error: Unmocked fetch path" })
           };
         };
       }

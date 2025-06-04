@@ -64,9 +64,9 @@ const tests = {
 
             if (errorModalContentElement) {
                 assertEquals(
-                    "Test error",
+                    "Test error: Unmocked fetch path",
                     errorModalContentElement.innerText.trim(),
-                    "Error message in modal should be 'Test error'."
+                    "Error message in modal should be 'Test error: Unmocked fetch path'."
                 );
             }
             window.document.body.removeChild(profilePictureContainer);
