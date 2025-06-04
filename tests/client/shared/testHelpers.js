@@ -479,27 +479,81 @@ function loadAllClientScripts() {
 
   // Parse the includes
   const parseIncludes = (fromHtmlContent) => {
-    let returningHtmlContent = fromHtmlContent
-    const scriptLineRegex = /(.*<!--#include\s+file="[^"]+\.[^"]+".*)/g;
-    const scriptRegex = /[^"]+\.[^"]+/;
+    let returningHtmlContent = fromHtmlContent;
+    // Regex to find <!--#include file="..." --> directives
+    const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g;
     let match;
-    while ((match = scriptLineRegex.exec(fromHtmlContent)) !== null) {
+
+    // Keep replacing until no more include directives are found
+    // This handles nested includes by repeatedly applying the regex
+    while ((match = includeDirectiveRegex.exec(returningHtmlContent)) !== null) {
+      const directive = match[0]; // The full directive, e.g., <!--#include file="path/to/file.html" -->
+      const relativeFilePath = match[1]; // The path from the directive, e.g., "path/to/file.html"
+
       // Resolve the script path relative to the directory of the indexHtmlFile
-      const indexDir = path.dirname(indexPath)
-      const fullLine = match[0]
-      const filePath = fullLine.match(scriptRegex)[0]
-      // console.warn(match.index, fullLine.length, filePath)
-      // console.warn(fullLine, filePath) 
-      const scriptContent = fs.readFileSync(indexDir + "/" + filePath, "utf8")
-      returningHtmlContent = returningHtmlContent.replace(fullLine, scriptContent)
+      const indexDir = path.dirname(indexPath);
+      const absoluteFilePath = path.resolve(indexDir, relativeFilePath); // Use path.resolve for robustness
+
+      try {
+        const fileContent = fs.readFileSync(absoluteFilePath, "utf8");
+        returningHtmlContent = returningHtmlContent.replace(directive, fileContent);
+      } catch (error) {
+        console.error(`Error including file "${absoluteFilePath}": ${error.message}`);
+        // Optionally, replace with an error message or leave the directive,
+        // depending on desired error handling. For now, it will effectively remove the directive if file not found.
+        // returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`);
+      }
     }
-    return returningHtmlContent
-  }
-  // Parse the initial includes
-  const firstPassHtmlContent = parseIncludes(indexHtmlContent)
-  // Parse the includes of includes
-  const finalIndexHtmlContent = parseIncludes(firstPassHtmlContent)
+    return returningHtmlContent;
+  };
+
+  // Pre-process HTML to uncomment JS includes
+  // Removes leading "// " from lines containing "<!--#include file="client/...js" -->"
+  let processedIndexHtmlContent = indexHtmlContent.split('\n').map(line => {
+    if (line.trim().startsWith('//') && line.includes('<!--#include') && line.includes('.js"')) {
+      return line.replace('//', '');
+    }
+    return line;
+  }).join('\n');
+
+  // Parse includes. Iterative to handle nested includes.
+  let finalIndexHtmlContent = processedIndexHtmlContent;
+  let previousHtmlContent;
+  do {
+    previousHtmlContent = finalIndexHtmlContent;
+    finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent);
+  } while (finalIndexHtmlContent !== previousHtmlContent);
   // console.warn("Final HTML content loaded into JSDOM:", finalIndexHtmlContent) // DEBUGGING: Log the final HTML
+
+  // Attempt to ensure 'state' is explicitly assigned to 'window.state'
+  // This is a workaround for potential JSDOM issues with 'const state' in global scope
+  finalIndexHtmlContent = finalIndexHtmlContent.replace(
+    /const state = {/,
+    "window.state = {"
+  );
+  if (!finalIndexHtmlContent.includes("window.state = {")) {
+    console.warn("WARNING: Failed to replace 'const state = {' with 'window.state = {' in HTML content. State might still be undefined.");
+  }
+
+  // Attempt to ensure 'renderTopic' is explicitly assigned to 'window.renderTopic'
+  finalIndexHtmlContent = finalIndexHtmlContent.replace(
+    /const renderTopic = \(/,
+    "window.renderTopic = ("
+  );
+  if (!finalIndexHtmlContent.includes("window.renderTopic = (")) {
+    console.warn("WARNING: Failed to replace 'const renderTopic = (' with 'window.renderTopic = (' in HTML content. renderTopic might still be undefined.");
+  }
+
+  // Attempt to ensure 'flint' ($) is explicitly assigned to 'window.$'
+  // Note the more specific regex to avoid unintended replacements if $ is used elsewhere.
+  finalIndexHtmlContent = finalIndexHtmlContent.replace(
+    /const \$ = \((selector_or_flint, flint_args_or_element)\) => {/,
+    "window.$ = (selector_or_flint, flint_args_or_element) => {"
+  );
+  if (!finalIndexHtmlContent.includes("window.$ = (selector_or_flint, flint_args_or_element) => {")) {
+    console.warn("WARNING: Failed to replace 'const $ = (...)' with 'window.$ = (...)' in HTML content. Flint $ might still be undefined or incorrect.");
+  }
+
   const virtualConsole = new VirtualConsole()
   virtualConsole.sendTo(console)
   const dom = new JSDOM(finalIndexHtmlContent, {
@@ -563,21 +617,69 @@ function loadAllClientScripts() {
                 json: async () => ({
                   success: true,
                   path: "/topics",
-                  topics: [], // Empty is fine for this test
+                  topics: [],
                   comments: [],
                   activities: [],
                   notifications: [],
-                  user: {}, // Basic user object
-                  tag: {},   // Basic tag object
+                  user: {},
+                  tag: {},
                   subscribed_to_users: 0,
-                  // Add any other essential fields that renderPage might expect
                 }),
-                text: async () => JSON.stringify({ success: true, path: "/topics", topics: [] /* ... */ })
+                text: async () => JSON.stringify({ success: true, path: "/topics", topics: [], comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0 })
+              };
+            } else if (body.path && body.path.startsWith("/topic/")) {
+              // Handle fetch for a specific topic detail page
+              // For the test, we'll use a simplified version of mockTopicData
+              // In a real scenario, this would be the detailed topic data
+              const slug = body.path.split("/")[2];
+              // This is a very basic mock. A real app might fetch more detailed data.
+              // We'll assume the slug 'test-topic-1' is the one being tested.
+              // If other slugs are needed, this mock would need to be more sophisticated
+              // or the test data aligned.
+              const mockDetailTopic = {
+                slug: slug,
+                title: `Test Topic ${slug}`,
+                body: "Full body of the test topic. This should be longer than the summary.",
+                user_slug: "user1",
+                display_name: "User One",
+                tags: "politics", // Keep consistent with list view for now
+                profile_picture_uuid: null,
+                display_name_index: 0,
+                user_verified: false,
+                note: "",
+                poll_1: null,
+                favorited: false,
+                favorite_count: 0,
+                commented: false,
+                comment_count: 0, // For topic detail, comments are separate
+                image_uuids: null,
+                // Fields that might appear in a detail view but not summary
+                topic_id: 123, // Example ID
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              };
+
+              return {
+                ok: true,
+                status: 200,
+                statusText: "OK",
+                json: async () => ({
+                  success: true,
+                  path: body.path,
+                  topics: [mockDetailTopic], // Send back the specific topic in a 'topics' array
+                  comments: [], // Start with empty comments for simplicity
+                  activities: [],
+                  notifications: [],
+                  user: {},
+                  tag: {},
+                  subscribed_to_users: 0,
+                }),
+                text: async () => JSON.stringify({ success: true, path: body.path, topics: [mockDetailTopic], comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0 })
               };
             }
           }
           // Default mock fetch for other URLs or unhandled session paths
-          // console.log("Mock fetch returning default error");
+          // console.warn(`Mock fetch unhandled URL: ${url} or body.path: ${body?.path}`);
           return {
             ok: false,
             status: 500,
