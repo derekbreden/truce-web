@@ -4,75 +4,63 @@ const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
     testRealIndexHtmlLoads: () => {
-        const window = loadAllClientScripts();
+        const window = loadAllClientScripts(); // This should mock setTimeout and fetch
         assertEquals(false, window.is_android);
     },
 
-    testEditProfilePictureShowsErrorModal: () => {
-        const nativeSetTimeout = setTimeout; // Capture original setTimeout
-        const window = loadAllClientScripts(); // This might alter global setTimeout
+    testEditProfilePictureShowsErrorModal: async () => { // Ensure async
+        const window = loadAllClientScripts(); // This should mock setTimeout and fetch
 
-        // Mock imageToPng on the window object
-        const originalImageToPng = window.imageToPng; // Save original
-        window.imageToPng = (src, callback, size, crop) => {
-            // console.log("TEST_DEBUG: Mock window.imageToPng called with src:", src);
-            callback({ url: "mock_png_data_url", width: 100, height: 100 });
-        };
+        const originalImageToPng = window.imageToPng;
+        const originalFileReader = window.FileReader;
 
-        // Mock FileReader on the window object
-        const originalFileReader = window.FileReader; // Save original
-        window.FileReader = function() {
-            // console.log("TEST_DEBUG: Mock window.FileReader constructor executed");
-            this.readAsDataURL = (file) => {
-                // console.log("TEST_DEBUG: Mock window.FileReader.readAsDataURL called with file:", file ? file.name : 'no file');
-                if (this.onload) {
-                    // console.log("TEST_DEBUG: Mock window.FileReader.onload is being triggered.");
-                    this.onload({ target: { result: "mock_filereader_data_url" } });
-                } else {
-                    // console.log("TEST_DEBUG: Mock window.FileReader.onload is undefined.");
-                }
+        try {
+            window.imageToPng = (src, callback, size, crop) => {
+                callback({ url: "mock_png_data_url", width: 100, height: 100 });
             };
-            this.onerror = null;
-        };
 
-        const profilePictureContainer = window.document.createElement('div');
-        profilePictureContainer.setAttribute('profile-picture', '');
+            window.FileReader = function() {
+                this.readAsDataURL = (file) => {
+                    if (this.onload) {
+                        this.onload({ target: { result: "mock_filereader_data_url" } });
+                    }
+                };
+                this.onerror = null;
+            };
 
-        const fileInput = window.document.createElement('input');
-        fileInput.setAttribute('type', 'file');
-        fileInput.setAttribute('image', '');
+            const profilePictureContainer = window.document.createElement('div');
+            profilePictureContainer.setAttribute('profile-picture', '');
+            const fileInput = window.document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('image', '');
+            const imagePreviewArea = window.document.createElement('div');
+            imagePreviewArea.setAttribute('id', 'testImagePreviewArea');
+            const initialImg = window.document.createElement('img');
+            initialImg.setAttribute('src', 'placeholder-for-test.png');
+            imagePreviewArea.appendChild(initialImg);
+            profilePictureContainer.appendChild(fileInput);
+            profilePictureContainer.appendChild(imagePreviewArea);
+            window.document.body.appendChild(profilePictureContainer);
 
-        const imagePreviewArea = window.document.createElement('div');
-        imagePreviewArea.setAttribute('id', 'testImagePreviewArea'); // ID for stable selection
-        imagePreviewArea.setAttribute('image', ''); // Keep if original flint selector needs it
-        const initialImg = window.document.createElement('img');
-        initialImg.setAttribute('src', 'placeholder-for-test.png');
-        imagePreviewArea.appendChild(initialImg);
+            const mockFile = new window.File(["dummy file content"], "test-image.png", { type: "image/png" });
+            Object.defineProperty(fileInput, 'files', { value: [mockFile], writable: true });
 
-        profilePictureContainer.appendChild(fileInput);
-        profilePictureContainer.appendChild(imagePreviewArea);
-        window.document.body.appendChild(profilePictureContainer);
+            if (typeof window.editProfilePicture !== 'function') {
+                assertEquals(true, false, "window.editProfilePicture function is not defined.");
+                window.document.body.removeChild(profilePictureContainer);
+                return;
+            }
 
-        const mockFile = new window.File(["dummy file content"], "test-image.png", { type: "image/png" });
-        Object.defineProperty(fileInput, 'files', { value: [mockFile], writable: true });
+            window.editProfilePicture();
 
-        if (typeof window.editProfilePicture !== 'function') {
-            assertEquals(true, false, "window.editProfilePicture function is not defined.");
-            window.document.body.removeChild(profilePictureContainer);
-            // Restore mocks
-            window.imageToPng = originalImageToPng;
-            window.FileReader = originalFileReader;
-            return;
-        }
+            // First await: allow fetch Promise to resolve, modalError to be called,
+            // and its (mocked immediate) setTimeout to create modal shell.
+            await new Promise(resolve => setTimeout(resolve, 0));
+            // Second await: allow any subsequent microtask or immediate setTimeout
+            // used by modalError to populate content.
+            await new Promise(resolve => setTimeout(resolve, 0));
 
-        // console.log("TEST_DEBUG: Calling window.editProfilePicture()");
-        window.editProfilePicture();
-
-        nativeSetTimeout(() => {
-            // console.log("TEST_DEBUG: nativeSetTimeout callback executing. Checking for modal.");
-            // console.log("TEST_DEBUG: Body HTML:", window.document.body.innerHTML);
             const errorModalContentElement = window.document.querySelector("modal[error] error");
-
             assertEquals(
                 true,
                 !!errorModalContentElement,
@@ -82,15 +70,16 @@ const tests = {
             if (errorModalContentElement) {
                 assertEquals(
                     "Test error",
-                    errorModalContentElement.textContent.trim(),
+                    errorModalContentElement.innerText.trim(),
                     "Error message in modal should be 'Test error'."
                 );
             }
             window.document.body.removeChild(profilePictureContainer);
-            // Restore mocks
+
+        } finally {
             window.imageToPng = originalImageToPng;
             window.FileReader = originalFileReader;
-        }, 100); // Using a slightly longer delay
+        }
     }
 };
 
