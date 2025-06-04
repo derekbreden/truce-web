@@ -70,7 +70,7 @@ const tests = {
             if (errorModalContentElement) {
                 assertEquals(
                     "Test error",
-                    errorModalContentElement.textContent.trim(),
+                    errorModalContentElement.innerText.trim(),
                     "Error message in modal should be 'Test error'."
                 );
             }

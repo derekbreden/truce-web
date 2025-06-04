@@ -153,9 +153,11 @@ const $ = (selector_or_flint, flint_args_or_element) => {
             element.value = content;
           } else {
             element.textContent = content;
+            element.innerText = content;
           }
         } else if (rest.length) {
           element.textContent = rest;
+          element.innerText = rest;
         }
       }
 
