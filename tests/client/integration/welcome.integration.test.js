@@ -1,10 +1,10 @@
 const path = require('path');
-const { loadAllClientScripts } = require('../shared/testHelpers.js');
+const { setupIntegrationTestEnvironment } = require('./../shared/integrationTestSetup.js');
 const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
     testInitialPageShowsWelcomeOrTerms: () => {
-        const window = loadAllClientScripts();
+        const window = setupIntegrationTestEnvironment();
         // The welcome header is specifically <h2 welcome><span>Terms and conditions</span></h2>
         const welcomeHeaderSpan = window.document.querySelector('h2[welcome] span');
 
@@ -22,7 +22,7 @@ const tests = {
     },
 
     testAgreeingToTermsNavigatesToNextPageAndSetsLocalStorage: async () => {
-        const window = loadAllClientScripts();
+        const window = setupIntegrationTestEnvironment();
 
         // Corrected selector for the "Join the Discussion" button
         const joinButton = window.document.querySelector('a[href="/topics"][big]');

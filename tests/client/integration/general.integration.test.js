@@ -1,10 +1,10 @@
 const path = require('path');
-const { loadAllClientScripts } = require('../shared/testHelpers.js');
+const { setupIntegrationTestEnvironment } = require('./../shared/integrationTestSetup.js');
 const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
     testRealIndexHtmlLoads: () => {
-        const window = loadAllClientScripts(); // This should mock setTimeout and fetch
+        const window = setupIntegrationTestEnvironment(); // This should mock setTimeout and fetch
         assertEquals(false, window.is_android);
     }
     // The testEditProfilePictureShowsErrorModal has been moved

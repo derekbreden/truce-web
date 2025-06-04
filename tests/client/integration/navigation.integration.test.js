@@ -1,13 +1,13 @@
 const path = require('path');
-const { loadAllClientScripts } = require('../shared/testHelpers.js');
+const { setupIntegrationTestEnvironment } = require('./../shared/integrationTestSetup.js');
 const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
     testNavigateToFirstTopicDetail: async () => {
-        const window = loadAllClientScripts();
+        const window = setupIntegrationTestEnvironment();
 
         // Initial check for window.state
-        assertEquals(true, !!window.state, "window.state should be defined after loadAllClientScripts.");
+        assertEquals(true, !!window.state, "window.state should be defined after setupIntegrationTestEnvironment.");
         if (!window.state) return; // Guard against further errors if state is not defined
 
         const { document, state } = window; // Destructure after checking window.state
@@ -60,7 +60,7 @@ const tests = {
                 image_uuids: null
             };
             // We need to load renderTopic to manually render one for the test to proceed
-            const renderTopic = window.renderTopic; // Assumes renderTopic is globally available after loadAllClientScripts
+            const renderTopic = window.renderTopic; // Assumes renderTopic is globally available after setupIntegrationTestEnvironment
             if (renderTopic) {
                  const $mockTopic = renderTopic(mockTopicData);
                  topicsWrapper.appendChild($mockTopic);
