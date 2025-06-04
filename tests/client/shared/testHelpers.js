@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
-const esprima = require('esprima');
 
 // New loadClientScript function
 function loadClientScript(filePath, globalMocks, constNamesToReturn) {
