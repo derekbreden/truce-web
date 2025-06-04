@@ -1,5 +1,5 @@
 const path = require('path');
-const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers');
+const { loadClientScript, createMockDocument, createMockWindow } = require('../shared/testHelpers.js');
 
 // --- Mocking browser environment ---
 const mockDocument = createMockDocument();
@@ -95,7 +95,7 @@ let imageToPng;
 
 try {
   imageToPng = loadClientScript(
-    path.resolve(__dirname, '../client/imageToPng.js'),
+    path.resolve(__dirname, '../../../client/imageToPng.js'),
     { Image: global.Image, document: global.document },
     "imageToPng"
   );
@@ -105,7 +105,7 @@ try {
 }
 
 // Use the new testUtils
-const { assertEquals, runTests: runTestsFromUtils } = require('./testUtils');
+const { assertEquals, runTests: runTestsFromUtils } = require('../shared/testUtils.js');
 
 // --- Test Case Helper ---
 function runImageTest({

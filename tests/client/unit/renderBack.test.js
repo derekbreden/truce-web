@@ -1,6 +1,6 @@
 const path = require('path');
-const { assertEquals, runTests } = require('./testUtils.js');
-const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers.js');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
+const { loadClientScript, createMockDocument, createMockWindow } = require('../shared/testHelpers.js');
 
 // Create mock document and window
 const mockDocument = createMockDocument();
@@ -8,7 +8,7 @@ const mockWindow = createMockWindow(mockDocument);
 
 // Load real flint.js
 const $ = loadClientScript(
-  path.join(__dirname, '../client/flint.js'),
+  path.join(__dirname, '../../../client/flint.js'),
   { document: mockDocument, window: mockWindow },
   '$' // Ensure we get the $ function
 );
@@ -45,7 +45,7 @@ mockDocument.body.appendChild(mainContentWrapperElement);
 
 try {
   renderBack = loadClientScript(
-    path.join(__dirname, '../client/renderBack.js'),
+    path.join(__dirname, '../../../client/renderBack.js'),
     {
       "$": $,
       "state": global.state,

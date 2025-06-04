@@ -1,6 +1,6 @@
 const path = require('path');
-const { assertEquals, runTests } = require('./testUtils');
-const { loadClientScript, createMockFunction, createMockDocument, createMockWindow } = require('./testHelpers');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
+const { loadClientScript, createMockFunction, createMockDocument, createMockWindow } = require('../shared/testHelpers.js');
 
 // Mock global dependencies
 let mockState;
@@ -81,7 +81,7 @@ const setupMocks = () => {
   // Load client/websocket.js
   // No specific const is exported or needed; the script execution itself is what we're testing.
   loadClientScript(
-    path.resolve(__dirname, '../client/websocket.js'),
+    path.resolve(__dirname, '../../../client/websocket.js'),
     {
       state: mockState,
       window: mockWindow,

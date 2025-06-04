@@ -1,6 +1,6 @@
 const path = require("path")
-const { loadClientScript, createMockDocument, createMockWindow } = require("./testHelpers")
-const { assertEquals, runTests } = require("./testUtils")
+const { loadClientScript, createMockDocument, createMockWindow } = require("../shared/testHelpers.js")
+const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 // Global Variables for Mocks and Loaded Functions
 let mockDocumentInstance, mockWindowInstance, $, modalConfirm, modalInfo, modalError, alertInfo, alertError;
@@ -41,7 +41,7 @@ mockState = { most_recent_error: null }; // Already declared, ensure it's reset 
 mockDebugLog = []; // Already declared, ensure it's reset here
 
 // Load client/flint.js
-const flintPath = path.resolve(__dirname, "../client/flint.js");
+const flintPath = path.resolve(__dirname, "../../../client/flint.js");
 $ = loadClientScript(flintPath, { document: mockDocumentInstance, window: mockWindowInstance }, "$");
 
 // Update mockWindowInstance with loaded flint $ and other mocks
@@ -53,7 +53,7 @@ mockWindowInstance.clearTimeout = mockClearTimeout;
 // mockWindowInstance.document is already set by createMockWindow
 
 // Load functions from client/modals.js
-const modalsScriptPath = path.join(__dirname, "../client/modals.js");
+const modalsScriptPath = path.join(__dirname, "../../../client/modals.js");
 const functionsToLoad = ["modalConfirm", "modalInfo", "modalError", "alertInfo", "alertError"];
 const loadedFunctions = loadClientScript(modalsScriptPath, mockWindowInstance, functionsToLoad);
 
