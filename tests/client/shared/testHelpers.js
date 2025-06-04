@@ -509,19 +509,18 @@ function loadAllClientScripts() {
     includeNodeLocations: true,
     virtualConsole: virtualConsole,
     beforeParse(window) {
-      // window.is_test = true; // This prevents WebSocket initialization if not mocked
 
       // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
       window.WebSocket = function(url) {
-        console.log(`Mock WebSocket attempting to connect to: ${url}`);
+        // console.log(`Mock WebSocket attempting to connect to: ${url}`);
         this.send = function(data) {
-          console.log(`Mock WebSocket send: ${data}`);
+          // console.log(`Mock WebSocket send: ${data}`);
         };
         this.close = function() {
-          console.log("Mock WebSocket close");
+          // console.log("Mock WebSocket close");
         };
         this.addEventListener = function(event, callback) {
-          console.log(`Mock WebSocket addEventListener for ${event}`);
+          // console.log(`Mock WebSocket addEventListener for ${event}`);
           // Store listeners if needed for more complex simulation, e.g., this['on'+event] = callback;
         };
         // Simulate open and close events if necessary for client logic, though likely not for this test
@@ -552,11 +551,11 @@ function loadAllClientScripts() {
 
       if (!window.fetch) {
         window.fetch = async function(url, options) {
-          console.log(`Mock fetch called for URL: ${url}`, options);
+          // console.log(`Mock fetch called for URL: ${url}`, options);
           if (url === "/session") {
             const body = options && options.body ? JSON.parse(options.body) : {};
             if (body.path === "/topics") {
-              console.log("Mock fetch returning success for /topics");
+              // console.log("Mock fetch returning success for /topics");
               return {
                 ok: true,
                 status: 200,
@@ -578,7 +577,7 @@ function loadAllClientScripts() {
             }
           }
           // Default mock fetch for other URLs or unhandled session paths
-          console.log("Mock fetch returning default error");
+          // console.log("Mock fetch returning default error");
           return {
             ok: false,
             status: 500,

@@ -1,7 +1,4 @@
 const reconnectWs = () => {
-  if (window.is_test) {
-    return false
-  }
   state.ws = new WebSocket(`wss://${window.location.host}`);
   state.ws.addEventListener("message", (event) => {
     if (event?.data === "UPDATE") {
