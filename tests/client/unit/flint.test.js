@@ -60,7 +60,7 @@ function testCreateParagraphWithText() {
   assertEquals(!!$p, true, "Test P with Text: element should be created");
   if (!$p) return;
   assertEquals($p.tagName, "P", "Test P with Text: tagName should be P");
-  assertEquals($p.innerText, "Hello World", "Test P with Text: innerText should be 'Hello World'");
+  assertEquals($p.textContent, "Hello World", "Test P with Text: textContent should be 'Hello World'");
 }
 
 function testCreateInputWithAttributes() {
@@ -85,7 +85,7 @@ function testCreateNestedElements() {
   assertEquals(!!$li, true, "Test Nested Elements: LI element should be created");
   if (!$li) return;
   assertEquals($li.tagName, "LI", "Test Nested Elements: Child tagName should be LI");
-  assertEquals($li.innerText, "Item 1", "Test Nested Elements: Child innerText should be 'Item 1'");
+  assertEquals($li.textContent, "Item 1", "Test Nested Elements: Child textContent should be 'Item 1'");
 }
 
 function testArgSubstitutionText() {
@@ -94,7 +94,7 @@ function testArgSubstitutionText() {
   assertEquals(!!$h1, true, "Test Arg Substitution Text: element should be created");
   if (!$h1) return;
   assertEquals($h1.tagName, "H1", "Test Arg Substitution Text: tagName should be H1");
-  assertEquals($h1.innerText, "Test Title", "Test Arg Substitution Text: innerText should be 'Test Title'");
+  assertEquals($h1.textContent, "Test Title", "Test Arg Substitution Text: textContent should be 'Test Title'");
 }
 
 function testArgSubstitutionAttrValue() {
@@ -145,9 +145,9 @@ function testCreateMultipleRootElements() {
 function testArrayArgument() {
   beforeEachFlintTest();
   const mockChild1 = mockDocumentInstance.createElement('span'); // Assuming mockDocument is in scope
-  mockChild1.innerText = "Child 1";
+  mockChild1.textContent = "Child 1";
   const mockChild2 = mockDocumentInstance.createElement('span');
-  mockChild2.innerText = "Child 2";
+  mockChild2.textContent = "Child 2";
 
   const $div = $("\n  div $1", [[mockChild1, mockChild2]]);
   assertEquals(!!$div, true, "Test Array Argument: DIV element should be created");
@@ -157,8 +157,8 @@ function testArrayArgument() {
 
   // Current flint.js behavior for array arguments used as element content (e.g., "div $1"):
   // Flint.js correctly identifies the array argument. However, when substituting this array
-  // into the content of the 'div', it effectively does `div.innerText = arrayArgument;`.
-  // Assigning an array (or a DocumentFragment) to innerText results in its string representation
+  // into the content of the 'div', it effectively does `div.textContent = arrayArgument;`.
+  // Assigning an array (or a DocumentFragment) to textContent results in its string representation
   // being set as the text (e.g., "[object HTMLSpanElement],[object HTMLSpanElement]" or "[object DocumentFragment]"),
   // rather than appending the actual elements from the array/fragment as children.
   // Thus, the div element remains empty of actual child DOM elements.
@@ -167,11 +167,11 @@ function testArrayArgument() {
   // a DocumentFragment containing the elements from the array, which is a different behavior.
   //
   // This test confirms the current behavior where the div has no children.
-  assertEquals(($div.children || []).length, 0, "Test Array Argument: DIV should have 0 children due to array being set to innerText.");
+  assertEquals(($div.children || []).length, 0, "Test Array Argument: DIV should have 0 children due to array being set to textContent.");
 
   // The large commented-out block of assertions, which described a hypothetical alternative behavior
   // for array arguments (direct child appending), has been removed to clean up the test file.
-  // The current behavior (setting innerText to the string representation of the array)
+  // The current behavior (setting textContent to the string representation of the array)
   // is correctly asserted above and documented in the preceding comments.
 }
 
@@ -237,7 +237,7 @@ function testSelectSingleElement() {
   // Create the specific element this test will try to select.
   const mockSingleGlobal = mockDocumentInstance.createElement('div');
   mockSingleGlobal.setAttribute('id', 'singleElement');
-  mockSingleGlobal.innerText = "Single";
+  mockSingleGlobal.textContent = "Single";
   // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#singleElement");
@@ -248,7 +248,7 @@ function testSelectSingleElement() {
   }
 
   assertEquals($el.tagName, "DIV", "Test Select Single: tagName should be DIV");
-  assertEquals($el.innerText, "Single", "Test Select Single: innerText should be 'Single'");
+  assertEquals($el.textContent, "Single", "Test Select Single: textContent should be 'Single'");
   assertEquals(typeof $el.forEach, "function", "Test Select Single: Should have a .forEach helper method");
   // No teardown needed here
 }
@@ -259,11 +259,11 @@ function testSelectMultipleElements() {
   // Create the specific elements this test will try to select.
   const mockMultiple1Global = mockDocumentInstance.createElement('span');
   mockMultiple1Global.setAttribute('class', 'multipleElements');
-  mockMultiple1Global.innerText = "Multiple 1";
+  mockMultiple1Global.textContent = "Multiple 1";
 
   const mockMultiple2Global = mockDocumentInstance.createElement('span');
   mockMultiple2Global.setAttribute('class', 'multipleElements');
-  mockMultiple2Global.innerText = "Multiple 2";
+  mockMultiple2Global.textContent = "Multiple 2";
   // mockDocumentInstance.createElement automatically adds these to mockDocumentInstance._elements
 
   const $els = $(".multipleElements");
@@ -276,12 +276,12 @@ function testSelectMultipleElements() {
   assertEquals($els.length, 2, "Test Select Multiple: Should find 2 elements");
   assertEquals(typeof $els.forEach, "function", "Test Select Multiple: Should be NodeList-like (have forEach)");
   if ($els.length === 2) {
-    // Order might not be guaranteed by simple _elements scan, sort by innerText for stable test
-    const sortedEls = Array.from($els).sort((a, b) => a.innerText.localeCompare(b.innerText));
+    // Order might not be guaranteed by simple _elements scan, sort by textContent for stable test
+    const sortedEls = Array.from($els).sort((a, b) => (a.textContent || "").localeCompare(b.textContent || ""));
     assertEquals(sortedEls[0].tagName, "SPAN", "Test Select Multiple: First element tagName");
-    assertEquals(sortedEls[0].innerText, "Multiple 1", "Test Select Multiple: First element text");
+    assertEquals(sortedEls[0].textContent, "Multiple 1", "Test Select Multiple: First element text");
     assertEquals(sortedEls[1].tagName, "SPAN", "Test Select Multiple: Second element tagName");
-    assertEquals(sortedEls[1].innerText, "Multiple 2", "Test Select Multiple: Second element text");
+    assertEquals(sortedEls[1].textContent, "Multiple 2", "Test Select Multiple: Second element text");
   }
   // No teardown needed here
 }
@@ -416,10 +416,10 @@ function testHelperForEachMultipleElements() {
   // Create the specific elements this test will use.
   const el1 = mockDocumentInstance.createElement('p');
   el1.setAttribute('class', 'testClassForForEach');
-  el1.innerText = "Item 1";
+  el1.textContent = "Item 1";
   const el2 = mockDocumentInstance.createElement('p');
   el2.setAttribute('class', 'testClassForForEach');
-  el2.innerText = "Item 2";
+  el2.textContent = "Item 2";
   // mockDocumentInstance.createElement automatically adds them to mockDocumentInstance._elements
 
   const $els = $(".testClassForForEach");
@@ -445,8 +445,8 @@ function testHelperForEachMultipleElements() {
   });
 
   assertEquals(callbackCount, 2, "Test .forEach() Multiple: Callback should be called twice.");
-  // Sort $els and receivedElements by innerText for stable comparison, as QSA order isn't guaranteed
-  const sortFn = (a,b) => (a.innerText || "").localeCompare(b.innerText || "");
+  // Sort $els and receivedElements by textContent for stable comparison, as QSA order isn't guaranteed
+  const sortFn = (a,b) => (a.textContent || "").localeCompare(b.textContent || "");
   const sortedOriginals = Array.from($els).sort(sortFn);
   const sortedReceived = receivedElements.sort(sortFn);
 

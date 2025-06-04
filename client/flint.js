@@ -152,10 +152,10 @@ const $ = (selector_or_flint, flint_args_or_element) => {
           if (element.tagName === "TEXTAREA") {
             element.value = content;
           } else {
-            element.innerText = content;
+            element.textContent = content;
           }
         } else if (rest.length) {
-          element.innerText = rest;
+          element.textContent = rest;
         }
       }
 
