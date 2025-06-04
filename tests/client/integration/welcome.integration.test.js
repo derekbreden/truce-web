@@ -5,6 +5,28 @@ const { assertEquals, runTests } = require('../shared/testUtils.js');
 const tests = {
     testInitialPageShowsWelcomeOrTerms: () => {
         const window = setupIntegrationTestEnvironment();
+
+        // Mock for initial load of "/" path
+        window.setMockFetchResponses([
+            {
+                requestMatcher: (url, options) => {
+                    if (url !== "/session") return false;
+                    try {
+                        const body = JSON.parse(options.body);
+                        return body.path === "/" && !body.min_topic_create_date; // Initial load
+                    } catch (e) { return false; }
+                },
+                status: 200,
+                responseBody: {
+                    path: "/",
+                    topics: [], comments: [], activities: [], notifications: [],
+                    user_slug: null, subscribed_to_users: 0, user_id: null, email: null,
+                    display_name: null, profile_picture_uuid: null, display_name_index: 0,
+                    has_more: false
+                }
+            }
+        ]);
+
         // The welcome header is specifically <h2 welcome><span>Terms and conditions</span></h2>
         const welcomeHeaderSpan = window.document.querySelector('h2[welcome] span');
 
@@ -23,6 +45,45 @@ const tests = {
 
     testAgreeingToTermsNavigatesToNextPageAndSetsLocalStorage: async () => {
         const window = setupIntegrationTestEnvironment();
+
+        // Setup mock API responses for this test
+        window.setMockFetchResponses([
+            { // Mock for the initial fetch when path is "/"
+                requestMatcher: (url, options) => {
+                    if (url !== "/session") return false;
+                    try {
+                        const body = JSON.parse(options.body);
+                        return body.path === "/" && !body.min_topic_create_date;
+                    } catch (e) { return false; }
+                },
+                status: 200,
+                responseBody: {
+                    path: "/",
+                    topics: [], comments: [], activities: [], notifications: [],
+                    user_slug: null, subscribed_to_users: 0, user_id: null, email: null,
+                    display_name: null, profile_picture_uuid: null, display_name_index: 0,
+                    has_more: false
+                }
+            },
+            { // Mock for the fetch when path is "/topics" (after click)
+                requestMatcher: (url, options) => {
+                    if (url !== "/session") return false;
+                    try {
+                        const body = JSON.parse(options.body);
+                        return body.path === "/topics" && !body.min_topic_create_date;
+                    } catch (e) { return false; }
+                },
+                status: 200,
+                responseBody: {
+                    path: "/topics",
+                    topics: [], // Empty topics list is fine for this test's assertions
+                    comments: [], activities: [], notifications: [],
+                    user_slug: null, subscribed_to_users: 0, user_id: null, email: null,
+                    display_name: null, profile_picture_uuid: null, display_name_index: 0,
+                    has_more: false
+                }
+            }
+        ]);
 
         // Corrected selector for the "Join the Discussion" button
         const joinButton = window.document.querySelector('a[href="/topics"][big]');
