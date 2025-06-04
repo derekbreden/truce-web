@@ -21,7 +21,7 @@ function clearTestResults() {
 async function runTests(testFileName, testFunctions, includeTimer) {
   clearTestResults();
   const startTime = new Date()
-  console.log(`\n--- Test Results for ${testFileName} ---`);
+  console.log(`\n  ${testFileName}`);
 
   for (const testFn of testFunctions) {
     try {
@@ -51,16 +51,16 @@ async function runTests(testFileName, testFunctions, includeTimer) {
       // console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`);
       passedCount++;
     } else {
-      console.log(`\x1b[31mFAIL:\x1b[0m ${result.message}`);
-      console.log(`  Expected: ${JSON.stringify(result.expected)}`);
-      console.log(`  Actual:   ${JSON.stringify(result.actual)}`);
+      console.log(`  \x1b[31mFAIL:\x1b[0m ${result.message}`);
+      console.log(`    Expected: ${JSON.stringify(result.expected)}`);
+      console.log(`    Actual:   ${JSON.stringify(result.actual)}`);
       failedCount++;
     }
   });
 
-  console.log(`\x1b[32mPASSED:\x1b[0m ${passedCount}`);
+  console.log(`  \x1b[32mPASSED:\x1b[0m ${passedCount}`);
   if (failedCount) {
-    console.log(`\x1b[31mFAILED:\x1b[0m ${failedCount}`);
+    console.log(`  \x1b[31mFAILED:\x1b[0m ${failedCount}`);
   } else {
     // console.log(`FAILED: ${failedCount}`);
   }
