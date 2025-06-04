@@ -534,22 +534,15 @@ function loadAllClientScripts() {
 
       if (!window.fetch) {
         window.fetch = async function(url, options) {
+          console.log(`MOCK FETCH CALLED: URL=${url}, Options=${JSON.stringify(options)}`); // Debug log
           // Log the fetch call for debugging during tests if needed
           // console.log(`Mock fetch called for URL: ${url}`, options);
           return {
-            ok: true,
-            status: 200,
-            statusText: "OK",
-            headers: {
-              get: function(headerName) {
-                if (headerName === "Content-Type") {
-                  return "application/json";
-                }
-                return null;
-              }
-            },
-            json: async () => ({ success: true }),
-            text: async () => JSON.stringify({ success: true })
+            ok: false,
+            status: 500,
+            statusText: "Internal Server Error",
+            json: async () => ({ success: false, error: "Test error" }),
+            text: async () => JSON.stringify({ success: false, error: "Test error" })
           };
         };
       }
