@@ -62,15 +62,27 @@ alert("Success");
 This project contains both standard server-side Node.js modules and client-side JavaScript files that are handled in a unique, non-modular way. The testing approach varies slightly depending on what you are testing. Server-side code and any client-side code structured as standard modules can be tested using typical Node.js testing patterns. However, for client-side scripts that are globally included (as described in 'Client-Side File Organization'), a special approach is needed.
 
 ### How to run tests
-To run all automated tests, use the following command from the project root:
+The primary way to run all automated tests is using the following command from the project root:
 ```bash
-npm install jsdom
 npm test
 ```
-This will execute all test files located in the `tests/` directory that end with `.test.js`.
+This command executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. When running all tests, the output will be categorized into "Unit Tests", "Integration Tests", and "Other Tests", each with its own summary.
+
+You can also run specific categories of tests:
+
+*   **To run only unit tests** (tests located in any directory named `unit` within `tests/`):
+    ```bash
+    npm run test:unit
+    ```
+*   **To run only integration tests** (tests located in any directory named `integration` within `tests/`):
+    ```bash
+    npm run test:integration
+    ```
+
+Make sure you have run `npm install` at least once to install all necessary dependencies, including those required for testing (like `jsdom`).
 
 ### How to write new tests
-Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `tests/` directory or its subdirectories.
+Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `tests/` directory or its subdirectories. To be categorized correctly, unit tests should be placed within a subdirectory named `unit` (e.g., `tests/client/unit`) and integration tests within a subdirectory named `integration` (e.g., `tests/server/integration`).
 
 Tests are written in Node.js.
 

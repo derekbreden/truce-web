@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node runAllTests.js"
+    "test": "node runAllTests.js all",
+    "test:unit": "node runAllTests.js unit",
+    "test:integration": "node runAllTests.js integration"
   },
   "keywords": [],
   "author": "",
