@@ -3,21 +3,29 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const testDir = path.join(__dirname, 'tests');
-let testFilesFound = [];
 
 /**
- * Recursively finds all files ending with .test.js in a given directory.
+ * Recursively finds all files ending with .test.js in a given directory
+ * and categorizes them.
  * @param {string} directory - The directory to search.
+ * @param {object} categorizedFiles - An object to store categorized file paths.
  */
-function findTestFiles(directory) {
+function findTestFiles(directory, categorizedFiles) {
   try {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(directory, entry.name);
       if (entry.isDirectory()) {
-        findTestFiles(fullPath);
+        findTestFiles(fullPath, categorizedFiles);
       } else if (entry.isFile() && entry.name.endsWith('.test.js')) {
-        testFilesFound.push(fullPath);
+        const pathParts = fullPath.split(path.sep);
+        if (pathParts.includes('unit')) {
+          categorizedFiles.unit.push(fullPath);
+        } else if (pathParts.includes('integration')) {
+          categorizedFiles.integration.push(fullPath);
+        } else {
+          categorizedFiles.other.push(fullPath);
+        }
       }
     }
   } catch (error) {
@@ -58,67 +66,139 @@ function executeTestFile(filePath) {
  * Main function to run all tests.
  */
 async function main() {
-  console.log('--- Searching for test files ---');
-  findTestFiles(testDir);
+  let testTypeArg = process.argv[2] || 'all';
+  let mainHeader = '';
 
-  if (testFilesFound.length === 0) {
-    console.log('No test files found in tests/ ending with .test.js.');
-    process.exit(0); // Exit successfully as per requirement
+  const validTestTypes = ['unit', 'integration', 'all'];
+  if (!validTestTypes.includes(testTypeArg)) {
+    console.warn(`Unknown test type: ${testTypeArg}. Defaulting to 'all'.`);
+    testTypeArg = 'all';
+  }
+
+  switch (testTypeArg) {
+    case 'unit':
+      mainHeader = 'Running Unit Tests';
+      break;
+    case 'integration':
+      mainHeader = 'Running Integration Tests';
+      break;
+    case 'all':
+      mainHeader = 'Running All Tests';
+      break;
+  }
+  console.log(`--- ${mainHeader} ---`);
+
+  console.log('--- Searching for test files ---');
+  const categorizedFiles = { unit: [], integration: [], other: [] };
+  findTestFiles(testDir, categorizedFiles);
+
+  let filesToRun = [];
+  let totalFilesFound = 0;
+
+  if (testTypeArg === 'unit') {
+    filesToRun = [{ category: 'unit', files: categorizedFiles.unit, header: 'Unit Tests' }];
+    totalFilesFound = categorizedFiles.unit.length;
+  } else if (testTypeArg === 'integration') {
+    filesToRun = [{ category: 'integration', files: categorizedFiles.integration, header: 'Integration Tests' }];
+    totalFilesFound = categorizedFiles.integration.length;
+  } else { // 'all'
+    filesToRun = [
+      { category: 'unit', files: categorizedFiles.unit, header: 'Unit Tests' },
+      { category: 'integration', files: categorizedFiles.integration, header: 'Integration Tests' },
+      { category: 'other', files: categorizedFiles.other, header: 'Other Tests' },
+    ];
+    totalFilesFound = categorizedFiles.unit.length + categorizedFiles.integration.length + categorizedFiles.other.length;
+  }
+
+  if (totalFilesFound === 0) {
+    console.log(`No test files found for the specified type '${testTypeArg}'.`);
+    process.exit(0);
     return;
   }
 
-  console.log(`Found ${testFilesFound.length} test file(s):\n${testFilesFound.map(f => `- ${path.relative(__dirname, f)}`).join('\n')}\n`);
+  console.log(`Found ${totalFilesFound} test file(s) in total for type '${testTypeArg}'.`);
+  if (testTypeArg === 'all') {
+    if(categorizedFiles.unit.length > 0) console.log(`  Unit Tests: ${categorizedFiles.unit.length}`);
+    if(categorizedFiles.integration.length > 0) console.log(`  Integration Tests: ${categorizedFiles.integration.length}`);
+    if(categorizedFiles.other.length > 0) console.log(`  Other Tests: ${categorizedFiles.other.length}`);
+  }
+  console.log(''); // Newline for separation
 
-  let passedCount = 0;
-  let failedCount = 0;
-  const failedFileNames = [];
+  const results = {
+    unit: { passed: 0, failed: 0, failedFiles: [] },
+    integration: { passed: 0, failed: 0, failedFiles: [] },
+    other: { passed: 0, failed: 0, failedFiles: [] },
+  };
+  let totalPassedOverall = 0;
+  let totalFailedOverall = 0;
 
-  for (const filePath of testFilesFound) {
-    const startTime = new Date()
-    const fileName = path.basename(filePath);
-    // A small separator before each test file's output begins, handled by testUtils.js now.
-    // console.log(`\n--- Executing: ${fileName} ---`);
-    try {
-      const exitCode = await executeTestFile(filePath);
-      if (exitCode === 0) {
-        passedCount++;
-        // Test file itself prints PASS/FAIL summary, so only add to overall summary here.
-      } else {
-        failedCount++;
-        failedFileNames.push(fileName);
-        // Test file itself prints PASS/FAIL summary.
-        // console.error(`--- ${fileName} FAILED (Exit Code: ${exitCode}) ---`);
-      }
-    } catch (error) {
-      // This catch is for errors in spawning the process itself, already logged in executeTestFile
-      failedCount++;
-      failedFileNames.push(`${fileName} (execution error)`);
+  for (const group of filesToRun) {
+    if (group.files.length === 0) continue;
+
+    if (testTypeArg === 'all') {
+      console.log(`--- Running ${group.header} (${group.files.length} file(s)) ---`);
     }
-
-    const endTime = new Date()
-    // if (filePath.includes("loadAllClientScripts.test.js")) {
-    //   console.warn("TIME TO EXECUTE: " + (endTime - startTime) + "ms")
-    // }
-    // Add a small visual separator in the main runner's log after a file finishes.
-    // console.log(`--- Finished: ${fileName} ---\n`);
+    for (const filePath of group.files) {
+      const fileName = path.basename(filePath);
+      // console.log(`\n--- Executing: ${fileName} ---`); // Already handled by testUtils
+      try {
+        const exitCode = await executeTestFile(filePath);
+        if (exitCode === 0) {
+          results[group.category].passed++;
+          totalPassedOverall++;
+        } else {
+          results[group.category].failed++;
+          results[group.category].failedFiles.push(fileName);
+          totalFailedOverall++;
+        }
+      } catch (error) {
+        results[group.category].failed++;
+        results[group.category].failedFiles.push(`${fileName} (execution error)`);
+        totalFailedOverall++;
+      }
+      // console.log(`--- Finished: ${fileName} ---\n`); // Already handled by testUtils
+    }
   }
 
   // --- Report Final Summary ---
-  console.log('\n--- Overall Test Summary ---');
-  console.log(`\x1b[32mTEST FILES PASSED:\x1b[0m ${passedCount}`);
-  if (failedCount) {
-    console.log(`\x1b[31mTEST FILES FAILED:\x1b[0m ${failedCount}`);
-  } else {
-    console.log(`TEST FILES FAILED: ${failedCount}`);
+  console.log(`\n--- ${testTypeArg === 'all' ? 'Overall Test Summary' : mainHeader + ' Summary'} ---`);
+
+  if (testTypeArg === 'all') {
+    for (const group of filesToRun) {
+      if (group.files.length === 0 && !(group.category in categorizedFiles && (categorizedFiles[group.category].length > 0))) {
+        // Don't report for categories that had no files found, unless 'all' and it's a primary category
+         if (!(testTypeArg ==='all' && (group.category === 'unit' || group.category === 'integration'))) continue;
+      }
+
+      // Only print summary for categories that were supposed to run or had files.
+      if (categorizedFiles[group.category].length > 0 || (testTypeArg === 'all' && (group.category === 'unit' || group.category === 'integration' || group.category === 'other'))) {
+        console.log(`\n  --- ${group.header} Summary ---`);
+        console.log(`  \x1b[32mPASSED:\x1b[0m ${results[group.category].passed}`);
+        console.log(`  \x1b[31mFAILED:\x1b[0m ${results[group.category].failed}`);
+        if (results[group.category].failed > 0) {
+          console.log('  Failed files:');
+          results[group.category].failedFiles.forEach(name => console.log(`  - ${name}`));
+        }
+      }
+    }
+    console.log('\n  --- Totals for All Categories ---');
+    console.log(`  \x1b[32mTOTAL FILES PASSED:\x1b[0m ${totalPassedOverall}`);
+    console.log(`  \x1b[31mTOTAL FILES FAILED:\x1b[0m ${totalFailedOverall}`);
+  } else { // Specific test type run
+    const cat = filesToRun[0].category; // Should be only one group
+    console.log(`\x1b[32mPASSED:\x1b[0m ${results[cat].passed}`);
+    console.log(`\x1b[31mFAILED:\x1b[0m ${results[cat].failed}`);
+    if (results[cat].failed > 0) {
+      console.log('\nFailed files:');
+      results[cat].failedFiles.forEach(name => console.log(`- ${name}`));
+    }
   }
 
-  if (failedCount > 0) {
-    console.log('\nFailed test files:');
-    failedFileNames.forEach(name => console.log(`- ${name}`));
+  if (totalFailedOverall > 0) {
     console.log('\nSome test files failed. Exiting with status 1.');
     process.exit(1);
   } else {
-    console.log('\nAll test files passed successfully!');
+    console.log('\nAll selected test files passed successfully!');
     process.exit(0);
   }
 }
