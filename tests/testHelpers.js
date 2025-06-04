@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { JSDOM } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 const esprima = require('esprima');
 
 // New loadClientScript function
@@ -474,20 +474,17 @@ const createMockFunction = (name = 'mockFunction') => {
   return mock;
 };
 
-// Function to load all client-side JavaScript files referenced in index.html
-function loadAllClientScripts(customIndexPath) { // Added customIndexPath parameter
-  const loadedFunctions = {};
-  // try {
-    // 1. Read index.html to find all client-side JavaScript files
-    const indexPath = customIndexPath ? path.resolve(customIndexPath) : path.resolve(__dirname, '../index.html');
-    const indexHtmlContent = fs.readFileSync(indexPath, 'utf8');
-    let finalIndexHtmlContent = indexHtmlContent
+function loadAllClientScripts() {
+  const indexPath = path.resolve(__dirname, '../index.html');
+  const indexHtmlContent = fs.readFileSync(indexPath, 'utf8');
 
+  // Parse the includes
+  const parseIncludes = (fromHtmlContent) => {
+    let returningHtmlContent = fromHtmlContent
     const scriptLineRegex = /(.*<!--#include\s+file="[^"]+\.[^"]+".*)/g;
     const scriptRegex = /[^"]+\.[^"]+/;
     let match;
-    const scriptFiles = [];
-    while ((match = scriptLineRegex.exec(indexHtmlContent)) !== null) {
+    while ((match = scriptLineRegex.exec(fromHtmlContent)) !== null) {
       // Resolve the script path relative to the directory of the indexHtmlFile
       const indexDir = path.dirname(indexPath)
       const fullLine = match[0]
@@ -495,168 +492,73 @@ function loadAllClientScripts(customIndexPath) { // Added customIndexPath parame
       // console.warn(match.index, fullLine.length, filePath)
       // console.warn(fullLine, filePath) 
       const scriptContent = fs.readFileSync(indexDir + "/" + filePath, "utf8")
-      finalIndexHtmlContent = finalIndexHtmlContent.replace(fullLine, scriptContent)
+      returningHtmlContent = returningHtmlContent.replace(fullLine, scriptContent)
     }
-    // console.warn(finalIndexHtmlContent)
-    const dom = new JSDOM(finalIndexHtmlContent, {
-      runScripts: "dangerously", // Allow scripts added to the DOM to run
-      url: "http://localhost", // Necessary for some scripts that might use location/history
-      pretendToBeVisual: true, // Helps with some DOM manipulations if needed
-      includeNodeLocations: true,
-      beforeParse(window) {
-        if (!window.matchMedia) {
-          window.matchMedia = function(query) {
-            return {
-              matches: false, // Or true, depending on what's more suitable for general tests
-              media: query,
-              onchange: null,
-              addListener: function() {}, // Deprecated
-              removeListener: function() {}, // Deprecated
-              addEventListener: function() {},
-              removeEventListener: function() {},
-              dispatchEvent: function() {}
-            };
-          };
-        }
+    return returningHtmlContent
+  }
+  // Parse the initial includes
+  const firstPassHtmlContent = parseIncludes(indexHtmlContent)
+  // Parse the includes of includes
+  const finalIndexHtmlContent = parseIncludes(firstPassHtmlContent)
+  // console.warn(finalIndexHtmlContent)
+  const virtualConsole = new VirtualConsole()
+  virtualConsole.sendTo(console)
+  const dom = new JSDOM(finalIndexHtmlContent, {
+    runScripts: "dangerously", // Allow scripts added to the DOM to run
+    url: "http://localhost", // Necessary for some scripts that might use location/history
+    pretendToBeVisual: true, // Helps with some DOM manipulations if needed
+    includeNodeLocations: true,
+    virtualConsole: virtualConsole,
+    beforeParse(window) {
+      window.is_test = true
 
-        if (!window.fetch) {
-          window.fetch = async function(url, options) {
-            // Log the fetch call for debugging during tests if needed
-            // console.log(`Mock fetch called for URL: ${url}`, options);
-            return {
-              ok: true,
-              status: 200,
-              statusText: "OK",
-              headers: {
-                get: function(headerName) {
-                  if (headerName === "Content-Type") {
-                    return "application/json";
-                  }
-                  return null;
-                }
-              },
-              json: async () => ({ success: true, message: "Mocked fetch response" }),
-              text: async () => JSON.stringify({ success: true, message: "Mocked fetch response" })
-            };
-          };
-        }
+      // Force setTimeout to be faster, to avoid delays
+      //   (add conditional logic here if we need to not do this later)
+      window.setTimeout = (fn) => {
+        fn()
       }
-    })
-    // console.warn(dom)
-    const { window } = dom
 
-    console.warn(window.is_android)
+      if (!window.matchMedia) {
+        window.matchMedia = function(query) {
+          return {
+            matches: false, // Or true, depending on what's more suitable for general tests
+            media: query,
+            onchange: null,
+            addListener: function() {}, // Deprecated
+            removeListener: function() {}, // Deprecated
+            addEventListener: function() {},
+            removeEventListener: function() {},
+            dispatchEvent: function() {}
+          };
+        };
+      }
 
-    return window
+      if (!window.fetch) {
+        window.fetch = async function(url, options) {
+          // Log the fetch call for debugging during tests if needed
+          // console.log(`Mock fetch called for URL: ${url}`, options);
+          return {
+            ok: true,
+            status: 200,
+            statusText: "OK",
+            headers: {
+              get: function(headerName) {
+                if (headerName === "Content-Type") {
+                  return "application/json";
+                }
+                return null;
+              }
+            },
+            json: async () => ({ success: true }),
+            text: async () => JSON.stringify({ success: true })
+          };
+        };
+      }
+    }
+  })
+  const { window } = dom
 
-    // 2. Read the content of each of these JavaScript files
-//     let allScriptsContent = '';
-//     for (const scriptPath of scriptFiles) {
-//       try {
-//         const scriptContent = fs.readFileSync(scriptPath, 'utf8');
-//         allScriptsContent += scriptContent + '\n'; // Add a newline as separator
-//       } catch (fileError) {
-//         console.error(`Error reading script file ${scriptPath}: ${fileError.message}`);
-//         // Continue to try loading other scripts, or re-throw if critical
-//       }
-//     }
-
-//     if (!allScriptsContent.trim()) {
-//         console.warn("No content found in the specified script files.");
-//         return loadedFunctions;
-//     }
-
-//     // 3. Create a JSDOM environment
-//     const dom = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>', {
-//       runScripts: "dangerously", // Allow scripts added to the DOM to run
-//       url: "http://localhost", // Necessary for some scripts that might use location/history
-//       pretendToBeVisual: true // Helps with some DOM manipulations if needed
-//     });
-//     const { window } = dom;
-
-//     // 4. Concatenate the content of all client-side scripts - Done in step 2
-
-//     // --- Esprima Parsing to find const function names ---
-//     const constFunctionNames = [];
-//     try {
-//       const ast = esprima.parseScript(allScriptsContent, { tolerant: true }); // tolerant to handle potential minor syntax issues not breaking execution
-//       for (const node of ast.body) {
-//         if (node.type === 'VariableDeclaration' && node.kind === 'const') {
-//           for (const declarator of node.declarations) {
-//             if (declarator.id && declarator.id.type === 'Identifier' && declarator.init &&
-//                 (declarator.init.type === 'ArrowFunctionExpression' || declarator.init.type === 'FunctionExpression')) {
-//               constFunctionNames.push(declarator.id.name);
-//             }
-//           }
-//         }
-//       }
-//     } catch (parseError) {
-//       console.error(`Error parsing script content with Esprima: ${parseError.message}`);
-//       // Decide if we should throw or continue without const function extraction
-//       // For now, let's log and continue, it might still load var/global functions
-//     }
-
-//     // --- Constructing the Wrapped Script for Evaluation ---
-//     let scriptToEvaluate = allScriptsContent;
-//     if (constFunctionNames.length > 0) {
-//       const privateFunctionAssignments = constFunctionNames.map(name => `  __privateFunctions['${name}'] = typeof ${name} !== 'undefined' ? ${name} : undefined;`).join('\n');
-//       scriptToEvaluate = `
-// (() => {
-// ${allScriptsContent}
-
-//   const __privateFunctions = {};
-// ${privateFunctionAssignments}
-//   return __privateFunctions;
-// })();
-// `;
-//     }
-
-//     // --- JSDOM Evaluation ---
-//     // The JSDOM instance and window object are already created above (before Esprima parsing).
-//     // We will use that existing window object.
-
-//     // Get initial window properties (for var/function declarations)
-//     // This must be from the *same* window instance where scripts will be evaluated.
-//     const initialWindowProps = new Set(Object.getOwnPropertyNames(window));
-
-//     let constFunctions = {};
-//     try {
-//       const evalResult = window.eval(scriptToEvaluate);
-//       if (constFunctionNames.length > 0 && evalResult) {
-//         constFunctions = evalResult;
-//       }
-//     } catch (evalError) {
-//       console.error(`Error executing wrapped script in JSDOM: ${evalError.message}`);
-//       // If wrapper fails, maybe try evaluating original script for var/globals?
-//       // For now, just throw. This is a critical step.
-//       throw evalError;
-//     }
-
-//     // Merge const functions
-//     for (const funcName in constFunctions) {
-//       if (typeof constFunctions[funcName] === 'function') {
-//         loadedFunctions[funcName] = constFunctions[funcName];
-//       }
-//     }
-
-//     // Merge var/global functions (those that became window properties)
-//     const currentWindowProps = Object.getOwnPropertyNames(window);
-//     for (const prop of currentWindowProps) {
-//       if (!initialWindowProps.has(prop) && typeof window[prop] === 'function' && window.hasOwnProperty(prop)) {
-//         if (!loadedFunctions[prop]) { // Avoid overwriting a const function if name collides
-//           loadedFunctions[prop] = window[prop];
-//         }
-//       }
-//     }
-
-//   } catch (error) {
-//     console.error(`Failed to load all client scripts: ${error.message}`);
-//     // Depending on desired behavior, re-throw or return empty/partial object
-//     // For now, returning what has been loaded or an empty object.
-//   }
-
-//   // 7. Return the object containing all the extracted functions
-//   return loadedFunctions;
+  return window
 }
 
 module.exports = {

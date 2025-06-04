@@ -74,6 +74,7 @@ async function main() {
   const failedFileNames = [];
 
   for (const filePath of testFilesFound) {
+    const startTime = new Date()
     const fileName = path.basename(filePath);
     // A small separator before each test file's output begins, handled by testUtils.js now.
     // console.log(`\n--- Executing: ${fileName} ---`);
@@ -93,6 +94,11 @@ async function main() {
       failedCount++;
       failedFileNames.push(`${fileName} (execution error)`);
     }
+
+    const endTime = new Date()
+    // if (filePath.includes("loadAllClientScripts.test.js")) {
+    //   console.warn("TIME TO EXECUTE: " + (endTime - startTime) + "ms")
+    // }
     // Add a small visual separator in the main runner's log after a file finishes.
     // console.log(`--- Finished: ${fileName} ---\n`);
   }
