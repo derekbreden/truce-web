@@ -104,7 +104,7 @@ function testBackButtonNotRendered_RootPath() {
   global.state.path_index = 0;
   renderBack();
   const backButtonWrapper = $('main-content-wrapper[active] main-content .back-forward-wrapper');
-  assertEquals(!backButtonWrapper || backButtonWrapper.length === 0, true, "Test Case 1: Back button wrapper should not exist for root path.");
+  assertEquals(true, !backButtonWrapper || backButtonWrapper.length === 0, "Test Case 1: Back button wrapper should not exist for root path.");
 }
 
 function testBackButtonNotRendered_TopicsPath() {
@@ -114,7 +114,7 @@ function testBackButtonNotRendered_TopicsPath() {
   global.state.path_index = 0;
   renderBack();
   const backButtonWrapper = $('main-content-wrapper[active] main-content .back-forward-wrapper');
-  assertEquals(!backButtonWrapper || backButtonWrapper.length === 0, true, "Test Case 2: Back button wrapper should not exist for /topics path if it's the only history.");
+  assertEquals(true, !backButtonWrapper || backButtonWrapper.length === 0, "Test Case 2: Back button wrapper should not exist for /topics path if it's the only history.");
 }
 
 function testBackButtonRendered_TopicPath_DisplaysTitle() {
@@ -126,14 +126,14 @@ function testBackButtonRendered_TopicPath_DisplaysTitle() {
   renderBack();
 
   const mainContent = $('main-content-wrapper[active] main-content');
-  assertEquals(mainContent && mainContent.children && mainContent.children.length > 0, true, "Test Case 3: Main content should have children.");
+  assertEquals(true, mainContent && mainContent.children && mainContent.children.length > 0, "Test Case 3: Main content should have children.");
   
   const backButtonWrapperElement = mainContent.children[0]; // This is <back-forward-wrapper>
-  assertEquals(backButtonWrapperElement.tagName === 'BACK-FORWARD-WRAPPER', true, "Test Case 3: Correct wrapper is prepended (tag check).");
+  assertEquals(true, backButtonWrapperElement.tagName === 'BACK-FORWARD-WRAPPER', "Test Case 3: Correct wrapper is prepended (tag check).");
 
   const backButtonTextElement = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper p');
   const backButtonText = backButtonTextElement ? backButtonTextElement.innerText : "";
-  assertEquals(backButtonText.includes("Topics"), true, `Test Case 3: Button text includes 'Topics'. Actual: '${backButtonText}'`);
+  assertEquals(true, backButtonText.includes("Topics"), `Test Case 3: Button text includes 'Topics'. Actual: '${backButtonText}'`);
 }
 
 function testBackButtonRendered_TopicPath_ClickNavigates() {
@@ -145,7 +145,7 @@ function testBackButtonRendered_TopicPath_ClickNavigates() {
   renderBack();
   
   const backWrapperToClick = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper');
-  assertEquals(!!backWrapperToClick, true, "Test Case 4: Back wrapper element exists.");
+  assertEquals(true, !!backWrapperToClick, "Test Case 4: Back wrapper element exists.");
   
   if (backWrapperToClick && typeof backWrapperToClick.click === 'function') {
       backWrapperToClick.click();
@@ -153,12 +153,12 @@ function testBackButtonRendered_TopicPath_ClickNavigates() {
     backWrapperToClick.eventListeners.click.forEach(handler => handler.call(backWrapperToClick));
   } else {
     console.error("Click handler not found or not callable for back wrapper in Test Case 4. Element:", backWrapperToClick);
-    assertEquals(false, true, "Test Case 4: Click handler should be registered and callable on back wrapper.");
+    assertEquals(true, false, "Test Case 4: Click handler should be registered and callable on back wrapper.");
   }
 
   assertEquals(global.goToPath.lastCall.path, "/topics", "Test Case 4: goToPath is called with correct path.");
   assertEquals(global.goToPath.lastCall.skip_state, false, "Test Case 4: goToPath is called with skip_state false.");
-  assertEquals(global.goToPath.lastCall.clicked_back, true, "Test Case 4: goToPath is called with clicked_back true.");
+  assertEquals(true, global.goToPath.lastCall.clicked_back, "Test Case 4: goToPath is called with clicked_back true.");
 }
 
 function testBackButtonRendered_CommentPath_DisplaysGenericText() {
@@ -171,7 +171,7 @@ function testBackButtonRendered_CommentPath_DisplaysGenericText() {
 
   const backButtonTextElement = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper p');
   const backButtonText = backButtonTextElement ? backButtonTextElement.innerText : "";
-  assertEquals(backButtonText.includes("Some Topic"), true, `Test Case 5: Button text is 'Some Topic'. Actual: '${backButtonText}'`);
+  assertEquals(true, backButtonText.includes("Some Topic"), `Test Case 5: Button text is 'Some Topic'. Actual: '${backButtonText}'`);
 }
 
 function testBackButtonRendered_UserPath_DisplaysRenderName() {
@@ -185,7 +185,7 @@ function testBackButtonRendered_UserPath_DisplaysRenderName() {
 
   const backButtonTextElement = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper p');
   const backButtonText = backButtonTextElement ? backButtonTextElement.innerText : "";
-  assertEquals(backButtonText.includes("Topics"), true, `Test Case 6: Button text includes 'Topics'. Actual: '${backButtonText}'`);
+  assertEquals(true, backButtonText.includes("Topics"), `Test Case 6: Button text includes 'Topics'. Actual: '${backButtonText}'`);
 }
 
 function testBackButtonRendered_PathWithThreeSegments_CorrectPreviousPath() {
@@ -203,7 +203,7 @@ function testBackButtonRendered_PathWithThreeSegments_CorrectPreviousPath() {
 
   const backButtonTextElement = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper p');
   const backButtonText = backButtonTextElement ? backButtonTextElement.innerText : "";
-  assertEquals(backButtonText.includes("Back"), true, `Test Case 7: Button text contains 'Back'. Actual: '${backButtonText}'`);
+  assertEquals(true, backButtonText.includes("Back"), `Test Case 7: Button text contains 'Back'. Actual: '${backButtonText}'`);
 
   const backWrapperToClick = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper');
    if (backWrapperToClick && typeof backWrapperToClick.click === 'function') {
@@ -211,7 +211,7 @@ function testBackButtonRendered_PathWithThreeSegments_CorrectPreviousPath() {
   } else if (backWrapperToClick && backWrapperToClick.eventListeners && backWrapperToClick.eventListeners.click) {
     backWrapperToClick.eventListeners.click.forEach(handler => handler.call(backWrapperToClick));
   } else {
-     assertEquals(false, true, "Test Case 7: Click handler for back wrapper not found or not callable.");
+     assertEquals(true, false, "Test Case 7: Click handler for back wrapper not found or not callable.");
   }
   assertEquals(global.goToPath.lastCall.path, "/first", "Test Case 7: Click navigates to '/first'.");
 }
@@ -225,10 +225,10 @@ function testBackButtonRemoved_IfPreviousPathIsRootAndOnlyHistory() {
   renderBack();
   
   const backButtonToRoot = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper');
-  assertEquals(!!backButtonToRoot, true, "Test Case 8a: Back button to root should be rendered.");
+  assertEquals(true, !!backButtonToRoot, "Test Case 8a: Back button to root should be rendered.");
   const backButtonToRootTextElement = $('main-content-wrapper[active] main-content back-forward-wrapper back-wrapper p');
   const backButtonToRootText = backButtonToRootTextElement ? backButtonToRootTextElement.innerText : "";
-  assertEquals(backButtonToRootText.includes("Terms and conditions"), true, `Test Case 8a: Button text is 'Terms and conditions'. Actual: '${backButtonToRootText}'`);
+  assertEquals(true, backButtonToRootText.includes("Terms and conditions"), `Test Case 8a: Button text is 'Terms and conditions'. Actual: '${backButtonToRootText}'`);
 
   beforeEach();
   global.state.path = "/nextpage";
@@ -237,7 +237,7 @@ function testBackButtonRemoved_IfPreviousPathIsRootAndOnlyHistory() {
   renderBack();
 
   const backButtonWrapper = $('main-content-wrapper[active] main-content .back-forward-wrapper');
-  assertEquals(!backButtonWrapper || backButtonWrapper.length === 0, true, "Test Case 8b: Back button wrapper is not rendered if no valid previous path.");
+  assertEquals(true, !backButtonWrapper || backButtonWrapper.length === 0, "Test Case 8b: Back button wrapper is not rendered if no valid previous path.");
 }
 
 const allTestFunctions = [
