@@ -46,7 +46,7 @@ function testCreateSimpleDiv() {
     return;
   }
   const $div = $("\n  div"); // Changed to standard string with escaped newline
-  assertEquals(!!$div, true, "Test Simple Div: element should be created");
+  assertEquals(true, !!$div, "Test Simple Div: element should be created");
   if (!$div) return; // Guard against further errors if creation failed
   assertEquals($div.tagName, "DIV", "Test Simple Div: tagName should be DIV");
   assertEquals(typeof $div.attributes, "object", "Test Simple Div: attributes should be an object");
@@ -57,7 +57,7 @@ function testCreateSimpleDiv() {
 function testCreateParagraphWithText() {
   beforeEachFlintTest();
   const $p = $("\n  p Hello World");
-  assertEquals(!!$p, true, "Test P with Text: element should be created");
+  assertEquals(true, !!$p, "Test P with Text: element should be created");
   if (!$p) return;
   assertEquals($p.tagName, "P", "Test P with Text: tagName should be P");
   assertEquals($p.innerText, "Hello World", "Test P with Text: innerText should be 'Hello World'");
@@ -66,7 +66,7 @@ function testCreateParagraphWithText() {
 function testCreateInputWithAttributes() {
   beforeEachFlintTest();
   const $input = $("\n  input[type=text][name=testInput]");
-  assertEquals(!!$input, true, "Test Input with Attributes: element should be created");
+  assertEquals(true, !!$input, "Test Input with Attributes: element should be created");
   if (!$input) return;
   assertEquals($input.tagName, "INPUT", "Test Input with Attributes: tagName should be INPUT");
   assertEquals($input.getAttribute('type'), "text", "Test Input with Attributes: type attribute should be 'text'");
@@ -76,13 +76,13 @@ function testCreateInputWithAttributes() {
 function testCreateNestedElements() {
   beforeEachFlintTest();
   const $ul = $("\n  ul\n    li Item 1");
-  assertEquals(!!$ul, true, "Test Nested Elements: UL element should be created");
+  assertEquals(true, !!$ul, "Test Nested Elements: UL element should be created");
   if (!$ul) return;
   assertEquals($ul.tagName, "UL", "Test Nested Elements: UL tagName should be UL");
   assertEquals(($ul.children || []).length, 1, "Test Nested Elements: UL should have one child");
   if (($ul.children || []).length === 0) return;
   const $li = $ul.children[0];
-  assertEquals(!!$li, true, "Test Nested Elements: LI element should be created");
+  assertEquals(true, !!$li, "Test Nested Elements: LI element should be created");
   if (!$li) return;
   assertEquals($li.tagName, "LI", "Test Nested Elements: Child tagName should be LI");
   assertEquals($li.innerText, "Item 1", "Test Nested Elements: Child innerText should be 'Item 1'");
@@ -91,7 +91,7 @@ function testCreateNestedElements() {
 function testArgSubstitutionText() {
   beforeEachFlintTest();
   const $h1 = $("\n  h1 $1", ["Test Title"]);
-  assertEquals(!!$h1, true, "Test Arg Substitution Text: element should be created");
+  assertEquals(true, !!$h1, "Test Arg Substitution Text: element should be created");
   if (!$h1) return;
   assertEquals($h1.tagName, "H1", "Test Arg Substitution Text: tagName should be H1");
   assertEquals($h1.innerText, "Test Title", "Test Arg Substitution Text: innerText should be 'Test Title'");
@@ -100,7 +100,7 @@ function testArgSubstitutionText() {
 function testArgSubstitutionAttrValue() {
   beforeEachFlintTest();
   const $a = $("\n  a[href=$1][target=_blank]", ["/test-path"]);
-  assertEquals(!!$a, true, "Test Arg Substitution Attr Value: element should be created");
+  assertEquals(true, !!$a, "Test Arg Substitution Attr Value: element should be created");
   if (!$a) return;
   assertEquals($a.tagName, "A", "Test Arg Substitution Attr Value: tagName should be A");
   assertEquals($a.getAttribute('href'), "/test-path", "Test Arg Substitution Attr Value: href attribute should be '/test-path'");
@@ -110,7 +110,7 @@ function testArgSubstitutionAttrValue() {
 function testArgSubstitutionAttrKey() {
   beforeEachFlintTest();
   const $div = $("\n  div[$1=value]", ["data-dynamic-attr"]);
-  assertEquals(!!$div, true, "Test Arg Substitution Attr Key: element should be created");
+  assertEquals(true, !!$div, "Test Arg Substitution Attr Key: element should be created");
   if (!$div) return;
   assertEquals($div.tagName, "DIV", "Test Arg Substitution Attr Key: tagName should be DIV");
   assertEquals($div.getAttribute('data-dynamic-attr'), "value", "Test Arg Substitution Attr Key: dynamic attribute 'data-dynamic-attr' should be 'value'");
@@ -119,7 +119,7 @@ function testArgSubstitutionAttrKey() {
 function testCreateMultipleRootElements() {
   beforeEachFlintTest();
   const $container = $("\n  div[id=one]\n  p[id=two]");
-  assertEquals(!!$container, true, "Test Multiple Roots: Container should be created");
+  assertEquals(true, !!$container, "Test Multiple Roots: Container should be created");
   if (!$container) return;
 
   assertEquals($container.tagName, "DIV", "Test Multiple Roots: Container tagName should be DIV (wrapper)");
@@ -128,14 +128,14 @@ function testCreateMultipleRootElements() {
   if (($container.children || []).length < 2) return; // Guard
 
   const $child1 = $container.children[0];
-  assertEquals(!!$child1, true, "Test Multiple Roots: First child should exist");
+  assertEquals(true, !!$child1, "Test Multiple Roots: First child should exist");
   if ($child1) {
     assertEquals($child1.tagName, "DIV", "Test Multiple Roots: First child should be DIV");
     assertEquals($child1.getAttribute('id'), "one", "Test Multiple Roots: First child id should be 'one'");
   }
 
   const $child2 = $container.children[1];
-  assertEquals(!!$child2, true, "Test Multiple Roots: Second child should exist");
+  assertEquals(true, !!$child2, "Test Multiple Roots: Second child should exist");
   if ($child2) {
     assertEquals($child2.tagName, "P", "Test Multiple Roots: Second child should be P");
     assertEquals($child2.getAttribute('id'), "two", "Test Multiple Roots: Second child id should be 'two'");
@@ -150,7 +150,7 @@ function testArrayArgument() {
   mockChild2.innerText = "Child 2";
 
   const $div = $("\n  div $1", [[mockChild1, mockChild2]]);
-  assertEquals(!!$div, true, "Test Array Argument: DIV element should be created");
+  assertEquals(true, !!$div, "Test Array Argument: DIV element should be created");
   if (!$div) return;
 
   assertEquals($div.tagName, "DIV", "Test Array Argument: tagName should be DIV");
@@ -191,7 +191,7 @@ function testTextNodeArgument() {
   mockDocumentInstance.createTextNode = originalCreateTextNode;
 
   const $returnedNode = $("\n  $1", ["My Text Content"]);
-  assertEquals(!!$returnedNode, true, "Test Text Node Arg Return: A node should be returned.");
+  assertEquals(true, !!$returnedNode, "Test Text Node Arg Return: A node should be returned.");
   if (!$returnedNode) return;
 
   // Assuming the mock text node has nodeType and textContent
@@ -241,7 +241,7 @@ function testSelectSingleElement() {
   // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#singleElement");
-  assertEquals(!!$el, true, "Test Select Single: Element should be found");
+  assertEquals(true, !!$el, "Test Select Single: Element should be found");
   if (!$el) {
     // No teardown needed here as setup handles the next test.
     return;
@@ -267,7 +267,7 @@ function testSelectMultipleElements() {
   // mockDocumentInstance.createElement automatically adds these to mockDocumentInstance._elements
 
   const $els = $(".multipleElements");
-  assertEquals(!!$els, true, "Test Select Multiple: Elements should be found");
+  assertEquals(true, !!$els, "Test Select Multiple: Elements should be found");
   if (!$els) {
     // No teardown needed here
     return;
@@ -305,7 +305,7 @@ function testNestedSelection() {
   // parentEl is now in mockDocumentInstance._elements due to createElement.
 
   const $parent = $("#parentForNested");
-  assertEquals(!!$parent, true, "Test Nested Selection: Parent element should be found");
+  assertEquals(true, !!$parent, "Test Nested Selection: Parent element should be found");
   if (!$parent) {
     // No teardown needed here
     return;
@@ -315,7 +315,7 @@ function testNestedSelection() {
   // The mockElement.querySelectorAll (from createMockElement in testHelpers.js) should handle this.
   // It filters children of the $parent element.
   const $child = $parent.$("p");
-  assertEquals(!!$child, true, "Test Nested Selection: Child element should be found");
+  assertEquals(true, !!$child, "Test Nested Selection: Child element should be found");
   if (!$child) {
     // No teardown needed here
     return;
@@ -339,7 +339,7 @@ function testHelperOnMethod() {
 
   const $el = $("#testButtonForOn"); // Select the element just created
 
-  assertEquals(!!$el, true, "Test .on(): Element should be found for testing .on()");
+  assertEquals(true, !!$el, "Test .on(): Element should be found for testing .on()");
   if (!$el) {
     // No teardown needed here
     return;
@@ -364,13 +364,13 @@ function testHelperOnMethod() {
   $el.on('click', mockClickHandler);
   $el.on('mouseover', mockMouseOverHandler);
 
-  assertEquals(!!$el.eventListeners['click'], true, "Test .on(): 'click' event should have listeners registered.");
+  assertEquals(true, !!$el.eventListeners['click'], "Test .on(): 'click' event should have listeners registered.");
   if ($el.eventListeners['click']) {
     assertEquals($el.eventListeners['click'].length, 1, "Test .on(): One click handler should be registered.");
     assertEquals($el.eventListeners['click'][0], mockClickHandler, "Test .on(): Correct click handler should be registered.");
   }
 
-  assertEquals(!!$el.eventListeners['mouseover'], true, "Test .on(): 'mouseover' event should have listeners registered.");
+  assertEquals(true, !!$el.eventListeners['mouseover'], "Test .on(): 'mouseover' event should have listeners registered.");
   if ($el.eventListeners['mouseover']) {
     assertEquals($el.eventListeners['mouseover'].length, 1, "Test .on(): One mouseover handler should be registered.");
     assertEquals($el.eventListeners['mouseover'][0], mockMouseOverHandler, "Test .on(): Correct mouseover handler should be registered.");
@@ -387,7 +387,7 @@ function testHelperForEachSingleElement() {
   // mockDocumentInstance.createElement automatically adds it to mockDocumentInstance._elements
 
   const $el = $("#testDivForForEachSingle");
-  assertEquals(!!$el, true, "Test .forEach() Single: Element should be found");
+  assertEquals(true, !!$el, "Test .forEach() Single: Element should be found");
   if (!$el) {
     // No teardown needed here
     return;
@@ -423,7 +423,7 @@ function testHelperForEachMultipleElements() {
   // mockDocumentInstance.createElement automatically adds them to mockDocumentInstance._elements
 
   const $els = $(".testClassForForEach");
-  assertEquals(!!$els && typeof $els.forEach === 'function', true, "Test .forEach() Multiple: NodeList-like object should be returned");
+  assertEquals(true, !!$els && typeof $els.forEach === 'function', "Test .forEach() Multiple: NodeList-like object should be returned");
   if (!$els || typeof $els.forEach !== 'function') {
      // No teardown needed here
      return;

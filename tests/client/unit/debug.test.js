@@ -190,7 +190,7 @@ function testDebug_setTimeoutCallbackRemovesElement() {
   debug("Testing setTimeout callback");
   // We don't need to check expectedRenderedArrayForAssertions for this specific test's main goal.
 
-  assertEquals(typeof setTimeoutCallback === 'function', true, "setTimeout callback not a function.");
+  assertEquals(true, typeof setTimeoutCallback === 'function', "setTimeout callback not a function.");
 
   // mock$.reset(); // Removed: mock$ is no longer used
 

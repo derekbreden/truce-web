@@ -139,8 +139,8 @@ function runImageTest({
         assertEquals(result.url, expectedDataUrl, `${testName}: Should convert to PNG successfully`);
         assertEquals(result.width, expectedCanvasWidth, `${testName}: Result canvas width should be ${expectedCanvasWidth}`);
         assertEquals(result.height, expectedCanvasHeight, `${testName}: Result canvas height should be ${expectedCanvasHeight}`);
-        assertEquals(!!lastDrawImageArgs, true, `${testName}: drawImage should have been called`);
-        assertEquals(toDataURLCalled, true, `${testName}: toDataURL('image/png') should have been called`);
+        assertEquals(true, !!lastDrawImageArgs, `${testName}: drawImage should have been called`);
+        assertEquals(true, toDataURLCalled, `${testName}: toDataURL('image/png') should have been called`);
         assertEquals(mockCanvas.width, expectedCanvasWidth, `${testName}: Mock canvas width should be set to ${expectedCanvasWidth}`);
         assertEquals(mockCanvas.height, expectedCanvasHeight, `${testName}: Mock canvas height should be set to ${expectedCanvasHeight}`);
 
@@ -156,7 +156,7 @@ function runImageTest({
         // So, we re-throw the error to be caught by runTestsFromUtils's try-catch block around testFn().
         // Or, ensure assertEquals correctly reports failures that runTestsFromUtils can see.
         // For now, let's make sure assertEquals is called for failures.
-        assertEquals(false, true, `${testName}: Error during callback assertions: ${e.message}`);
+        assertEquals(true, false, `${testName}: Error during callback assertions: ${e.message}`);
         reject(e); // Keep reject to stop this specific Promise chain
       } finally {
         mockCanvas.toDataURL = originalToDataURL; // Restore original
@@ -168,7 +168,7 @@ function runImageTest({
     if (!global.Image.lastInstance) {
       // This indicates a fundamental issue with the test setup or the Image mock.
       // Report it as a failed assertion.
-      assertEquals(false, true, `[${testName}]: No image instance was created.`);
+      assertEquals(true, false, `[${testName}]: No image instance was created.`);
       return reject(new Error(`[${testName}] No image instance created.`));
     }
     
@@ -181,7 +181,7 @@ function runImageTest({
       global.Image.lastInstance.height = imgHeight;
       global.Image.lastInstance.onload();
     } else {
-      assertEquals(false, true, `[${testName}]: Image onload was not set or lastInstance is not available.`);
+      assertEquals(true, false, `[${testName}]: Image onload was not set or lastInstance is not available.`);
       return reject(new Error(`[${testName}] Image onload not set.`));
     }
   });
@@ -232,14 +232,14 @@ async function testImageLoadError() {
   try {
     await callbackPromise; // Wait for the main callback from imageToPng
 
-    assertEquals(mainCallbackCalled, true, `${testName}: Main callback should have been called.`);
+    assertEquals(true, mainCallbackCalled, `${testName}: Main callback should have been called.`);
     assertEquals(typeof mainCallbackArgs, "object", `${testName}: Callback argument should be an object.`);
     if (mainCallbackArgs === null || typeof mainCallbackArgs === 'undefined') {
       // Fail explicitly if mainCallbackArgs is null/undefined, to avoid error on next lines
-      assertEquals(false, true, `${testName}: mainCallbackArgs is null or undefined.`);
+      assertEquals(true, false, `${testName}: mainCallbackArgs is null or undefined.`);
       return; // Stop further execution in this test
     }
-    assertEquals(mainCallbackArgs.error, true, `${testName}: Callback argument should have 'error: true'.`);
+    assertEquals(true, mainCallbackArgs.error, `${testName}: Callback argument should have 'error: true'.`);
     assertEquals(mainCallbackArgs.message, "Image failed to load", `${testName}: Callback argument should have correct error message.`);
 
     // Check that the image src was indeed set to the invalid source on the mock
@@ -247,12 +247,12 @@ async function testImageLoadError() {
       assertEquals(global.Image.lastInstance.src, "invalid-image-source", `${testName}: Image src should be set to invalid-image-source on the mock.`);
     } else {
       // This should ideally be caught by the reject in the Promise if !global.Image.lastInstance
-      assertEquals(false, true, `${testName}: global.Image.lastInstance was unexpectedly null after test execution.`);
+      assertEquals(true, false, `${testName}: global.Image.lastInstance was unexpectedly null after test execution.`);
     }
 
   } catch (error) {
     // If callbackPromise rejected (e.g. timeout or explicit reject), it will be caught here.
-    assertEquals(false, true, `${testName}: Test failed: ${error.message}`);
+    assertEquals(true, false, `${testName}: Test failed: ${error.message}`);
   }
 }
 
