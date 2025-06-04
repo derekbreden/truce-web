@@ -5,6 +5,7 @@ const { assertEquals, runTests } = require('../tests/testUtils.js');
 
 const mockIndexHtmlPath = path.resolve(__dirname, 'mockIndex.html');
 const mockScriptsDirPath = path.resolve(__dirname, 'mockClientScripts');
+const realIndexHtmlPath = path.resolve(__dirname, '..', 'index.html');
 
 const tests = {
     testFunctionsAreLoaded: () => {
@@ -40,6 +41,11 @@ const tests = {
         // For now, we are checking that a non-existent const is not there.
         const loadedFunctions = loadAllClientScripts(mockIndexHtmlPath);
         assertEquals(undefined, loadedFunctions.nonExistentFunction, "nonExistentFunction should be undefined");
+    },
+
+    testRealIndexHtmlLoads: () => {
+        const indexHtmlContent = fs.readFileSync(realIndexHtmlPath, 'utf-8');
+        assertEquals(true, /\/\/ <!--#include file="client\/flint\.js" -->/.test(indexHtmlContent), "Should find flint.js include in real index.html");
     }
 };
 
