@@ -6,6 +6,25 @@ const tests = {
     testNavigateToFirstTopicDetail: async () => {
         const window = setupIntegrationTestEnvironment();
 
+        const mockTopicsPayload = {
+          success: true,
+          path: "/topics",
+          topics: [
+            { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Short body for list", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null }
+          ],
+          comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0
+        };
+
+        const mockTopicDetailPayload = {
+          success: true,
+          path: "/topic/test-topic-1",
+          topics: [ // Server returns topic detail in a 'topics' array
+            { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Full detailed body for test-topic-1. This should appear on the detail page.", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null, "topic_id": 1, "created_at": "2023-01-01T00:00:00Z", "updated_at": "2023-01-01T00:00:00Z" }
+          ],
+          comments: [], // Assuming no comments for this test
+          activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0
+        };
+
         // Initial check for window.state
         assertEquals(true, !!window.state, "window.state should be defined after setupIntegrationTestEnvironment.");
         if (!window.state) return; // Guard against further errors if state is not defined
@@ -26,6 +45,20 @@ const tests = {
         const joinButton = document.querySelector('a[href="/topics"][big]');
         assertEquals(true, !!joinButton, "Agree button should exist on the welcome page.");
         if (!joinButton) return;
+
+        window.setMockFetchResponses([
+          {
+            requestMatcher: (url, options) => url === "/session" && JSON.parse(options.body).path === "/topics",
+            responseBody: mockTopicsPayload,
+            status: 200
+          },
+          {
+            requestMatcher: (url, options) => url === "/session" && JSON.parse(options.body).path === "/topic/test-topic-1",
+            responseBody: mockTopicDetailPayload,
+            status: 200
+          }
+        ]);
+
         joinButton.click();
 
         // Wait for navigation and rendering (increased delay for page load)
@@ -36,43 +69,8 @@ const tests = {
         const topicsWrapper = document.querySelector('topics'); // Element that wraps all topics
         assertEquals(true, !!topicsWrapper, "Topics wrapper element should be present on /topics page.");
 
-        // Mock that topics have loaded (in a real scenario, startSession would fetch and render them)
-        // For this test, we'll assume renderTopics has been called and populated topics
-        // We need at least one topic to click on. Let's simulate a minimal topic structure.
-        // This is a simplification; ideally, test data would be served.
-        if (topicsWrapper && !topicsWrapper.querySelector('topic[trimmed]')) {
-            const mockTopicData = {
-                slug: "test-topic-1",
-                title: "Test Topic 1",
-                body: "Short body",
-                user_slug: "user1",
-                display_name: "User One",
-                tags: "politics", // Changed from "general" to an existing icon tag
-                profile_picture_uuid: null,
-                display_name_index: 0,
-                user_verified: false,
-                note: "",
-                poll_1: null,
-                favorited: false,
-                favorite_count: 0,
-                commented: false,
-                comment_count: 0,
-                image_uuids: null
-            };
-            // We need to load renderTopic to manually render one for the test to proceed
-            const renderTopic = window.renderTopic; // Assumes renderTopic is globally available after setupIntegrationTestEnvironment
-            if (renderTopic) {
-                 const $mockTopic = renderTopic(mockTopicData);
-                 topicsWrapper.appendChild($mockTopic);
-            } else {
-                console.error("renderTopic function not found on window object. Skipping part of test.");
-                // Potentially fail the test here or make it inconclusive
-                assertEquals(true, false, "renderTopic function is required for this test and was not found.");
-                return;
-            }
-        }
-
         // 2. Find and click the first topic link/element
+        // Topic should be rendered by the actual application logic via the mocked fetch
         const firstTopicElement = document.querySelector('topics > topic[trimmed]');
         assertEquals(true, !!firstTopicElement, "First topic element with [trimmed] attribute should be found on the /topics page.");
         if (!firstTopicElement) return;

@@ -92,6 +92,15 @@ function setupIntegrationTestEnvironment() {
     includeNodeLocations: true,
     virtualConsole: virtualConsole,
     beforeParse(window) {
+      window.mockFetchConfig = { responses: [], defaultResponse: null };
+
+      window.setMockFetchResponses = (responsesConfig) => {
+        window.mockFetchConfig.responses = responsesConfig;
+      };
+
+      window.setMockFetchDefaultResponse = (responseBody, status = 200) => {
+        window.mockFetchConfig.defaultResponse = { responseBody, status };
+      };
 
       // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
       window.WebSocket = function(url) {
@@ -132,92 +141,56 @@ function setupIntegrationTestEnvironment() {
         };
       }
 
-      if (!window.fetch) {
-        window.fetch = async function(url, options) {
-          // console.log(`Mock fetch called for URL: ${url}`, options);
-          if (url === "/session") {
-            const body = options && options.body ? JSON.parse(options.body) : {};
-            if (body.path === "/topics") {
-              // console.log("Mock fetch returning success for /topics");
-              return {
-                ok: true,
-                status: 200,
-                statusText: "OK",
-                json: async () => ({
-                  success: true,
-                  path: "/topics",
-                  topics: [],
-                  comments: [],
-                  activities: [],
-                  notifications: [],
-                  user: {},
-                  tag: {},
-                  subscribed_to_users: 0,
-                }),
-                text: async () => JSON.stringify({ success: true, path: "/topics", topics: [], comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0 })
-              };
-            } else if (body.path && body.path.startsWith("/topic/")) {
-              // Handle fetch for a specific topic detail page
-              // For the test, we'll use a simplified version of mockTopicData
-              // In a real scenario, this would be the detailed topic data
-              const slug = body.path.split("/")[2];
-              // This is a very basic mock. A real app might fetch more detailed data.
-              // We'll assume the slug 'test-topic-1' is the one being tested.
-              // If other slugs are needed, this mock would need to be more sophisticated
-              // or the test data aligned.
-              const mockDetailTopic = {
-                slug: slug,
-                title: `Test Topic ${slug}`,
-                body: "Full body of the test topic. This should be longer than the summary.",
-                user_slug: "user1",
-                display_name: "User One",
-                tags: "politics", // Keep consistent with list view for now
-                profile_picture_uuid: null,
-                display_name_index: 0,
-                user_verified: false,
-                note: "",
-                poll_1: null,
-                favorited: false,
-                favorite_count: 0,
-                commented: false,
-                comment_count: 0, // For topic detail, comments are separate
-                image_uuids: null,
-                // Fields that might appear in a detail view but not summary
-                topic_id: 123, // Example ID
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              };
+      // Always override fetch with our mock
+      window.fetch = async function(url, options) {
+        const { responses, defaultResponse } = window.mockFetchConfig;
 
-              return {
-                ok: true,
-                status: 200,
-                statusText: "OK",
-                json: async () => ({
-                  success: true,
-                  path: body.path,
-                  topics: [mockDetailTopic], // Send back the specific topic in a 'topics' array
-                  comments: [], // Start with empty comments for simplicity
-                  activities: [],
-                  notifications: [],
-                  user: {},
-                  tag: {},
-                  subscribed_to_users: 0,
-                }),
-                text: async () => JSON.stringify({ success: true, path: body.path, topics: [mockDetailTopic], comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0 })
-              };
+        for (const entry of responses) {
+          let match = false;
+          if (typeof entry.requestMatcher === 'function') {
+            match = entry.requestMatcher(url, options);
+          } else if (typeof entry.urlPattern === 'string') {
+            if (url === entry.urlPattern) {
+              match = true;
+            }
+          } else if (entry.urlPattern instanceof RegExp) {
+            if (entry.urlPattern.test(url)) {
+              match = true;
             }
           }
-          // Default mock fetch for other URLs or unhandled session paths
-          // console.warn(`Mock fetch unhandled URL: ${url} or body.path: ${body?.path}`);
-          return {
-            ok: false,
-            status: 500,
-            statusText: "Internal Server Error",
-            json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
-            text: async () => JSON.stringify({ success: false, error: "Test error: Unmocked fetch path" })
-          };
-        };
-      }
+
+          if (match) {
+            // console.log(`Mock fetch: Matched ${url} with requestMatcher or pattern ${entry.urlPattern || 'custom matcher'}`);
+            return Promise.resolve({
+              ok: entry.status >= 200 && entry.status < 300,
+              status: entry.status,
+              statusText: entry.status === 200 ? "OK" : "Error", // Simplified statusText
+              json: async () => entry.responseBody,
+              text: async () => JSON.stringify(entry.responseBody),
+            });
+          }
+        }
+
+        if (defaultResponse) {
+          // console.log(`Mock fetch: Using default response for ${url}`);
+          return Promise.resolve({
+            ok: defaultResponse.status >= 200 && defaultResponse.status < 300,
+            status: defaultResponse.status,
+            statusText: defaultResponse.status === 200 ? "OK" : "Error",
+            json: async () => defaultResponse.responseBody,
+            text: async () => JSON.stringify(defaultResponse.responseBody),
+          });
+        }
+
+        // console.warn(`Mock fetch: No matching mock or default response for ${url}`, options);
+        return Promise.resolve({
+          ok: false,
+          status: 500,
+          statusText: "Internal Server Error",
+          json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
+          text: async () => JSON.stringify({ success: false, error: "Test error: Unmocked fetch path" }),
+        });
+      };
     }
   })
   const { window } = dom

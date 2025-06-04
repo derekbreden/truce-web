@@ -6,56 +6,51 @@ const testTopicsListDisplaysFetchedTopics = async () => {
     const { window } = await setupIntegrationTestEnvironment();
     const { document, state } = window;
 
-    const originalFetch = window.fetch;
-    let fetchCalledWithTopicsPath = false;
+    // Simulate agreeing to terms to navigate to /topics
+    const joinButton = document.querySelector('a[href="/topics"][big]');
+    assertEquals(joinButton !== null, true, 'Join the Discussion button should exist');
 
-    window.fetch = async (url, options) => {
-        if (url === '/session' && options && options.body) {
+    window.setMockFetchResponses([
+      {
+        requestMatcher: (url, options) => {
+          if (url === "/session" && options && options.body) {
             try {
-                const body = JSON.parse(options.body);
-                if (body.path === '/topics') {
-                    fetchCalledWithTopicsPath = true;
-                    return Promise.resolve({
-                        ok: true,
-                        status: 200,
-                        json: async () => ({
-                            success: true,
-                            path: "/topics",
-                            topics: [
-                                { "slug": "tech-trends", "title": "Tech Trends 2024", "body": "Exploring upcoming tech.\n\nThis is the first topic.", "user_slug": "jdoe", "display_name": "John Doe", "tags": "work", "comment_count": 5, "favorite_count": 10, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null },
-                                { "slug": "science-discoveries", "title": "Science Discoveries", "body": "Latest in science.\n\nThis is the second topic.", "user_slug": "jane", "display_name": "Jane Roe", "tags": "science", "comment_count": 3, "favorite_count": 7, "favorited": true, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": true, "note": "", "poll_1": null }
-                            ],
-                            comments: [],
-                            activities: [],
-                            notifications: [],
-                            user: {},
-                            tag: {},
-                            subscribed_to_users: 0
-                        })
-                    });
-                }
+              const body = JSON.parse(options.body);
+              return body.path === "/topics";
             } catch (e) {
-                // Not a JSON body or other parsing error, fall through to original fetch
+              return false;
             }
-        }
-        return originalFetch(url, options);
-    };
+          }
+          return false;
+        },
+        responseBody: {
+          success: true,
+          path: "/topics",
+          topics: [
+            { "slug": "tech-trends", "title": "Tech Trends 2024", "body": "Exploring upcoming tech.\n\nThis is the first topic.", "user_slug": "jdoe", "display_name": "John Doe", "tags": "work", "comment_count": 5, "favorite_count": 10, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null },
+            { "slug": "science-discoveries", "title": "Science Discoveries", "body": "Latest in science.\n\nThis is the second topic.", "user_slug": "jane", "display_name": "Jane Roe", "tags": "science", "comment_count": 3, "favorite_count": 7, "favorited": true, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": true, "note": "", "poll_1": null }
+          ],
+          comments: [],
+          activities: [],
+          notifications: [],
+          user: {},
+          tag: {},
+          subscribed_to_users: 0
+        },
+        status: 200
+      }
+    ]);
 
-    try {
-        // Simulate agreeing to terms to navigate to /topics
-        const joinButton = document.querySelector('a[href="/topics"][big]');
-        assertEquals(joinButton !== null, true, 'Join the Discussion button should exist');
-        if (joinButton) {
-            joinButton.click();
-        }
+    if (joinButton) {
+        joinButton.click();
+    }
 
-        // Wait for navigation and rendering
-        await new Promise(resolve => setTimeout(resolve, 200)); // Adjusted timeout for potential async operations
+    // Wait for navigation and rendering
+    await new Promise(resolve => setTimeout(resolve, 200)); // Adjusted timeout for potential async operations
 
-        assertEquals(state.path, '/topics', 'State path should be /topics after navigation');
-        assertEquals(fetchCalledWithTopicsPath, true, 'window.fetch should have been called with path /topics');
+    assertEquals(state.path, '/topics', 'State path should be /topics after navigation');
 
-        const topicsWrapper = document.querySelector('topics');
+    const topicsWrapper = document.querySelector('topics');
         assertEquals(topicsWrapper !== null, true, '<topics> wrapper element should be present');
 
         if (topicsWrapper) {
@@ -84,10 +79,6 @@ const testTopicsListDisplaysFetchedTopics = async () => {
                 throw new Error("Second topic element not found for assertion.");
             }
         }
-
-    } finally {
-        window.fetch = originalFetch; // Restore original fetch
-    }
 };
 
 const tests = {
