@@ -62,22 +62,38 @@ alert("Success");
 This project contains both standard server-side Node.js modules and client-side JavaScript files that are handled in a unique, non-modular way. The testing approach varies slightly depending on what you are testing. Server-side code and any client-side code structured as standard modules can be tested using typical Node.js testing patterns. However, for client-side scripts that are globally included (as described in 'Client-Side File Organization'), a special approach is needed.
 
 ### How to run tests
-The primary way to run all automated tests is using the following command from the project root:
-```bash
-npm test
-```
-This command executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. When running all tests, the output will be categorized into "Unit Tests", "Integration Tests", and "Other Tests", each with its own summary.
+The primary way to run automated tests is using the `npm test` command from the project root. This command has several options:
 
-You can also run specific categories of tests:
+*   **To run all tests:**
+    ```bash
+    npm test
+    ```
+    This executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. The output will be categorized into "Unit Tests", "Integration Tests", and "Other Tests", each with its own summary.
 
-*   **To run only unit tests** (tests located in any directory named `unit` within `tests/`):
+*   **To run a specific test file:**
+    Provide the path to the test file relative to the project root:
     ```bash
-    npm run test:unit
+    npm test tests/server/unit/example.test.js
     ```
-*   **To run only integration tests** (tests located in any directory named `integration` within `tests/`):
-    ```bash
-    npm run test:integration
-    ```
+
+*   **To run specific categories of tests:**
+    You can run all unit tests or all integration tests using the following commands:
+    *   **Unit Tests** (tests located in any subdirectory named `unit` within `tests/`):
+        ```bash
+        npm test unit
+        ```
+        Alternatively, you can also use the more specific script:
+        ```bash
+        npm run test:unit
+        ```
+    *   **Integration Tests** (tests located in any subdirectory named `integration` within `tests/`):
+        ```bash
+        npm test integration
+        ```
+        Alternatively, you can also use the more specific script:
+        ```bash
+        npm run test:integration
+        ```
 
 Make sure you have run `npm install` at least once to install all necessary dependencies, including those required for testing (like `jsdom`).
 
