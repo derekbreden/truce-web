@@ -1,5 +1,5 @@
-const { loadClientScript, createMockDollar, createMockDocument, createMockWindow, createMockFunction } = require('./testHelpers');
-const { assertEquals, runTests } = require('./testUtils');
+const { loadClientScript, createMockDollar, createMockDocument, createMockWindow, createMockFunction } = require('../shared/testHelpers.js');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
 const path = require('path'); // Needed for path.resolve if used, though not directly in this refactor immediately
 
 // --- Mock Instances (created once) ---
@@ -127,13 +127,13 @@ const setupMocksAndState = () => {
 
   // Load flint.js and goToPath.js at the end of setup, so they use the fresh mocks
   $ = loadClientScript(
-    path.resolve(__dirname, '../client/flint.js'),
+    path.resolve(__dirname, '../../../client/flint.js'),
     { document: mockDocument, window: mockWindow }, // Provide the created mockDocument and mockWindow
     "$" // flint.js exports $
   );
 
   goToPath = loadClientScript(
-    __dirname + '/../client/goToPath.js', // Use __dirname for robustness
+    path.resolve(__dirname, '../../../client/goToPath.js'), // Use path.resolve for consistency
     {
       localStorage: mockLocalStorage, // Pass the single instance
       history: mockHistory,           // Pass the single instance

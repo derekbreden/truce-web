@@ -1,6 +1,6 @@
 const path = require('path');
-const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers');
-const { assertEquals, runTests } = require('./testUtils');
+const { loadClientScript, createMockDocument, createMockWindow } = require('../shared/testHelpers.js');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 // Initialize Mock DOM using Imported Utilities
 let mockDocumentInstance = createMockDocument();
@@ -9,7 +9,7 @@ let mockWindowInstance = createMockWindow(mockDocumentInstance);
 global.document = mockDocumentInstance;
 global.window = mockWindowInstance;
 
-const flintPath = path.resolve(__dirname, '../client/flint.js');
+const flintPath = path.resolve(__dirname, '../../../client/flint.js');
 const $ = loadClientScript(
   flintPath,
   { document: mockDocumentInstance, window: mockWindowInstance }, // New instances

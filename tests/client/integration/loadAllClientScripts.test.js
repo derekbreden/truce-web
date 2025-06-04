@@ -1,6 +1,6 @@
 const path = require('path');
-const { loadAllClientScripts } = require('../tests/testHelpers.js');
-const { assertEquals, runTests } = require('../tests/testUtils.js');
+const { loadAllClientScripts } = require('../shared/testHelpers.js');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const mockIndexHtmlPath = path.resolve(__dirname, 'mockIndex.html');
 

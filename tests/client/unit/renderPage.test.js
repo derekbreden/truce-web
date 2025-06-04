@@ -1,6 +1,6 @@
 const path = require('path');
-const { assertEquals, runTests } = require('./testUtils.js');
-const { loadClientScript, createMockDocument, createMockWindow, createMockFunction } = require('./testHelpers.js');
+const { assertEquals, runTests } = require('../shared/testUtils.js');
+const { loadClientScript, createMockDocument, createMockWindow, createMockFunction } = require('../shared/testHelpers.js');
 
 const mockDocument = createMockDocument();
 const mockWindow = createMockWindow();
@@ -87,7 +87,7 @@ function beforeEach() {
   global.CustomEvent = actualCustomEventMock;
 
 
-  renderPage = loadClientScript(path.resolve(__dirname, '../client/renderPage.js'), {}); // Pass empty object for globalMocks
+  renderPage = loadClientScript(path.resolve(__dirname, '../../../client/renderPage.js'), {}); // Pass empty object for globalMocks
 }
 
 // --- Test Cases ---

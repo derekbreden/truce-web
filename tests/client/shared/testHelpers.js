@@ -475,7 +475,7 @@ const createMockFunction = (name = 'mockFunction') => {
 };
 
 function loadAllClientScripts() {
-  const indexPath = path.resolve(__dirname, '../index.html');
+  const indexPath = path.resolve(__dirname, '../../../index.html');
   const indexHtmlContent = fs.readFileSync(indexPath, 'utf8');
 
   // Parse the includes

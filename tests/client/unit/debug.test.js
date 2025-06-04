@@ -1,5 +1,5 @@
-const { assertEquals, runTests } = require('./testUtils');
-const { createMockDocument, createMockWindow, loadClientScript } = require('./testHelpers'); // Updated imports
+const { assertEquals, runTests } = require('../shared/testUtils.js');
+const { createMockDocument, createMockWindow, loadClientScript } = require('../shared/testHelpers.js'); // Updated imports
 const path = require('path');
 
 // --- Mock Environment Setup ---
@@ -16,7 +16,7 @@ mockDocument.body.appendChild(mainContentWrapper);
 
 // Load flint.js using loadClientScript to get the real $ function
 const $ = loadClientScript(
-  path.resolve(__dirname, '../client/flint.js'),
+  path.resolve(__dirname, '../../../client/flint.js'),
   { document: mockDocument, window: mockWindow },
   "$"
 );
@@ -49,7 +49,7 @@ const setupTestEnvironment = () => {
   debugElements.forEach(el => el.remove());
 
   // Reload debug.js to reset its internal state, including the 'rendered' array
-  const scriptPath = path.resolve(__dirname, '../client/debug.js');
+  const scriptPath = path.resolve(__dirname, '../../../client/debug.js');
   const loadedDebugModule = loadClientScript(
     scriptPath,
     {

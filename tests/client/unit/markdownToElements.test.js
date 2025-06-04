@@ -1,7 +1,7 @@
 // --- Imports ---
 const path = require('path');
-const { assertEquals, runTests: runTestsFromUtils } = require('./testUtils');
-const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers.js'); // Updated imports
+const { assertEquals, runTests: runTestsFromUtils } = require('../shared/testUtils.js');
+const { loadClientScript, createMockDocument, createMockWindow } = require('../shared/testHelpers.js'); // Updated imports
 
 // Global variable for the function, will be loaded by loadClientScript
 let markdownToElements;
@@ -49,7 +49,7 @@ function beforeEachMarkdownTest() {
 // --- Load Flint ---
 try {
   $ = loadClientScript(
-    path.resolve(__dirname, '../client/flint.js'),
+    path.resolve(__dirname, '../../../client/flint.js'),
     { document: mockDocument, window: mockWindow },
     "$" // Ensure we get the '$' constant from flint.js
   );
@@ -64,7 +64,7 @@ try {
 // --- Load Function Under Test ---
 try {
   markdownToElements = loadClientScript(
-    path.join(__dirname, '../client/markdownToElements.js'),
+    path.join(__dirname, '../../../client/markdownToElements.js'),
     {
       // These are the globals markdownToElements.js expects
       "document": mockDocument, // The same mockDocument flint.js uses
