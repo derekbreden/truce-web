@@ -64,7 +64,7 @@ This project contains both standard server-side Node.js modules and client-side 
 ### How to run tests
 To run all automated tests, use the following command from the project root:
 ```bash
-npm install jsdom esprima
+npm install jsdom
 npm test
 ```
 This will execute all test files located in the `tests/` directory that end with `.test.js`.
