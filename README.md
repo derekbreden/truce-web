@@ -123,117 +123,116 @@ runTests('myModule.test.js', [
 ]);
 ```
 
-### Testing Non-Modular Client-Side Scripts
-Client-side files included directly in `index.html` (and not structured as ES6 modules) require a special approach for testing due to their reliance on a global scope and browser-specific APIs. For these situations, use the `loadClientScript` utility from `tests/testHelpers.js`.
+### Testing Client-Side Scripts
 
-The `loadClientScript` function works as follows:
-- It reads the target script file.
-- It accepts an object of `globalMocks` (e.g., for `document`, `window`, custom global functions).
-- It optionally accepts a third argument, `constNamesToReturn`, which can be a string or an array of strings. This argument specifies which constant(s) defined within the script should be returned.
-- It executes the script within a context where the `globalMocks` are available globally.
-- It returns the requested constant(s):
-  - If `constNamesToReturn` is omitted, it defaults to returning the constant that has the same name as the file (e.g., `myScript.js` would lead to `myScript` being returned). This maintains backward compatibility.
-  - If `constNamesToReturn` is a string, it returns the value of that specific constant.
-  - If `constNamesToReturn` is an array of strings, it returns an object where keys are the names from the array and values are the corresponding constants from the script.
+Client-side scripts in this project are handled in two main ways for testing, depending on their nature and the test's requirements:
 
-Here’s an updated code example:
+1.  **Integration Testing for the Full Client Environment**:
+    When you need to test the client-side application in an environment that closely mimics how `index.html` loads all scripts together, use the `setupIntegrationTestEnvironment` function from `tests/client/shared/integrationTestSetup.js`. This utility is designed for integration tests where the interplay of multiple client-side scripts (like `flint.js`, `state.js`, `renderTopic.js`, etc.) is important.
+
+    `setupIntegrationTestEnvironment` works by:
+    - Reading the `index.html` file.
+    - Processing all `<!--#include file="..." -->` directives to gather all client-side JavaScript files, similar to how the actual server does.
+    - Using JSDOM to create a virtual DOM environment with this combined script content.
+    - It mocks `WebSocket`, `fetch`, and `setTimeout` to ensure tests run predictably and don't make real network calls or suffer from real-time delays.
+    - It returns the `window` object from the JSDOM environment, allowing your test to interact with the client-side code as it would run in a browser.
+
+    Example for an integration test:
+    ```javascript
+    // In your integration test (e.g., tests/client/integration/myFeature.test.js)
+    const { setupIntegrationTestEnvironment } = require('../shared/integrationTestSetup.js'); // Adjust path as needed
+    const { assertEquals, runTests } = require('../shared/testUtils.js'); // Adjust path as needed
+
+    function testMyFeatureInFullEnvironment() {
+      const window = setupIntegrationTestEnvironment();
+      // Now window.state, window.$, window.renderTopic, etc., are available
+      // as if all scripts from index.html were loaded.
+
+      // Example: Trigger an action and assert the outcome
+      window.document.querySelector('#myButton').click();
+      assertEquals('expected value', window.state.someProperty, 'State should update after button click');
+    }
+
+    runTests('myFeature.integration.test.js', [testMyFeatureInFullEnvironment]);
+    ```
+    This is the preferred method for integration tests that need to simulate the full browser environment with all scripts loaded.
+
+2.  **Unit Testing for Individual Non-Modular Client-Side Scripts**:
+    For more isolated testing of specific client-side files that are not structured as ES6 modules and rely on a global scope, you can use the `loadClientScript` utility from `tests/client/shared/testHelpers.js`. This is useful when you want to unit test a particular script's functions without loading the entire application.
+
+    The `loadClientScript` function works as follows:
+    - It reads the target script file.
+    - It accepts an object of `globalMocks` (e.g., for `document`, `window`, custom global functions).
+    - It optionally accepts a third argument, `constNamesToReturn`, which can be a string or an array of strings. This argument specifies which constant(s) defined within the script should be returned.
+    - It executes the script within a context where the `globalMocks` are available globally.
+    - It returns the requested constant(s):
+      - If `constNamesToReturn` is omitted, it defaults to returning the constant that has the same name as the file (e.g., `myScript.js` would lead to `myScript` being returned).
+      - If `constNamesToReturn` is a string, it returns the value of that specific constant.
+      - If `constNamesToReturn` is an array of strings, it returns an object where keys are the names from the array and values are the corresponding constants from the script.
+
+    Here’s an example for `loadClientScript`:
 
 ```javascript
-// In your test.js
+// In your unit test for a specific client script (e.g., tests/client/unit/mySpecificScript.test.js)
 const path = require('path');
-// Assuming testUtils.js and testHelpers.js are in the tests/ directory or a subdirectory.
-// Adjust path if they are in different locations.
-const { assertEquals, runTests } = require('./testUtils'); // e.g. require('../testUtils') if in a sub-directory of tests/
-const { loadClientScript, createMockDocument, createMockWindow } = require('./testHelpers'); // e.g. require('../testHelpers') if in a sub-directory of tests/
+const { assertEquals, runTests } = require('../../shared/testUtils.js'); // Adjust path
+const { loadClientScript, createMockDocument, createMockWindow } = require('../../shared/testHelpers.js'); // Adjust path
 
 // For browser-specific globals like `document` and `window`, use the helper functions
-// from `tests/testHelpers.js` to create mock objects:
+// from `tests/client/shared/testHelpers.js` to create mock objects:
 const mockDocument = createMockDocument();
 const mockWindow = createMockWindow(mockDocument);
 
-// These can then be passed to loadClientScript's globalMocks argument:
-// const globalMocks = {
-//   document: mockDocument,
-//   window: mockWindow,
-//   // ... any other custom global mocks your script might need (e.g., Image, navigator)
-// };
+// These can then be passed to loadClientScript's globalMocks argument.
+const globalMocks = {
+  document: mockDocument,
+  window: mockWindow,
+  // ... any other custom global mocks your script might need (e.g., Image, navigator)
+};
 
-// --- Scenario 1: Default behavior (backward compatible) ---
-// Assuming 'client/myOldScript.js' defines 'const myOldScript = ...;'
-// and it might use global document or window objects.
-const myOldScript = loadClientScript(
-  path.resolve(__dirname, '../client/myOldScript.js'), // Path to the script from tests/ dir
-  { document: mockDocument, window: mockWindow /*, ...otherMocks */ } // Global mocks
+// Example: Loading 'client/mySpecificScript.js' which defines 'const mySpecificFunction = ...;'
+// and might use global document or window objects.
+const mySpecificScript = loadClientScript(
+  path.resolve(__dirname, '../../../client/mySpecificScript.js'), // Adjust path to the script
+  globalMocks,
+  "mySpecificFunction" // Assuming you want to get 'mySpecificFunction'
 );
-// myOldScript can now be used.
+// mySpecificScript will now hold the value of 'mySpecificFunction'.
+
 // Example test:
-// function testOldScript() {
-//   assertEquals('expected', myOldScript.someFunction(), 'Test for old script');
+// function testMySpecificFunction() {
+//   assertEquals('expected', mySpecificScript(), 'Test for mySpecificFunction');
 // }
 
-// --- Scenario 2: Loading a script and fetching a specific named constant ---
-// Useful for scripts like 'client/flint.js' which defines 'const $ = ...;'
-// flint.js might need document/window, so pass mocks.
-const $ = loadClientScript(
-  path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
-  { document: mockDocument, window: mockWindow /*, ...otherMocks */ },
-  "$" // Name of the constant to return
-);
-// $ can now be used for testing flint.js functionality.
-// Example test:
-// function testFlintDollar() {
-//   const $el = $('div');
-//   assertEquals('DIV', $el.tagName, 'Flint $ should create elements');
-// }
-
-// --- Scenario 3: Loading a script and fetching multiple specific constants ---
-// Assuming 'client/myMultiConstScript.js' defines 'const foo = ...;' and 'const bar = ...;'
-const myConstants = loadClientScript(
-  path.resolve(__dirname, '../client/myMultiConstScript.js'), // Path to script from tests/ dir
-  { document: mockDocument, window: mockWindow /*, globalMocks, if any */ },
-  ["foo", "bar"] // Array of constant names to return
-);
-// myConstants would be { foo: /* value of foo */, bar: /* value of bar */ }
-// You can then access myConstants.foo and myConstants.bar.
-// Example test:
-// function testMultiConst() {
-//   assertEquals('fooValue', myConstants.foo, 'Test for foo');
-//   assertEquals('barValue', myConstants.bar, 'Test for bar');
-// }
-
-// Example of running tests (assuming you have defined test functions)
-// runTests('UpdatedLoadClientScriptTests', [
-//   testOldScript,
-//   testFlintDollar,
-//   testMultiConst
-// ]);
+// runTests('MySpecificScriptTests', [testMySpecificFunction]);
 ```
-The `loadClientScript` utility is the recommended approach for loading client scripts in new tests. It helps in injecting mock objects into the global scope for your script during testing.
+The `loadClientScript` utility is suitable for unit-testing individual scripts. For creating `document` and `window` mocks, use the `createMockDocument()` and `createMockWindow()` helper functions from `tests/client/shared/testHelpers.js`. For other global browser APIs not covered by these helpers (e.g., `Image`, `navigator`), you might still need to create your own mocks. For examples, see `tests/client/unit/imageToPng.test.js`.
 
-For creating `document` and `window` mocks, use the `createMockDocument()` and `createMockWindow()` helper functions from `tests/testHelpers.js`. For other global browser APIs not covered by these helpers (e.g., `Image`, `navigator`), you might still need to create your own mocks. For examples of creating other mocks (like `Image`), see `tests/imageToPng.test.js`.
+### Testing `flint.js` and Dependent Code (Integration Testing)
 
-### Testing `flint.js` and Dependent Code
+For integration testing `flint.js` or any client-side scripts that depend on `flint.js` and the full client environment (i.e., how they operate when all scripts in `index.html` are loaded together), use the `setupIntegrationTestEnvironment` function from `tests/client/shared/integrationTestSetup.js`.
 
-To test `flint.js` itself or any client-side scripts that depend on `flint.js`, the standard approach is to use the `loadClientScript` utility. This utility, found in `tests/testHelpers.js`, allows the real `flint.js` code to be loaded and executed within a controlled test environment.
-
-When using `loadClientScript` for this purpose, you should provide mock implementations for browser-specific globals like `document` and `window`. This creates a mock DOM environment, enabling `flint.js` to operate as it would in a browser, but with predictable and controllable behavior for testing.
-
-The example provided in the "Testing Non-Modular Client-Side Scripts" section demonstrates how to use `loadClientScript` to load `flint.js` by requesting the `$` constant, along with providing necessary mock DOM objects:
+This function sets up a JSDOM environment with all client scripts loaded and necessary mocks (like `fetch`, `WebSocket`) in place.
 
 ```javascript
-// In your test.js
-// ... (ensure mockDocument and mockWindow are created using createMockDocument and createMockWindow as shown above) ...
+// In your integration test (e.g., tests/client/integration/flintDependent.test.js)
+const { setupIntegrationTestEnvironment } = require('../shared/integrationTestSetup.js'); // Adjust path
+const { assertEquals, runTests } = require('../shared/testUtils.js'); // Adjust path
 
-const $ = loadClientScript(
-  path.resolve(__dirname, '../client/flint.js'), // Path to flint.js from tests/ dir
-  { document: mockDocument, window: mockWindow /*, ...otherMocks */ },
-  "$" // Name of the constant to return
-);
-// $ can now be used for testing flint.js functionality or for testing
-// other client scripts that require $ to be in their scope.
+function testFlintDependentFeature() {
+  const window = setupIntegrationTestEnvironment();
+
+  // Now, window.$ (Flint), window.state, and other globally available
+  // functions/constants from your client scripts are available.
+  const $element = window.$('div'); // Use Flint via window.$
+  $element.text('Hello from Flint');
+  assertEquals('Hello from Flint', window.document.querySelector('div').textContent, 'Text should be set by Flint');
+}
+
+runTests('FlintDependentIntegrationTests', [testFlintDependentFeature]);
 ```
 
-This approach ensures that tests are run against the actual `flint.js` implementation, providing more accurate and reliable test results. It is the recommended method for all new tests involving `flint.js`.
+This approach ensures that tests for `flint.js` and its dependent scripts are run in an environment that closely matches the actual browser execution, providing accurate and reliable results for integration scenarios.
 
 ## Flint.js DOM Manipulation
 
