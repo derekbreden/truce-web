@@ -151,6 +151,32 @@ Make sure you have run `npm install jsdom` before running tests.
 
     **Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
 
+### Test Guidelines
+
+1. Prioritize Mock Data and Test Adjustments:
+
+    - "Before modifying core application logic (especially shared libraries like flint.js or common rendering functions) to make a test pass, exhaust all possibilities of adjusting the test's mock data, selectors, and assertions. Core logic changes should only be a last resort and require strong justification."
+    - "If a test fails due to data-dependent rendering (e.g., missing icons, conditional elements), first verify that the mock data provided in window.setMockFetchResponseForPaths accurately reflects the expected server response and includes all necessary fields and values that the component under test relies on. For example, ensure arrays expected by functions like renderTopics or renderTags are always provided in mocks, even if empty (e.g., topics: [])."
+2. Icon and Asset Availability in Tests:
+
+    - "When testing components that render icons or other assets (e.g., images defined in body.html or loaded dynamically), ensure that any specific asset names used in mock data (like icon names for tags) actually exist or are properly mocked if their presence is crucial for the component's rendering logic (e.g., cloneNode operations). If an asset isn't available and isn't the direct subject of the test, consider using mock data that references available assets or adjust the component's mock to not rely on the missing asset."
+3. Understanding innerText vs. textContent in the Test Environment:
+
+    - "In the JSDOM test environment, innerText and textContent might have subtle differences in behavior compared to real browsers, especially concerning how whitespace, visibility, and CSS affect them. flint.js's templating might also interact with these differently. For assertions on text content:
+    - Prefer element.innerText.trim() for verifying text visible to you, as this is often closer to what you experience.
+    - If innerText causes issues or returns unexpected results (e.g., due to flint.js's automatic <br> insertion or other DOM manipulations specific to the testing setup), element.textContent.trim() can be an alternative, but be aware it might include text from hidden elements or different whitespace handling.
+    - The primary goal is stable and accurate tests. If innerText is the established convention and flint.js is designed around it, test adjustments should aim to work with innerText where possible, rather than immediately changing flint.js."
+4. Scope of Changes for New Tests:
+
+    - "When adding a new test, the primary goal is to verify the specific functionality or component behavior described in the test's objective. Changes to unrelated files or shared libraries should be avoided unless they address a clear, pre-existing bug that directly prevents the test from accurately verifying the target behavior and cannot be worked around by adjusting the test itself."
+5. Debugging Test Failures - Order of Operations:
+
+    - Verify test assertions and selectors: Are they correctly targeting the intended elements?
+    - Verify mock data: Is it complete and correct for the component under test? Does it provide all necessary fields, including empty arrays where appropriate?
+    - Examine client-side JavaScript for the component under test: Understand how it processes the data and renders elements.
+    - Consider the test environment: How might JSDOM or flint.js interact with the component in a specific way?
+    - Only after these steps, if a genuine bug in the application code (outside the test itself) is suspected, should modifications to application files be considered.
+
 ## Flint.js DOM Manipulation
 
 ### Variable Naming
