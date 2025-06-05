@@ -34,7 +34,9 @@ async function runTests(testFileName, testFunctions, includeTimer) {
       // This is a basic way to catch unexpected errors within a test.
       testResults.push({
         pass: false,
-        message: `Test function "${testFn.name || 'anonymous'}" threw an error: ${error.message}`,
+        message: `Test function "${testFn.name || 'anonymous'}" threw an error:
+    ${error.message}
+    ${error.stack}`,
         expected: 'Test to complete without error',
         actual: `Error: ${error.message}`,
       });

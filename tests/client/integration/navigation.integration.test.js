@@ -6,24 +6,6 @@ const tests = {
     testNavigateToFirstTopicDetail: async () => {
         const window = setupIntegrationTestEnvironment();
 
-        const mockTopicsPayload = {
-          success: true,
-          path: "/topics",
-          topics: [
-            { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Short body for list", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null }
-          ],
-          comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0
-        };
-
-        const mockTopicDetailPayload = {
-          success: true,
-          path: "/topic/test-topic-1",
-          topics: [ // Server returns topic detail in a 'topics' array
-            { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Full detailed body for test-topic-1. This should appear on the detail page.", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null, "topic_id": 1, "created_at": "2023-01-01T00:00:00Z", "updated_at": "2023-01-01T00:00:00Z" }
-          ],
-          comments: [], // Assuming no comments for this test
-          activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0
-        };
 
         // Initial check for window.state
         assertEquals(true, !!window.state, "window.state should be defined after setupIntegrationTestEnvironment.");
@@ -46,18 +28,25 @@ const tests = {
         assertEquals(true, !!joinButton, "Agree button should exist on the welcome page.");
         if (!joinButton) return;
 
-        window.setMockFetchResponses([
-          {
-            requestMatcher: (url, options) => url === "/session" && JSON.parse(options.body).path === "/topics",
-            responseBody: mockTopicsPayload,
-            status: 200
+        window.setMockFetchResponseForPaths({
+          "/topics": {
+            success: true,
+            path: "/topics",
+            topics: [
+              { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Short body for list", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null }
+            ],
+            comments: [], activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0,
           },
-          {
-            requestMatcher: (url, options) => url === "/session" && JSON.parse(options.body).path === "/topic/test-topic-1",
-            responseBody: mockTopicDetailPayload,
-            status: 200
-          }
-        ]);
+          "/topic/test-topic-1": {
+            success: true,
+            path: "/topic/test-topic-1",
+            topics: [ // Server returns topic detail in a 'topics' array
+              { "slug": "test-topic-1", "title": "Test Topic 1", "body": "Full detailed body for test-topic-1. This should appear on the detail page.", "user_slug": "user1", "display_name": "User One", "tags": "politics", "comment_count": 0, "favorite_count": 0, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null, "topic_id": 1, "created_at": "2023-01-01T00:00:00Z", "updated_at": "2023-01-01T00:00:00Z" }
+            ],
+            comments: [], // Assuming no comments for this test
+            activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0,
+          },
+        })
 
         joinButton.click();
 

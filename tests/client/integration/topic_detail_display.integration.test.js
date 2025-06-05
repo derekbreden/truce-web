@@ -4,107 +4,87 @@ const { assertEquals, runTests } = require('../shared/testUtils.js');
 
 const tests = {
     testTopicDetailsDisplayOnDetailPage: async () => {
-        const window = setupIntegrationTestEnvironment();
+        const window = setupIntegrationTestEnvironment({
+            constsToExpose: ["renderTopic"],
+        });
         const { document, state } = window;
 
         // Setup mock API responses
-        window.setMockFetchResponses([
-            {
-                requestMatcher: (url, options) => {
-                    if (url !== "/session") return false;
-                    try {
-                        const body = JSON.parse(options.body);
-                        // Check for path and absence of min_topic_create_date for initial load
-                        return body.path === "/topics" && !body.min_topic_create_date;
-                    } catch (e) { return false; }
-                },
-                status: 200,
-                responseBody: {
-                    path: "/topics",
-                    topics: [{
-                        slug: "test-topic-for-details",
-                        title: "Test Topic for Details",
-                        body: "Short body for testing details display.",
-                        user_slug: "user-details",
-                        display_name: "User Details",
-                        tags: "general",
-                        profile_picture_uuid: null,
-                        display_name_index: 0,
-                        user_verified: false,
-                        note: "",
-                        poll_1: null,
-                        favorited: false,
-                        favorite_count: 3,
-                        commented: false,
-                        comment_count: 5,
-                        image_uuids: null,
-                        created_at: new Date().toISOString(),
-                        last_activity_at: new Date().toISOString()
-                    }],
-                    comments: [],
-                    activities: [],
-                    notifications: [],
-                    user_slug: null, // Default values, can be customized if test needs specific user context
-                    subscribed_to_users: 0,
-                    user_id: null,
-                    email: null,
-                    display_name: null,
+        window.setMockFetchResponseForPaths({
+            "/topics": {
+                path: "/topics",
+                topics: [{
+                    slug: "test-topic-for-details",
+                    title: "Test Topic for Details",
+                    body: "Short body for testing details display.",
+                    user_slug: "user-details",
+                    display_name: "User Details",
+                    tags: "general",
                     profile_picture_uuid: null,
                     display_name_index: 0,
-                    has_more: false // Important for renderTopics to know if "load more" should be shown
-                }
+                    user_verified: false,
+                    note: "",
+                    poll_1: null,
+                    favorited: false,
+                    favorite_count: 3,
+                    commented: false,
+                    comment_count: 5,
+                    image_uuids: null,
+                    created_at: new Date().toISOString(),
+                    last_activity_at: new Date().toISOString()
+                }],
+                comments: [],
+                activities: [],
+                notifications: [],
+                user_slug: null, // Default values, can be customized if test needs specific user context
+                subscribed_to_users: 0,
+                user_id: null,
+                email: null,
+                display_name: null,
+                profile_picture_uuid: null,
+                display_name_index: 0,
+                has_more: false // Important for renderTopics to know if "load more" should be shown
             },
-            {
-                requestMatcher: (url, options) => {
-                    if (url !== "/session") return false;
-                    try {
-                        const body = JSON.parse(options.body);
-                        // Check for path and absence of min_comment_create_date for initial load
-                        return body.path === "/topic/test-topic-for-details" && !body.min_comment_create_date;
-                    } catch (e) { return false; }
-                },
-                status: 200,
-                responseBody: {
-                    path: "/topic/test-topic-for-details",
-                    topics: [{ // getSingleTopic returns data in 'topics' array
-                        slug: "test-topic-for-details",
-                        title: "Test Topic for Details",
-                        body: "Full body for the test topic, ensuring details are shown.",
-                        user_slug: "user-details",
-                        display_name: "User Details",
-                        tags: "general",
-                        profile_picture_uuid: null,
-                        display_name_index: 0,
-                        user_verified: false,
-                        note: "Detailed note for the topic.",
-                        poll_1: null,
-                        poll_2: null,
-                        poll_3: null,
-                        poll_4: null,
-                        poll_5: null,
-                        poll_counts: "0,0,0,0,0",
-                        user_poll_choice: null,
-                        favorited: false,
-                        favorite_count: 3,
-                        commented: false,
-                        comment_count: 5,
-                        image_uuids: null,
-                        created_at: new Date().toISOString(),
-                        last_activity_at: new Date().toISOString()
-                    }],
-                    comments: [], // Start with no comments for this specific test
-                    activities: [],
-                    notifications: [],
-                    user_slug: null, // Default values
-                    subscribed_to_users: 0,
-                    user_id: null,
-                    email: null,
-                    display_name: null,
+            "/topic/test-topic-for-details": {
+                path: "/topic/test-topic-for-details",
+                topics: [{ // getSingleTopic returns data in 'topics' array
+                    slug: "test-topic-for-details",
+                    title: "Test Topic for Details",
+                    body: "Full body for the test topic, ensuring details are shown.",
+                    user_slug: "user-details",
+                    display_name: "User Details",
+                    tags: "general",
                     profile_picture_uuid: null,
-                    display_name_index: 0
-                }
+                    display_name_index: 0,
+                    user_verified: false,
+                    note: "Detailed note for the topic.",
+                    poll_1: null,
+                    poll_2: null,
+                    poll_3: null,
+                    poll_4: null,
+                    poll_5: null,
+                    poll_counts: "0,0,0,0,0",
+                    user_poll_choice: null,
+                    favorited: false,
+                    favorite_count: 3,
+                    commented: false,
+                    comment_count: 5,
+                    image_uuids: null,
+                    created_at: new Date().toISOString(),
+                    last_activity_at: new Date().toISOString()
+                }],
+                comments: [], // Start with no comments for this specific test
+                activities: [],
+                notifications: [],
+                user_slug: null, // Default values
+                subscribed_to_users: 0,
+                user_id: null,
+                email: null,
+                display_name: null,
+                profile_picture_uuid: null,
+                display_name_index: 0
             }
-        ]);
+        })
 
         // 1. Agree to terms to navigate to /topics
         const joinButton = document.querySelector('a[href="/topics"][big]');

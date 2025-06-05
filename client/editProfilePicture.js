@@ -1,8 +1,8 @@
-window.editProfilePicture = () => {
+const editProfilePicture = () => {
   Array.from($("[profile-picture] input[image]").files).forEach((file) => {
     const reader = new FileReader();
     reader.onload = ($event) => {
-      window.imageToPng( // Call via window
+      imageToPng(
         $event.target.result,
         (png) => {
           const $imagePreviewContainerById = window.document.getElementById("testImagePreviewArea");

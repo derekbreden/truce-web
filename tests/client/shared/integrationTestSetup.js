@@ -2,11 +2,24 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-function setupIntegrationTestEnvironment() {
+function setupIntegrationTestEnvironment(options) {
+
+  // Default Options
+  options = options || {}
+  options.constsToExpose = options.constsToExpose || []
+  options.constsToExpose = [
+    ...options.constsToExpose,
+    "state",
+    "$",
+  ]
+
+  // Index path and content
   const indexPath = path.resolve(__dirname, '../../../index.html');
   const indexHtmlContent = fs.readFileSync(indexPath, 'utf8');
 
+  // --------------------------------------------------------------------------
   // Parse the includes
+  // --------------------------------------------------------------------------
   const parseIncludes = (fromHtmlContent) => {
     let returningHtmlContent = fromHtmlContent;
     // Regex to find <!--#include file="..." --> directives
@@ -52,37 +65,26 @@ function setupIntegrationTestEnvironment() {
     previousHtmlContent = finalIndexHtmlContent;
     finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent);
   } while (finalIndexHtmlContent !== previousHtmlContent);
-  // console.warn("Final HTML content loaded into JSDOM:", finalIndexHtmlContent) // DEBUGGING: Log the final HTML
+  // --------------------------------------------------------------------------
+  // Finish process includes
+  // --------------------------------------------------------------------------
 
-  // Attempt to ensure 'state' is explicitly assigned to 'window.state'
-  // This is a workaround for potential JSDOM issues with 'const state' in global scope
-  finalIndexHtmlContent = finalIndexHtmlContent.replace(
-    /const state = {/,
-    "window.state = {"
-  );
-  if (!finalIndexHtmlContent.includes("window.state = {")) {
-    console.warn("WARNING: Failed to replace 'const state = {' with 'window.state = {' in HTML content. State might still be undefined.");
-  }
 
-  // Attempt to ensure 'renderTopic' is explicitly assigned to 'window.renderTopic'
-  finalIndexHtmlContent = finalIndexHtmlContent.replace(
-    /const renderTopic = \(/,
-    "window.renderTopic = ("
-  );
-  if (!finalIndexHtmlContent.includes("window.renderTopic = (")) {
-    console.warn("WARNING: Failed to replace 'const renderTopic = (' with 'window.renderTopic = (' in HTML content. renderTopic might still be undefined.");
-  }
+  // --------------------------------------------------------------------------
+  // Exponse consts to window
+  // --------------------------------------------------------------------------
+  options.constsToExpose.forEach(constToExpose => {
+    finalIndexHtmlContent = finalIndexHtmlContent.replace(
+      `const ${constToExpose} = `,
+      `window.${constToExpose} = `
+    )
+  })
+  // --------------------------------------------------------------------------
 
-  // Attempt to ensure 'flint' ($) is explicitly assigned to 'window.$'
-  // Note the more specific regex to avoid unintended replacements if $ is used elsewhere.
-  finalIndexHtmlContent = finalIndexHtmlContent.replace(
-    /const \$ = \((selector_or_flint, flint_args_or_element)\) => {/,
-    "window.$ = (selector_or_flint, flint_args_or_element) => {"
-  );
-  if (!finalIndexHtmlContent.includes("window.$ = (selector_or_flint, flint_args_or_element) => {")) {
-    console.warn("WARNING: Failed to replace 'const $ = (...)' with 'window.$ = (...)' in HTML content. Flint $ might still be undefined or incorrect.");
-  }
 
+  // --------------------------------------------------------------------------
+  // Setup JSDOM
+  // --------------------------------------------------------------------------
   const virtualConsole = new VirtualConsole()
   virtualConsole.sendTo(console)
   const dom = new JSDOM(finalIndexHtmlContent, {
@@ -92,15 +94,14 @@ function setupIntegrationTestEnvironment() {
     includeNodeLocations: true,
     virtualConsole: virtualConsole,
     beforeParse(window) {
-      window.mockFetchConfig = { responses: [], defaultResponse: null };
+      let mockFetchResponseForPaths = {}
 
-      window.setMockFetchResponses = (responsesConfig) => {
-        window.mockFetchConfig.responses = responsesConfig;
-      };
-
-      window.setMockFetchDefaultResponse = (responseBody, status = 200) => {
-        window.mockFetchConfig.defaultResponse = { responseBody, status };
-      };
+      window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
+        mockFetchResponseForPaths = {
+          ... mockFetchResponseForPaths,
+          ... newFetchResponsesForPaths,
+        }
+      }
 
       // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
       window.WebSocket = function(url) {
@@ -120,79 +121,59 @@ function setupIntegrationTestEnvironment() {
         // setTimeout(() => { if (this.onclose) this.onclose(); }, 20); // Example: simulate close
       };
 
-      // Force setTimeout to be faster, to avoid delays
-      //   (add conditional logic here if we need to not do this later)
+      // Mock setTimeout to be instant, to avoid delays
       window.setTimeout = (fn) => {
         fn()
       }
 
-      if (!window.matchMedia) {
-        window.matchMedia = function(query) {
-          return {
-            matches: false, // Or true, depending on what's more suitable for general tests
-            media: query,
-            onchange: null,
-            addListener: function() {}, // Deprecated
-            removeListener: function() {}, // Deprecated
-            addEventListener: function() {},
-            removeEventListener: function() {},
-            dispatchEvent: function() {}
-          };
-        };
+      // Mock matchMedia
+      window.matchMedia = function(query) {
+        return {
+          matches: false, // Or true, depending on what's more suitable for general tests
+          media: query,
+          onchange: null,
+          addListener: function() {}, // Deprecated
+          removeListener: function() {}, // Deprecated
+          addEventListener: function() {},
+          removeEventListener: function() {},
+          dispatchEvent: function() {}
+        }
       }
 
-      // Always override fetch with our mock
-      window.fetch = async function(url, options) {
-        const { responses, defaultResponse } = window.mockFetchConfig;
+      // Mock fetch
+      window.fetch = async function(url, fetchOptions) {
 
-        for (const entry of responses) {
-          let match = false;
-          if (typeof entry.requestMatcher === 'function') {
-            match = entry.requestMatcher(url, options);
-          } else if (typeof entry.urlPattern === 'string') {
-            if (url === entry.urlPattern) {
-              match = true;
+        // Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
+        for (const path of Object.keys(mockFetchResponseForPaths)) {
+          if (url === "/session") {
+            const body = JSON.parse(fetchOptions.body)
+            if (body.path === path) {
+              return Promise.resolve({
+                ok: true,
+                status: 200,
+                statusText: "OK",
+                json: async () => mockFetchResponseForPaths[path],
+                text: async () => JSON.stringify(mockFetchResponseForPaths[path]),
+              })
             }
-          } else if (entry.urlPattern instanceof RegExp) {
-            if (entry.urlPattern.test(url)) {
-              match = true;
-            }
-          }
-
-          if (match) {
-            // console.log(`Mock fetch: Matched ${url} with requestMatcher or pattern ${entry.urlPattern || 'custom matcher'}`);
-            return Promise.resolve({
-              ok: entry.status >= 200 && entry.status < 300,
-              status: entry.status,
-              statusText: entry.status === 200 ? "OK" : "Error", // Simplified statusText
-              json: async () => entry.responseBody,
-              text: async () => JSON.stringify(entry.responseBody),
-            });
           }
         }
 
-        if (defaultResponse) {
-          // console.log(`Mock fetch: Using default response for ${url}`);
-          return Promise.resolve({
-            ok: defaultResponse.status >= 200 && defaultResponse.status < 300,
-            status: defaultResponse.status,
-            statusText: defaultResponse.status === 200 ? "OK" : "Error",
-            json: async () => defaultResponse.responseBody,
-            text: async () => JSON.stringify(defaultResponse.responseBody),
-          });
-        }
-
-        // console.warn(`Mock fetch: No matching mock or default response for ${url}`, options);
+        // Otherwise return an error
         return Promise.resolve({
           ok: false,
           status: 500,
           statusText: "Internal Server Error",
           json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
           text: async () => JSON.stringify({ success: false, error: "Test error: Unmocked fetch path" }),
-        });
-      };
+        })
+      }
     }
   })
+  // --------------------------------------------------------------------------
+  // END setup JSDOM
+  // --------------------------------------------------------------------------
+
   const { window } = dom
 
   return window

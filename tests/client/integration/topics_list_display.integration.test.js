@@ -10,36 +10,22 @@ const testTopicsListDisplaysFetchedTopics = async () => {
     const joinButton = document.querySelector('a[href="/topics"][big]');
     assertEquals(joinButton !== null, true, 'Join the Discussion button should exist');
 
-    window.setMockFetchResponses([
-      {
-        requestMatcher: (url, options) => {
-          if (url === "/session" && options && options.body) {
-            try {
-              const body = JSON.parse(options.body);
-              return body.path === "/topics";
-            } catch (e) {
-              return false;
-            }
-          }
-          return false;
-        },
-        responseBody: {
-          success: true,
-          path: "/topics",
-          topics: [
-            { "slug": "tech-trends", "title": "Tech Trends 2024", "body": "Exploring upcoming tech.\n\nThis is the first topic.", "user_slug": "jdoe", "display_name": "John Doe", "tags": "work", "comment_count": 5, "favorite_count": 10, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null },
-            { "slug": "science-discoveries", "title": "Science Discoveries", "body": "Latest in science.\n\nThis is the second topic.", "user_slug": "jane", "display_name": "Jane Roe", "tags": "science", "comment_count": 3, "favorite_count": 7, "favorited": true, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": true, "note": "", "poll_1": null }
-          ],
-          comments: [],
-          activities: [],
-          notifications: [],
-          user: {},
-          tag: {},
-          subscribed_to_users: 0
-        },
-        status: 200
-      }
-    ]);
+    window.setMockFetchResponseForPaths({
+      "/topics": {
+        success: true,
+        path: "/topics",
+        topics: [
+          { "slug": "tech-trends", "title": "Tech Trends 2024", "body": "Exploring upcoming tech.\n\nThis is the first topic.", "user_slug": "jdoe", "display_name": "John Doe", "tags": "work", "comment_count": 5, "favorite_count": 10, "favorited": false, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": false, "note": "", "poll_1": null },
+          { "slug": "science-discoveries", "title": "Science Discoveries", "body": "Latest in science.\n\nThis is the second topic.", "user_slug": "jane", "display_name": "Jane Roe", "tags": "science", "comment_count": 3, "favorite_count": 7, "favorited": true, "commented": false, "image_uuids": null, "profile_picture_uuid": null, "display_name_index": 0, "user_verified": true, "note": "", "poll_1": null }
+        ],
+        comments: [],
+        activities: [],
+        notifications: [],
+        user: {},
+        tag: {},
+        subscribed_to_users: 0
+      },
+    })
 
     if (joinButton) {
         joinButton.click();

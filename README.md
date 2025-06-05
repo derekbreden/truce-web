@@ -144,9 +144,11 @@ Client-side scripts in this project are handled in two main ways for testing, de
     const { assertEquals, runTests } = require('../shared/testUtils.js'); // Adjust path as needed
 
     function testMyFeatureInFullEnvironment() {
-      const window = setupIntegrationTestEnvironment();
-      // Now window.state, window.$, window.renderTopic, etc., are available
-      // as if all scripts from index.html were loaded.
+      const window = setupIntegrationTestEnvironment({
+        constsToExpose: ["renderTopic", "renderTopics"]
+      });
+      // Now window.state, window.$ are available
+      // As are renderTopic and renderTopics
 
       // Example: Trigger an action and assert the outcome
       window.document.querySelector('#myButton').click();
