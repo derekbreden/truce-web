@@ -73,8 +73,9 @@ The primary way to run automated tests is using the `npm test` command from the 
 *   **To run a specific test file:**
     Provide the path to the test file relative to the project root:
     ```bash
-    npm test tests/client/integration/example.test.js
+    npm test tests/client/integration/navigation.integration.test.js
     ```
+    (navigation.integration.test.js is a great file to follow patterns from by the way)
 
 *   **To run specific categories of tests:**
     You can run all unit tests or all integration tests using the following commands:
@@ -91,42 +92,7 @@ Make sure you have run `npm install jsdom` before running tests.
 
 ### How to write new tests
 
-Tests are written in Node.js.
-
-A typical test file structure looks like this:
-```javascript
-const { assertEquals, runTests } = require("./testUtils")
-
-// Define your test functions
-function testFeatureOne() {
-  // Setup and assertions
-  // assertEquals(expected, myModule.featureOne(), "Feature one should work")
-}
-
-function testFeatureTwo() {
-  // Setup and assertions
-}
-
-// Run all tests in this file
-runTests("myModule.test.js", [
-  testFeatureOne,
-  testFeatureTwo
-  // Add more test functions here
-])
-```
-
-### Testing Client-Side Scripts
-
 1.  **Integration Testing for the Full Client Environment**:
-    When you need to test the client-side application in an environment that closely mimics how `index.html` loads all scripts together, use the `setupIntegrationTestEnvironment` function from `tests/client/shared/integrationTestSetup.js`. This utility is designed for integration tests where the interplay of multiple client-side scripts (like `flint.js`, `state.js`, `renderTopic.js`, etc.) is important.
-
-    `setupIntegrationTestEnvironment` works by:
-    - Reading the `index.html` file.
-    - Processing all `<!--#include file="..." -->` directives to gather all client-side JavaScript files, similar to how the actual server does.
-    - Using JSDOM to create a virtual DOM environment with this combined script content.
-    - It mocks `WebSocket`, `fetch`, and `setTimeout` to ensure tests run predictably and don't make real network calls or suffer from real-time delays.
-    - It returns the `window` object from the JSDOM environment, allowing your test to interact with the client-side code as it would run in a browser
-    - It exposes `$` and `state` as window level variables (they are normally just `const`s in a `<script>` block) by default and additional `const`s can be exposed to the window level with `options.constsToExpose`
 
     Example for an integration test:
     ```javascript
@@ -147,6 +113,8 @@ runTests("myModule.test.js", [
     runTests("myFeature.integration.test.js", [testMyFeatureInFullEnvironment])
     ```
     This is the preferred method for **ALL** integration tests.
+
+    (navigation.integration.test.js is a great file to follow patterns from by the way)
 
 ## Flint.js DOM Manipulation
 
