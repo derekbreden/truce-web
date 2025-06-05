@@ -1,13 +1,14 @@
-const path = require('path');
-const { setupIntegrationTestEnvironment } = require('./../shared/integrationTestSetup.js');
-const { assertEquals, runTests } = require('../shared/testUtils.js');
+const path = require("path")
+const { setupIntegrationTestEnvironment } = require("./../shared/integrationTestSetup.js")
+const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
     testRealIndexHtmlLoads: () => {
-        const window = setupIntegrationTestEnvironment(); // This should mock setTimeout and fetch
-        assertEquals(false, window.is_android);
+        const window = setupIntegrationTestEnvironment()
+        // window.$ and window.state are exposed from consts by options.constsToExpose by default
+        assertEquals("function", typeof window.$)
+        assertEquals("object", typeof window.state)
     }
-    // The testEditProfilePictureShowsErrorModal has been moved
-};
+}
 
-runTests(path.basename(__filename), Object.values(tests));
+runTests(path.basename(__filename), Object.values(tests))

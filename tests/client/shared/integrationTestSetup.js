@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { JSDOM, VirtualConsole } = require('jsdom');
+const fs = require('fs')
+const path = require('path')
+const { JSDOM, VirtualConsole } = require('jsdom')
 
 function setupIntegrationTestEnvironment(options) {
 
@@ -14,57 +14,57 @@ function setupIntegrationTestEnvironment(options) {
   ]
 
   // Index path and content
-  const indexPath = path.resolve(__dirname, '../../../index.html');
-  const indexHtmlContent = fs.readFileSync(indexPath, 'utf8');
+  const indexPath = path.resolve(__dirname, '../../../index.html')
+  const indexHtmlContent = fs.readFileSync(indexPath, 'utf8')
 
   // --------------------------------------------------------------------------
   // Parse the includes
   // --------------------------------------------------------------------------
   const parseIncludes = (fromHtmlContent) => {
-    let returningHtmlContent = fromHtmlContent;
+    let returningHtmlContent = fromHtmlContent
     // Regex to find <!--#include file="..." --> directives
-    const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g;
-    let match;
+    const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g
+    let match
 
     // Keep replacing until no more include directives are found
     // This handles nested includes by repeatedly applying the regex
     while ((match = includeDirectiveRegex.exec(returningHtmlContent)) !== null) {
-      const directive = match[0]; // The full directive, e.g., <!--#include file="path/to/file.html" -->
-      const relativeFilePath = match[1]; // The path from the directive, e.g., "path/to/file.html"
+      const directive = match[0] // The full directive, e.g., <!--#include file="path/to/file.html" -->
+      const relativeFilePath = match[1] // The path from the directive, e.g., "path/to/file.html"
 
       // Resolve the script path relative to the directory of the indexHtmlFile
-      const indexDir = path.dirname(indexPath);
-      const absoluteFilePath = path.resolve(indexDir, relativeFilePath); // Use path.resolve for robustness
+      const indexDir = path.dirname(indexPath)
+      const absoluteFilePath = path.resolve(indexDir, relativeFilePath) // Use path.resolve for robustness
 
       try {
-        const fileContent = fs.readFileSync(absoluteFilePath, "utf8");
-        returningHtmlContent = returningHtmlContent.replace(directive, fileContent);
+        const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
+        returningHtmlContent = returningHtmlContent.replace(directive, fileContent)
       } catch (error) {
-        console.error(`Error including file "${absoluteFilePath}": ${error.message}`);
+        console.error(`Error including file "${absoluteFilePath}": ${error.message}`)
         // Optionally, replace with an error message or leave the directive,
         // depending on desired error handling. For now, it will effectively remove the directive if file not found.
-        // returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`);
+        // returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`)
       }
     }
-    return returningHtmlContent;
-  };
+    return returningHtmlContent
+  }
 
   // Pre-process HTML to uncomment JS includes
   // Removes leading "// " from lines containing "<!--#include file="client/...js" -->"
   let processedIndexHtmlContent = indexHtmlContent.split('\n').map(line => {
     if (line.trim().startsWith('//') && line.includes('<!--#include') && line.includes('.js"')) {
-      return line.replace('//', '');
+      return line.replace('//', '')
     }
-    return line;
-  }).join('\n');
+    return line
+  }).join('\n')
 
   // Parse includes. Iterative to handle nested includes.
-  let finalIndexHtmlContent = processedIndexHtmlContent;
-  let previousHtmlContent;
+  let finalIndexHtmlContent = processedIndexHtmlContent
+  let previousHtmlContent
   do {
-    previousHtmlContent = finalIndexHtmlContent;
-    finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent);
-  } while (finalIndexHtmlContent !== previousHtmlContent);
+    previousHtmlContent = finalIndexHtmlContent
+    finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent)
+  } while (finalIndexHtmlContent !== previousHtmlContent)
   // --------------------------------------------------------------------------
   // Finish process includes
   // --------------------------------------------------------------------------
@@ -105,21 +105,13 @@ function setupIntegrationTestEnvironment(options) {
 
       // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
       window.WebSocket = function(url) {
-        // console.log(`Mock WebSocket attempting to connect to: ${url}`);
         this.send = function(data) {
-          // console.log(`Mock WebSocket send: ${data}`);
-        };
+        }
         this.close = function() {
-          // console.log("Mock WebSocket close");
-        };
+        }
         this.addEventListener = function(event, callback) {
-          // console.log(`Mock WebSocket addEventListener for ${event}`);
-          // Store listeners if needed for more complex simulation, e.g., this['on'+event] = callback;
-        };
-        // Simulate open and close events if necessary for client logic, though likely not for this test
-        // setTimeout(() => { if (this.onopen) this.onopen(); }, 10); // Example: simulate open
-        // setTimeout(() => { if (this.onclose) this.onclose(); }, 20); // Example: simulate close
-      };
+        }
+      }
 
       // Mock setTimeout to be instant, to avoid delays
       window.setTimeout = (fn) => {
@@ -129,14 +121,7 @@ function setupIntegrationTestEnvironment(options) {
       // Mock matchMedia
       window.matchMedia = function(query) {
         return {
-          matches: false, // Or true, depending on what's more suitable for general tests
-          media: query,
-          onchange: null,
-          addListener: function() {}, // Deprecated
-          removeListener: function() {}, // Deprecated
-          addEventListener: function() {},
-          removeEventListener: function() {},
-          dispatchEvent: function() {}
+          matches: false,
         }
       }
 
@@ -149,11 +134,8 @@ function setupIntegrationTestEnvironment(options) {
             const body = JSON.parse(fetchOptions.body)
             if (body.path === path) {
               return Promise.resolve({
-                ok: true,
                 status: 200,
-                statusText: "OK",
                 json: async () => mockFetchResponseForPaths[path],
-                text: async () => JSON.stringify(mockFetchResponseForPaths[path]),
               })
             }
           }
@@ -161,11 +143,8 @@ function setupIntegrationTestEnvironment(options) {
 
         // Otherwise return an error
         return Promise.resolve({
-          ok: false,
           status: 500,
-          statusText: "Internal Server Error",
           json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
-          text: async () => JSON.stringify({ success: false, error: "Test error: Unmocked fetch path" }),
         })
       }
     }
@@ -179,4 +158,4 @@ function setupIntegrationTestEnvironment(options) {
   return window
 }
 
-module.exports = { setupIntegrationTestEnvironment };
+module.exports = { setupIntegrationTestEnvironment }

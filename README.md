@@ -59,7 +59,7 @@ alert("Success");
 ```
 
 ## Testing
-This project contains both standard server-side Node.js modules and client-side JavaScript files that are handled in a unique, non-modular way. The testing approach varies slightly depending on what you are testing. Server-side code and any client-side code structured as standard modules can be tested using typical Node.js testing patterns. However, for client-side scripts that are globally included (as described in 'Client-Side File Organization'), a special approach is needed.
+This project contains both standard server-side Node.js modules and client-side JavaScript files that are handled in a unique, non-modular way.
 
 ### How to run tests
 The primary way to run automated tests is using the `npm test` command from the project root. This command has several options:
@@ -87,28 +87,20 @@ The primary way to run automated tests is using the `npm test` command from the 
         npm test integration
         ```
 
-Make sure you have run `npm install` at least once to install all necessary dependencies, including those required for testing (like `jsdom`).
+Make sure you have run `npm install jsdom` before running tests.
 
 ### How to write new tests
-Test files should be named with the `.test.js` suffix (e.g., `myModule.test.js`) and placed within the `tests/` directory or its subdirectories. To be categorized correctly, unit tests should be placed within a subdirectory named `unit` (e.g., `tests/client/unit`) and integration tests within a subdirectory named `integration` (e.g., `tests/server/integration`).
 
 Tests are written in Node.js.
 
-Use the provided test utilities in `tests/testUtils.js` for assertions and test structure. Import them as needed:
-```javascript
-const { assertEquals, runTests } = require('./testUtils'); // Adjust path if needed if testUtils is in a different sub-directory of tests/
-```
-
 A typical test file structure looks like this:
 ```javascript
-const { assertEquals, runTests } = require('./testUtils'); // Or appropriate path e.g. require('../testUtils') if in a sub-directory of tests/
-// Import the module to be tested
-// const myModule = require('./myModule');
+const { assertEquals, runTests } = require("./testUtils")
 
 // Define your test functions
 function testFeatureOne() {
   // Setup and assertions
-  // assertEquals(expected, myModule.featureOne(), 'Feature one should work');
+  // assertEquals(expected, myModule.featureOne(), "Feature one should work")
 }
 
 function testFeatureTwo() {
@@ -116,16 +108,14 @@ function testFeatureTwo() {
 }
 
 // Run all tests in this file
-runTests('myModule.test.js', [
+runTests("myModule.test.js", [
   testFeatureOne,
   testFeatureTwo
   // Add more test functions here
-]);
+])
 ```
 
 ### Testing Client-Side Scripts
-
-Client-side scripts in this project are handled in two main ways for testing, depending on their nature and the test's requirements:
 
 1.  **Integration Testing for the Full Client Environment**:
     When you need to test the client-side application in an environment that closely mimics how `index.html` loads all scripts together, use the `setupIntegrationTestEnvironment` function from `tests/client/shared/integrationTestSetup.js`. This utility is designed for integration tests where the interplay of multiple client-side scripts (like `flint.js`, `state.js`, `renderTopic.js`, etc.) is important.
@@ -135,106 +125,28 @@ Client-side scripts in this project are handled in two main ways for testing, de
     - Processing all `<!--#include file="..." -->` directives to gather all client-side JavaScript files, similar to how the actual server does.
     - Using JSDOM to create a virtual DOM environment with this combined script content.
     - It mocks `WebSocket`, `fetch`, and `setTimeout` to ensure tests run predictably and don't make real network calls or suffer from real-time delays.
-    - It returns the `window` object from the JSDOM environment, allowing your test to interact with the client-side code as it would run in a browser.
+    - It returns the `window` object from the JSDOM environment, allowing your test to interact with the client-side code as it would run in a browser
+    - It exposes `$` and `state` as window level variables (they are normally just `const`s in a `<script>` block) by default and additional `const`s can be exposed to the window level with `options.constsToExpose`
 
     Example for an integration test:
     ```javascript
     // In your integration test (e.g., tests/client/integration/myFeature.test.js)
-    const { setupIntegrationTestEnvironment } = require('../shared/integrationTestSetup.js'); // Adjust path as needed
-    const { assertEquals, runTests } = require('../shared/testUtils.js'); // Adjust path as needed
+    const { assertEquals, runTests } = require("../shared/testUtils.js")
+    const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
 
     function testMyFeatureInFullEnvironment() {
-      const window = setupIntegrationTestEnvironment({
-        constsToExpose: ["renderTopic", "renderTopics"]
-      });
+      const window = setupIntegrationTestEnvironment()
       // Now window.state, window.$ are available
-      // As are renderTopic and renderTopics
+      { state, $ } = window
 
       // Example: Trigger an action and assert the outcome
-      window.document.querySelector('#myButton').click();
-      assertEquals('expected value', window.state.someProperty, 'State should update after button click');
+      $("#myButton").click()
+      assertEquals("expected value", state.someProperty, "State should update after button click")
     }
 
-    runTests('myFeature.integration.test.js', [testMyFeatureInFullEnvironment]);
+    runTests("myFeature.integration.test.js", [testMyFeatureInFullEnvironment])
     ```
-    This is the preferred method for integration tests that need to simulate the full browser environment with all scripts loaded.
-
-2.  **Unit Testing for Individual Non-Modular Client-Side Scripts**:
-    For more isolated testing of specific client-side files that are not structured as ES6 modules and rely on a global scope, you can use the `loadClientScript` utility from `tests/client/shared/testHelpers.js`. This is useful when you want to unit test a particular script's functions without loading the entire application.
-
-    The `loadClientScript` function works as follows:
-    - It reads the target script file.
-    - It accepts an object of `globalMocks` (e.g., for `document`, `window`, custom global functions).
-    - It optionally accepts a third argument, `constNamesToReturn`, which can be a string or an array of strings. This argument specifies which constant(s) defined within the script should be returned.
-    - It executes the script within a context where the `globalMocks` are available globally.
-    - It returns the requested constant(s):
-      - If `constNamesToReturn` is omitted, it defaults to returning the constant that has the same name as the file (e.g., `myScript.js` would lead to `myScript` being returned).
-      - If `constNamesToReturn` is a string, it returns the value of that specific constant.
-      - If `constNamesToReturn` is an array of strings, it returns an object where keys are the names from the array and values are the corresponding constants from the script.
-
-    Here’s an example for `loadClientScript`:
-
-```javascript
-// In your unit test for a specific client script (e.g., tests/client/unit/mySpecificScript.test.js)
-const path = require('path');
-const { assertEquals, runTests } = require('../../shared/testUtils.js'); // Adjust path
-const { loadClientScript, createMockDocument, createMockWindow } = require('../../shared/testHelpers.js'); // Adjust path
-
-// For browser-specific globals like `document` and `window`, use the helper functions
-// from `tests/client/shared/testHelpers.js` to create mock objects:
-const mockDocument = createMockDocument();
-const mockWindow = createMockWindow(mockDocument);
-
-// These can then be passed to loadClientScript's globalMocks argument.
-const globalMocks = {
-  document: mockDocument,
-  window: mockWindow,
-  // ... any other custom global mocks your script might need (e.g., Image, navigator)
-};
-
-// Example: Loading 'client/mySpecificScript.js' which defines 'const mySpecificFunction = ...;'
-// and might use global document or window objects.
-const mySpecificScript = loadClientScript(
-  path.resolve(__dirname, '../../../client/mySpecificScript.js'), // Adjust path to the script
-  globalMocks,
-  "mySpecificFunction" // Assuming you want to get 'mySpecificFunction'
-);
-// mySpecificScript will now hold the value of 'mySpecificFunction'.
-
-// Example test:
-// function testMySpecificFunction() {
-//   assertEquals('expected', mySpecificScript(), 'Test for mySpecificFunction');
-// }
-
-// runTests('MySpecificScriptTests', [testMySpecificFunction]);
-```
-The `loadClientScript` utility is suitable for unit-testing individual scripts. For creating `document` and `window` mocks, use the `createMockDocument()` and `createMockWindow()` helper functions from `tests/client/shared/testHelpers.js`. For other global browser APIs not covered by these helpers (e.g., `Image`, `navigator`), you might still need to create your own mocks. For examples, see `tests/client/unit/imageToPng.test.js`.
-
-### Testing `flint.js` and Dependent Code (Integration Testing)
-
-For integration testing `flint.js` or any client-side scripts that depend on `flint.js` and the full client environment (i.e., how they operate when all scripts in `index.html` are loaded together), use the `setupIntegrationTestEnvironment` function from `tests/client/shared/integrationTestSetup.js`.
-
-This function sets up a JSDOM environment with all client scripts loaded and necessary mocks (like `fetch`, `WebSocket`) in place.
-
-```javascript
-// In your integration test (e.g., tests/client/integration/flintDependent.test.js)
-const { setupIntegrationTestEnvironment } = require('../shared/integrationTestSetup.js'); // Adjust path
-const { assertEquals, runTests } = require('../shared/testUtils.js'); // Adjust path
-
-function testFlintDependentFeature() {
-  const window = setupIntegrationTestEnvironment();
-
-  // Now, window.$ (Flint), window.state, and other globally available
-  // functions/constants from your client scripts are available.
-  const $element = window.$('div'); // Use Flint via window.$
-  $element.text('Hello from Flint');
-  assertEquals('Hello from Flint', window.document.querySelector('div').textContent, 'Text should be set by Flint');
-}
-
-runTests('FlintDependentIntegrationTests', [testFlintDependentFeature]);
-```
-
-This approach ensures that tests for `flint.js` and its dependent scripts are run in an environment that closely matches the actual browser execution, providing accurate and reliable results for integration scenarios.
+    This is the preferred method for **ALL** integration tests.
 
 ## Flint.js DOM Manipulation
 

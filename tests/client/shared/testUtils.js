@@ -1,4 +1,4 @@
-let testResults = [];
+let testResults = []
 
 function assertEquals(expected, actual, message) {
   const pass = expected === actual; // Consider a deep equality check for objects/arrays if needed
@@ -7,27 +7,27 @@ function assertEquals(expected, actual, message) {
     message,
     expected,
     actual,
-  });
+  })
 }
 
 function getTestResults() {
-  return [...testResults];
+  return [...testResults]
 }
 
 function clearTestResults() {
-  testResults = [];
+  testResults = []
 }
 
 async function runTests(testFileName, testFunctions, includeTimer) {
-  clearTestResults();
+  clearTestResults()
   const startTime = new Date()
-  console.log(`\n  ${testFileName}`);
+  console.log(`\n  ${testFileName}`)
 
   for (const testFn of testFunctions) {
     try {
-      const result = testFn();
+      const result = testFn()
       if (result && typeof result.then === 'function') {
-        await result;
+        await result
       }
     } catch (error) {
       // If a test function itself throws an error, record it as a failure.
@@ -39,32 +39,32 @@ async function runTests(testFileName, testFunctions, includeTimer) {
     ${error.stack}`,
         expected: 'Test to complete without error',
         actual: `Error: ${error.message}`,
-      });
+      })
     }
   }
 
-  let passedCount = 0;
-  let failedCount = 0;
+  let passedCount = 0
+  let failedCount = 0
 
   testResults.forEach(result => {
     if (result.pass) {
       // Individual passes are not super relevant information.
       // We only want to see total passes and any failures.
-      // console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`);
-      passedCount++;
+      // console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`)
+      passedCount++
     } else {
-      console.log(`  \x1b[31mFAIL:\x1b[0m ${result.message}`);
-      console.log(`    Expected: ${JSON.stringify(result.expected)}`);
-      console.log(`    Actual:   ${JSON.stringify(result.actual)}`);
-      failedCount++;
+      console.log(`  \x1b[31mFAIL:\x1b[0m ${result.message}`)
+      console.log(`    Expected: ${JSON.stringify(result.expected)}`)
+      console.log(`    Actual:   ${JSON.stringify(result.actual)}`)
+      failedCount++
     }
-  });
+  })
 
-  console.log(`  \x1b[32mPASSED:\x1b[0m ${passedCount}`);
+  console.log(`  \x1b[32mPASSED:\x1b[0m ${passedCount}`)
   if (failedCount) {
-    console.log(`  \x1b[31mFAILED:\x1b[0m ${failedCount}`);
+    console.log(`  \x1b[31mFAILED:\x1b[0m ${failedCount}`)
   } else {
-    // console.log(`FAILED: ${failedCount}`);
+    // console.log(`FAILED: ${failedCount}`)
   }
   const endTime = new Date()
   if (includeTimer) {
@@ -72,8 +72,8 @@ async function runTests(testFileName, testFunctions, includeTimer) {
   }
 
   if (failedCount > 0) {
-    console.log("\x1b[31mSome tests failed. Exiting with status 1.\x1b[0m");
-    process.exit(1);
+    console.log("\x1b[31mSome tests failed. Exiting with status 1.\x1b[0m")
+    process.exit(1)
   }
 }
 
@@ -82,4 +82,4 @@ module.exports = {
   getTestResults,
   clearTestResults,
   runTests,
-};
+}

@@ -1,58 +1,58 @@
-const fs = require('fs');
-const path = require('path');
-const { JSDOM, VirtualConsole } = require('jsdom');
+const fs = require('fs')
+const path = require('path')
+const { JSDOM, VirtualConsole } = require('jsdom')
 
 // New loadClientScript function
 function loadClientScript(filePath, globalMocks, constNamesToReturn) {
   try {
-    const scriptContent = fs.readFileSync(filePath, 'utf8');
-    const mockNames = Object.keys(globalMocks);
-    const mockValues = Object.values(globalMocks);
-    const scriptName = path.basename(filePath, '.js');
+    const scriptContent = fs.readFileSync(filePath, 'utf8')
+    const mockNames = Object.keys(globalMocks)
+    const mockValues = Object.values(globalMocks)
+    const scriptName = path.basename(filePath, '.js')
 
-    let returnStatement = "";
+    let returnStatement = ""
 
     if (constNamesToReturn === undefined ||
         (typeof constNamesToReturn === 'string' && constNamesToReturn === scriptName)) {
-      returnStatement = `return ${scriptName};`;
+      returnStatement = `return ${scriptName};`
     } else if (typeof constNamesToReturn === 'string') {
-      returnStatement = `return ${constNamesToReturn};`;
+      returnStatement = `return ${constNamesToReturn};`
     } else if (Array.isArray(constNamesToReturn)) {
       if (constNamesToReturn.length === 0) {
-        returnStatement = "return {};";
+        returnStatement = "return {};"
       } else {
         // Correctly quote property names if they are not simple identifiers,
         // but here 'name' is a variable containing the string name, which is valid as a key.
-        const assignments = constNamesToReturn.map(name => `${name}: ${name}`);
-        returnStatement = `return { ${assignments.join(', ')} };`;
+        const assignments = constNamesToReturn.map(name => `${name}: ${name}`)
+        returnStatement = `return { ${assignments.join(', ')} };`
       }
     } else {
-      console.warn(`Invalid constNamesToReturn type: ${typeof constNamesToReturn}. Defaulting to returning const matching script name (${scriptName}).`);
-      returnStatement = `return ${scriptName};`;
+      console.warn(`Invalid constNamesToReturn type: ${typeof constNamesToReturn}. Defaulting to returning const matching script name (${scriptName}).`)
+      returnStatement = `return ${scriptName};`
     }
 
     const scriptToExecute = scriptContent + "\n" + returnStatement; // Ensure newline before return
 
-    const functionConstructorArgs = [...mockNames, scriptToExecute];
-    const dynamicallyCreatedFunction = new Function(...functionConstructorArgs);
-    return dynamicallyCreatedFunction.apply(null, mockValues);
+    const functionConstructorArgs = [...mockNames, scriptToExecute]
+    const dynamicallyCreatedFunction = new Function(...functionConstructorArgs)
+    return dynamicallyCreatedFunction.apply(null, mockValues)
   } catch (e) {
-    let attemptedReturn = "Error determining return statement";
+    let attemptedReturn = "Error determining return statement"
     // Safely stringify constNamesToReturn for the error message
     try {
       if (typeof returnStatement === 'string' && returnStatement.length > 0) {
-          attemptedReturn = returnStatement;
+          attemptedReturn = returnStatement
       } else if (constNamesToReturn !== undefined) {
-          attemptedReturn = `Input constNamesToReturn: ${JSON.stringify(constNamesToReturn)}`;
+          attemptedReturn = `Input constNamesToReturn: ${JSON.stringify(constNamesToReturn)}`
       }
     } catch (jsonError) {
         attemptedReturn = "Input constNamesToReturn could not be stringified."
     }
 
-    console.error(`Failed to load or execute client script: ${filePath}.`);
-    console.error(`Attempted to construct return statement: ${attemptedReturn}`);
+    console.error(`Failed to load or execute client script: ${filePath}.`)
+    console.error(`Attempted to construct return statement: ${attemptedReturn}`)
     console.error(`Error details: ${e.message}`); // Log the original error message
-    throw new Error(`Failed to load or execute client script: ${filePath}. Reason: ${e.message}. (Attempted return: ${attemptedReturn})`);
+    throw new Error(`Failed to load or execute client script: ${filePath}. Reason: ${e.message}. (Attempted return: ${attemptedReturn})`)
   }
 }
 // End of new loadClientScript function
@@ -87,18 +87,18 @@ function createEmptyMockElement() {
     val: function(v_content) { if (v_content === undefined) return ''; return this; },
     focus: function() { this.focused = true; return this; },
     empty: function() {
-      this._children = [];
-      this.prependedChildren = [];
-      this.appendedChildren = [];
-      this._content = '';
-      return this;
+      this._children = []
+      this.prependedChildren = []
+      this.appendedChildren = []
+      this._content = ''
+      return this
     },
     $: function(subSelector, subArgs) { return createEmptyMockElement(); },
     setAttribute: function(attributeName, value) { return this.attr(attributeName, value); },
     click: function() { return this; },
     index: function() { return 0; }
-  };
-  return emptyElement;
+  }
+  return emptyElement
 }
 
 // Mock DOM Implementation for testing flint.js itself
@@ -126,12 +126,12 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
     parentNode: null,
     eventListeners: {},
     appendChild: function(child) {
-      this.children.push(child);
+      this.children.push(child)
       child.parentNode = this; // Set parentNode
       if (child.nodeType === 3) { // Node.TEXT_NODE
         // Simplest form: directly append. Make sure parent textContent is also updated.
-        const newText = child.textContent || "";
-        this.innerText += newText;
+        const newText = child.textContent || ""
+        this.innerText += newText
         this.textContent += newText; // Also update textContent
       } else {
         // For non-text nodes, their own innerText/textContent might contribute to parent's textContent in real DOM.
@@ -140,128 +140,128 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
       }
     },
     prepend: function(...nodes) { // Added prepend method
-      const currentChildren = [...this.children];
-      this.children = [];
+      const currentChildren = [...this.children]
+      this.children = []
       nodes.forEach(node => {
         // If node is a string, convert it to a text node (simplified)
-        const childNode = typeof node === 'string' ? this.ownerDocument.createTextNode(node) : node;
+        const childNode = typeof node === 'string' ? this.ownerDocument.createTextNode(node) : node
         this.appendChild(childNode); // Use existing appendChild logic
-      });
-      currentChildren.forEach(child => this.appendChild(child));
+      })
+      currentChildren.forEach(child => this.appendChild(child))
     },
     setAttribute: function(name, value) {
       this.attributes[name] = String(value); // Store as string, like HTML
       if (name.toLowerCase() === "style") {
         if (!this.style) this.style = {}; // Initialize style if not present
-        // console.log(`setAttribute style: ${value} on ${this.tagName}`);
+        // console.log(`setAttribute style: ${value} on ${this.tagName}`)
         // this.style = {}; // Clear previous styles set by attribute - NO, merge them.
         value.split(';').forEach(styleRule => {
-          if (styleRule.trim() === '') return;
-          const [prop, valPart] = styleRule.split(':');
+          if (styleRule.trim() === '') return
+          const [prop, valPart] = styleRule.split(':')
           if (prop && valPart) {
             const propFormatted = prop.trim().replace(/-([a-z])/g, g => g[1].toUpperCase()); // css-case to camelCase
-            this.style[propFormatted] = valPart.trim();
+            this.style[propFormatted] = valPart.trim()
           }
-        });
+        })
       }
     },
     getAttribute: function(name) {
-      return this.attributes[name];
+      return this.attributes[name]
     },
     addEventListener: function(type, listener) {
       if (!this.eventListeners[type]) {
-        this.eventListeners[type] = [];
+        this.eventListeners[type] = []
       }
-      this.eventListeners[type].push(listener);
+      this.eventListeners[type].push(listener)
     },
     _matchesSelector: function(selector) { // `this` refers to the element being checked
-      if (!this.tagName) return false;
+      if (!this.tagName) return false
 
-      const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/);
+      const attrSelectorMatch = selector.match(/^([*.a-zA-Z0-9_-]*)\[\s*([a-zA-Z0-9_-]+)\s*(?:=\s*["']?([^"']+)["']?)?\s*\]$/)
 
       if (attrSelectorMatch) {
-        const tagNamePart = attrSelectorMatch[1] || '*';
-        const attrName = attrSelectorMatch[2];
-        const attrValue = attrSelectorMatch[3];
+        const tagNamePart = attrSelectorMatch[1] || '*'
+        const attrName = attrSelectorMatch[2]
+        const attrValue = attrSelectorMatch[3]
 
-        let tagMatch = false;
+        let tagMatch = false
         if (tagNamePart === '*' || tagNamePart === '' || this.tagName === tagNamePart.toUpperCase()) {
-          tagMatch = true;
+          tagMatch = true
         }
 
         if (tagMatch) {
-          const elAttrValue = this.getAttribute(attrName);
+          const elAttrValue = this.getAttribute(attrName)
           if (attrValue !== undefined) {
-            return elAttrValue === attrValue;
+            return elAttrValue === attrValue
           } else {
-            return elAttrValue !== undefined && elAttrValue !== null;
+            return elAttrValue !== undefined && elAttrValue !== null
           }
         }
-        return false;
+        return false
       } else if (selector.startsWith('#')) {
-        return this.getAttribute('id') === selector.substring(1);
+        return this.getAttribute('id') === selector.substring(1)
       } else if (selector.startsWith('.')) {
-        const className = selector.substring(1);
-        const classes = this.getAttribute('class');
-        return classes && classes.split(' ').includes(className);
+        const className = selector.substring(1)
+        const classes = this.getAttribute('class')
+        return classes && classes.split(' ').includes(className)
       } else {
-        return this.tagName === selector.toUpperCase();
+        return this.tagName === selector.toUpperCase()
       }
     },
     querySelectorAll: function(selector) { // Applies to mockElement.querySelectorAll
-      const results = [];
-      const parts = selector.trim().split(/\s+/);
+      const results = []
+      const parts = selector.trim().split(/\s+/)
 
       if (parts.length > 1) {
-        const firstPart = parts[0];
-        const remainingPartsString = parts.slice(1).join(' ');
+        const firstPart = parts[0]
+        const remainingPartsString = parts.slice(1).join(' ')
 
         // Find all descendants of 'this' (current context element) that match 'firstPart'
-        const firstLevelMatches = [];
+        const firstLevelMatches = []
         const collectDescendantsMatchingFirstPart = (currentElement) => {
           for (const child of currentElement.children) {
-            if (!child.tagName) continue;
+            if (!child.tagName) continue
             if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(firstPart)) {
               if (!firstLevelMatches.includes(child)) {
-                firstLevelMatches.push(child);
+                firstLevelMatches.push(child)
               }
             }
             // Continue searching deeper within this child for the firstPart
             if (child.children && child.children.length > 0) {
-              collectDescendantsMatchingFirstPart(child);
+              collectDescendantsMatchingFirstPart(child)
             }
           }
-        };
-        collectDescendantsMatchingFirstPart(this);
+        }
+        collectDescendantsMatchingFirstPart(this)
 
         // For each element that matched the firstPart, call its querySelectorAll with the remaining parts
         firstLevelMatches.forEach(matchedElement => {
           if (matchedElement.querySelectorAll && typeof matchedElement.querySelectorAll === 'function') {
-            const deeperMatches = matchedElement.querySelectorAll(remainingPartsString);
+            const deeperMatches = matchedElement.querySelectorAll(remainingPartsString)
             deeperMatches.forEach(dm => {
               if (!results.includes(dm)) { // Ensure uniqueness
-                results.push(dm);
+                results.push(dm)
               }
-            });
+            })
           }
-        });
+        })
       } else { // Single selector part (no spaces)
-        const singleSelector = parts[0];
+        const singleSelector = parts[0]
         const findRecursively = (currentElement) => {
           for (const child of currentElement.children) {
-            if (!child.tagName) continue;
+            if (!child.tagName) continue
             if (child._matchesSelector && typeof child._matchesSelector === 'function' && child._matchesSelector(singleSelector)) {
               if (!results.includes(child)) { // Ensure uniqueness
-                results.push(child);
+                results.push(child)
               }
             }
             // Continue searching deeper within this child
             if (child.children && child.children.length > 0) {
-              findRecursively(child);
+              findRecursively(child)
             }
           }
-        };
-        findRecursively(this);
+        }
+        findRecursively(this)
       }
 
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
@@ -269,30 +269,30 @@ const createMockElement = (tagName, ownerDoc) => { // Added ownerDoc parameter
     },
     remove: function() {
       if (this.parentNode && this.parentNode.children) {
-        const index = this.parentNode.children.indexOf(this);
+        const index = this.parentNode.children.indexOf(this)
         if (index > -1) {
-          this.parentNode.children.splice(index, 1);
+          this.parentNode.children.splice(index, 1)
         }
       }
       // Also remove from ownerDocument._elements to prevent re-selection by global queries
       if (this.ownerDocument && this.ownerDocument._elements) {
-        const docIndex = this.ownerDocument._elements.indexOf(this);
+        const docIndex = this.ownerDocument._elements.indexOf(this)
         if (docIndex > -1) {
-          this.ownerDocument._elements.splice(docIndex, 1);
+          this.ownerDocument._elements.splice(docIndex, 1)
         }
       }
     },
     focus: function() { this.focused = true; /* Basic mock */ },
-  };
+  }
   // Ensure style property exists for direct assignment like el.style.zIndex
   Object.defineProperty(element, 'style', {
     value: {},
     writable: true,
     configurable: true,
     enumerable: true
-  });
-  return element;
-};
+  })
+  return element
+}
 
 function createMockDocument() {
   const mockDocumentObject = {
@@ -301,136 +301,136 @@ function createMockDocument() {
     createElement: function(tagName) {
       const el = createMockElement(tagName, this); // Pass this (mockDocument) as ownerDocument
       this._elements.push(el); // Track elements for global queries
-      return el;
+      return el
     },
     createTextNode: function(text) {
       const textNode = createMockElement('#text', this); // Pass this (mockDocument) as ownerDocument
-      textNode.nodeType = 3;
+      textNode.nodeType = 3
       textNode.textContent = text; // textContent is primary for text nodes
       textNode.nodeValue = text; // Another property real text nodes have
       textNode.data = text; // And another
       // textNode.innerText = text; // innerText on a text node itself is not standard as on elements
 
-      textNode.appendChild = () => { throw new Error("Cannot appendChild to a text node"); };
-      textNode.setAttribute = () => { throw new Error("Cannot setAttribute on a text node"); };
+      textNode.appendChild = () => { throw new Error("Cannot appendChild to a text node"); }
+      textNode.setAttribute = () => { throw new Error("Cannot setAttribute on a text node"); }
       textNode.querySelectorAll = function(selector) {
-          const results = [];
-          results.forEach = Array.prototype.forEach;
-          return results;
-      };
-      return textNode;
+          const results = []
+          results.forEach = Array.prototype.forEach
+          return results
+      }
+      return textNode
     },
     createDocumentFragment: function() {
-      const fragment = createMockElement('#document-fragment');
+      const fragment = createMockElement('#document-fragment')
       fragment.nodeType = 11; // Node.DOCUMENT_FRAGMENT_NODE
-      return fragment;
+      return fragment
     },
     querySelectorAll: function(selector) { // Applies to mockDocument.querySelectorAll
-      const lowerCaseSelector = selector.toLowerCase();
+      const lowerCaseSelector = selector.toLowerCase()
 
       if (lowerCaseSelector === 'html') {
-        const results = [];
+        const results = []
         if (this.documentElement) {
-          results.push(this.documentElement);
+          results.push(this.documentElement)
         }
-        results.forEach = Array.prototype.forEach;
-        return results;
+        results.forEach = Array.prototype.forEach
+        return results
       }
 
       if (lowerCaseSelector === 'body') {
-        const results = [];
+        const results = []
         if (this.body) {
-          results.push(this.body);
+          results.push(this.body)
         }
-        results.forEach = Array.prototype.forEach;
-        return results;
+        results.forEach = Array.prototype.forEach
+        return results
       }
 
-      let results = [];
-      let elementsToSearch = this._elements;
+      let results = []
+      let elementsToSearch = this._elements
 
-      const parts = selector.trim().split(/\s+/);
+      const parts = selector.trim().split(/\s+/)
 
       if (parts.length > 1) {
-        const ancestorSelector = parts[0];
-        const descendantSelector = parts.slice(1).join(' ');
+        const ancestorSelector = parts[0]
+        const descendantSelector = parts.slice(1).join(' ')
 
-        const ancestors = this.querySelectorAll(ancestorSelector);
+        const ancestors = this.querySelectorAll(ancestorSelector)
 
-        elementsToSearch = [];
+        elementsToSearch = []
         ancestors.forEach(ancestor => {
-          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector));
-        });
+          elementsToSearch.push(...ancestor.querySelectorAll(descendantSelector))
+        })
 
-        results = [...new Set(elementsToSearch)];
-        results.forEach = Array.prototype.forEach;
-        return results;
+        results = [...new Set(elementsToSearch)]
+        results.forEach = Array.prototype.forEach
+        return results
       }
 
-      const currentSelectorPart = parts[0];
+      const currentSelectorPart = parts[0]
       for (const el of elementsToSearch) {
         if (!el.tagName) {
-          continue;
+          continue
         }
         if (el._matchesSelector && typeof el._matchesSelector === 'function' && el._matchesSelector(currentSelectorPart)) {
-          results.push(el);
+          results.push(el)
         } else if (!el._matchesSelector || typeof el._matchesSelector !== 'function') {
           // Element doesn't have the method - potentially an issue if it's supposed to be a full mock element.
         }
       }
       if (currentSelectorPart.toLowerCase() === 'html' && this.documentElement && !results.includes(this.documentElement)) {
-        results.push(this.documentElement);
+        results.push(this.documentElement)
       }
       if (currentSelectorPart.toLowerCase() === 'body' && this.body && !results.includes(this.body)) {
-        results.push(this.body);
+        results.push(this.body)
       }
-      const uniqueResults = [...new Set(results)];
-      uniqueResults.forEach = Array.prototype.forEach;
-      return uniqueResults;
+      const uniqueResults = [...new Set(results)]
+      uniqueResults.forEach = Array.prototype.forEach
+      return uniqueResults
     },
     head: null,
     body: null, // Initialized below
     readyState: 'complete',
     getElementById: function(id) {
-      return this._elements.find(el => el.getAttribute('id') === id) || null;
+      return this._elements.find(el => el.getAttribute('id') === id) || null
     },
     getElementsByTagName: function(tagNameLC) {
-      const lowerCaseTagName = tagNameLC.toLowerCase();
-      const results = this._elements.filter(el => el.tagName && el.tagName.toLowerCase() === lowerCaseTagName);
+      const lowerCaseTagName = tagNameLC.toLowerCase()
+      const results = this._elements.filter(el => el.tagName && el.tagName.toLowerCase() === lowerCaseTagName)
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
       // Also make it behave like a live HTMLCollection by adding a namedItem method (simplified)
-      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
-      return results;
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null
+      return results
     },
     getElementsByClassName: function(className) {
       const results = this._elements.filter(el => {
-        const classes = el.getAttribute('class');
-        return classes && classes.split(' ').includes(className);
-      });
+        const classes = el.getAttribute('class')
+        return classes && classes.split(' ').includes(className)
+      })
       results.forEach = Array.prototype.forEach; // Add forEach for NodeList mimicry
-      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null;
-      return results;
+      results.namedItem = (name) => results.find(el => el.getAttribute('id') === name || el.getAttribute('name') === name) || null
+      return results
     }
-  };
-  mockDocumentObject.head = mockDocumentObject.createElement('head');
-  mockDocumentObject.body = mockDocumentObject.createElement('body');
+  }
+  mockDocumentObject.head = mockDocumentObject.createElement('head')
+  mockDocumentObject.body = mockDocumentObject.createElement('body')
   // Add html element (documentElement)
-  mockDocumentObject.documentElement = mockDocumentObject.createElement('html');
-  mockDocumentObject.documentElement.appendChild(mockDocumentObject.head);
-  mockDocumentObject.documentElement.appendChild(mockDocumentObject.body);
+  mockDocumentObject.documentElement = mockDocumentObject.createElement('html')
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.head)
+  mockDocumentObject.documentElement.appendChild(mockDocumentObject.body)
   // Ensure documentElement is also part of _elements so it can be found by generic queries if needed
   // although specific 'html' query should handle it.
   if (!mockDocumentObject._elements.includes(mockDocumentObject.documentElement)) {
-    mockDocumentObject._elements.push(mockDocumentObject.documentElement);
+    mockDocumentObject._elements.push(mockDocumentObject.documentElement)
   }
    if (!mockDocumentObject._elements.includes(mockDocumentObject.body)) {
-    mockDocumentObject._elements.push(mockDocumentObject.body);
+    mockDocumentObject._elements.push(mockDocumentObject.body)
   }
    if (!mockDocumentObject._elements.includes(mockDocumentObject.head)) {
-    mockDocumentObject._elements.push(mockDocumentObject.head);
+    mockDocumentObject._elements.push(mockDocumentObject.head)
   }
 
-  return mockDocumentObject;
+  return mockDocumentObject
 }
 
 function createMockWindow(mockDocument) {
@@ -442,36 +442,36 @@ function createMockWindow(mockDocument) {
     },
     removeEventListener: function(type, listener) {
     }
-  };
+  }
 }
 
 // --- Mock Implementations ---
 const createMockFunction = (name = 'mockFunction') => {
   const mock = (...args) => {
-    mock.called = true;
-    mock.callCount++;
-    mock.calls.push(args);
+    mock.called = true
+    mock.callCount++
+    mock.calls.push(args)
     // For functions that need to return a value based on input:
     if (mock.customBehavior) {
-      return mock.customBehavior(...args);
+      return mock.customBehavior(...args)
     }
-    return mock.returnValue;
-  };
-  mock.called = false;
-  mock.callCount = 0;
-  mock.calls = [];
-  mock.returnValue = undefined;
+    return mock.returnValue
+  }
+  mock.called = false
+  mock.callCount = 0
+  mock.calls = []
+  mock.returnValue = undefined
   mock.customBehavior = null; // Function to define custom return logic
   mock.mockName = name; // Store the name for debugging or identification
   mock.reset = () => { // Renamed from clearHistory to reset to avoid confusion
-    mock.called = false;
-    mock.callCount = 0;
-    mock.calls = [];
+    mock.called = false
+    mock.callCount = 0
+    mock.calls = []
     // mock.returnValue = undefined; // Usually, returnValue is set once
     // mock.customBehavior = null; // And customBehavior is set once
-  };
-  return mock;
-};
+  }
+  return mock
+}
 
 module.exports = {
   loadClientScript,
@@ -479,4 +479,4 @@ module.exports = {
   createMockElement,
   createMockDocument,
   createMockWindow,
-};
+}
