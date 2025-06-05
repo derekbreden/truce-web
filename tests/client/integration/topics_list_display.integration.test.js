@@ -7,8 +7,7 @@ const testTopicsListDisplaysFetchedTopics = async () => {
     const { state, $ } = window
 
     // Simulate agreeing to terms to navigate to /topics
-    const joinButton = $(`a[href="/topics"][big]`)
-    assertEquals(joinButton !== null, true, "Join the Discussion button should exist")
+    const $joinButton = $(`a[href="/topics"][big]`)
 
     window.setMockFetchResponseForPaths({
       "/topics": {
@@ -27,42 +26,36 @@ const testTopicsListDisplaysFetchedTopics = async () => {
       },
     })
 
-    joinButton.click()
+    $joinButton.click()
 
     // Wait for navigation and rendering (all setTimeouts in the page will respond instantly)
     await new Promise(resolve => setTimeout(resolve, 0))
 
     assertEquals(state.path, "/topics", "State path should be /topics after navigation")
 
-    const topicsWrapper = $("topics")
-    assertEquals(topicsWrapper !== null, true, "<topics> wrapper element should be present")
+    const $topicsWrapper = $("topics")
+    assertEquals($topicsWrapper !== null, true, "<topics> wrapper element should be present")
 
-    if (topicsWrapper) {
-        const renderedTopicElements = topicsWrapper.querySelectorAll("topic")
-        assertEquals(renderedTopicElements.length, 2, "Should render 2 topic elements based on mock data")
+    const $renderedTopicElements = $topicsWrapper.querySelectorAll("topic")
+    assertEquals($renderedTopicElements.length, 2, "Should render 2 topic elements based on mock data")
 
-        // Assert content of the first topic
-        const firstTopic = renderedTopicElements[0]
-        if (firstTopic) {
-            const firstTitle = firstTopic.querySelector("h2")
-            assertEquals(firstTitle && firstTitle.textContent.trim(), "Tech Trends 2024", "First topic title mismatch")
-            const firstBodySpan = firstTopic.querySelector("p > span") // Target the span inside the first p
-            assertEquals(firstBodySpan !== null, true, "First topic body span should exist")
-        } else {
-            throw new Error("First topic element not found for assertion.")
-        }
+    // Assert content of the first topic
+    const $firstTopic = $renderedTopicElements[0]
 
-        // Assert content of the second topic
-        const secondTopic = renderedTopicElements[1]
-        if (secondTopic) {
-            const secondTitle = secondTopic.querySelector("h2")
-            assertEquals(secondTitle && secondTitle.textContent.trim(), "Science Discoveries", "Second topic title mismatch")
-            const secondBodySpan = secondTopic.querySelector("p > span") // Target the span inside the first p
-            assertEquals(secondBodySpan !== null, true, "Second topic body span should exist")
-        } else {
-            throw new Error("Second topic element not found for assertion.")
-        }
-    }
+    const $firstTitle = $firstTopic.querySelector("h2")
+    assertEquals($firstTitle && $firstTitle.textContent.trim(), "Tech Trends 2024", "First topic title mismatch")
+
+    const $firstBodySpan = $firstTopic.querySelector("p > span") // Target the span inside the first p
+    assertEquals($firstBodySpan !== null, true, "First topic body span should exist")
+
+    // Assert content of the second topic
+    const $secondTopic = $renderedTopicElements[1]
+
+    const $secondTitle = $secondTopic.querySelector("h2")
+    assertEquals($secondTitle && $secondTitle.textContent.trim(), "Science Discoveries", "Second topic title mismatch")
+
+    const $secondBodySpan = $secondTopic.querySelector("p > span") // Target the span inside the first p
+    assertEquals($secondBodySpan !== null, true, "Second topic body span should exist")
 }
 
 const tests = {

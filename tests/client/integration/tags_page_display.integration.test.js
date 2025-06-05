@@ -65,43 +65,39 @@ const tests = {
         // Assert content of the first tag ("science")
         const $firstTag = $tagsListContainer.$("tag[tag='science']")
         assertEquals(true, Boolean($firstTag), "First tag (science) element should be found.")
-        if ($firstTag) {
-            const $nameElement = $firstTag.$("tagname name")
-            assertEquals(true, Boolean($nameElement), "First tag should have a <name> element.")
-            assertEquals("Science", $nameElement.innerText.trim(), "First tag name mismatch. Expected 'Science'.")
 
-            const $countElement = $firstTag.$("tagname count")
-            assertEquals(true, Boolean($countElement), "First tag should have a <count> element.")
-            assertEquals("10", $countElement.innerText.trim(), "First tag count mismatch. Expected '10'.")
-            
-            const $subtitleElement = $firstTag.$("subtitle")
-            assertEquals(true, Boolean($subtitleElement), "First tag should have a <subtitle> element.")
-            assertEquals("All about science", $subtitleElement.innerText.trim(), "First tag subtitle mismatch.")
-        }
+        const $firstNameElement = $firstTag.$("tagname name")
+        assertEquals(true, Boolean($firstNameElement), "First tag should have a <name> element.")
+        assertEquals("Science", $firstNameElement.innerText.trim(), "First tag name mismatch. Expected 'Science'.")
+
+        const $firstCountElement = $firstTag.$("tagname count")
+        assertEquals(true, Boolean($firstCountElement), "First tag should have a <count> element.")
+        assertEquals("10", $firstCountElement.innerText.trim(), "First tag count mismatch. Expected '10'.")
+        
+        const $firstSubtitleElement = $firstTag.$("subtitle")
+        assertEquals(true, Boolean($firstSubtitleElement), "First tag should have a <subtitle> element.")
+        assertEquals("All about science", $firstSubtitleElement.innerText.trim(), "First tag subtitle mismatch.")
 
         // Assert content of the second tag ("history")
         const $secondTag = $tagsListContainer.$("tag[tag='history']")
         assertEquals(true, Boolean($secondTag), "Second tag (history) element should be found.")
-        if ($secondTag) {
-                const $nameElement = $secondTag.$("tagname name")
-                assertEquals(true, Boolean($nameElement), "Second tag should have a <name> element.")
-                assertEquals("History", $nameElement.innerText.trim(), "Second tag name mismatch. Expected 'History'.")
+    
+        const $secondNameElement = $secondTag.$("tagname name")
+        assertEquals(true, Boolean($secondNameElement), "Second tag should have a <name> element.")
+        assertEquals("History", $secondNameElement.innerText.trim(), "Second tag name mismatch. Expected 'History'.")
 
-                const $countElement = $secondTag.$("tagname count")
-                assertEquals(true, Boolean($countElement), "Second tag should have a <count> element.")
-                assertEquals("5", $countElement.innerText.trim(), "Second tag count mismatch. Expected '5'.")
+        const $secondCountElement = $secondTag.$("tagname count")
+        assertEquals(true, Boolean($secondCountElement), "Second tag should have a <count> element.")
+        assertEquals("5", $secondCountElement.innerText.trim(), "Second tag count mismatch. Expected '5'.")
 
-                const $subtitleElement = $secondTag.$("subtitle")
-                assertEquals(true, Boolean($subtitleElement), "Second tag should have a <subtitle> element.")
-                assertEquals("History discussions", $subtitleElement.innerText.trim(), "Second tag subtitle mismatch.")
-        }
+        const $secondSubtitleElement = $secondTag.$("subtitle")
+        assertEquals(true, Boolean($secondSubtitleElement), "Second tag should have a <subtitle> element.")
+        assertEquals("History discussions", $secondSubtitleElement.innerText.trim(), "Second tag subtitle mismatch.")
         
         // Check for the overall page structure (header for tags page)
         const $tagsPageHeader = $mainContent.$("topics topic h2[tags] span") // As per renderTags.js structure
         assertEquals(true, Boolean($tagsPageHeader), "Tags page header (h2 > span) should exist.")
-        if ($tagsPageHeader) {
-            assertEquals("Tags", $tagsPageHeader.innerText.trim(), "Tags page header text mismatch.")
-        }
+        assertEquals("Tags", $tagsPageHeader.innerText.trim(), "Tags page header text mismatch.")
     }
 }
 

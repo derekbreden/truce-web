@@ -27,11 +27,9 @@ const tests = {
         })
 
         // Simulate agreeing to terms to navigate to /topics
-        const joinButton = $(`a[href="/topics"][big]`)
-        assertEquals(true, Boolean(joinButton), "Agree button should exist on the welcome page.")
-        if (!joinButton) return // Guard assertion
-
-        joinButton.click()
+        const $joinButton = $(`a[href="/topics"][big]`)
+        assertEquals(true, Boolean($joinButton), "Agree button should exist on the welcome page.")
+        $joinButton.click()
 
         // Wait for navigation and rendering
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -49,9 +47,7 @@ const tests = {
             const selector = `footer icon[${iconName}] svg`
             const $iconSvg = $(selector)
             assertEquals(true, Boolean($iconSvg), `Footer icon <${iconName}> SVG should exist. Selector: ${selector}`)
-            if ($iconSvg) {
-                assertEquals("svg", $iconSvg.tagName?.toLowerCase(), `Footer icon <${iconName}> element should be an SVG tag.`)
-            }
+            assertEquals("svg", $iconSvg.tagName?.toLowerCase(), `Footer icon <${iconName}> element should be an SVG tag.`)
         })
     },
 
@@ -70,12 +66,12 @@ const tests = {
             }
         })
 
-        const hamburgerImg = $("header hamburger img")
-        assertEquals(true, Boolean(hamburgerImg), "Hamburger image should exist in the header.")
-        if (hamburgerImg) {
-            assertEquals("img", hamburgerImg.tagName?.toLowerCase(), "Hamburger element should be an <img> tag.")
-            assertEquals("/hamburger.svg", hamburgerImg.getAttribute("src"), "Hamburger image src attribute should be correct.")
-            assertEquals("Menu", hamburgerImg.getAttribute("alt"), "Hamburger image alt attribute should be correct.")
+        const $hamburgerImg = $("header hamburger img")
+        assertEquals(true, Boolean($hamburgerImg), "Hamburger image should exist in the header.")
+        if ($hamburgerImg) {
+            assertEquals("img", $hamburgerImg.tagName?.toLowerCase(), "Hamburger element should be an <img> tag.")
+            assertEquals("/hamburger.svg", $hamburgerImg.getAttribute("src"), "Hamburger image src attribute should be correct.")
+            assertEquals("Menu", $hamburgerImg.getAttribute("alt"), "Hamburger image alt attribute should be correct.")
         }
     },
 
@@ -104,9 +100,7 @@ const tests = {
         globalIconsToTest.forEach(iconInfo => {
             const $iconSvg = $(iconInfo.selector)
             assertEquals(true, Boolean($iconSvg), `Global icon <${iconInfo.name}> SVG should exist. Selector: ${iconInfo.selector}`)
-            if ($iconSvg) {
-                assertEquals("svg", $iconSvg.tagName?.toLowerCase(), `Global icon <${iconInfo.name}> element should be an SVG tag.`)
-            }
+            assertEquals("svg", $iconSvg.tagName?.toLowerCase(), `Global icon <${iconInfo.name}> element should be an SVG tag.`)
         })
     }
 }

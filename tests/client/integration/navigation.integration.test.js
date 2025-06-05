@@ -15,8 +15,8 @@ const tests = {
         }
 
         // 1. Agree to terms to navigate to /topics
-        const joinButton = $(`a[href="/topics"][big]`)
-        assertEquals(true, Boolean(joinButton), "Agree button should exist on the welcome page.")
+        const $joinButton = $(`a[href="/topics"][big]`)
+        assertEquals(true, Boolean($joinButton), "Agree button should exist on the welcome page.")
 
         // Set fetch response for topics and specific topic
         window.setMockFetchResponseForPaths({
@@ -40,23 +40,23 @@ const tests = {
         })
 
         // Click the join button
-        joinButton.click()
+        $joinButton.click()
 
         // Wait for navigation and rendering (increased delay for page load)
         await new Promise(resolve => setTimeout(resolve, 200))
 
         // Verify navigation to /topics
         assertEquals("/topics", state.path, "Path should be /topics after agreeing to terms.")
-        const topicsWrapper = $("topics") // Element that wraps all topics
-        assertEquals(true, Boolean(topicsWrapper), "Topics wrapper element should be present on /topics page.")
+        const $topicsWrapper = $("topics") // Element that wraps all topics
+        assertEquals(true, Boolean($topicsWrapper), "Topics wrapper element should be present on /topics page.")
 
         // 2. Find and click the first topic link/element
         // Topic should be rendered by the actual application logic via the mocked fetch
-        const firstTopicElement = $("topics > topic[trimmed]")
-        assertEquals(true, Boolean(firstTopicElement), "First topic element with [trimmed] attribute should be found on the /topics page.")
+        const $firstTopicElement = $("topics > topic[trimmed]")
+        assertEquals(true, Boolean($firstTopicElement), "First topic element with [trimmed] attribute should be found on the /topics page.")
 
         // Simulate click on the topic element itself, which should trigger navigation
-        firstTopicElement.click()
+        $firstTopicElement.click()
 
         // Wait for navigation and rendering
         await new Promise(resolve => setTimeout(resolve, 200))
@@ -74,14 +74,14 @@ const tests = {
 
         // 4. Assert that topic detail specific elements are rendered
         // Check for the <comments> wrapper, indicating comments can be loaded/displayed
-        const commentsWrapper = $("main-content-wrapper[active] comments")
-        assertEquals(true, Boolean(commentsWrapper), "Comments wrapper element should be present on the topic detail page.")
+        const $commentsWrapper = $("main-content-wrapper[active] comments")
+        assertEquals(true, Boolean($commentsWrapper), "Comments wrapper element should be present on the topic detail page.")
 
         // Check that the main topic display is no longer "trimmed" (if it was the same element being re-rendered)
         // Or, more simply, check if a full topic body indicative element exists.
         // renderTopic uses markdownToElements. Let"s assume a <p> tag will be part of the body.
-        const topicBodyIndicator = $("main-content-wrapper[active] topic p")
-        assertEquals(true, Boolean(topicBodyIndicator), "A <p> tag (indicator of topic body) should be present in the main content of the topic detail page.")
+        const $topicBodyIndicator = $("main-content-wrapper[active] topic p")
+        assertEquals(true, Boolean($topicBodyIndicator), "A <p> tag (indicator of topic body) should be present in the main content of the topic detail page.")
     }
 }
 

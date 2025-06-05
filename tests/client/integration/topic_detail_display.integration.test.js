@@ -85,10 +85,9 @@ const tests = {
         })
 
         // 1. Agree to terms to navigate to /topics
-        const joinButton = $(`a[href="/topics"][big]`)
-        assertEquals(true, Boolean(joinButton), "Agree button should exist on the welcome page.")
-        if (!joinButton) return
-        joinButton.click()
+        const $joinButton = $(`a[href="/topics"][big]`)
+        assertEquals(true, Boolean($joinButton), "Agree button should exist on the welcome page.")
+        $joinButton.click()
 
         // Wait for navigation and rendering
         // Multiple awaits for setTimeout(0) to allow microtasks and rendering to process
@@ -97,19 +96,19 @@ const tests = {
 
 
         assertEquals("/topics", state.path, "Path should be /topics after agreeing to terms.")
-        const topicsWrapper = $("topics")
-        assertEquals(true, Boolean(topicsWrapper), "Topics wrapper element should be present on /topics page.")
+        const $topicsWrapper = $("topics")
+        assertEquals(true, Boolean($topicsWrapper), "Topics wrapper element should be present on /topics page.")
 
         // 2. Simulate at least one topic appearing on the /topics page
         // This is necessary to be able to click on a topic to navigate to its detail page.
         // The navigation.integration.test.js uses a similar approach.
         // The manual topic injection is no longer needed as fetch mock will provide the topic.
 
-        const firstTopicElement = $("topics > topic[trimmed]")
-        assertEquals(true, Boolean(firstTopicElement), "First topic element should be found on the /topics page.")
+        const $firstTopicElement = $("topics > topic[trimmed]")
+        assertEquals(true, Boolean($firstTopicElement), "First topic element should be found on the /topics page.")
 
         // 3. Click the topic to navigate to its detail page
-        firstTopicElement.click()
+        $firstTopicElement.click()
 
         // Wait for navigation and rendering to the detail page
         await new Promise(resolve => setTimeout(resolve, 0))
@@ -120,28 +119,24 @@ const tests = {
 
         // 4. Assert that topic detail specific elements are rendered
         // As per renderTopic.js, these details are within a "topic-details[detail-wrapper]"
-        const topicDetailsWrapper = $("main-content-wrapper[active] topic topic-details[detail-wrapper]")
-        assertEquals(true, Boolean(topicDetailsWrapper), "Topic details wrapper (`topic-details[detail-wrapper]`) should be present on the topic detail page.")
+        const $topicDetailsWrapper = $("main-content-wrapper[active] topic topic-details[detail-wrapper]")
+        assertEquals(true, Boolean($topicDetailsWrapper), "Topic details wrapper (`topic-details[detail-wrapper]`) should be present on the topic detail page.")
 
-        if (topicDetailsWrapper) {
-            const favoritesDetail = topicDetailsWrapper.querySelector("detail[favorites]")
-            assertEquals(true, Boolean(favoritesDetail), "Favorites detail element (`detail[favorites]`) should be present within the topic details wrapper.")
-            if (favoritesDetail) {
-                const favoriteCountElement = favoritesDetail.querySelector("p")
-                assertEquals(true, Boolean(favoriteCountElement), "Favorite count <p> element should be present.")
-                // Assert the actual count from the mocked API response
-                assertEquals("3", favoriteCountElement.innerText.trim(), `Favorite count should be "3".`)
-            }
+        const $favoritesDetail = $topicDetailsWrapper.querySelector("detail[favorites]")
+        assertEquals(true, Boolean($favoritesDetail), "Favorites detail element (`detail[favorites]`) should be present within the topic details wrapper.")
 
-            const commentsDetail = topicDetailsWrapper.querySelector("detail[comments]")
-            assertEquals(true, Boolean(commentsDetail), "Comments detail element (`detail[comments]`) should be present within the topic details wrapper.")
-            if (commentsDetail) {
-                const commentCountElement = commentsDetail.querySelector("p")
-                assertEquals(true, Boolean(commentCountElement), "Comment count <p> element should be present.")
-                // Assert the actual count from the mocked API response
-                assertEquals("5", commentCountElement.innerText.trim(), `Comment count should be "5".`)
-            }
-        }
+        const $favoriteCountElement = $favoritesDetail.querySelector("p")
+        assertEquals(true, Boolean($favoriteCountElement), "Favorite count <p> element should be present.")
+        // Assert the actual count from the mocked API response
+        assertEquals("3", $favoriteCountElement.innerText.trim(), `Favorite count should be "3".`)
+
+        const $commentsDetail = $topicDetailsWrapper.querySelector("detail[comments]")
+        assertEquals(true, Boolean($commentsDetail), "Comments detail element (`detail[comments]`) should be present within the topic details wrapper.")
+
+        const $commentCountElement = $commentsDetail.querySelector("p")
+        assertEquals(true, Boolean($commentCountElement), "Comment count <p> element should be present.")
+        // Assert the actual count from the mocked API response
+        assertEquals("5", $commentCountElement.innerText.trim(), `Comment count should be "5".`)
     }
 }
 
