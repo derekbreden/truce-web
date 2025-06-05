@@ -75,7 +75,7 @@ The primary way to run automated tests is using the `npm test` command from the 
     ```bash
     npm test tests/client/integration/navigation.integration.test.js
     ```
-    (navigation.integration.test.js is a great file to follow patterns from by the way)
+    **Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
 
 *   **To run specific categories of tests:**
     You can run all unit tests or all integration tests using the following commands:
@@ -95,26 +95,61 @@ Make sure you have run `npm install jsdom` before running tests.
 1.  **Integration Testing for the Full Client Environment**:
 
     Example for an integration test:
+    Many tests need to simulate the user clicking "Join the Discussion" on the welcome page to navigate to the main content. The example below includes this crucial first step:
     ```javascript
     // In your integration test (e.g., tests/client/integration/myFeature.test.js)
     const { assertEquals, runTests } = require("../shared/testUtils.js")
     const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
 
-    function testMyFeatureInFullEnvironment() {
+    async function testMyFeatureInFullEnvironment() { // Added async
       const window = setupIntegrationTestEnvironment()
       // Now window.state, window.$ are available
-      { state, $ } = window
+      const { state, $ } = window // Destructure after window is defined
 
-      // Example: Trigger an action and assert the outcome
-      $("#myButton").click()
-      assertEquals("expected value", state.someProperty, "State should update after button click")
+      // Most integration tests need to simulate the initial "Join the Discussion" click.
+      // 1. Mock initial and target path responses:
+      window.setMockFetchResponseForPaths({
+        "/": { success: true, path: "/", topics: [], comments: [], user: {} }, // Mock for welcome page
+        "/topics": { success: true, path: "/topics", topics: [{slug: "example-topic", title:"Example Topic", body: "Body of example topic", user_slug: "user-slug", display_name: "User Name"}], comments: [], user: {} } // Mock for topics page
+      })
+
+      // 2. Find and click the "Join the Discussion" button:
+      const joinButton = $(`a[href="/topics"][big]`)
+      if (joinButton && joinButton.click) { // Ensure button exists before clicking
+        joinButton.click()
+        // Wait for DOM updates and navigation
+        await new Promise(resolve => setTimeout(resolve, 50)) // Small delay for async operations
+      } else {
+        console.error("Could not find the 'Join the Discussion' button in the test setup.")
+        // Potentially throw an error or handle as a test failure condition
+      }
+
+      // Now you are on the /topics page (or the page your action navigates to)
+      // Example: Assert navigation and find an element on the new page
+      assertEquals("/topics", state.path, "Should have navigated to /topics.")
+
+      const topicsWrapper = $("topics") // Element that wraps all topics
+      assertEquals(true, Boolean(topicsWrapper), "Topics wrapper element should be present on /topics page.")
+
+      const firstTopicElement = $("topics > topic")
+      assertEquals(true, Boolean(firstTopicElement), "A topic element should be found on the /topics page.")
+
+      // Continue with your feature-specific test logic...
+      // Example: Trigger another action on the /topics page
+      // const specificTopicButton = firstTopicElement.$("button[some-action]")
+      // if (specificTopicButton && specificTopicButton.click) {
+      //   specificTopicButton.click()
+      //   await new Promise(resolve => setTimeout(resolve, 50))
+      //   assertEquals("expected state change", state.someProperty, "State should update after feature button click")
+      // }
     }
 
+    // Remember to pass the async function to runTests
     runTests("myFeature.integration.test.js", [testMyFeatureInFullEnvironment])
     ```
     This is the preferred method for **ALL** integration tests.
 
-    (navigation.integration.test.js is a great file to follow patterns from by the way)
+    **Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
 
 ## Flint.js DOM Manipulation
 
