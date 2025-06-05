@@ -125,6 +125,12 @@ Make sure you have run `npm install jsdom` before running tests.
       const $firstTopicElement = $("topics > topic")
       assertEquals(true, Boolean($firstTopicElement), "A topic element should be found on the /topics page.")
 
+      // Example: Assert text content of the first topic's title
+      // Assumes Flint.js renders the title like: <topic><h2><span>Example Topic</span></h2>...</topic>
+      // Adjust selector if your Flint.js template for a topic's title is different.
+      const $firstTopicTitleSpan = $firstTopicElement.$("h2 span")
+      assertEquals("Example Topic", $firstTopicTitleSpan.innerText.trim(), "First topic title should be 'Example Topic'.")
+
       // Continue with your feature-specific test logic...
       // Example: Trigger another action on the /topics page
       // const $specificTopicButton = $firstTopicElement.$("button[some-action]")
@@ -152,9 +158,20 @@ Make sure you have run `npm install jsdom` before running tests.
 3. Understanding innerText vs. textContent in the Test Environment:
 
     - "In the JSDOM test environment, innerText and textContent might have subtle differences in behavior compared to real browsers, especially concerning how whitespace, visibility, and CSS affect them. flint.js's templating might also interact with these differently. For assertions on text content:
-    - Prefer element.innerText.trim() for verifying text visible to you, as this is often closer to what you experience.
-    - If innerText causes issues or returns unexpected results (e.g., due to flint.js's automatic <br> insertion or other DOM manipulations specific to the testing setup), element.textContent.trim() can be an alternative, but be aware it might include text from hidden elements or different whitespace handling.
-    - The primary goal is stable and accurate tests. If innerText is the established convention and flint.js is designed around it, test adjustments should aim to work with innerText where possible, rather than immediately changing flint.js."
+    - Prefer element.innerText.trim() for verifying text visible to you. This is often closer to what you experience, and importantly, flint.js's templating might automatically insert <br> tags, and innerText handles this as you would expect. This makes it preferred over textContent for Flint-rendered content.
+    - **Target Child Elements for Flint.js Text**: When asserting text content for elements populated by Flint.js, it's crucial to target the specific child <span> (or other innermost element) where Flint.js places the text. Flint.js often uses a pattern like h2 > span or p > span for text content. Assertions should use `element.$("span").innerText.trim()` rather than `element.innerText.trim()` on the parent. This is because JSDOM's `innerText` does not propagate from children to parents in the same way as a browser, especially when Flint.js structures are involved.
+    - **Example**:
+    ```javascript
+    // Incorrect for Flint.js text set in a child span:
+    // const $header = $("h2[page-title]");
+    // assertEquals("Title", $header.innerText.trim(), "..."); // This might fail if text is in a span
+
+    // Correct for Flint.js text set in a child span:
+    const $headerSpan = $("h2[page-title] span"); // Target the span
+    assertEquals("Title", $headerSpan.innerText.trim(), "Title should be in the span.");
+    ```
+    - If `innerText` on the correct child element still causes issues or returns unexpected results (e.g., due to other DOM manipulations specific to the testing setup), `element.textContent.trim()` can be an alternative, but be aware it might include text from hidden elements or different whitespace handling.
+    - The primary goal is stable and accurate tests. If `innerText` (on the appropriate child element) is the established convention and flint.js is designed around it, test adjustments should aim to work with `innerText` where possible, rather than immediately changing flint.js."
 4. Scope of Changes for New Tests:
 
     - "When adding a new test, the primary goal is to verify the specific functionality or component behavior described in the test's objective. Changes to unrelated files or shared libraries should be avoided unless they address a clear, pre-existing bug that directly prevents the test from accurately verifying the target behavior and cannot be worked around by adjusting the test itself."
@@ -165,6 +182,12 @@ Make sure you have run `npm install jsdom` before running tests.
     - Examine client-side JavaScript for the component under test: Understand how it processes the data and renders elements.
     - Consider the test environment: How might JSDOM or flint.js interact with the component in a specific way?
     - Only after these steps, if a genuine bug in the application code (outside the test itself) is suspected, should modifications to application files be considered.
+
+### Best Practices for Test Assertions
+
+*   **Selector Specificity:** Ensure your selectors are specific enough to target the exact element rendered by Flint.js. When a test fails to find an element or text, double-check the actual DOM structure produced by Flint.js for that component (e.g., by temporarily logging `innerHTML` in the test if unsure). For text content, this often means targeting a specific child `<span>` or other innermost element where Flint.js places the text, as detailed in the "Understanding innerText vs. textContent" guideline.
+*   **JSDOM `innerText` Behavior:** Remember that JSDOM's `innerText` might not behave identically to a browser, especially regarding parent/child text propagation. Always target the most specific element containing the text. Refer to the "Understanding innerText vs. textContent" guideline for more details on choosing between `innerText` and `textContent`.
+*   **Test Simplicity (Style Note):** Write tests to be clear and direct. Avoid unnecessary conditional logic (like early returns or overly defensive checks for elements you expect to be present) if a simple, direct assertion would make the test fail clearly when something is wrong. A failing test due to an inability to find an element is often the desired outcome as it points directly to the issue. This helps in quickly identifying the root cause of a problem.
 
 ## Flint.js DOM Manipulation
 
