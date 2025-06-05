@@ -122,9 +122,6 @@ const tests = {
 
         // Wait for navigation and rendering to the detail page
         await new Promise(resolve => setTimeout(resolve, 0))
-        await new Promise(resolve => setTimeout(resolve, 0))
-        // Additional small delay might be needed if content rendering is slow
-        await new Promise(resolve => setTimeout(resolve, 50))
 
 
         const expectedTopicPath = "/topic/test-topic-for-details"
