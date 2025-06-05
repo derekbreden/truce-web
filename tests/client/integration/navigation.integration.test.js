@@ -54,7 +54,6 @@ const tests = {
         // Topic should be rendered by the actual application logic via the mocked fetch
         const firstTopicElement = $("topics > topic[trimmed]")
         assertEquals(true, Boolean(firstTopicElement), "First topic element with [trimmed] attribute should be found on the /topics page.")
-        if (!firstTopicElement) return
 
         // Simulate click on the topic element itself, which should trigger navigation
         firstTopicElement.click()
