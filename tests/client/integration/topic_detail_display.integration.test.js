@@ -4,9 +4,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
     testTopicDetailsDisplayOnDetailPage: async () => {
-        const window = setupIntegrationTestEnvironment({
-            constsToExpose: ["renderTopic"],
-        })
+        const window = setupIntegrationTestEnvironment()
         const { state, $ } = window
 
         // Setup mock API responses
@@ -101,13 +99,6 @@ const tests = {
         assertEquals("/topics", state.path, "Path should be /topics after agreeing to terms.")
         const topicsWrapper = $("topics")
         assertEquals(true, Boolean(topicsWrapper), "Topics wrapper element should be present on /topics page.")
-
-        // Ensure renderTopic is available (it"s made global by setupIntegrationTestEnvironment)
-        const renderTopic = window.renderTopic
-        if (!renderTopic) {
-            assertEquals(true, false, "renderTopic function is required and was not found.")
-            return
-        }
 
         // 2. Simulate at least one topic appearing on the /topics page
         // This is necessary to be able to click on a topic to navigate to its detail page.
