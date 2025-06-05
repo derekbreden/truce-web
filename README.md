@@ -12,7 +12,7 @@ All client-side JavaScript files are included in `index.html` using server-side 
 // <!--#include file="client/markdownToElements.js" -->
 ```
 
-These files are processed by `server/server.js` and concatenated into a single `<script>` block, meaning all `const` and `let` declarations are available globally across all client files. This non-standard method of including and scoping client-side files is why a special utility like `loadClientScript` (detailed in the 'Testing' section) is often necessary when writing tests for them, as they are not typical JavaScript modules.
+These files are processed by `server/server.js` and concatenated into a single `<script>` block, meaning all `const` and `let` declarations are available globally across all client files. This non-standard method of including and scoping client-side files requires a specific setup for tests, as they are not typical JavaScript modules.
 
 ### Server-Side Structure
 - `server/session/` - Middleware functions for handling session requests
@@ -68,7 +68,7 @@ The primary way to run automated tests is using the `npm test` command from the 
     ```bash
     npm test
     ```
-    This executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. The output will be categorized into "Unit Tests", "Integration Tests", and "Other Tests", each with its own summary.
+    This executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. The output will be categorized into "Integration Tests" and "Other Tests" (if any), each with its own summary.
 
 *   **To run a specific test file:**
     Provide the path to the test file relative to the project root:
@@ -78,11 +78,7 @@ The primary way to run automated tests is using the `npm test` command from the 
     **Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
 
 *   **To run specific categories of tests:**
-    You can run all unit tests or all integration tests using the following commands:
-    *   **Unit Tests** (tests located in any subdirectory named `unit` within `tests/`):
-        ```bash
-        npm test unit
-        ```
+    You can run all integration tests using the following command:
     *   **Integration Tests** (tests located in any subdirectory named `integration` within `tests/`):
         ```bash
         npm test integration
