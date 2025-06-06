@@ -1,94 +1,94 @@
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.session.user_id) {
-    // Updating an array of notification_ids that are read and seen
-    if (req.body.mark_as_read) {
-      await req.client.query(
-        `
+	if (!res.writableEnded && req.session.user_id) {
+		// Updating an array of notification_ids that are read and seen
+		if (req.body.mark_as_read) {
+			await req.client.query(
+				`
         UPDATE notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE notification_id = ANY($1::int[]) AND user_id = $2
         `,
-        [req.body.mark_as_read, req.session.user_id],
-      );
-      res.end(JSON.stringify({ success: true }));
-    }
+				[req.body.mark_as_read, req.session.user_id],
+			)
+			res.end(JSON.stringify({ success: true }))
+		}
 
-    // Update all notifications as read and seen
-    if (req.body.mark_all_as_read) {
-      await req.client.query(
-        `
+		// Update all notifications as read and seen
+		if (req.body.mark_all_as_read) {
+			await req.client.query(
+				`
         UPDATE notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE
           user_id = $1
           AND (read = FALSE OR seen = FALSE)
         `,
-        [req.session.user_id],
-      );
-      res.end(JSON.stringify({ success: true }));
-    }
+				[req.session.user_id],
+			)
+			res.end(JSON.stringify({ success: true }))
+		}
 
-    // Updating all notifications as seen
-    if (req.body.mark_all_as_seen) {
-      await req.client.query(
-        `
+		// Updating all notifications as seen
+		if (req.body.mark_all_as_seen) {
+			await req.client.query(
+				`
         UPDATE notifications
         SET seen = TRUE
         WHERE
           user_id = $1
           AND seen = FALSE
         `,
-        [req.session.user_id],
-      );
-      res.end(JSON.stringify({ success: true }));
-    }
+				[req.session.user_id],
+			)
+			res.end(JSON.stringify({ success: true }))
+		}
 
-    // Returning the unread_count and unseen_count
-    if (req.body?.path === "/unread_count_unseen_count") {
-      const counts = await req.client.query(
-        `
+		// Returning the unread_count and unseen_count
+		if (req.body?.path === "/unread_count_unseen_count") {
+			const counts = await req.client.query(
+				`
         SELECT 
           SUM(CASE WHEN read = FALSE THEN 1 ELSE 0 END) AS unread_count,
           SUM(CASE WHEN seen = FALSE THEN 1 ELSE 0 END) AS unseen_count
         FROM notifications
         WHERE user_id = $1
         `,
-        [req.session.user_id],
-      );
+				[req.session.user_id],
+			)
 
-      // Special case for exactly 1 unseen, we want to load that comment_id and notification_id
-      let comment_id = null;
-      let notification_id = null;
-      if (counts.rows[0].unseen_count === "1") {
-        const comment = await req.client.query(
-          `
+			// Special case for exactly 1 unseen, we want to load that comment_id and notification_id
+			let comment_id = null
+			let notification_id = null
+			if (counts.rows[0].unseen_count === "1") {
+				const comment = await req.client.query(
+					`
           SELECT comment_id, notification_id
           FROM notifications
           WHERE user_id = $1
           AND seen = FALSE
           ORDER BY create_date DESC
           `,
-          [req.session.user_id],
-        );
-        comment_id = comment.rows[0].comment_id;
-        notification_id = comment.rows[0].notification_id;
-      }
+					[req.session.user_id],
+				)
+				comment_id = comment.rows[0].comment_id
+				notification_id = comment.rows[0].notification_id
+			}
 
-      // Return the counts (and maybe a comment_id/notification_id)
-      res.end(
-        JSON.stringify({
-          unread_count: counts.rows[0].unread_count,
-          unseen_count: counts.rows[0].unseen_count,
-          comment_id,
-          notification_id,
-        }),
-      );
+			// Return the counts (and maybe a comment_id/notification_id)
+			res.end(
+				JSON.stringify({
+					unread_count: counts.rows[0].unread_count,
+					unseen_count: counts.rows[0].unseen_count,
+					comment_id,
+					notification_id,
+				}),
+			)
 
-      // Returning the complete notifications list
-    } else if (req.body?.path === "/notifications") {
-      req.results.path = "/notifications";
-      const notifications_unread = await req.client.query(
-        `
+			// Returning the complete notifications list
+		} else if (req.body?.path === "/notifications") {
+			req.results.path = "/notifications"
+			const notifications_unread = await req.client.query(
+				`
         SELECT
           n.notification_id,
           n.read,
@@ -130,14 +130,14 @@ module.exports = async (req, res) => {
         ORDER BY n.create_date DESC
         LIMIT 30
         `,
-        [
-          req.session.user_id,
-          req.body.max_notification_unread_create_date || null,
-          req.body.min_notification_unread_create_date || null,
-        ],
-      );
-      const notifications_read = await req.client.query(
-        `
+				[
+					req.session.user_id,
+					req.body.max_notification_unread_create_date || null,
+					req.body.min_notification_unread_create_date || null,
+				],
+			)
+			const notifications_read = await req.client.query(
+				`
         SELECT
           n.notification_id,
           n.read,
@@ -179,16 +179,16 @@ module.exports = async (req, res) => {
         ORDER BY n.create_date DESC
         LIMIT 30
         `,
-        [
-          req.session.user_id,
-          req.body.max_notification_read_create_date || null,
-          req.body.min_notification_read_create_date || null,
-        ],
-      );
-      req.results.notifications = [
-        ...notifications_unread.rows,
-        ...notifications_read.rows,
-      ];
-    }
-  }
-};
+				[
+					req.session.user_id,
+					req.body.max_notification_read_create_date || null,
+					req.body.min_notification_read_create_date || null,
+				],
+			)
+			req.results.notifications = [
+				...notifications_unread.rows,
+				...notifications_read.rows,
+			]
+		}
+	}
+}

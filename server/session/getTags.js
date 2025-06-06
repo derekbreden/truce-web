@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.body.path === "/tags") {
-    req.results.path = req.body.path;
-    const tags = await req.client.query(
-      `
+	if (!res.writableEnded && req.body.path === "/tags") {
+		req.results.path = req.body.path
+		const tags = await req.client.query(
+			`
       SELECT
         ts.tag_name,
         ts.subtitle,
@@ -16,13 +16,17 @@ module.exports = async (req, res) => {
         ts.subtitle
       ORDER BY ts.tag_id ASC
       `,
-    );
-    req.results.tags = tags.rows;
-  }
+		)
+		req.results.tags = tags.rows
+	}
 
-  if (!res.writableEnded && req.body.path && req.body.path.substr(0, 5) === "/tag/") {
-    const tag = await req.client.query(
-      `
+	if (
+		!res.writableEnded &&
+		req.body.path &&
+		req.body.path.substr(0, 5) === "/tag/"
+	) {
+		const tag = await req.client.query(
+			`
       SELECT
         ts.tag_name,
         ts.subtitle
@@ -31,8 +35,8 @@ module.exports = async (req, res) => {
       WHERE
         ts.tag_name = $1
       `,
-      [req.body.path.substr(5)],
-    );
-    req.results.tag = tag.rows[0] || {};
-  }
-};
+			[req.body.path.substr(5)],
+		)
+		req.results.tag = tag.rows[0] || {}
+	}
+}

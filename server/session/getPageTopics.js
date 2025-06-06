@@ -1,25 +1,25 @@
-// const pool = require("../pool");
+// const pool = require("../pool")
 // const sleep = (ms) => {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// };
-// const ai = require("../ai");
-// const prompts = require("../prompts");
-// const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+//   return new Promise((resolve) => setTimeout(resolve, ms))
+// }
+// const ai = require("../ai")
+// const prompts = require("../prompts")
+// const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3")
 // const object_client = new S3Client({
 //   region: "us-east-1",
-// });
+// })
 
 module.exports = async (req, res) => {
-  if (
-    !res.writableEnded &&
-    (req.body.path === "/topics" ||
-      req.body.path === "/topics/all" ||
-      req.body.path?.substr(0, 5) === "/tag/" ||
-      req.body.path?.substr(0, 6) === "/user/")
-  ) {
-    if (!req.body.max_comment_create_date) {
-      const topic_results = await req.client.query(
-        `
+	if (
+		!res.writableEnded &&
+		(req.body.path === "/topics" ||
+			req.body.path === "/topics/all" ||
+			req.body.path?.substr(0, 5) === "/tag/" ||
+			req.body.path?.substr(0, 6) === "/user/")
+	) {
+		if (!req.body.max_comment_create_date) {
+			const topic_results = await req.client.query(
+				`
         SELECT
           t.create_date,
           t.topic_id,
@@ -70,8 +70,8 @@ module.exports = async (req, res) => {
           AND l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
           ${
-            req.body.path.substr(0, 5) === "/tag/"
-              ? `
+						req.body.path.substr(0, 5) === "/tag/"
+							? `
                 AND t.topic_id IN (
                   SELECT topic_id
                   FROM topic_tags
@@ -82,176 +82,176 @@ module.exports = async (req, res) => {
                   )
                 )
                 `
-              : ""
-          }
+							: ""
+					}
           ${
-            req.body.path.substr(0, 6) === "/user/"
-              ? `
+						req.body.path.substr(0, 6) === "/user/"
+							? `
                 AND t.user_id IN (
                   SELECT user_id
                   FROM users
                   WHERE 
                     ${
-                      Number(req.body.path.split("/")[2])
-                        ? `user_id = $4`
-                        : `slug = $4`
-                    }
+											Number(req.body.path.split("/")[2])
+												? `user_id = $4`
+												: `slug = $4`
+										}
                 )
                 `
-              : ""
-          }
+							: ""
+					}
           ${
-            req.body.path === "/topics" &&
-            Number(req.session.subscribed_to_users) > 0
-              ? `
+						req.body.path === "/topics" &&
+						Number(req.session.subscribed_to_users) > 0
+							? `
                 AND t.user_id IN (
                   SELECT subscribed_to_user_id
                   FROM subscribers
                   WHERE user_id = $1
                 )
                 `
-              : ""
-          }
+							: ""
+					}
         ORDER BY t.create_date DESC
         LIMIT 20
         `,
-        [
-          req.session.user_id || 0,
-          req.body.min_topic_create_date || null,
-          req.body.max_topic_create_date || null,
-          req.body.path.substr(0, 5) === "/tag/"
-            ? req.body.path.substr(5)
-            : req.body.path.substr(0, 6) === "/user/"
-              ? req.body.path.split("/")[2]
-              : undefined,
-        ].filter((x) => x !== undefined),
-      );
-      req.results.path = req.body.path;
-      req.results.topics.push(...topic_results.rows);
+				[
+					req.session.user_id || 0,
+					req.body.min_topic_create_date || null,
+					req.body.max_topic_create_date || null,
+					req.body.path.substr(0, 5) === "/tag/"
+						? req.body.path.substr(5)
+						: req.body.path.substr(0, 6) === "/user/"
+							? req.body.path.split("/")[2]
+							: undefined,
+				].filter((x) => x !== undefined),
+			)
+			req.results.path = req.body.path
+			req.results.topics.push(...topic_results.rows)
 
-      //       let delayed = 0;
-      //       topic_results.rows.forEach(async (topic) => {
-      //         delayed += 2000;
-      //         await sleep(delayed);
+			//       let delayed = 0
+			//       topic_results.rows.forEach(async (topic) => {
+			//         delayed += 2000
+			//         await sleep(delayed)
 
-      //         const client = await pool.pool.connect();
-      //         try {
-      //           const messages = [];
+			//         const client = await pool.pool.connect()
+			//         try {
+			//           const messages = []
 
-      //           let text_to_evaluate = topic.title + "\n\n" + topic.body;
-      //           let poll_counts = "";
-      //           if (topic.poll_1) {
-      //             text_to_evaluate = `${topic.title}
+			//           let text_to_evaluate = topic.title + "\n\n" + topic.body
+			//           let poll_counts = ""
+			//           if (topic.poll_1) {
+			//             text_to_evaluate = `${topic.title}
 
-      // ${topic.body}
+			// ${topic.body}
 
-      // A) ${topic.poll_1}
-      // B) ${topic.poll_2}`;
-      //             if (topic.poll_3) {
-      //               text_to_evaluate += `\nC) ${topic.poll_3}`;
-      //             }
-      //             if (topic.poll_4) {
-      //               text_to_evaluate += `\nD) ${topic.poll_4}`;
-      //             }
-      //             poll_counts = "0,0,0,0";
-      //           }
+			// A) ${topic.poll_1}
+			// B) ${topic.poll_2}`
+			//             if (topic.poll_3) {
+			//               text_to_evaluate += `\nC) ${topic.poll_3}`
+			//             }
+			//             if (topic.poll_4) {
+			//               text_to_evaluate += `\nD) ${topic.poll_4}`
+			//             }
+			//             poll_counts = "0,0,0,0"
+			//           }
 
-      //           const pngs = [];
-      //           for (const image_uuid of topic.image_uuids
-      //             .split(",")
-      //             .filter((x) => x)) {
-      //             if (image_uuid) {
-      //               console.warn(image_uuid);
-      //               try {
-      //                 const response = await object_client.send(
-      //                   new GetObjectCommand({
-      //                     Bucket: "truce.net",
-      //                     Key: `${image_uuid}.png`,
-      //                   }),
-      //                 );
-      //                 const base64_string = await response.Body.transformToString();
-      //                 pngs.push(base64_string);
-      //               } catch (err) {
-      //                 console.error(err);
-      //               }
-      //             }
-      //           }
-      //           messages.push({
-      //             role: "user",
-      //             name:
-      //               (topic.display_name || "Anonymous").replace(
-      //                 /[^a-z0-9_\-]/gi,
-      //                 "",
-      //               ) || "Anonymous",
-      //             content: [
-      //               { type: "text", text: text_to_evaluate },
-      //               ...pngs.map((png) => {
-      //                 return {
-      //                   image_url: {
-      //                     url: png,
-      //                   },
-      //                   type: "image_url",
-      //                 };
-      //               }),
-      //             ],
-      //           });
+			//           const pngs = []
+			//           for (const image_uuid of topic.image_uuids
+			//             .split(",")
+			//             .filter((x) => x)) {
+			//             if (image_uuid) {
+			//               console.warn(image_uuid)
+			//               try {
+			//                 const response = await object_client.send(
+			//                   new GetObjectCommand({
+			//                     Bucket: "truce.net",
+			//                     Key: `${image_uuid}.png`,
+			//                   }),
+			//                 )
+			//                 const base64_string = await response.Body.transformToString()
+			//                 pngs.push(base64_string)
+			//               } catch (err) {
+			//                 console.error(err)
+			//               }
+			//             }
+			//           }
+			//           messages.push({
+			//             role: "user",
+			//             name:
+			//               (topic.display_name || "Anonymous").replace(
+			//                 /[^a-z0-9_\-]/gi,
+			//                 "",
+			//               ) || "Anonymous",
+			//             content: [
+			//               { type: "text", text: text_to_evaluate },
+			//               ...pngs.map((png) => {
+			//                 return {
+			//                   image_url: {
+			//                     url: png,
+			//                   },
+			//                   type: "image_url",
+			//                 }
+			//               }),
+			//             ],
+			//           })
 
-      //           // Get the relevant tags
-      //           const ai_tags_response = await ai.ask(
-      //             messages,
-      //             "tags",
-      //             prompts.tags_response_format,
-      //           );
-      //           let ai_tags_response_parsed = [];
-      //           try {
-      //             ai_tags_response_parsed = JSON.parse(ai_tags_response);
-      //           } catch (e) {
-      //             console.error("Failed to parse AI JSON", ai_tags_response, e);
-      //           }
-      //           console.warn(topic.title, ai_tags_response_parsed.tags)
+			//           // Get the relevant tags
+			//           const ai_tags_response = await ai.ask(
+			//             messages,
+			//             "tags",
+			//             prompts.tags_response_format,
+			//           )
+			//           let ai_tags_response_parsed = []
+			//           try {
+			//             ai_tags_response_parsed = JSON.parse(ai_tags_response)
+			//           } catch (e) {
+			//             console.error("Failed to parse AI JSON", ai_tags_response, e)
+			//           }
+			//           console.warn(topic.title, ai_tags_response_parsed.tags)
 
-      //           await client.query(
-      //             `
-      //           DELETE FROM topic_tags
-      //           WHERE topic_id = $1
-      //           `,
-      //             [topic.topic_id],
-      //           );
+			//           await client.query(
+			//             `
+			//           DELETE FROM topic_tags
+			//           WHERE topic_id = $1
+			//           `,
+			//             [topic.topic_id],
+			//           )
 
-      //           const tag_id_query = await client.query(
-      //             `
-      //             SELECT tag_id, tag_name FROM tags
-      //           `,
-      //           );
-      //           const tag_ids = tag_id_query.rows.reduce((acc, row) => {
-      //             acc[row.tag_name] = row.tag_id;
-      //             return acc;
-      //           }, {});
-      //           for (const tag of ai_tags_response_parsed.tags) {
-      //             if (
-      //               ai_tags_response_parsed.tags.includes("polls") &&
-      //               tag === "asks"
-      //             ) {
-      //               continue;
-      //             }
-      //             if (tag_ids[tag]) {
-      //               await client.query(
-      //                 `
-      //               INSERT INTO topic_tags
-      //                 (topic_id, tag_id)
-      //               VALUES
-      //                 ($1, $2)
-      //               `,
-      //                 [topic.topic_id, tag_ids[tag]],
-      //               );
-      //             } else {
-      //               console.error("Unable to find tag", tag);
-      //             }
-      //           }
-      //         } finally {
-      //           client.release();
-      //         }
-      //       });
-    }
-  }
-};
+			//           const tag_id_query = await client.query(
+			//             `
+			//             SELECT tag_id, tag_name FROM tags
+			//           `,
+			//           )
+			//           const tag_ids = tag_id_query.rows.reduce((acc, row) => {
+			//             acc[row.tag_name] = row.tag_id
+			//             return acc
+			//           }, {})
+			//           for (const tag of ai_tags_response_parsed.tags) {
+			//             if (
+			//               ai_tags_response_parsed.tags.includes("polls") &&
+			//               tag === "asks"
+			//             ) {
+			//               continue
+			//             }
+			//             if (tag_ids[tag]) {
+			//               await client.query(
+			//                 `
+			//               INSERT INTO topic_tags
+			//                 (topic_id, tag_id)
+			//               VALUES
+			//                 ($1, $2)
+			//               `,
+			//                 [topic.topic_id, tag_ids[tag]],
+			//               )
+			//             } else {
+			//               console.error("Unable to find tag", tag)
+			//             }
+			//           }
+			//         } finally {
+			//           client.release()
+			//         }
+			//       })
+		}
+	}
+}

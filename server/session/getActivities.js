@@ -1,13 +1,13 @@
 module.exports = async (req, res) => {
-  if (
-    !res.writableEnded &&
-    ((req.body.path === "/favorites" && req.session.user_id) ||
-      (req.body.path?.substr(0, 6) === "/user/" &&
-        req.body.path?.split("/")[3] === "comments"))
-  ) {
-    req.results.path = req.body.path;
-    const activity_results = await req.client.query(
-      `
+	if (
+		!res.writableEnded &&
+		((req.body.path === "/favorites" && req.session.user_id) ||
+			(req.body.path?.substr(0, 6) === "/user/" &&
+				req.body.path?.split("/")[3] === "comments"))
+	) {
+		req.results.path = req.body.path
+		const activity_results = await req.client.query(
+			`
       WITH combined AS (
         SELECT 
           c.comment_id AS id,
@@ -144,19 +144,19 @@ module.exports = async (req, res) => {
         l.comment_id IS NULL
         AND b.user_id_blocked IS NULL
         ${
-          req.body.path === "/favorites"
-            ? `
+					req.body.path === "/favorites"
+						? `
               AND combined.favorited = TRUE
               AND (combined.favorite_create_date < $2 OR $2 IS NULL)
               AND (combined.favorite_create_date > $3 OR $3 IS NULL)
               ORDER BY combined.favorite_create_date DESC
             `
-            : ``
-        }
+						: ``
+				}
         ${
-          req.body.path.substr(0, 6) === "/user/" &&
-          req.body.path.split("/")[3] === "comments"
-            ? `
+					req.body.path.substr(0, 6) === "/user/" &&
+					req.body.path.split("/")[3] === "comments"
+						? `
               AND combined.type = 'comment'
               AND (combined.create_date < $2 OR $2 IS NULL)
               AND (combined.create_date > $3 OR $3 IS NULL)
@@ -164,19 +164,19 @@ module.exports = async (req, res) => {
               AND ${Number(req.body.path.split("/")[2]) ? `u.user_id = $4` : `u.slug = $4`}
               ORDER BY combined.create_date DESC
             `
-            : ``
-        }
-      LIMIT 30;
+						: ``
+				}
+      LIMIT 30
       `,
-      [
-        req.session.user_id || 0,
-        req.body.max_create_date || null,
-        req.body.min_create_date || null,
-        req.body.path.substr(0, 6) === "/user/"
-          ? req.body.path.split("/")[2]
-          : undefined,
-      ].filter((x) => x !== undefined),
-    );
-    req.results.activities.push(...activity_results.rows);
-  }
-};
+			[
+				req.session.user_id || 0,
+				req.body.max_create_date || null,
+				req.body.min_create_date || null,
+				req.body.path.substr(0, 6) === "/user/"
+					? req.body.path.split("/")[2]
+					: undefined,
+			].filter((x) => x !== undefined),
+		)
+		req.results.activities.push(...activity_results.rows)
+	}
+}

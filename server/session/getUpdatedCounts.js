@@ -1,12 +1,12 @@
 module.exports = async (req, res) => {
-  if (
-    !res.writableEnded &&
-    req.body.min_create_date_for_counts &&
-    req.body.min_counts_create_date
-  ) {
-    if (req.body.has_topics) {
-      const topic_counts = await req.client.query(
-        `
+	if (
+		!res.writableEnded &&
+		req.body.min_create_date_for_counts &&
+		req.body.min_counts_create_date
+	) {
+		if (req.body.has_topics) {
+			const topic_counts = await req.client.query(
+				`
         SELECT
           t.topic_id,
           t.favorite_count,
@@ -21,17 +21,17 @@ module.exports = async (req, res) => {
           AND l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
-        [
-          req.session.user_id || 0,
-          req.body.min_create_date_for_counts,
-          req.body.min_counts_create_date,
-        ],
-      );
-      req.results.topic_counts = topic_counts.rows;
-    }
-    if (req.body.has_comments) {
-      const comment_counts = await req.client.query(
-        `
+				[
+					req.session.user_id || 0,
+					req.body.min_create_date_for_counts,
+					req.body.min_counts_create_date,
+				],
+			)
+			req.results.topic_counts = topic_counts.rows
+		}
+		if (req.body.has_comments) {
+			const comment_counts = await req.client.query(
+				`
         SELECT
           c.comment_id,
           c.favorite_count
@@ -44,13 +44,13 @@ module.exports = async (req, res) => {
           AND l.comment_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
-        [
-          req.session.user_id || 0,
-          req.body.min_create_date_for_counts,
-          req.body.min_counts_create_date,
-        ],
-      );
-      req.results.comment_counts = comment_counts.rows;
-    }
-  }
-};
+				[
+					req.session.user_id || 0,
+					req.body.min_create_date_for_counts,
+					req.body.min_counts_create_date,
+				],
+			)
+			req.results.comment_counts = comment_counts.rows
+		}
+	}
+}

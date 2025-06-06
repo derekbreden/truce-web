@@ -1,168 +1,174 @@
-const fs = require('fs')
-const path = require('path')
-const { JSDOM, VirtualConsole } = require('jsdom')
+const fs = require("fs")
+const path = require("path")
+const { JSDOM, VirtualConsole } = require("jsdom")
 
 function setupIntegrationTestEnvironment(options) {
+	// Default Options
+	options = options || {}
+	options.constsToExpose = options.constsToExpose || []
+	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 
-  // Default Options
-  options = options || {}
-  options.constsToExpose = options.constsToExpose || []
-  options.constsToExpose = [
-    ...options.constsToExpose,
-    "state",
-    "$",
-  ]
+	// Index path and content
+	const indexPath = path.resolve(__dirname, "../../../index.html")
+	const indexHtmlContent = fs.readFileSync(indexPath, "utf8")
 
-  // Index path and content
-  const indexPath = path.resolve(__dirname, '../../../index.html')
-  const indexHtmlContent = fs.readFileSync(indexPath, 'utf8')
+	// --------------------------------------------------------------------------
+	// Parse the includes
+	// --------------------------------------------------------------------------
+	const parseIncludes = (fromHtmlContent) => {
+		let returningHtmlContent = fromHtmlContent
+		// Regex to find <!--#include file="..." --> directives
+		const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g
+		let match
 
-  // --------------------------------------------------------------------------
-  // Parse the includes
-  // --------------------------------------------------------------------------
-  const parseIncludes = (fromHtmlContent) => {
-    let returningHtmlContent = fromHtmlContent
-    // Regex to find <!--#include file="..." --> directives
-    const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g
-    let match
+		// Keep replacing until no more include directives are found
+		// This handles nested includes by repeatedly applying the regex
+		while (
+			(match = includeDirectiveRegex.exec(returningHtmlContent)) !== null
+		) {
+			const directive = match[0] // The full directive, e.g., <!--#include file="path/to/file.html" -->
+			const relativeFilePath = match[1] // The path from the directive, e.g., "path/to/file.html"
 
-    // Keep replacing until no more include directives are found
-    // This handles nested includes by repeatedly applying the regex
-    while ((match = includeDirectiveRegex.exec(returningHtmlContent)) !== null) {
-      const directive = match[0] // The full directive, e.g., <!--#include file="path/to/file.html" -->
-      const relativeFilePath = match[1] // The path from the directive, e.g., "path/to/file.html"
+			// Resolve the script path relative to the directory of the indexHtmlFile
+			const indexDir = path.dirname(indexPath)
+			const absoluteFilePath = path.resolve(indexDir, relativeFilePath) // Use path.resolve for robustness
 
-      // Resolve the script path relative to the directory of the indexHtmlFile
-      const indexDir = path.dirname(indexPath)
-      const absoluteFilePath = path.resolve(indexDir, relativeFilePath) // Use path.resolve for robustness
+			try {
+				const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
+				returningHtmlContent = returningHtmlContent.replace(
+					directive,
+					fileContent,
+				)
+			} catch (error) {
+				console.error(
+					`Error including file "${absoluteFilePath}": ${error.message}`,
+				)
+				// Optionally, replace with an error message or leave the directive,
+				// depending on desired error handling. For now, it will effectively remove the directive if file not found.
+				// returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`)
+			}
+		}
+		return returningHtmlContent
+	}
 
-      try {
-        const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
-        returningHtmlContent = returningHtmlContent.replace(directive, fileContent)
-      } catch (error) {
-        console.error(`Error including file "${absoluteFilePath}": ${error.message}`)
-        // Optionally, replace with an error message or leave the directive,
-        // depending on desired error handling. For now, it will effectively remove the directive if file not found.
-        // returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`)
-      }
-    }
-    return returningHtmlContent
-  }
+	// Pre-process HTML to uncomment JS includes
+	// Removes leading "// " from lines containing "<!--#include file="client/...js" -->"
+	let processedIndexHtmlContent = indexHtmlContent
+		.split("\n")
+		.map((line) => {
+			if (
+				line.trim().startsWith("//") &&
+				line.includes("<!--#include") &&
+				line.includes('.js"')
+			) {
+				return line.replace("//", "")
+			}
+			return line
+		})
+		.join("\n")
 
-  // Pre-process HTML to uncomment JS includes
-  // Removes leading "// " from lines containing "<!--#include file="client/...js" -->"
-  let processedIndexHtmlContent = indexHtmlContent.split('\n').map(line => {
-    if (line.trim().startsWith('//') && line.includes('<!--#include') && line.includes('.js"')) {
-      return line.replace('//', '')
-    }
-    return line
-  }).join('\n')
+	// Parse includes. Iterative to handle nested includes.
+	let finalIndexHtmlContent = processedIndexHtmlContent
+	let previousHtmlContent
+	do {
+		previousHtmlContent = finalIndexHtmlContent
+		finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent)
+	} while (finalIndexHtmlContent !== previousHtmlContent)
+	// --------------------------------------------------------------------------
+	// Finish process includes
+	// --------------------------------------------------------------------------
 
-  // Parse includes. Iterative to handle nested includes.
-  let finalIndexHtmlContent = processedIndexHtmlContent
-  let previousHtmlContent
-  do {
-    previousHtmlContent = finalIndexHtmlContent
-    finalIndexHtmlContent = parseIncludes(finalIndexHtmlContent)
-  } while (finalIndexHtmlContent !== previousHtmlContent)
-  // --------------------------------------------------------------------------
-  // Finish process includes
-  // --------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
+	// Exponse consts to window
+	// --------------------------------------------------------------------------
+	options.constsToExpose.forEach((constToExpose) => {
+		finalIndexHtmlContent = finalIndexHtmlContent.replace(
+			`const ${constToExpose} = `,
+			`window.${constToExpose} = `,
+		)
+	})
+	// --------------------------------------------------------------------------
 
+	// --------------------------------------------------------------------------
+	// Setup JSDOM
+	// --------------------------------------------------------------------------
+	//
+	// Forward the console logs
+	const virtualConsole = new VirtualConsole()
+	virtualConsole.sendTo(console)
+	//
+	// Load the index.html content
+	const dom = new JSDOM(finalIndexHtmlContent, {
+		runScripts: "dangerously", // Allow scripts added to the DOM to run
+		url: "http://localhost", // Necessary for some scripts that might use location/history
+		pretendToBeVisual: true, // Helps with some DOM manipulations if needed
+		includeNodeLocations: true,
+		virtualConsole: virtualConsole,
+		beforeParse(window) {
+			let mockFetchResponseForPaths = {}
 
-  // --------------------------------------------------------------------------
-  // Exponse consts to window
-  // --------------------------------------------------------------------------
-  options.constsToExpose.forEach(constToExpose => {
-    finalIndexHtmlContent = finalIndexHtmlContent.replace(
-      `const ${constToExpose} = `,
-      `window.${constToExpose} = `
-    )
-  })
-  // --------------------------------------------------------------------------
+			window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
+				mockFetchResponseForPaths = {
+					...mockFetchResponseForPaths,
+					...newFetchResponsesForPaths,
+				}
+			}
 
+			// Mock scrollIntoView
+			window.HTMLElement.prototype.scrollIntoView = () => {}
 
-  // --------------------------------------------------------------------------
-  // Setup JSDOM
-  // --------------------------------------------------------------------------
-  //
-  // Forward the console logs
-  const virtualConsole = new VirtualConsole()
-  virtualConsole.sendTo(console)
-  //
-  // Load the index.html content
-  const dom = new JSDOM(finalIndexHtmlContent, {
-    runScripts: "dangerously", // Allow scripts added to the DOM to run
-    url: "http://localhost", // Necessary for some scripts that might use location/history
-    pretendToBeVisual: true, // Helps with some DOM manipulations if needed
-    includeNodeLocations: true,
-    virtualConsole: virtualConsole,
-    beforeParse(window) {
-      let mockFetchResponseForPaths = {}
+			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
+			window.WebSocket = function (url) {
+				this.send = function (data) {}
+				this.close = function () {}
+				this.addEventListener = function (event, callback) {}
+			}
 
-      window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
-        mockFetchResponseForPaths = {
-          ... mockFetchResponseForPaths,
-          ... newFetchResponsesForPaths,
-        }
-      }
+			// Mock setTimeout to be instant, to avoid delays
+			window.setTimeout = (fn) => {
+				fn()
+			}
 
-      // Mock scrollIntoView
-      window.HTMLElement.prototype.scrollIntoView = () => {}
+			// Mock matchMedia
+			window.matchMedia = function (query) {
+				return {
+					matches: false,
+				}
+			}
 
-      // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
-      window.WebSocket = function(url) {
-        this.send = function(data) {
-        }
-        this.close = function() {
-        }
-        this.addEventListener = function(event, callback) {
-        }
-      }
+			// Mock fetch
+			window.fetch = async function (url, fetchOptions) {
+				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
+				for (const path of Object.keys(mockFetchResponseForPaths)) {
+					if (url === "/session") {
+						const body = JSON.parse(fetchOptions.body)
+						if (body.path === path) {
+							return Promise.resolve({
+								status: 200,
+								json: async () => mockFetchResponseForPaths[path],
+							})
+						}
+					}
+				}
 
-      // Mock setTimeout to be instant, to avoid delays
-      window.setTimeout = (fn) => {
-        fn()
-      }
+				// Otherwise return an error
+				return Promise.resolve({
+					status: 500,
+					json: async () => ({
+						success: false,
+						error: "Test error: Unmocked fetch path",
+					}),
+				})
+			}
+		},
+	})
+	// --------------------------------------------------------------------------
+	// END setup JSDOM
+	// --------------------------------------------------------------------------
 
-      // Mock matchMedia
-      window.matchMedia = function(query) {
-        return {
-          matches: false,
-        }
-      }
+	const { window } = dom
 
-      // Mock fetch
-      window.fetch = async function(url, fetchOptions) {
-
-        // Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
-        for (const path of Object.keys(mockFetchResponseForPaths)) {
-          if (url === "/session") {
-            const body = JSON.parse(fetchOptions.body)
-            if (body.path === path) {
-              return Promise.resolve({
-                status: 200,
-                json: async () => mockFetchResponseForPaths[path],
-              })
-            }
-          }
-        }
-
-        // Otherwise return an error
-        return Promise.resolve({
-          status: 500,
-          json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
-        })
-      }
-    }
-  })
-  // --------------------------------------------------------------------------
-  // END setup JSDOM
-  // --------------------------------------------------------------------------
-
-  const { window } = dom
-
-  return window
+	return window
 }
 
 module.exports = { setupIntegrationTestEnvironment }

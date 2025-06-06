@@ -1,5 +1,5 @@
 module.exports = {
-   display_name: `You will perform content moderation for truce.net.
+	display_name: `You will perform content moderation for truce.net.
 
 Your response will be in JSON format. You will always respond with a single keyword:
 
@@ -34,25 +34,25 @@ You will be moderating display names, which are the names users will pick to be 
    - Example: "NassarHussain"
 
 By following these guidelines and examples, you will ensure that display names on truce.net are appropriate and contribute to a respectful and constructive community.`,
-   display_name_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               keyword: {
-                  enum: ["Spam", "Violent", "Sexual", "Invalid", "OK"],
-                  description: "The most applicable keyword",
-               },
-            },
-            required: ["keyword"],
-            additionalProperties: false,
-         },
-      },
-   },
-   profile_picture: `You will perform content moderation for truce.net.
+	display_name_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					keyword: {
+						enum: ["Spam", "Violent", "Sexual", "Invalid", "OK"],
+						description: "The most applicable keyword",
+					},
+				},
+				required: ["keyword"],
+				additionalProperties: false,
+			},
+		},
+	},
+	profile_picture: `You will perform content moderation for truce.net.
 
 Your response will be in JSON format. You will always respond with a single keyword:
 
@@ -82,25 +82,25 @@ You will be moderating profile pictures, which is the image that will be display
    - Use for acceptable and appropriate photos
 
 By following these guidelines, you will ensure that profile photos on truce.net are appropriate and contribute to a respectful and constructive community.`,
-   profile_picture_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               keyword: {
-                  enum: ["Spam", "Violent", "Hateful", "Sexual", "OK"],
-                  description: "The most applicable keyword",
-               },
-            },
-            required: ["keyword"],
-            additionalProperties: false,
-         },
-      },
-   },
-   common: `You will perform content moderation for truce.net.
+	profile_picture_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					keyword: {
+						enum: ["Spam", "Violent", "Hateful", "Sexual", "OK"],
+						description: "The most applicable keyword",
+					},
+				},
+				required: ["keyword"],
+				additionalProperties: false,
+			},
+		},
+	},
+	common: `You will perform content moderation for truce.net.
 
 You will always respond with one of these five keywords, followed by an optional note:
 
@@ -140,36 +140,30 @@ You will always respond with one of these five keywords, followed by an optional
   - Example: If a user posts, "You are a fascist who supports a fascist leader," respond with: {"keyword: "Name-calling", "note": "Calling someone a fascist without them identifying as such is an example of name-calling. This type of labeling obstructs constructive and respectful dialogue."}
 
 By following these guidelines and examples, you will ensure that content moderation on truce.net promotes respectful and constructive dialogue.`,
-   common_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               keyword: {
-                  enum: [
-                     "Spam",
-                     "Escalation",
-                     "Judgment",
-                     "Name-calling",
-                     "OK",
-                  ],
-                  description: "The most applicable keyword",
-               },
-               note: {
-                  type: "string",
-                  description:
-                     "A note explaining why the keyword applies to this topic",
-               },
-            },
-            required: ["keyword", "note"],
-            additionalProperties: false,
-         },
-      },
-   },
-   poll: `You will perform content moderation for truce.net.
+	common_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					keyword: {
+						enum: ["Spam", "Escalation", "Judgment", "Name-calling", "OK"],
+						description: "The most applicable keyword",
+					},
+					note: {
+						type: "string",
+						description:
+							"A note explaining why the keyword applies to this topic",
+					},
+				},
+				required: ["keyword", "note"],
+				additionalProperties: false,
+			},
+		},
+	},
+	poll: `You will perform content moderation for truce.net.
 
    Your response will be a JSON object. You will always respond with one of these five keywords, and possibly an optional note:
 
@@ -209,86 +203,80 @@ By following these guidelines and examples, you will ensure that content moderat
      - Example: If a user posts, "You are a fascist who supports a fascist leader," respond with: {"keyword: "Name-calling", "note": "Calling someone a fascist without them identifying as such is an example of name-calling. This type of labeling obstructs constructive and respectful dialogue."}
 
    Because the content you will be evaluating is a poll, it is especially important that sensitive and divisive topics be allowed. Further, the goal for polls is to achieve balance. Even if one of the answers is clearly upsetting to many people, as long as the range of choices available allows all to participate, then your response should always be {"keyword": "OK"}.`,
-   poll_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               keyword: {
-                  enum: [
-                     "Spam",
-                     "Escalation",
-                     "Judgment",
-                     "Name-calling",
-                     "OK",
-                  ],
-                  description: "The most applicable keyword",
-               },
-               note: {
-                  type: "string",
-                  description:
-                     "A note explaining why the keyword applies to this poll",
-               },
-            },
-            required: ["keyword", "note"],
-            additionalProperties: false,
-         },
-      },
-   },
-   poll_estimate: `You are the poll estimate bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
+	poll_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					keyword: {
+						enum: ["Spam", "Escalation", "Judgment", "Name-calling", "OK"],
+						description: "The most applicable keyword",
+					},
+					note: {
+						type: "string",
+						description:
+							"A note explaining why the keyword applies to this poll",
+					},
+				},
+				required: ["keyword", "note"],
+				additionalProperties: false,
+			},
+		},
+	},
+	poll_estimate: `You are the poll estimate bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
 
 You will provide a hypothetical estimate of how these people from United States would respond to the survey question. You will provide percentages for each choice available, as well as an estimated response rate.
    
 Your response will be in a JSON format, with a floating point number between 0 and 1 for each choice and the response rate.`,
-   poll_estimate_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "estimated_response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               choice_a: {
-                  type: "number",
-                  description:
-                     "A number between 0 and 1 representing the percent which choose choice A",
-               },
-               choice_b: {
-                  type: "number",
-                  description:
-                     "A number between 0 and 1 representing the percent which choose choice B",
-               },
-               choice_c: {
-                  type: "number",
-                  description:
-                     "A number between 0 and 1 representing the percent which choose choice C",
-               },
-               choice_d: {
-                  type: "number",
-                  description:
-                     "A number between 0 and 1 representing the percent which choose choice D",
-               },
-               response_rate: {
-                  type: "number",
-                  description:
-                     "A number between 0 and 1 representing the percent which respond to the poll",
-               },
-            },
-            required: [
-               "choice_a",
-               "choice_b",
-               "choice_c",
-               "choice_d",
-               "response_rate",
-            ],
-            additionalProperties: false,
-         },
-      },
-   },
-   tags: `You are the tagging bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
+	poll_estimate_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "estimated_response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					choice_a: {
+						type: "number",
+						description:
+							"A number between 0 and 1 representing the percent which choose choice A",
+					},
+					choice_b: {
+						type: "number",
+						description:
+							"A number between 0 and 1 representing the percent which choose choice B",
+					},
+					choice_c: {
+						type: "number",
+						description:
+							"A number between 0 and 1 representing the percent which choose choice C",
+					},
+					choice_d: {
+						type: "number",
+						description:
+							"A number between 0 and 1 representing the percent which choose choice D",
+					},
+					response_rate: {
+						type: "number",
+						description:
+							"A number between 0 and 1 representing the percent which respond to the poll",
+					},
+				},
+				required: [
+					"choice_a",
+					"choice_b",
+					"choice_c",
+					"choice_d",
+					"response_rate",
+				],
+				additionalProperties: false,
+			},
+		},
+	},
+	tags: `You are the tagging bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
 
 Your response will be in JSON format. You will provide a list of tags which apply to the topic which was posted.
 
@@ -363,41 +351,40 @@ Tags:
       - Anything to do with the economy
       - Anything to do with money
 `,
-   tags_response_format: {
-      type: "json_schema",
-      json_schema: {
-         name: "response",
-         strict: true,
-         schema: {
-            type: "object",
-            properties: {
-               tags: {
-                  type: "array",
-                  description:
-                     "An array of tags which are even remotely relevant",
-                  items: {
-                     enum: [
-                        "politics",
-                        "media",
-                        "religion",
-                        "animals",
-                        "asks",
-                        "polls",
-                        "sports",
-                        "history",
-                        "weather",
-                        "food",
-                        "parenting",
-                        "health",
-                        "science",
-                        "work",
-                     ],
-                  },
-               },
-            },
-            required: ["tags"],
-            additionalProperties: false,
-         },
-      },
-   },
-};
+	tags_response_format: {
+		type: "json_schema",
+		json_schema: {
+			name: "response",
+			strict: true,
+			schema: {
+				type: "object",
+				properties: {
+					tags: {
+						type: "array",
+						description: "An array of tags which are even remotely relevant",
+						items: {
+							enum: [
+								"politics",
+								"media",
+								"religion",
+								"animals",
+								"asks",
+								"polls",
+								"sports",
+								"history",
+								"weather",
+								"food",
+								"parenting",
+								"health",
+								"science",
+								"work",
+							],
+						},
+					},
+				},
+				required: ["tags"],
+				additionalProperties: false,
+			},
+		},
+	},
+}

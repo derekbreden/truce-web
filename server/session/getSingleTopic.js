@@ -1,15 +1,15 @@
 module.exports = async (req, res) => {
-  if (
-    !res.writableEnded &&
-    req.body.path &&
-    req.body.path.substr(0, 7) === "/topic/"
-  ) {
-    const slug = req.body.path.substr(7);
-    let topic_id = "";
+	if (
+		!res.writableEnded &&
+		req.body.path &&
+		req.body.path.substr(0, 7) === "/topic/"
+	) {
+		const slug = req.body.path.substr(7)
+		let topic_id = ""
 
-    if (!req.body.max_comment_create_date) {
-      const topic_results = await req.client.query(
-        `
+		if (!req.body.max_comment_create_date) {
+			const topic_results = await req.client.query(
+				`
         SELECT
           t.create_date,
           t.topic_id,
@@ -60,42 +60,42 @@ module.exports = async (req, res) => {
           AND l.topic_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
-        [
-          req.session.user_id || 0,
-          slug,
-          req.body.min_topic_create_date || null,
-        ],
-      );
-      req.results.topics.push(...topic_results.rows);
-      // We set path here to ensure the path goes to a default if there are no results
-      if (topic_results.rows.length) {
-        req.results.path = `/topic/${slug}`;
-        topic_id = topic_results.rows[0].topic_id;
-      }
-    }
+				[
+					req.session.user_id || 0,
+					slug,
+					req.body.min_topic_create_date || null,
+				],
+			)
+			req.results.topics.push(...topic_results.rows)
+			// We set path here to ensure the path goes to a default if there are no results
+			if (topic_results.rows.length) {
+				req.results.path = `/topic/${slug}`
+				topic_id = topic_results.rows[0].topic_id
+			}
+		}
 
-    // Also get the topic_id if the topic was not updated
-    if (!topic_id) {
-      const topic_id_result = await req.client.query(
-        `
+		// Also get the topic_id if the topic was not updated
+		if (!topic_id) {
+			const topic_id_result = await req.client.query(
+				`
         SELECT t.topic_id
         FROM topics t
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE t.slug = $2 AND l.topic_id IS NULL AND b.user_id_blocked IS NULL
         `,
-        [req.session.user_id || 0, slug],
-      );
-      if (topic_id_result.rows.length) {
-        req.results.path = `/topic/${slug}`;
-        topic_id = topic_id_result.rows[0].topic_id;
-      }
-    }
+				[req.session.user_id || 0, slug],
+			)
+			if (topic_id_result.rows.length) {
+				req.results.path = `/topic/${slug}`
+				topic_id = topic_id_result.rows[0].topic_id
+			}
+		}
 
-    // Get the comments
-    if (topic_id) {
-      const root_comments = await req.client.query(
-        `
+		// Get the comments
+		if (topic_id) {
+			const root_comments = await req.client.query(
+				`
         SELECT
           c.create_date,
           c.comment_id,
@@ -128,15 +128,15 @@ module.exports = async (req, res) => {
         ORDER BY c.create_date DESC
         LIMIT 10
         `,
-        [
-          req.session.user_id || 0,
-          topic_id,
-          req.body.min_comment_create_date || null,
-          req.body.max_comment_create_date || null,
-        ],
-      );
-      const reply_comments = await req.client.query(
-        `
+				[
+					req.session.user_id || 0,
+					topic_id,
+					req.body.min_comment_create_date || null,
+					req.body.max_comment_create_date || null,
+				],
+			)
+			const reply_comments = await req.client.query(
+				`
         SELECT
           c.create_date,
           c.comment_id,
@@ -177,15 +177,15 @@ module.exports = async (req, res) => {
         ORDER BY c.create_date ASC
         LIMIT 10
         `,
-        [
-          req.session.user_id || 0,
-          topic_id,
-          root_comments.rows.map((c) => c.comment_id),
-          req.body.min_comment_create_date || null,
-        ],
-      );
-      req.results.comments.push(...root_comments.rows);
-      req.results.comments.push(...reply_comments.rows);
-    }
-  }
-};
+				[
+					req.session.user_id || 0,
+					topic_id,
+					root_comments.rows.map((c) => c.comment_id),
+					req.body.min_comment_create_date || null,
+				],
+			)
+			req.results.comments.push(...root_comments.rows)
+			req.results.comments.push(...reply_comments.rows)
+		}
+	}
+}

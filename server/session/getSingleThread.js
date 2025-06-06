@@ -1,12 +1,12 @@
 module.exports = async (req, res) => {
-  if (
-    !res.writableEnded &&
-    req.body.path &&
-    req.body.path.substr(0, 9) === "/comment/"
-  ) {
-    const comment_id = req.body.path.substr(9);
-    const comment_results = await req.client.query(
-      `
+	if (
+		!res.writableEnded &&
+		req.body.path &&
+		req.body.path.substr(0, 9) === "/comment/"
+	) {
+		const comment_id = req.body.path.substr(9)
+		const comment_results = await req.client.query(
+			`
       WITH root_comment AS (
         SELECT comment_id
         FROM comments
@@ -59,15 +59,15 @@ module.exports = async (req, res) => {
         AND b.user_id_blocked IS NULL
       ORDER BY c.create_date ASC
       `,
-      [
-        comment_id,
-        req.session.user_id || 0,
-        req.body.min_comment_create_date || null,
-      ],
-    );
-    if (comment_results.rows.length) {
-      const topic_result = await req.client.query(
-        `
+			[
+				comment_id,
+				req.session.user_id || 0,
+				req.body.min_comment_create_date || null,
+			],
+		)
+		if (comment_results.rows.length) {
+			const topic_result = await req.client.query(
+				`
         SELECT t.title, t.slug
         FROM topics t
         LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
@@ -80,20 +80,20 @@ module.exports = async (req, res) => {
         AND l.topic_id IS NULL
         AND b.user_id_blocked IS NULL
         `,
-        [req.session.user_id || 0, comment_id],
-      );
-      req.results.parent_topic = {
-        title: topic_result.rows[0].title,
-        slug: topic_result.rows[0].slug,
-      };
-      req.results.path = `/comment/${comment_id}`;
-      req.results.comments.push(...comment_results.rows);
-    }
+				[req.session.user_id || 0, comment_id],
+			)
+			req.results.parent_topic = {
+				title: topic_result.rows[0].title,
+				slug: topic_result.rows[0].slug,
+			}
+			req.results.path = `/comment/${comment_id}`
+			req.results.comments.push(...comment_results.rows)
+		}
 
-    // We set path there to ensure the path goes to a default if there are no results
-    // But, now that we are checking for most recent, the path is also good if a min_comment_create_date was passed
-    if (req.body.min_comment_create_date) {
-      req.results.path = `/comment/${comment_id}`;
-    }
-  }
-};
+		// We set path there to ensure the path goes to a default if there are no results
+		// But, now that we are checking for most recent, the path is also good if a min_comment_create_date was passed
+		if (req.body.min_comment_create_date) {
+			req.results.path = `/comment/${comment_id}`
+		}
+	}
+}

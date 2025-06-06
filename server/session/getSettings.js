@@ -1,7 +1,7 @@
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.body.path && req.body.path === "/settings") {
-    const users = await req.client.query(
-      `
+	if (!res.writableEnded && req.body.path && req.body.path === "/settings") {
+		const users = await req.client.query(
+			`
       SELECT
         u.user_id,
         u.display_name,
@@ -17,8 +17,8 @@ module.exports = async (req, res) => {
       WHERE
         s.user_id = $1
       `,
-      [req.session.user_id || 0],
-    );
-    req.results.users = users.rows;
-  }
-};
+			[req.session.user_id || 0],
+		)
+		req.results.users = users.rows
+	}
+}

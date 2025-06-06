@@ -10,14 +10,14 @@
   <!--#include file="client/body.html" -->
   <script>
     // Set the localstorage key based on android presence
-    window.local_storage_key = "trucev1";
-    window.is_android = false;
+    window.local_storage_key = "trucev1"
+    window.is_android = false
     if (
       document.referrer === "android-app://net.truce.twa/" ||
       navigator.userAgent.includes("Android")
     ) {
-      window.local_storage_key = "trucev1_android";
-      window.is_android = true;
+      window.local_storage_key = "trucev1_android"
+      window.is_android = true
     }
 
     // Global state
@@ -48,30 +48,30 @@
       window_recently_focused: false,
       window_recently_loaded: false,
       version: 1,
-    };
+    }
     if (window.webkit) {
       state.version = Number(
         (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 2,
-      );
+      )
     } else {
-      state.version = 2;
+      state.version = 2
     }
 
     // Global elements
-    const $body = document.scrollingElement || document.documentElement;
+    const $body = document.scrollingElement || document.documentElement
 
     // Global variables
     const note_keywords = {
       Escalation: "Escalation",
       Judgment: "Judgment",
       "Name-calling": "Name-calling",
-    };
+    }
     const topic_prompts = [
       "What are you concerned about?",
       "What would you prefer we do?",
       "What have you observed?",
       "Do you have any unmet needs?",
-    ];
+    ]
 
     // Libraries
     // <!--#include file="client/flint.js" -->
@@ -106,7 +106,7 @@
     // Add new
     // <!--#include file="client/showAddNewComment.js" -->
     // <!--#include file="client/showAddNewTopic.js" -->
-    <!--#include file="client/editProfilePicture.js" -->
+    // <!--#include file="client/editProfilePicture.js" -->
     // <!--#include file="client/updateDisplayName.js" -->
 
     // Global events
@@ -120,8 +120,8 @@
     // Init
     // <!--#include file="client/startSession.js" -->
 
-    loadingPage(true, true);
-    startSession();
+    loadingPage(true, true)
+    startSession()
 
     // Create WebSocket connection.
     // <!--#include file="client/websocket.js" -->
