@@ -44,44 +44,37 @@ const tests = {
 
         assertEquals("/topics", state.path, "Path should be /topics after agreeing to terms.")
 
-        // After navigation and processing of mock response for /topics, state.user_id should be updated.
-        // The client-side logic (likely in startSession or loadingPage after fetch) should update the global state.
         assertEquals("test-user-123", state.user_id, `state.user_id should be updated by mock. Initial: ${initialUserId}, Current: ${state.user_id}`)
 
-        // 3. Assertions (verify elements from showAddNewTopic() are visible)
-        // According to loadingPage.js, the form should be prepended to "main-content-wrapper[active] main-content"
-        // The actual element rendered by showAddNewTopic() is <add-new topic>
         const $formContainer = $("main-content-wrapper[active] main-content add-new[topic]")
         assertEquals(true, Boolean($formContainer), "Add New Topic form container (add-new[topic]) should be present in main-content.")
 
-        if ($formContainer) {
-            const $titleInput = $formContainer.$("input[title]")
-            assertEquals(true, Boolean($titleInput), "Title input should be present in the form.")
-            assertEquals("Title", $titleInput.getAttribute("placeholder"), "Title input placeholder should be 'Title'.")
+        const $titleInput = $formContainer.$("input[title]")
+        assertEquals(true, Boolean($titleInput), "Title input should be present in the form.")
+        assertEquals("Title", $titleInput.getAttribute("placeholder"), "Title input placeholder should be 'Title'.")
 
-            const $bodyTextarea = $formContainer.$("textarea[body]")
-            assertEquals(true, Boolean($bodyTextarea), "Body textarea should be present in the form.")
-            assertEquals(true, $bodyTextarea.getAttribute("placeholder")?.includes("Content"), "Body textarea placeholder should contain 'Content'.")
+        const $bodyTextarea = $formContainer.$("textarea[body]")
+        assertEquals(true, Boolean($bodyTextarea), "Body textarea should be present in the form.")
+        assertEquals(true, $bodyTextarea.getAttribute("placeholder")?.includes("Content"), "Body textarea placeholder should contain 'Content'.")
 
-            const $pollIconContainer = $formContainer.$("label[poll] icon") // container for the svg
-            assertEquals(true, Boolean($pollIconContainer), "Poll icon container (label[poll] icon) should be present.")
-            const $pollIconSvg = $pollIconContainer.$("svg")
-            assertEquals(true, Boolean($pollIconSvg), "Poll icon SVG should be present within its container.")
-            assertEquals("svg", $pollIconSvg.tagName?.toLowerCase(), "Poll icon should be an SVG.")
+        const $pollIconContainer = $formContainer.$("label[poll] icon") // container for the svg
+        assertEquals(true, Boolean($pollIconContainer), "Poll icon container (label[poll] icon) should be present.")
+        const $pollIconSvg = $pollIconContainer.$("svg")
+        assertEquals(true, Boolean($pollIconSvg), "Poll icon SVG should be present within its container.")
+        assertEquals("svg", $pollIconSvg.tagName?.toLowerCase(), "Poll icon should be an SVG.")
 
-            const $imageIconContainer = $formContainer.$("label[image] icon") // container for the svg
-            assertEquals(true, Boolean($imageIconContainer), "Image icon container (label[image] icon) should be present.")
-            const $imageIconSvg = $imageIconContainer.$("svg")
-            assertEquals(true, Boolean($imageIconSvg), "Image icon SVG should be present within its container.")
-            assertEquals("svg", $imageIconSvg.tagName?.toLowerCase(), "Image icon should be an SVG.")
+        const $imageIconContainer = $formContainer.$("label[image] icon") // container for the svg
+        assertEquals(true, Boolean($imageIconContainer), "Image icon container (label[image] icon) should be present.")
+        const $imageIconSvg = $imageIconContainer.$("svg")
+        assertEquals(true, Boolean($imageIconSvg), "Image icon SVG should be present within its container.")
+        assertEquals("svg", $imageIconSvg.tagName?.toLowerCase(), "Image icon should be an SVG.")
 
-            const $submitButton = $formContainer.$("button[submit]")
-            assertEquals(true, Boolean($submitButton), "Submit button should be present.")
-            assertEquals("Add topic", $submitButton.innerText.trim(), "Submit button text should be 'Add topic'.")
+        const $submitButton = $formContainer.$("button[submit]")
+        assertEquals(true, Boolean($submitButton), "Submit button should be present.")
+        assertEquals("Add topic", $submitButton.innerText.trim(), "Submit button text should be 'Add topic'.")
 
-            const $cancelButton = $formContainer.$("button[alt][cancel]")
-            assertEquals(false, Boolean($cancelButton), "Cancel button should NOT be present for a new topic form.")
-        }
+        const $cancelButton = $formContainer.$("button[alt][cancel]")
+        assertEquals(false, Boolean($cancelButton), "Cancel button should NOT be present for a new topic form.")
     }
 }
 
