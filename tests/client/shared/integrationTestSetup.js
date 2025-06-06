@@ -127,25 +127,45 @@ function setupIntegrationTestEnvironment(options) {
 
       // Mock fetch
       window.fetch = async function(url, fetchOptions) {
+        let responseData = null;
 
-        // Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
-        for (const path of Object.keys(mockFetchResponseForPaths)) {
-          if (url === "/session") {
-            const body = JSON.parse(fetchOptions.body)
-            if (body.path === path) {
-              return Promise.resolve({
-                status: 200,
-                json: async () => mockFetchResponseForPaths[path],
-              })
+        // Check if the exact URL is a key in our mock responses (e.g., for GET "/")
+        if (mockFetchResponseForPaths[url]) {
+          responseData = mockFetchResponseForPaths[url];
+        }
+        // Special handling for /session endpoint, potentially looking into body.path
+        else if (url === "/session" && fetchOptions && fetchOptions.body) {
+          try {
+            const body = JSON.parse(fetchOptions.body);
+            // If mock is structured like { "/": { ... } } and body.path is "/"
+            if (body.path && mockFetchResponseForPaths[body.path]) {
+              responseData = mockFetchResponseForPaths[body.path];
             }
+            // Fallback: if there's a generic mock for "/session" itself
+            else if (mockFetchResponseForPaths["/session"]) {
+              responseData = mockFetchResponseForPaths["/session"];
+            }
+          } catch (e) {
+            // Body parsing error
+            return Promise.resolve({
+              status: 400, // Bad Request
+              json: async () => ({ success: false, error: "Invalid JSON in request body for /session" }),
+            });
           }
         }
 
-        // Otherwise return an error
+        if (responseData) {
+          return Promise.resolve({
+            status: 200,
+            json: async () => responseData,
+          });
+        }
+
+        // Otherwise return an error, indicating the specific path that was unmocked
         return Promise.resolve({
           status: 500,
-          json: async () => ({ success: false, error: "Test error: Unmocked fetch path" }),
-        })
+          json: async () => ({ success: false, error: `Test error: Unmocked fetch path: ${url}` }),
+        });
       }
     }
   })
