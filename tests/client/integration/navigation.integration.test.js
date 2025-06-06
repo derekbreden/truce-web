@@ -43,7 +43,7 @@ const tests = {
         $joinButton.click()
 
         // Wait for navigation and rendering (increased delay for page load)
-        await new Promise(resolve => setTimeout(resolve, 200))
+        await new Promise(resolve => setTimeout(resolve, 0))
 
         // Verify navigation to /topics
         assertEquals("/topics", state.path, "Path should be /topics after agreeing to terms.")
@@ -59,7 +59,7 @@ const tests = {
         $firstTopicElement.click()
 
         // Wait for navigation and rendering
-        await new Promise(resolve => setTimeout(resolve, 200))
+        await new Promise(resolve => setTimeout(resolve, 0))
 
         // 3. Assert navigation to the topic detail path
         // The exact slug might be hard to predict if topics are dynamic,
