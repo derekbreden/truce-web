@@ -1,7 +1,7 @@
 let testResults = []
 
 function assertEquals(expected, actual, message) {
-  const pass = expected === actual; // Consider a deep equality check for objects/arrays if needed
+  const pass = expected === actual // Consider a deep equality check for objects/arrays if needed
   testResults.push({
     pass,
     message,

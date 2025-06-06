@@ -183,6 +183,13 @@ Make sure you have run `npm install jsdom` before running tests.
     - Consider the test environment: How might JSDOM or flint.js interact with the component in a specific way?
     - Only after these steps, if a genuine bug in the application code (outside the test itself) is suspected, should modifications to application files be considered.
 
+6. Modifying Shared Test Infrastructure (e.g., `integrationTestSetup.js`)
+
+    -   **Avoid Unnecessary Changes:** Changes to shared testing infrastructure like `integrationTestSetup.js` should be a last resort. Before modifying these files, exhaust all options for making your test pass by adjusting the test itself, its mock data, or its assertions.
+    -   **Principle of Least Impact:** If a shared infrastructure change is contemplated, ensure it's for a reason that broadly benefits multiple tests or fixes a fundamental flaw in the setup. Do not modify shared files to accommodate highly specific needs of a single test if that need can be met with test-local adjustments (e.g., direct state manipulation within the test if state setup is tricky, or more detailed local mocks).
+    -   **Justification Required:** Any proposed change to shared testing files must come with a strong justification explaining why test-local solutions are insufficient and how the change benefits the testing suite more broadly without negatively impacting existing tests.
+    -   **State Management in Tests:** For tests requiring specific application states (e.g., logged-in user, specific data loaded), prefer highly specific `window.setMockFetchResponseForPaths` configurations within the test file itself. 
+
 ### Best Practices for Test Assertions
 
 *   **Selector Specificity:** Ensure your selectors are specific enough to target the exact element rendered by Flint.js. When a test fails to find an element or text, double-check the actual DOM structure produced by Flint.js for that component (e.g., by temporarily logging `innerHTML` in the test if unsure). For text content, this often means targeting a specific child `<span>` or other innermost element where Flint.js places the text, as detailed in the "Understanding innerText vs. textContent" guideline.

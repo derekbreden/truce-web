@@ -5,9 +5,10 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 const tests = {
     testRealIndexHtmlLoads: () => {
         const window = setupIntegrationTestEnvironment()
-        // window.$ and window.state are exposed from consts by options.constsToExpose by default
-        assertEquals("function", typeof window.$)
-        assertEquals("object", typeof window.state)
+        const { state, $ } = window
+        // $ and state are exposed to the window from consts by options.constsToExpose by default
+        assertEquals("function", typeof $)
+        assertEquals("object", typeof state)
     }
 }
 

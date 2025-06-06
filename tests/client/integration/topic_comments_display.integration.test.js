@@ -4,8 +4,8 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
     testTopicCommentsDisplayOnDetailPage: async () => {
-        const { window } = await setupIntegrationTestEnvironment();
-        const { state, $ } = window;
+        const { window } = await setupIntegrationTestEnvironment()
+        const { state, $ } = window
 
         window.setMockFetchResponseForPaths({
             "/": {
@@ -79,62 +79,62 @@ const tests = {
                 ],
                 activities: [], notifications: [], user: {}, tag: {}, subscribed_to_users: 0
             }
-        });
+        })
 
         // Navigate from welcome page to topics page
-        const $joinButton = $("a[href='/topics'][big]");
-        assertEquals(true, Boolean($joinButton), "Join button should be present on welcome page.");
-        $joinButton.click();
-        await new Promise(resolve => setTimeout(resolve, 0)); // Wait for DOM update
-        assertEquals("/topics", state.path, "Clicking join button should navigate to /topics.");
+        const $joinButton = $("a[href='/topics'][big]")
+        assertEquals(true, Boolean($joinButton), "Join button should be present on welcome page.")
+        $joinButton.click()
+        await new Promise(resolve => setTimeout(resolve, 0)) // Wait for DOM update
+        assertEquals("/topics", state.path, "Clicking join button should navigate to /topics.")
 
         // Navigate from topics page to topic detail page
-        const $topicLink = $("topics > topic[trimmed]"); // Assuming first topic is the one
-        assertEquals(true, Boolean($topicLink), "Topic link should be present on /topics page.");
+        const $topicLink = $("topics > topic[trimmed]") // Assuming first topic is the one
+        assertEquals(true, Boolean($topicLink), "Topic link should be present on /topics page.")
         // Check title instead of slug attribute directly on topic[trimmed]
-        const $topicTitle = $topicLink.$("h2");
-        assertEquals("Test Topic for Comments", $topicTitle?.textContent.trim(), "Topic title mismatch on /topics page.");
-        $topicLink.click();
-        await new Promise(resolve => setTimeout(resolve, 0)); // Wait for DOM update
-        assertEquals("/topic/test-comments-topic", state.path, "Clicking topic link should navigate to topic detail page.");
+        const $topicTitle = $topicLink.$("h2")
+        assertEquals("Test Topic for Comments", $topicTitle?.textContent.trim(), "Topic title mismatch on /topics page.")
+        $topicLink.click()
+        await new Promise(resolve => setTimeout(resolve, 0)) // Wait for DOM update
+        assertEquals("/topic/test-comments-topic", state.path, "Clicking topic link should navigate to topic detail page.")
 
         // Assertions for Comments
-        const $commentsWrapper = $("main-content-wrapper[active] comments");
-        assertEquals(true, Boolean($commentsWrapper), "Comments wrapper element should be present on the topic detail page.");
+        const $commentsWrapper = $("main-content-wrapper[active] comments")
+        assertEquals(true, Boolean($commentsWrapper), "Comments wrapper element should be present on the topic detail page.")
 
         // Based on renderComments.js, root comments are directly appended to <comments>
         // and each comment is represented by a <comment> custom element.
-        const $renderedComments = $commentsWrapper.querySelectorAll(":scope > comment");
-        assertEquals(2, $renderedComments.length, "Should render 2 comment elements based on mock data.");
+        const $renderedComments = $commentsWrapper.querySelectorAll(":scope > comment")
+        assertEquals(2, $renderedComments.length, "Should render 2 comment elements based on mock data.")
 
         // Assertions for Comments (variables $commentsWrapper and $renderedComments are defined above)
 
         // For the first comment ($renderedComments[0])
-        const $comment1 = $renderedComments[0];
+        const $comment1 = $renderedComments[0]
 
         // Author Name (structure: comment > h3 > author > span)
-        const $authorName1 = $comment1.$("author span");
-        assertEquals(true, Boolean($authorName1), "First comment author's name span should exist.");
-        assertEquals("Commenter One", $authorName1.innerText.trim(), "First comment author name mismatch.");
+        const $authorName1 = $comment1.$("author span")
+        assertEquals(true, Boolean($authorName1), "First comment author's name span should exist.")
+        assertEquals("Commenter One", $authorName1.innerText.trim(), "First comment author name mismatch.")
 
         // Comment Body (structure: comment > p > span, from markdownToElements)
-        const $body1 = $comment1.$(":scope > p > span");
-        assertEquals(true, Boolean($body1), "First comment body span should exist.");
-        assertEquals("This is the first test comment.", $body1.innerText.trim(), "First comment body mismatch.");
+        const $body1 = $comment1.$(":scope > p > span")
+        assertEquals(true, Boolean($body1), "First comment body span should exist.")
+        assertEquals("This is the first test comment.", $body1.innerText.trim(), "First comment body mismatch.")
 
 
         // For the second comment ($renderedComments[1])
-        const $comment2 = $renderedComments[1];
+        const $comment2 = $renderedComments[1]
 
         // Author Name
-        const $authorName2 = $comment2.$("author span");
-        assertEquals(true, Boolean($authorName2), "Second comment author's name span should exist.");
-        assertEquals("Commenter Two", $authorName2.innerText.trim(), "Second comment author name mismatch.");
+        const $authorName2 = $comment2.$("author span")
+        assertEquals(true, Boolean($authorName2), "Second comment author's name span should exist.")
+        assertEquals("Commenter Two", $authorName2.innerText.trim(), "Second comment author name mismatch.")
 
         // Comment Body
-        const $body2 = $comment2.$(":scope > p > span");
-        assertEquals(true, Boolean($body2), "Second comment body span should exist.");
-        assertEquals("A second insightful comment here.", $body2.innerText.trim(), "Second comment body mismatch.");
+        const $body2 = $comment2.$(":scope > p > span")
+        assertEquals(true, Boolean($body2), "Second comment body span should exist.")
+        assertEquals("A second insightful comment here.", $body2.innerText.trim(), "Second comment body mismatch.")
     }
 }
 
