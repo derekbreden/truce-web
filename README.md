@@ -196,6 +196,19 @@ Make sure you have run `npm install jsdom` before running tests.
 *   **JSDOM `innerText` Behavior:** Remember that JSDOM's `innerText` might not behave identically to a browser, especially regarding parent/child text propagation. Always target the most specific element containing the text. Refer to the "Understanding innerText vs. textContent" guideline for more details on choosing between `innerText` and `textContent`.
 *   **Test Simplicity (Style Note):** Write tests to be clear and direct. Avoid unnecessary conditional logic (like early returns or overly defensive checks for elements you expect to be present) if a simple, direct assertion would make the test fail clearly when something is wrong. A failing test due to an inability to find an element is often the desired outcome as it points directly to the issue. This helps in quickly identifying the root cause of a problem.
 
+### AI Agent Collaboration & Testing Best Practices
+
+To ensure efficient collaboration with AI coding assistants and maintain code quality, please adhere to the following guidelines when generating or modifying tests:
+
+1.  **Test Cleanliness - Post-Debugging:**
+    *   **Remove Debugging Artifacts:** Before finalizing a test, ensure all temporary debugging code (e.g., `console.log` statements, excessive comments explaining obvious steps, temporary variables used for inspection) is removed.
+    *   **Simplify Logic:** Refactor any overly complex logic or selectors that were introduced during debugging back to the simplest, most direct form that accurately tests the functionality. For instance, avoid iterating over elements if a direct, unique selector is available.
+    *   **No Unnecessary Delays:** Remove any `setTimeout` calls (e.g., `await new Promise(resolve => setTimeout(resolve, 0))`) that were used for debugging DOM update timings, as the test environment mocks `setTimeout` to be immediate. Rely on natural event propagation and promise resolution.
+
+2.  **Assertion Style:**
+    *   **Prefer Direct Failures:** Avoid "guard assertions" (e.g., checking if an element exists with one assertion before attempting to access its properties in a subsequent assertion). Allow tests to fail directly on the problematic access (e.g., `element.property` if `element` is unexpectedly null). This provides a more direct stack trace and points to the exact expectation that failed.
+    *   **Follow Existing Patterns:** Observe and replicate the assertion style and structure found in existing, well-written tests within this repository.
+
 ## Flint.js DOM Manipulation
 
 ### Variable Naming
