@@ -144,14 +144,19 @@ Make sure you have run `npm install jsdom` before running tests.
 		```
 		This is the preferred method for **ALL** integration tests.
 
+		**Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
+
 ### Test Guidelines
 
-1.	**Prioritize Mock Data and Test Adjustments:**
+1. Prioritize Mock Data and Test Adjustments:
+
 		- "Before modifying core application logic (especially shared libraries like flint.js or common rendering functions) to make a test pass, exhaust all possibilities of adjusting the test's mock data, selectors, and assertions. Core logic changes should only be a last resort and require strong justification."
 		- "If a test fails due to data-dependent rendering (e.g., missing icons, conditional elements), first verify that the mock data provided in window.setMockFetchResponseForPaths accurately reflects the expected server response and includes all necessary fields and values that the component under test relies on. For example, ensure arrays expected by functions like renderTopics or renderTags are always provided in mocks, even if empty (e.g., topics: [])."
-2.	**Icon and Asset Availability in Tests:**
+2. Icon and Asset Availability in Tests:
+
 		- "When testing components that render icons or other assets (e.g., images defined in body.html or loaded dynamically), ensure that any specific asset names used in mock data (like icon names for tags) actually exist or are properly mocked if their presence is crucial for the component's rendering logic (e.g., cloneNode operations). If an asset isn't available and isn't the direct subject of the test, consider using mock data that references available assets or adjust the component's mock to not rely on the missing asset."
-3.	**Understanding innerText vs. textContent in the Test Environment:**
+3. Understanding innerText vs. textContent in the Test Environment:
+
 		- "In the JSDOM test environment, innerText and textContent might have subtle differences in behavior compared to real browsers, especially concerning how whitespace, visibility, and CSS affect them. flint.js's templating might also interact with these differently. For assertions on text content:
 		- Prefer element.innerText.trim() for verifying text visible to you. This is often closer to what you experience, and importantly, flint.js's templating might automatically insert <br> tags, and innerText handles this as you would expect. This makes it preferred over textContent for Flint-rendered content.
 		- **Target Child Elements for Flint.js Text**: When asserting text content for elements populated by Flint.js, it's crucial to target the specific child <span> (or other innermost element) where Flint.js places the text. Flint.js often uses a pattern like h2 > span or p > span for text content. Assertions should use `element.$("span").innerText.trim()` rather than `element.innerText.trim()` on the parent. This is because JSDOM's `innerText` does not propagate from children to parents in the same way as a browser, especially when Flint.js structures are involved.
@@ -167,22 +172,29 @@ Make sure you have run `npm install jsdom` before running tests.
 		```
 		- If `innerText` on the correct child element still causes issues or returns unexpected results (e.g., due to other DOM manipulations specific to the testing setup), `element.textContent.trim()` can be an alternative, but be aware it might include text from hidden elements or different whitespace handling.
 		- The primary goal is stable and accurate tests. If `innerText` (on the appropriate child element) is the established convention and flint.js is designed around it, test adjustments should aim to work with `innerText` where possible, rather than immediately changing flint.js."
-		- **Note on JSDOM `innerText` Behavior:** Remember that JSDOM's `innerText` might not behave identically to a browser, especially regarding parent/child text propagation. Always target the most specific element containing the text.
-4.	**Scope of Changes for New Tests:**
+4. Scope of Changes for New Tests:
+
 		- "When adding a new test, the primary goal is to verify the specific functionality or component behavior described in the test's objective. Changes to unrelated files or shared libraries should be avoided unless they address a clear, pre-existing bug that directly prevents the test from accurately verifying the target behavior and cannot be worked around by adjusting the test itself."
-5.	**Debugging Test Failures - Order of Operations:**
+5. Debugging Test Failures - Order of Operations:
+
 		- Verify test assertions and selectors: Are they correctly targeting the intended elements?
 		- Verify mock data: Is it complete and correct for the component under test? Does it provide all necessary fields, including empty arrays where appropriate?
 		- Examine client-side JavaScript for the component under test: Understand how it processes the data and renders elements.
 		- Consider the test environment: How might JSDOM or flint.js interact with the component in a specific way?
 		- Only after these steps, if a genuine bug in the application code (outside the test itself) is suspected, should modifications to application files be considered.
-6.	**Modifying Shared Test Infrastructure (e.g., `integrationTestSetup.js`)**
+
+6. Modifying Shared Test Infrastructure (e.g., `integrationTestSetup.js`)
+
 		-	 **Avoid Unnecessary Changes:** Changes to shared testing infrastructure like `integrationTestSetup.js` should be a last resort. Before modifying these files, exhaust all options for making your test pass by adjusting the test itself, its mock data, or its assertions.
 		-	 **Principle of Least Impact:** If a shared infrastructure change is contemplated, ensure it's for a reason that broadly benefits multiple tests or fixes a fundamental flaw in the setup. Do not modify shared files to accommodate highly specific needs of a single test if that need can be met with test-local adjustments (e.g., direct state manipulation within the test if state setup is tricky, or more detailed local mocks).
 		-	 **Justification Required:** Any proposed change to shared testing files must come with a strong justification explaining why test-local solutions are insufficient and how the change benefits the testing suite more broadly without negatively impacting existing tests.
 		-	 **State Management in Tests:** For tests requiring specific application states (e.g., logged-in user, specific data loaded), prefer highly specific `window.setMockFetchResponseForPaths` configurations within the test file itself. For example, if you need a logged in state, you must set a logged in response on all paths your test uses, as in the case of menu_elements_display.integration.test.js which sets a "logged in response" on both / and /topics.
-7.	**Selector Specificity:** Ensure your selectors are specific enough to target the exact element rendered by Flint.js. When a test fails to find an element or text, double-check the actual DOM structure produced by Flint.js for that component (e.g., by temporarily logging `innerHTML` in the test if unsure). For text content, this often means targeting a specific child `<span>` or other innermost element where Flint.js places the text, as detailed in guideline #3 ("Understanding innerText vs. textContent").
-8.	**Test Simplicity and Direct Failures:** Write tests to be clear and direct. Avoid unnecessary conditional logic (like early returns or overly defensive checks for elements you expect to be present) if a simple, direct assertion would make the test fail clearly when something is wrong. A failing test due to an inability to find an element is often the desired outcome as it points directly to the issue. This helps in quickly identifying the root cause of a problem. Avoid "guard assertions" (e.g., checking if an element exists with one assertion before attempting to access its properties in a subsequent assertion). Allow tests to fail directly on the problematic access (e.g., `element.property` if `element` is unexpectedly null). This provides a more direct stack trace and points to the exact expectation that failed.
+
+### Best Practices for Test Assertions
+
+*	 **Selector Specificity:** Ensure your selectors are specific enough to target the exact element rendered by Flint.js. When a test fails to find an element or text, double-check the actual DOM structure produced by Flint.js for that component (e.g., by temporarily logging `innerHTML` in the test if unsure). For text content, this often means targeting a specific child `<span>` or other innermost element where Flint.js places the text, as detailed in the "Understanding innerText vs. textContent" guideline.
+*	 **JSDOM `innerText` Behavior:** Remember that JSDOM's `innerText` might not behave identically to a browser, especially regarding parent/child text propagation. Always target the most specific element containing the text. Refer to the "Understanding innerText vs. textContent" guideline for more details on choosing between `innerText` and `textContent`.
+*	 **Test Simplicity (Style Note):** Write tests to be clear and direct. Avoid unnecessary conditional logic (like early returns or overly defensive checks for elements you expect to be present) if a simple, direct assertion would make the test fail clearly when something is wrong. A failing test due to an inability to find an element is often the desired outcome as it points directly to the issue. This helps in quickly identifying the root cause of a problem.
 
 ### AI Agent Collaboration & Testing Best Practices
 
@@ -194,6 +206,7 @@ To ensure efficient collaboration with AI coding assistants and maintain code qu
 		*	 **No Unnecessary Delays:** Remove any `setTimeout` calls (e.g., `await new Promise(resolve => setTimeout(resolve, 0))`) that were used for debugging DOM update timings, as the test environment mocks `setTimeout` to be immediate. Rely on natural event propagation and promise resolution.
 
 2.	**Assertion Style:**
+		*	 **Prefer Direct Failures:** Avoid "guard assertions" (e.g., checking if an element exists with one assertion before attempting to access its properties in a subsequent assertion). Allow tests to fail directly on the problematic access (e.g., `element.property` if `element` is unexpectedly null). This provides a more direct stack trace and points to the exact expectation that failed.
 		*	 **Follow Existing Patterns:** Observe and replicate the assertion style and structure found in existing, well-written tests within this repository.
 
 ## Flint.js DOM Manipulation
