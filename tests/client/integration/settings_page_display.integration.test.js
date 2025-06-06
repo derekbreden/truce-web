@@ -41,7 +41,6 @@ const tests = {
                 topics: [], comments: [], activities: [], notifications: [], // Other standard page data
                 user_id: "test-user-123", // Logged-in user context
                 has_more: false,
-                page_title: "Settings" // Added page_title
             }
         })
 

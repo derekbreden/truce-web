@@ -20,6 +20,5 @@ module.exports = async (req, res) => {
       [req.session.user_id || 0],
     );
     req.results.users = users.rows;
-    req.results.page_title = "Settings";
   }
 };
