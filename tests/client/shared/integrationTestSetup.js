@@ -8,9 +8,10 @@ function setupIntegrationTestEnvironment(options) {
   options = options || {}
   options.constsToExpose = options.constsToExpose || []
   options.constsToExpose = [
-    ...options.constsToExpose,
+    ...options.constsToExpose, // Ensures that what's passed in options is preserved
     "state",
-    "$",
+    "$"
+    // goToPath, loadingPage, renderPage should be passed via options if needed by a test
   ]
 
   // Index path and content
