@@ -85,8 +85,12 @@ function setupIntegrationTestEnvironment(options) {
   // --------------------------------------------------------------------------
   // Setup JSDOM
   // --------------------------------------------------------------------------
+  //
+  // Forward the console logs
   const virtualConsole = new VirtualConsole()
   virtualConsole.sendTo(console)
+  //
+  // Load the index.html content
   const dom = new JSDOM(finalIndexHtmlContent, {
     runScripts: "dangerously", // Allow scripts added to the DOM to run
     url: "http://localhost", // Necessary for some scripts that might use location/history
@@ -102,6 +106,9 @@ function setupIntegrationTestEnvironment(options) {
           ... newFetchResponsesForPaths,
         }
       }
+
+      // Mock scrollIntoView
+      window.HTMLElement.prototype.scrollIntoView = () => {}
 
       // Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
       window.WebSocket = function(url) {
