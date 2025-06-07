@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 		if (token_found.rows.length > 0) {
 			const user_id_found = token_found.rows[0].user_id
 			const password_hash = await bcrypt.hash(req.body.password, 12)
-			await client.query(
+			await req.client.query(
 				`
         UPDATE users
           SET password_hash = $1
