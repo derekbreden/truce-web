@@ -100,11 +100,6 @@ const tests = {
 
 		// Navigate from welcome page to topics page
 		const $joinButton = $("a[href='/topics'][big]")
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Join button should be present on welcome page.",
-		)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM update
 		assertEquals(

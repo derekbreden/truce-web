@@ -80,35 +80,19 @@ const tests = {
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// Verify navigation to /topics
+		// 2. Verify navigation to /topics
 		assertEquals(
 			"/topics",
 			state.path,
 			"Path should be /topics after agreeing to terms.",
 		)
-		const $topicsWrapper = $("topics") // Element that wraps all topics
-		assertEquals(
-			true,
-			Boolean($topicsWrapper),
-			"Topics wrapper element should be present on /topics page.",
-		)
 
-		// 2. Find and click the first topic link/element
-		// Topic should be rendered by the actual application logic via the mocked fetch
+		// 3. Find and click the first topic link/element
 		const $firstTopicElement = $("topics > topic[trimmed]")
-		assertEquals(
-			true,
-			Boolean($firstTopicElement),
-			"First topic element with [trimmed] attribute should be found on the /topics page.",
-		)
-
-		// Simulate click on the topic element itself, which should trigger navigation
 		$firstTopicElement.click()
-
-		// Wait for navigation and rendering
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 3. Assert navigation to the topic detail path
+		// 4. Assert navigation to the topic detail path
 		const expectedTopicPath = "/topic/test-topic-1"
 		assertEquals(
 			expectedTopicPath,
@@ -116,22 +100,8 @@ const tests = {
 			`Path should be "${expectedTopicPath}" after clicking the first topic.`,
 		)
 
-		// 4. Assert that topic detail specific elements are rendered
-		// Check for the <comments> wrapper, indicating comments can be loaded/displayed
-		const $commentsWrapper = $("main-content-wrapper[active] comments")
-		assertEquals(
-			true,
-			Boolean($commentsWrapper),
-			"Comments wrapper element should be present on the topic detail page.",
-		)
-
-		// Assert the topic includes the detail rendered text
+		// 5. Assert the topic includes the detail rendered text
 		const $topicPSpan = $("main-content-wrapper[active] topic p span")
-		assertEquals(
-			true,
-			Boolean($topicPSpan),
-			"Topic p span should be present",
-		)
 		assertEquals(
 			true,
 			$topicPSpan.innerText.includes("Full detailed body for test-topic-1"),

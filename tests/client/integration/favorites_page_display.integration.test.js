@@ -47,12 +47,6 @@ const tests = {
 
 		// 2. Initial Navigation (Welcome -> Topics)
 		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Agree button (Join the Discussion) should exist on the welcome page.",
-		)
-
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -63,12 +57,6 @@ const tests = {
 
 		// 3. Navigate to Favorites Page
 		const $favoritesFooterIcon = $("footer icon[favorites]")
-		assertEquals(
-			true,
-			Boolean($favoritesFooterIcon),
-			"Favorites footer icon should exist.",
-		)
-
 		$favoritesFooterIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -79,12 +67,6 @@ const tests = {
 
 		// 4. Verify Favorites Page Content
 		const $mainContentWrapper = $("main-content-wrapper[active]")
-		assertEquals(
-			true,
-			Boolean($mainContentWrapper),
-			"Main content wrapper for favorites page should be active.",
-		)
-
 		const $mainContent = $mainContentWrapper.$("main-content")
 		assertEquals(
 			true,
@@ -95,11 +77,6 @@ const tests = {
 		// Adjusted header selector: Look for any h2 and check its text.
 		const $favoritesPageHeaderH2Span = $mainContent.$("h2[favorites] span")
 		assertEquals(
-			true,
-			Boolean($favoritesPageHeaderH2Span),
-			"A <h2> header element should exist on the favorites page.",
-		)
-		assertEquals(
 			"Favorites",
 			$favoritesPageHeaderH2Span.innerText.trim(),
 			"Favorites page H2 header text mismatch (using innerText).",
@@ -107,12 +84,6 @@ const tests = {
 
 		// Adjusted container selector: Look for any <topics> container.
 		const $favoritesListContainer = $mainContent.$("topics")
-		assertEquals(
-			true,
-			Boolean($favoritesListContainer),
-			"A <topics> container should be present on the favorites page.",
-		)
-
 		const $renderedTopicElements =
 			$favoritesListContainer.querySelectorAll("topic[trimmed]")
 		assertEquals(
@@ -207,12 +178,6 @@ const tests = {
 
 		// 2. Initial Navigation (Welcome -> Topics)
 		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Agree button (Join the Discussion) should exist on the welcome page.",
-		)
-
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -223,12 +188,6 @@ const tests = {
 
 		// 3. Navigate to Favorites Page
 		const $favoritesFooterIcon = $("footer icon[favorites]")
-		assertEquals(
-			true,
-			Boolean($favoritesFooterIcon),
-			"Favorites footer icon should exist.",
-		)
-
 		$favoritesFooterIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -240,11 +199,6 @@ const tests = {
 		// Find the first activities container
 		const $activitiesContainer1WithData = $(
 			"main-content-wrapper[active] main-content activities",
-		)
-		assertEquals(
-			true,
-			Boolean($activitiesContainer1WithData),
-			"Activities container should exist after loading data.",
 		)
 
 		// Assertions for the comment activity (should appear first due to create_date)
@@ -272,7 +226,7 @@ const tests = {
 			"Comment activity body text mismatch.",
 		)
 
-		// renderActivities > renderCommentActivity > renderComment > author > span for author
+		// Author
 		const $commentAuthor = $commentActivity.$("comment author span")
 		assertEquals(
 			"Activity User Two",
@@ -284,27 +238,12 @@ const tests = {
 		const $activitiesContainer2WithData = $(
 			"main-content-wrapper[active] main-content-2 activities",
 		)
-		assertEquals(
-			true,
-			Boolean($activitiesContainer1WithData),
-			"Activities container should exist after loading data.",
-		)
 
 		// Assertions for the topic activity (should appear second)
 		const $topicActivity = $activitiesContainer2WithData.$("activity[topic]")
-		assertEquals(
-			true,
-			Boolean($topicActivity),
-			"Topic activity element should be present.",
-		)
 
+		// Title
 		const $titleElement = $topicActivity.$("topic h2")
-		assertEquals(
-			true,
-			Boolean($titleElement),
-			"Topic activity H2 title element should exist.",
-		)
-
 		const titleText = $titleElement.firstChild?.textContent?.trim()
 		assertEquals(
 			"Activity Topic Title 1",
@@ -312,7 +251,7 @@ const tests = {
 			"Topic activity title text mismatch.",
 		)
 
-		// renderActivities > renderTopicActivity > renderTopic > author > span for author
+		// Author
 		const $author = $topicActivity.$("topic author span")
 		assertEquals(
 			"Activity User One",

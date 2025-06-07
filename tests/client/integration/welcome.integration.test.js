@@ -26,11 +26,6 @@ const tests = {
 		// Corrected selector for the "Join the Discussion" button
 		const $joinButton = $(`a[href="/topics"][big]`)
 		assertEquals(
-			true,
-			Boolean($joinButton),
-			`Initial page should have a "Join the Discussion" button.`,
-		)
-		assertEquals(
 			"Join the Discussion",
 			$joinButton.innerText.trim(),
 			`Button text should be "Join the Discussion".`,
@@ -61,11 +56,6 @@ const tests = {
 		})
 
 		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Agree button should exist on the page.",
-		)
 		$joinButton.click()
 
 		// Wait for render

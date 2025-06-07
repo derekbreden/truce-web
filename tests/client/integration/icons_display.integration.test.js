@@ -30,11 +30,6 @@ const tests = {
 
 		// Simulate agreeing to terms to navigate to /topics
 		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Agree button should exist on the welcome page.",
-		)
 		$joinButton.click()
 
 		// Wait for navigation and rendering

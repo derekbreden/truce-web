@@ -77,11 +77,6 @@ const tests = {
 
 		// 3. Simulate Navigation
 		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Welcome page: 'Join the Discussion' button should exist.",
-		)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
