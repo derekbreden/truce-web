@@ -9,7 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm test
 
 # Run specific test types
-npm test integration
+npm test integration  # Client-side integration tests
+npm test unit         # Server-side unit tests
 npm run test:integration
 
 # Run specific test file
@@ -158,6 +159,49 @@ async function testFeature() {
 
 runTests("test.js", [testFeature])
 ```
+
+### Server Unit Test Pattern
+Server unit tests focus on individual session handlers in isolation:
+
+```javascript
+const { createMockRequest, createMockResponse, assertEquals, runTests } = require("../shared/serverTestSetup.js")
+const handlerToTest = require("../../../server/session/handlerName.js")
+
+async function testHandler() {
+  // Create mock request with body and session data
+  const req = createMockRequest({
+    topic_id_to_favorite: 'topic-123',
+    was_favorited: false
+  }, {
+    user_id: 'test-user-123',
+    display_name: 'Test User'
+  })
+  
+  // Mock database responses
+  req.client.addQueryMock(
+    'INSERT INTO favorite_topics',  // SQL to match
+    { rows: [] }                   // Mock response
+  )
+  
+  const res = createMockResponse()
+  
+  // Execute the actual handler
+  await handlerToTest(req, res)
+  
+  // Assert response
+  const responseData = JSON.parse(res.getResponseData())
+  assertEquals(true, responseData.success, "Should succeed")
+}
+
+runTests("handler.unit.test.js", [testHandler])
+```
+
+**Server Unit Test Philosophy:**
+- **Test individual handlers in isolation** - One session handler per test file
+- **Mock only the database client** - `req.client.query()` responses
+- **Use real handler code** - Import and execute actual session handlers
+- **Test all code paths** - Happy path, error cases, edge conditions
+- **Fast execution** - No external dependencies or network calls
 
 ### Fetch Mocking System
 **Path-based mocking** (simple): Use `setMockFetchResponseForPaths` for basic path matching
