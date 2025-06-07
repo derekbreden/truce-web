@@ -43,6 +43,18 @@ Custom lightweight DOM manipulation library with:
 - Event binding via `.on()` method
 - Nested selection support
 
+**Critical**: Flint.js selectors often return NodeLists, not single elements:
+```javascript
+// ❌ WRONG: Assumes single element
+const $element = $("img")
+$element.click() // Error: NodeList doesn't have click()
+
+// ✅ CORRECT: Access first element from NodeList
+const $images = $("img")
+const $firstImage = $images[0]
+$firstImage.click()
+```
+
 ### Session Middleware Pattern
 Server routes in `server/session/` follow this pattern:
 ```javascript
@@ -110,6 +122,23 @@ async function testFeature() {
 }
 
 runTests("test.js", [testFeature])
+```
+
+### Testing Gotchas
+**JSDOM URL Handling**: Image src attributes include full URLs in tests:
+```javascript
+// ❌ WRONG: Direct string comparison
+assertEquals("/image/uuid", $img.src, "Check src")
+
+// ✅ CORRECT: Use endsWith for URL comparison
+assertEquals(true, $img.src.endsWith("/image/uuid"), "Check src")
+```
+
+**Flint.js Element Access**: Multiple ways to access DOM elements:
+```javascript
+// Single element selectors may return NodeList
+const $element = $("selector")[0]  // Get first from NodeList
+const $nested = $element.$("child") // Nested selection on single element
 ```
 
 ## Database and AI Integration
