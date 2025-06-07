@@ -50,9 +50,7 @@ async function testCommentCountUpdate() {
 
 	// 2. Verify Initial Comment Count
 	const $topicElement = $("topics > topic")
-	// If $topicElement is null, the next line will fail, which is the desired behavior.
 	const $commentCountElement = $topicElement.$("detail[comments] p")
-	// If $commentCountElement is null, the next line will fail, which is the desired behavior.
 	assertEquals("5", $commentCountElement.innerText.trim(), "Initial comment count should be 5.")
 
 	// 3. Prepare for Update (Mock response for getMoreRecent's fetch)
@@ -75,7 +73,6 @@ async function testCommentCountUpdate() {
 	assertEquals("10", String($commentCountElement.innerText).trim(), "Updated comment count should be 10.")
 
 	const updatedCachedTopic = state.cache["/topics"]?.topics.find(t => t.topic_id === initialTopic.topic_id)
-	// If updatedCachedTopic is null, the next line will fail, which is the desired behavior.
 	assertEquals(10, updatedCachedTopic.comment_count, "Comment count in cache should be updated to 10.")
 }
 

@@ -35,15 +35,12 @@ const tests = {
 
 		// Open the menu
 		const $hamburgerIcon = $("header hamburger")
-		// If $hamburgerIcon is null, the next line ($hamburgerIcon.click) will fail.
 		$hamburgerIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// Verify menu container is visible (using menu-wrapper)
 		const $menuWrapper = $("menu-wrapper")
-		// If $menuWrapper is null, the next line ($menuWrapper.$("menu")) will fail.
 		const $menu = $menuWrapper.$("menu")
-		// If $menu is null, subsequent .$ calls on it will fail.
 
 		// Assertions for logged-out user
 		// Settings link (NOT visible for logged-out user as per menu.js)
@@ -57,9 +54,7 @@ const tests = {
 		// Sign In / Sign Up form (visible when not logged in)
 		// menu.js adds a form with a submit button, not separate links
 		const $signInForm = $menu.$("menu sign-in") // Check within $menu, then 'menu' tag, then 'sign-in' tag
-		// If $signInForm is null, the next line ($signInForm.$("button[submit]")) will fail.
 		const $submitButton = $signInForm.$("button[submit]")
-		// If $submitButton is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Sign up / Sign in",
 			$submitButton.innerText.trim(),
@@ -134,22 +129,17 @@ const tests = {
 
 		// Open the menu
 		const $hamburgerIcon = $("header hamburger")
-		// If $hamburgerIcon is null, the next line ($hamburgerIcon.click) will fail.
 		$hamburgerIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// Verify menu container is visible (using menu-wrapper based on subtask feedback)
 		const $menuWrapper = $("menu-wrapper")
-		// If $menuWrapper is null, the next line ($menuWrapper.$("menu")) will fail.
 		const $menu = $menuWrapper.$("menu")
-		// If $menu is null, subsequent .$ calls on it will fail.
 
 		// Assertions for logged-in user
 		// Settings link (visible for logged-in user)
 		const $settingsLink = $menu.$("links a[href='/settings']")
-		// If $settingsLink is null, the next line ($settingsLink.$("p")) will fail.
 		const $settingsLinkText = $settingsLink.$("p") // menu.js structure: a > icon + p
-		// If $settingsLinkText is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Account settings",
 			$settingsLinkText.innerText.trim(),
@@ -169,9 +159,7 @@ const tests = {
 		// Logout button (visible for logged-in user)
 		// menu.js appends 'signed-in' element containing 'button[sign-out]' to menu.$("menu")
 		const $signedInSection = $menu.$("menu signed-in")
-		// If $signedInSection is null, the next line ($signedInSection.$("button[sign-out]")) will fail.
 		const $logoutButton = $signedInSection.$("button[sign-out]")
-		// If $logoutButton is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Log out",
 			$logoutButton.innerText.trim(),

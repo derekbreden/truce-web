@@ -46,7 +46,6 @@ const tests = {
 		footerIconsToTest.forEach((iconName) => {
 			const selector = `footer icon[${iconName}] svg`
 			const $iconSvg = $(selector)
-			// If $iconSvg is null, the next line will fail, which is the desired behavior.
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),
@@ -61,7 +60,6 @@ const tests = {
 		const { $ } = window
 
 		const $hamburgerImg = $("header hamburger img")
-		// If $hamburgerImg is null, the following lines will fail, which is the desired behavior.
 		assertEquals(
 			"img",
 			$hamburgerImg.tagName?.toLowerCase(),
@@ -91,7 +89,6 @@ const tests = {
 
 		globalIconsToTest.forEach((iconInfo) => {
 			const $iconSvg = $(iconInfo.selector)
-			// If $iconSvg is null, the next line will fail, which is the desired behavior.
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),

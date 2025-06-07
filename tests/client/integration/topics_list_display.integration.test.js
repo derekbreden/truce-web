@@ -73,7 +73,6 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	)
 
 	const $topicsWrapper = $("topics")
-	// If $topicsWrapper is null, the next line (.querySelectorAll) will fail.
 
 	const $renderedTopicElements = $topicsWrapper.querySelectorAll("topic")
 	assertEquals(
@@ -86,7 +85,6 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	const $firstTopic = $renderedTopicElements[0]
 
 	const $firstTitle = $firstTopic.querySelector("h2")
-	// If $firstTitle is null, the next line (.textContent.trim()) will fail.
 	assertEquals(
 		$firstTitle.textContent.trim(),
 		"Tech Trends 2024",
@@ -104,7 +102,6 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	const $secondTopic = $renderedTopicElements[1]
 
 	const $secondTitle = $secondTopic.querySelector("h2")
-	// If $secondTitle is null, the next line (.textContent.trim()) will fail.
 	assertEquals(
 		$secondTitle.textContent.trim(),
 		"Science Discoveries",

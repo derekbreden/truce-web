@@ -124,7 +124,6 @@ const tests = {
 		const $profilePictureImg = $displayNameWrapper.$(
 			`profile-picture img[src='/image/${mockUser.profile_picture_uuid}']`,
 		)
-		// If $profilePictureImg is null, the following getAttribute will fail, which is the desired behavior.
 		assertEquals(
 			`/image/${mockUser.profile_picture_uuid}`,
 			$profilePictureImg.getAttribute("src"),

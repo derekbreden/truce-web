@@ -11,8 +11,6 @@ const tests = {
 
 		// The welcome header is specifically <h2 welcome><span>Terms and conditions</span></h2>
 		const $welcomeHeaderSpan = $("h2[welcome] span")
-
-		// If $welcomeHeaderSpan is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Terms and conditions",
 			$welcomeHeaderSpan.innerText.trim(),

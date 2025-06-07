@@ -118,7 +118,6 @@ const tests = {
 		// The manual topic injection is no longer needed as fetch mock will provide the topic.
 
 		const $firstTopicElement = $("topics > topic[trimmed]")
-		// If $firstTopicElement is null, the next line (.click()) will fail.
 
 		// 3. Click the topic to navigate to its detail page
 		$firstTopicElement.click()
@@ -138,14 +137,11 @@ const tests = {
 		const $topicDetailsWrapper = $(
 			"main-content-wrapper[active] topic topic-details[detail-wrapper]",
 		)
-		// If $topicDetailsWrapper is null, subsequent .querySelector calls will fail.
 
 		const $favoritesDetail =
 			$topicDetailsWrapper.querySelector("detail[favorites]")
-		// If $favoritesDetail is null, the next line (.querySelector) will fail.
 
 		const $favoriteCountElement = $favoritesDetail.querySelector("p")
-		// If $favoriteCountElement is null, the next line (.innerText.trim()) will fail.
 		// Assert the actual count from the mocked API response
 		assertEquals(
 			"3",
@@ -155,10 +151,8 @@ const tests = {
 
 		const $commentsDetail =
 			$topicDetailsWrapper.querySelector("detail[comments]")
-		// If $commentsDetail is null, the next line (.querySelector) will fail.
 
 		const $commentCountElement = $commentsDetail.querySelector("p")
-		// If $commentCountElement is null, the next line (.innerText.trim()) will fail.
 		// Assert the actual count from the mocked API response
 		assertEquals(
 			"5",

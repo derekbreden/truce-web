@@ -60,12 +60,10 @@ const tests = {
 
 		// 3. Navigation - Open Menu and Go to Settings
 		const $hamburgerIcon = $("header hamburger")
-		// If $hamburgerIcon is null, the next line (.click()) will fail.
 		$hamburgerIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for menu to render
 
 		const $settingsLink = $("menu-wrapper menu links a[href='/settings']")
-		// If $settingsLink is null, the next line (.click()) will fail.
 		$settingsLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for settings page to render
 		assertEquals(
@@ -76,9 +74,7 @@ const tests = {
 
 		// 4. Verify Settings Page Content
 		const $mainContentWrapper = $("main-content-wrapper[active]")
-		// If $mainContentWrapper is null, the next line (.$("main-content")) will fail.
 		const $mainContent = $mainContentWrapper.$("main-content")
-		// If $mainContent is null, subsequent .$(...) calls on it will fail.
 
 		// Verify the header of the settings page
 		// The settings page title is rendered by client/loadingPage.js
@@ -86,7 +82,6 @@ const tests = {
 		const $settingsPageHeaderSpan = $mainContent.$(
 			"topics topic h2[settings] > span:first-child",
 		)
-		// If $settingsPageHeaderSpan is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Account settings",
 			$settingsPageHeaderSpan.innerText.trim(),
@@ -95,7 +90,6 @@ const tests = {
 
 		// Verify presence of some key settings elements based on client/loadingPage.js
 		const $displayNameInput = $mainContent.$("input[display-name]")
-		// If $displayNameInput is null, the next line (.value) will fail.
 		assertEquals(
 			"Test User",
 			$displayNameInput.value,
@@ -106,7 +100,6 @@ const tests = {
 		// Password change is not a button with 'change-password' attribute based on loadingPage.js
 
 		const $removeAccountButton = $mainContent.$("button[remove]")
-		// If $removeAccountButton is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Remove Account",
 			$removeAccountButton.innerText.trim(),
@@ -114,7 +107,6 @@ const tests = {
 		)
 
 		const $saveDisplayNameButton = $mainContent.$("button[save]")
-		// If $saveDisplayNameButton is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Save display name",
 			$saveDisplayNameButton.innerText.trim(),
