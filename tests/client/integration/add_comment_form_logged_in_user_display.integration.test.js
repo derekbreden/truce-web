@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testLoggedInUserSeesDisplayNamePrefilledInAddCommentForm: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// 1. Define Mock User and Topic Data
@@ -41,21 +41,6 @@ const tests = {
 
 		// 2. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				user_id: mockUser.user_id,
-				email: mockUser.email,
-				user_slug: mockUser.user_slug,
-				display_name: mockUser.display_name,
-				profile_picture_uuid: mockUser.profile_picture_uuid,
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				subscribed_to_users: 0,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				path: "/topics",
 				user_id: mockUser.user_id,

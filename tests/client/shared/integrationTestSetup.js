@@ -2,7 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const { JSDOM, VirtualConsole } = require("jsdom")
 
-function setupIntegrationTestEnvironment(options) {
+async function setupIntegrationTestEnvironment(options) {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
@@ -105,43 +105,30 @@ function setupIntegrationTestEnvironment(options) {
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
 		beforeParse(window) {
-			let mockFetchResponseForPaths = {}
-
+			//
+			// Mock Fetch
+			let mockFetchResponseForPaths = {
+				// Default fetch responses for a few common paths
+				... {
+					"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
+					"/unread_count_unseen_count": {
+						path: "/", topics: [], comments: [], activities: [], notifications: []
+					},
+				},
+				// All defaults to be passed by options as well
+				...options.mockFetchResponseForPaths
+			}
 			window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
 				mockFetchResponseForPaths = {
 					...mockFetchResponseForPaths,
 					...newFetchResponsesForPaths,
 				}
 			}
-
-			// Mock scrollIntoView
-			window.HTMLElement.prototype.scrollIntoView = () => {}
-
-			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
-			window.WebSocket = function (url) {
-				this.send = function (data) {}
-				this.close = function () {}
-				this.addEventListener = function (event, callback) {}
-			}
-
-			// Mock setTimeout to be instant, to avoid delays
-			window.setTimeout = (fn) => {
-				fn()
-			}
-
-			// Mock matchMedia
-			window.matchMedia = function (query) {
-				return {
-					matches: false,
-				}
-			}
-
-			// Mock fetch
 			window.fetch = async function (url, fetchOptions) {
 				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
-				for (const path of Object.keys(mockFetchResponseForPaths)) {
-					if (url === "/session") {
-						const body = JSON.parse(fetchOptions.body)
+				if (url === "/session") {
+					const body = JSON.parse(fetchOptions.body)
+					for (const path of Object.keys(mockFetchResponseForPaths)) {
 						if (body.path === path) {
 							return Promise.resolve({
 								status: 200,
@@ -149,16 +136,69 @@ function setupIntegrationTestEnvironment(options) {
 							})
 						}
 					}
+					console.error("Unmocked fetch path", body.path)
 				}
-
-				// Otherwise return an error
 				return Promise.resolve({
 					status: 500,
 					json: async () => ({
-						success: false,
 						error: "Test error: Unmocked fetch path",
 					}),
 				})
+			}
+			//
+			// Mock scrollIntoView
+			window.HTMLElement.prototype.scrollIntoView = () => {}
+			//
+			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
+			window.WebSocket = function (url) {
+				this.url = url;
+				this.isMockWebSocket = true; // Identify mock
+				this.send = function (data) {
+					// console.log(`Mock WebSocket sent: ${data}`);
+				};
+				this.close = function () {
+					// console.log("Mock WebSocket closed");
+				};
+				this.messageCallback = null;
+				this.addEventListener = function (event, callback) {
+					if (event === "message") {
+						this.messageCallback = callback;
+					}
+					// Add stubs for other events if necessary, e.g., open, close, error
+					if (event === "open" && this.onopen) {
+						this.onopen();
+					}
+					if (event === "close" && this.onclose) {
+						this.onclose();
+					}
+				};
+				this.triggerMessage = function (data) {
+					if (this.messageCallback) {
+						// Simulate a MessageEvent object
+						this.messageCallback({ data: data });
+					} else {
+						// console.log("Mock WebSocket: No message callback registered to trigger.");
+					}
+				};
+				// Helper to simulate 'open' event if client code expects it
+				// and if addEventListener isn't used for open
+				this.simulateOpen = function() {
+					if (this.onopen) {
+						this.onopen();
+					}
+				};
+			}
+			//
+			// Mock setTimeout to be instant, to avoid delays
+			window.setTimeout = (fn) => {
+				fn()
+			}
+			//
+			// Mock matchMedia
+			window.matchMedia = function (query) {
+				return {
+					matches: false,
+				}
 			}
 		},
 	})
@@ -167,6 +207,9 @@ function setupIntegrationTestEnvironment(options) {
 	// --------------------------------------------------------------------------
 
 	const { window } = dom
+
+	// Wait for initial render
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	return window
 }

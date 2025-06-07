@@ -5,28 +5,9 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testHeaderStaticElementsAreVisible: () => {
-		const window = setupIntegrationTestEnvironment()
+	testHeaderStaticElementsAreVisible: async () => {
+		const window = await setupIntegrationTestEnvironment()
 		const { $ } = window
-
-		// Mock API response for initial load
-		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
-		})
 
 		// Test for header title <h1>Truce.</h1>
 		const $headerTitle = $("header h1")

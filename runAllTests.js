@@ -70,6 +70,7 @@ async function main() {
 	let mainHeader = ""
 	let runMode = "all"
 	let singleFilePath = ""
+	let pattern = ""
 
 	if (!testTypeOrPathArg) {
 		testTypeOrPathArg = "all"
@@ -103,13 +104,8 @@ async function main() {
 			// Use the original user-provided path for the header for better user feedback
 			mainHeader = `Running Single Test File: ${testTypeOrPathArg}`
 		} else {
-			console.error(
-				`Error: Test file not found or invalid: ${testTypeOrPathArg}`,
-			)
-			console.log(
-				"Please provide 'integration', 'all', or a valid path to a .test.js file.",
-			)
-			process.exit(1)
+			runMode = "all"
+			pattern = testTypeOrPathArg
 		}
 	}
 	console.log(`--- ${mainHeader} ---`)
@@ -122,6 +118,12 @@ async function main() {
 	} else {
 		console.log("--- Searching for test files ---")
 		findTestFiles(testDir, categorizedFiles)
+		if (pattern) {
+			Object.keys(categorizedFiles).forEach(category => {
+				categorizedFiles[category] = categorizedFiles[category]
+					.filter(filename => filename.includes(pattern))
+			})
+		}
 	}
 
 	let filesToRun = []

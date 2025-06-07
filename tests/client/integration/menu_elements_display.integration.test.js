@@ -6,13 +6,13 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testStaticMenuElementsAreVisible: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Mock API response for initial load (logged-out user)
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
+			"/topics": {
+				path: "/topics",
 				topics: [],
 				comments: [],
 				activities: [],
@@ -119,7 +119,7 @@ const tests = {
 	},
 
 	testLoggedInUserMenuElementsAreVisible: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Define mock user
@@ -132,21 +132,6 @@ const tests = {
 
 		// Mock API response for initial load (still good practice, though we override state)
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: mockUser.user_slug,
-				subscribed_to_users: 0,
-				user_id: mockUser.user_id,
-				email: mockUser.email,
-				display_name: mockUser.display_name,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				path: "/topics",
 				topics: [],

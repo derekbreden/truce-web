@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testTopicDetailsDisplayOnDetailPage: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Setup mock API responses

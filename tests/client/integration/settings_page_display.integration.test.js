@@ -6,27 +6,11 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testSettingsPageDisplaysCorrectly: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// 1. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/": {
-				// For initial welcome page
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				// For navigation after agreeing to terms
 				path: "/topics",

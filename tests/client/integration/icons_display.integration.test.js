@@ -6,26 +6,11 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testFooterIconsAreVisible: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Mock API responses for initial load and navigation to /topics
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				path: "/topics",
 				topics: [], // Empty topics list is fine for this test's assertions
@@ -80,27 +65,9 @@ const tests = {
 	},
 
 	// This test was added by a previous subtask and is being kept.
-	testHeaderHamburgerIconIsVisible: () => {
-		const window = setupIntegrationTestEnvironment()
+	testHeaderHamburgerIconIsVisible: async () => {
+		const window = await setupIntegrationTestEnvironment()
 		const { $ } = window
-
-		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
-		})
 
 		const $hamburgerImg = $("header hamburger img")
 		assertEquals(
@@ -127,29 +94,9 @@ const tests = {
 		}
 	},
 
-	testGlobalIconsAreAvailable: () => {
-		const window = setupIntegrationTestEnvironment()
+	testGlobalIconsAreAvailable: async () => {
+		const window = await setupIntegrationTestEnvironment()
 		const { $ } = window
-
-		// No navigation needed, these are in the initial HTML structure.
-		// Mocking "/" path for consistency, though not strictly needed for these selectors.
-		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
-		})
 
 		const globalIconsToTest = [
 			{ name: "comment", selector: "icons icon[comment] svg" },

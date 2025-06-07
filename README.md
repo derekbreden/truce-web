@@ -98,21 +98,20 @@ Make sure you have run `npm install jsdom` before running tests.
 		const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
 
 		async function testMyFeatureInFullEnvironment() { // Added async
-			const window = setupIntegrationTestEnvironment()
+			const window = await setupIntegrationTestEnvironment()
 			// Now window.state, window.$ are available
 			const { state, $ } = window // Destructure after window is defined
 
 			// Most integration tests need to simulate the initial "Join the Discussion" click.
 			// 1. Mock initial and target path responses:
 			window.setMockFetchResponseForPaths({
-				"/": { success: true, path: "/", topics: [], comments: [], user: {} }, // Mock for welcome page
-				"/topics": { success: true, path: "/topics", topics: [{slug: "example-topic", title:"Example Topic", body: "Body of example topic", user_slug: "user-slug", display_name: "User Name"}], comments: [], user: {} } // Mock for topics page
+				"/topics": { path: "/topics", topics: [{slug: "example-topic", title:"Example Topic", body: "Body of example topic", user_slug: "user-slug", display_name: "User Name"}], comments: [], activities: [], notifications: [] }
 			})
 
 			// 2. Find and click the "Join the Discussion" button:
 			const $joinButton = $(`a[href="/topics"][big]`)
 			$joinButton.click()
-			// Wait for DOM updates and navigation
+			// Wait for DOM updates and navigation (NOTE: See how there is no guard assertion here?)
 			await new Promise(resolve => setTimeout(resolve, 0))
 
 			// Now you are on the /topics page (or the page your action navigates to)
