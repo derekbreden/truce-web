@@ -87,19 +87,42 @@ const state = {
 - **DOM variables**: Prefix with `$` like `const $button = $("button")`
 
 ### Testing Philosophy: No Guard Assertions
-**Critical**: This project strictly prohibits "guard assertions":
+**Critical**: This project strictly prohibits ALL forms of "guard assertions":
 
 ```javascript
-// ❌ WRONG: Guard assertions
+// ❌ WRONG: Boolean existence checks
 const $element = $("selector")
 assertEquals(true, Boolean($element), "Element should exist")
 assertEquals("text", $element.innerText.trim(), "Text should match")
 
-// ✅ CORRECT: Direct assertions
+// ❌ WRONG: Conditional existence checks
+const $button = $("button")
+if ($button) {
+  $button.click()
+  // test continues...
+}
+
+// ❌ WRONG: Optional chaining guards
+$element?.click()
+assertEquals("text", $element?.innerText?.trim(), "Should match")
+
+// ✅ CORRECT: Direct assertions that fail immediately
 assertEquals("text", $("selector").innerText.trim(), "Text should match")
+$("button").click() // Let it crash if button doesn't exist
 ```
 
-Direct assertions provide better error messages and less code noise.
+**Why direct assertions are superior:**
+- **Better error messages**: "Cannot read properties of null (reading 'innerText')" immediately tells you which selector failed
+- **Less code noise**: Eliminates defensive programming patterns
+- **Faster debugging**: Fails exactly where the problem occurs
+- **Mirrors app behavior**: If the app would crash, the test should too
+
+**Guard assertion patterns to avoid:**
+- `if (element)` conditionals
+- `Boolean(element)` checks  
+- `element?.property` optional chaining in tests
+- `try/catch` around element access
+- Any defensive existence validation
 
 ### Integration Test Pattern
 ```javascript
