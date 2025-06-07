@@ -176,7 +176,7 @@ const renderTopic = (topic) => {
 									$4
 								percent
 					`,
-						[topic.poll_1, topic.poll_2, topic.poll_3 || "", topic.poll_4 || ""],
+						[topic.poll_1, topic.poll_2, topic.poll_3, topic.poll_4],
 					)
 				: [],
 			$(

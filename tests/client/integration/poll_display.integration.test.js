@@ -35,8 +35,8 @@ const tests = {
 						note: "",
 						poll_1: "Option A",
 						poll_2: "Option B",
-						poll_3: null, // No third option for simplicity
-						poll_4: null, // No fourth option for simplicity
+						poll_3: "", // No third option for simplicity
+						poll_4: "", // No fourth option for simplicity
 						poll_counts: "0,0,0,0", // No votes yet
 						poll_counts_estimated: "0,0,0,0", // No estimated votes yet
 						voted: false, // User has not voted
@@ -73,9 +73,9 @@ const tests = {
 		assertEquals(true, Boolean($pollWrapper), "Poll wrapper element should be present.")
 
 		// Assert Poll Options Text
-        // When topic.edit is false and topic.voted is false, options are inside poll-vote-wrapper
-        const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper");
-        assertEquals(true, Boolean($pollVoteWrapper), "Poll vote wrapper should be present when user has not voted.");
+		// When topic.edit is false and topic.voted is false, options are inside poll-vote-wrapper
+		const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper");
+		assertEquals(true, Boolean($pollVoteWrapper), "Poll vote wrapper should be present when user has not voted.");
 
 		const $pollOption1 = $pollVoteWrapper.$("poll-1") // Corrected selector
 		assertEquals("Option A", $pollOption1.innerText.trim(), "Poll option 1 text should be 'Option A'.")
@@ -84,11 +84,11 @@ const tests = {
 		assertEquals("Option B", $pollOption2.innerText.trim(), "Poll option 2 text should be 'Option B'.")
 
 		// Assert that elements for poll_3 and poll_4 are not present as they are null in mock data
-        const $pollOption3 = $pollVoteWrapper.$("poll-3") // Corrected selector
-        assertEquals(false, Boolean($pollOption3), "Poll option 3 element should not be present in poll-vote-wrapper if its value is null.")
+		const $pollOption3 = $pollVoteWrapper.$("poll-3") // Corrected selector
+		assertEquals(false, Boolean($pollOption3), "Poll option 3 element should not be present in poll-vote-wrapper if its value is null.")
 
-        const $pollOption4 = $pollVoteWrapper.$("poll-4") // Corrected selector
-        assertEquals(false, Boolean($pollOption4), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
+		const $pollOption4 = $pollVoteWrapper.$("poll-4") // Corrected selector
+		assertEquals(false, Boolean($pollOption4), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
 
 		// Assert Poll Results Sections are NOT present (since user hasn't voted and edit is false)
 		// client/renderTopic.js removes these if topic.edit is false and topic.voted is false
