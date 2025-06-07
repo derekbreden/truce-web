@@ -1,0 +1,1007 @@
+// Mock S3 client (external dependency)
+let s3SendCalls = []
+const mockS3Client = {
+	send: async (command) => {
+		s3SendCalls.push(command)
+		// Simulate successful S3 operations
+		return { $metadata: { httpStatusCode: 200 } }
+	}
+}
+
+// Replace AWS S3 client in require cache
+const awsS3Path = require.resolve("@aws-sdk/client-s3")
+delete require.cache[awsS3Path]
+require.cache[awsS3Path] = {
+	exports: {
+		S3Client: function() { return mockS3Client },
+		PutObjectCommand: function(params) {
+			this.input = params
+			this.commandType = 'PutObject'
+		},
+		DeleteObjectCommand: function(params) {
+			this.input = params
+			this.commandType = 'Delete'
+		}
+	},
+	loaded: true,
+	id: awsS3Path
+}
+
+// Mock AI module (internal dependency - use real one but control responses)
+let aiAskCalls = []
+const mockAI = {
+	ask: async (messages, type, format) => {
+		aiAskCalls.push({ messages, type, format })
+		
+		// Default responses based on type
+		if (type === 'tags') {
+			return JSON.stringify({ tags: ['general', 'technology'] })
+		} else if (type === 'poll_estimate') {
+			return JSON.stringify({ 
+				response_rate: 0.5, 
+				choice_a: 0.4, 
+				choice_b: 0.3, 
+				choice_c: 0.2, 
+				choice_d: 0.1 
+			})
+		} else {
+			// Default to OK for content moderation
+			return JSON.stringify({ keyword: "OK" })
+		}
+	}
+}
+
+// Replace AI module in require cache
+const aiPath = require.resolve("../../../server/ai")
+delete require.cache[aiPath]
+require.cache[aiPath] = {
+	exports: mockAI,
+	loaded: true,
+	id: aiPath
+}
+
+// Mock crypto.randomUUID by replacing the node:crypto module
+let mockUuidResult = 'test-uuid-123'
+const mockCrypto = {
+	randomUUID: () => mockUuidResult
+}
+
+// Clear and replace node:crypto in require cache
+const nodeCryptoPath = "node:crypto"
+const cryptoPath = require.resolve("crypto")
+delete require.cache[nodeCryptoPath]
+delete require.cache[cryptoPath]
+require.cache[nodeCryptoPath] = {
+	exports: mockCrypto,
+	loaded: true,
+	id: nodeCryptoPath
+}
+require.cache[cryptoPath] = {
+	exports: mockCrypto,
+	loaded: true,
+	id: cryptoPath
+}
+
+const path = require("path")
+const {
+	createMockRequest,
+	createMockResponse,
+	assertEquals,
+	runTests
+} = require("../shared/serverTestSetup.js")
+
+// Clear the handler cache and import it after setting up mocks
+const saveTopicPath = require.resolve("../../../server/session/saveTopic.js")
+delete require.cache[saveTopicPath]
+
+// Import the handler we're testing (after mocking everything)
+const saveTopic = require("../../../server/session/saveTopic.js")
+
+// Import prompts for verification
+const prompts = require("../../../server/prompts.js")
+
+const tests = {
+	testSuccessfulTopicCreation: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request for new topic
+		const req = createMockRequest(
+			{ 
+				title: 'Test Topic Title',
+				body: 'This is a test topic body with some content.',
+				path: '/topics',
+				pngs: [
+					{ url: 'data:image/png;base64,image1data' },
+					{ url: 'data:image/png;base64,image2data' }
+				]
+			},
+			{ 
+				session_id: 'session-123',
+				user_id: 'user-456',
+				display_name: 'Test User'
+			}
+		)
+		
+		// Mock websocket functionality
+		req.sendWsMessage = (type, topicId) => {
+			req.wsMessages = req.wsMessages || []
+			req.wsMessages.push({ type, topicId })
+		}
+		
+		// Setup mock database responses
+		req.client.addQueryMock(
+			'SELECT slug FROM topics WHERE slug',
+			{ rows: [] } // Slug doesn't exist
+		)
+		req.client.addQueryMock(
+			'INSERT INTO topics',
+			{ 
+				rows: [
+					{
+						topic_id: 'new-topic-789'
+					}
+				]
+			}
+		)
+		req.client.addQueryMock(
+			'UPDATE topics',
+			{ rows: [] }
+		)
+		req.client.addQueryMock(
+			'SELECT tag_id, tag_name FROM tags',
+			{ 
+				rows: [
+					{ tag_id: 'tag-1', tag_name: 'general' },
+					{ tag_id: 'tag-2', tag_name: 'technology' },
+					{ tag_id: 'tag-3', tag_name: 'science' }
+				]
+			}
+		)
+		req.client.addQueryMock(
+			'DELETE FROM topic_tags',
+			{ rows: [] }
+		)
+		req.client.addQueryMock(
+			'INSERT INTO topic_tags',
+			{ rows: [] }
+		)
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify AI calls were made
+		assertEquals(
+			2,
+			aiAskCalls.length,
+			"Should call AI twice: content moderation and tags."
+		)
+		
+		// Verify content moderation call
+		const moderationCall = aiAskCalls[0]
+		assertEquals(
+			'common',
+			moderationCall.type,
+			"First AI call should be for content moderation."
+		)
+		assertEquals(
+			prompts.common_response_format,
+			moderationCall.format,
+			"Should use common response format."
+		)
+		assertEquals(
+			1,
+			moderationCall.messages.length,
+			"Should send one message for moderation."
+		)
+		assertEquals(
+			'estser',
+			moderationCall.messages[0].name,
+			"Should sanitize display name (removes uppercase and spaces)."
+		)
+		assertEquals(
+			'Test Topic Title\n\nThis is a test topic body with some content.',
+			moderationCall.messages[0].content[0].text,
+			"Should combine title and body for moderation."
+		)
+		assertEquals(
+			2,
+			moderationCall.messages[0].content.length - 1, // -1 for text content
+			"Should include images in moderation."
+		)
+		
+		// Verify tags call
+		const tagsCall = aiAskCalls[1]
+		assertEquals(
+			'tags',
+			tagsCall.type,
+			"Second AI call should be for tags."
+		)
+		assertEquals(
+			prompts.tags_response_format,
+			tagsCall.format,
+			"Should use tags response format."
+		)
+		
+		// Verify S3 operations
+		assertEquals(
+			2,
+			s3SendCalls.length,
+			"Should upload 2 images to S3."
+		)
+		
+		s3SendCalls.forEach((command, index) => {
+			assertEquals(
+				'PutObject',
+				command.commandType,
+				`S3 command ${index} should be upload.`
+			)
+			assertEquals(
+				'truce.net',
+				command.input.Bucket,
+				`S3 command ${index} should target correct bucket.`
+			)
+			assertEquals(
+				true,
+				command.input.Key.endsWith('.png'),
+				`S3 command ${index} should have .png extension.`
+			)
+		})
+		
+		// Verify successful response
+		assertEquals(
+			true,
+			res.isEnded(),
+			"Response should be ended."
+		)
+		
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should return success."
+		)
+		assertEquals(
+			'Test_Topic_Title',
+			responseData.slug,
+			"Should return generated slug."
+		)
+		assertEquals(
+			'user-456',
+			responseData.user_id,
+			"Should return user ID."
+		)
+		
+		// Verify websocket message
+		assertEquals(
+			1,
+			req.wsMessages.length,
+			"Should send websocket update."
+		)
+		assertEquals(
+			'UPDATE',
+			req.wsMessages[0].type,
+			"Should send UPDATE message."
+		)
+		assertEquals(
+			'new-topic-789',
+			req.wsMessages[0].topicId,
+			"Should send correct topic ID."
+		)
+	},
+
+	testTopicCreationWithPoll: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request for poll topic
+		const req = createMockRequest(
+			{ 
+				title: 'Poll Topic',
+				body: 'What do you think?',
+				path: '/topics',
+				pngs: [],
+				poll_1: 'Option A',
+				poll_2: 'Option B',
+				poll_3: 'Option C'
+			},
+			{ 
+				session_id: 'session-poll',
+				user_id: 'user-poll',
+				display_name: 'Poll User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'poll-topic-123' }] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify AI calls include poll estimation
+		assertEquals(
+			3,
+			aiAskCalls.length,
+			"Should call AI three times: content moderation, tags, and poll estimation."
+		)
+		
+		// Verify poll moderation includes poll options
+		const moderationCall = aiAskCalls[0]
+		assertEquals(
+			'poll',
+			moderationCall.type,
+			"Should use poll type for moderation."
+		)
+		assertEquals(
+			prompts.poll_response_format,
+			moderationCall.format,
+			"Should use poll response format."
+		)
+		assertEquals(
+			true,
+			moderationCall.messages[0].content[0].text.includes('A) Option A'),
+			"Should include poll option A."
+		)
+		assertEquals(
+			true,
+			moderationCall.messages[0].content[0].text.includes('B) Option B'),
+			"Should include poll option B."
+		)
+		assertEquals(
+			true,
+			moderationCall.messages[0].content[0].text.includes('C) Option C'),
+			"Should include poll option C."
+		)
+		
+		// Verify poll estimation call
+		const pollEstimateCall = aiAskCalls[2]
+		assertEquals(
+			'poll_estimate',
+			pollEstimateCall.type,
+			"Third AI call should be for poll estimation."
+		)
+		assertEquals(
+			prompts.poll_estimate_response_format,
+			pollEstimateCall.format,
+			"Should use poll estimate format."
+		)
+		
+		// Verify successful response
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should succeed with poll creation."
+		)
+	},
+
+	testTopicUpdate: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request for topic update
+		const req = createMockRequest(
+			{ 
+				title: 'Updated Topic Title',
+				body: 'Updated body content.',
+				path: '/topics',
+				pngs: [
+					{ url: 'data:image/png;base64,newimage' }
+				],
+				topic_id: 'existing-topic-456'
+			},
+			{ 
+				session_id: 'session-update',
+				user_id: 'user-update',
+				display_name: 'Update User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock(
+			'SELECT image_uuids',
+			{ 
+				rows: [
+					{
+						image_uuids: 'old-image1,old-image2'
+					}
+				]
+			}
+		)
+		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify old images were deleted from S3
+		assertEquals(
+			3,
+			s3SendCalls.length,
+			"Should perform 3 S3 operations: delete 2 old + upload 1 new."
+		)
+		assertEquals(
+			'Delete',
+			s3SendCalls[0].commandType,
+			"First operation should delete old image."
+		)
+		assertEquals(
+			'old-image1.png',
+			s3SendCalls[0].input.Key,
+			"Should delete first old image."
+		)
+		assertEquals(
+			'Delete',
+			s3SendCalls[1].commandType,
+			"Second operation should delete old image."
+		)
+		assertEquals(
+			'old-image2.png',
+			s3SendCalls[1].input.Key,
+			"Should delete second old image."
+		)
+		assertEquals(
+			'PutObject',
+			s3SendCalls[2].commandType,
+			"Third operation should upload new image."
+		)
+		
+		// Verify successful response
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should succeed with topic update."
+		)
+	},
+
+	testSpamTopicRejected: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Mock AI to return Spam
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'common' || type === 'poll') {
+				return JSON.stringify({ 
+					keyword: "Spam",
+					note: "This appears to be spam content"
+				})
+			}
+			return JSON.stringify({ tags: [] })
+		}
+		
+		// Setup mock request
+		const req = createMockRequest(
+			{ 
+				title: 'Spam Title',
+				body: 'Spam content here',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-spam',
+				user_id: 'user-spam',
+				display_name: 'Spam User'
+			}
+		)
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify AI was called for moderation
+		assertEquals(
+			1,
+			aiAskCalls.length,
+			"Should call AI for moderation only."
+		)
+		
+		// Verify no S3 operations for spam
+		assertEquals(
+			0,
+			s3SendCalls.length,
+			"Should not perform S3 operations for spam."
+		)
+		
+		// Verify error response
+		assertEquals(
+			true,
+			res.isEnded(),
+			"Response should be ended."
+		)
+		
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			"Spam This appears to be spam content",
+			responseData.error,
+			"Should return spam error."
+		)
+		assertEquals(
+			undefined,
+			responseData.success,
+			"Should not return success for spam."
+		)
+		
+		// Reset AI mock for other tests
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'tags') {
+				return JSON.stringify({ tags: ['general'] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
+	},
+
+	testSlugGeneration: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request with title needing slug processing
+		const req = createMockRequest(
+			{ 
+				title: 'Test Topic With Special Characters! @#$%',
+				body: 'Body content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-slug',
+				user_id: 'user-slug',
+				display_name: 'Slug User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'slug-topic' }] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify slug generation
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			'Test_Topic_With_Special_Characters_',
+			responseData.slug,
+			"Should generate clean slug from title."
+		)
+	},
+
+	testSlugCollisionHandling: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request
+		const req = createMockRequest(
+			{ 
+				title: 'Duplicate Title',
+				body: 'Body content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-collision',
+				user_id: 'user-collision',
+				display_name: 'Collision User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses - slug exists
+		req.client.addQueryMock(
+			'SELECT slug FROM topics WHERE slug',
+			{ 
+				rows: [
+					{ slug: 'Duplicate_Title' }
+				]
+			}
+		)
+		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'collision-topic' }] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify slug collision handling
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.slug.startsWith('Duplicate_Title_'),
+			"Should append UUID to duplicate slug."
+		)
+		assertEquals(
+			true,
+			responseData.slug.length > 'Duplicate_Title_'.length,
+			"Should have UUID appended to slug."
+		)
+	},
+
+	testTagProcessing: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Mock AI to return specific tags
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'tags') {
+				return JSON.stringify({ tags: ['technology', 'science', 'unknown-tag'] })
+			}
+			return JSON.stringify({ keyword: "OK" })
+		}
+		
+		// Setup mock request
+		const req = createMockRequest(
+			{ 
+				title: 'Tech Topic',
+				body: 'Technology content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-tags',
+				user_id: 'user-tags',
+				display_name: 'Tag User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'tag-topic' }] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock(
+			'SELECT tag_id, tag_name FROM tags',
+			{ 
+				rows: [
+					{ tag_id: 'tag-tech', tag_name: 'technology' },
+					{ tag_id: 'tag-sci', tag_name: 'science' },
+					{ tag_id: 'tag-gen', tag_name: 'general' }
+					// Note: 'unknown-tag' is not in the database
+				]
+			}
+		)
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify tags AI call
+		const tagsCall = aiAskCalls.find(call => call.type === 'tags')
+		assertEquals(
+			true,
+			tagsCall !== undefined,
+			"Should call AI for tags."
+		)
+		
+		// Verify successful response (unknown tags are skipped)
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should succeed even with unknown tags."
+		)
+		
+		// Reset AI mock
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'tags') {
+				return JSON.stringify({ tags: ['general'] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
+	},
+
+	testPollsTagsFiltering: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Mock AI to return polls and asks tags
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'tags') {
+				return JSON.stringify({ tags: ['polls', 'asks', 'technology'] })
+			}
+			return JSON.stringify({ keyword: "OK" })
+		}
+		
+		// Setup mock request for poll
+		const req = createMockRequest(
+			{ 
+				title: 'Poll Topic',
+				body: 'Poll question',
+				path: '/topics',
+				pngs: [],
+				poll_1: 'Yes',
+				poll_2: 'No'
+			},
+			{ 
+				session_id: 'session-poll-tags',
+				user_id: 'user-poll-tags',
+				display_name: 'Poll User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'poll-filter-topic' }] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock(
+			'SELECT tag_id, tag_name FROM tags',
+			{ 
+				rows: [
+					{ tag_id: 'tag-polls', tag_name: 'polls' },
+					{ tag_id: 'tag-asks', tag_name: 'asks' },
+					{ tag_id: 'tag-tech', tag_name: 'technology' }
+				]
+			}
+		)
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('INSERT INTO topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify successful response (asks tag should be filtered out when polls tag exists)
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should succeed with polls tag filtering."
+		)
+		
+		// Reset AI mock
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'tags') {
+				return JSON.stringify({ tags: ['general'] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
+	},
+
+	testNoActionWhenMissingTitle: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request without title
+		const req = createMockRequest(
+			{ 
+				body: 'Body content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-123',
+				user_id: 'user-456'
+			}
+		)
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify no action taken
+		assertEquals(
+			false,
+			res.isEnded(),
+			"Should not end response when title missing."
+		)
+		assertEquals(
+			0,
+			aiAskCalls.length,
+			"Should not call AI when title missing."
+		)
+		assertEquals(
+			0,
+			s3SendCalls.length,
+			"Should not perform S3 operations when title missing."
+		)
+	},
+
+	testNoActionWhenMissingUserId: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request without user_id
+		const req = createMockRequest(
+			{ 
+				title: 'Test Title',
+				body: 'Body content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-123',
+				user_id: undefined
+			}
+		)
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify no action taken
+		assertEquals(
+			false,
+			res.isEnded(),
+			"Should not end response when user_id missing."
+		)
+		assertEquals(
+			0,
+			aiAskCalls.length,
+			"Should not call AI when user_id missing."
+		)
+	},
+
+	testNoActionWhenAlreadyEnded: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request
+		const req = createMockRequest(
+			{ 
+				title: 'Test Title',
+				body: 'Body content',
+				path: '/topics',
+				pngs: []
+			},
+			{ 
+				session_id: 'session-123',
+				user_id: 'user-456'
+			}
+		)
+		
+		const res = createMockResponse()
+		// Simulate response already ended
+		res.writableEnded = true
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify no action taken
+		assertEquals(
+			true,
+			res.writableEnded,
+			"Response should remain ended."
+		)
+		assertEquals(
+			0,
+			aiAskCalls.length,
+			"Should not call AI when response already ended."
+		)
+	},
+
+	testPollVotesCleanupOnUpdate: async () => {
+		// Reset all calls
+		s3SendCalls = []
+		aiAskCalls = []
+		
+		// Setup mock request for poll topic update
+		const req = createMockRequest(
+			{ 
+				title: 'Updated Poll',
+				body: 'Updated poll question',
+				path: '/topics',
+				pngs: [],
+				poll_1: 'New Option A',
+				poll_2: 'New Option B',
+				topic_id: 'existing-poll-topic'
+			},
+			{ 
+				session_id: 'session-poll-update',
+				user_id: 'user-poll-update',
+				display_name: 'Poll Update User'
+			}
+		)
+		
+		req.sendWsMessage = () => {}
+		
+		// Setup mock database responses
+		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
+		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT image_uuids', { rows: [{ image_uuids: '' }] })
+		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		
+		const res = createMockResponse()
+		
+		// Execute the handler
+		await saveTopic(req, res)
+		
+		// Verify AI was called for poll estimation
+		assertEquals(
+			3,
+			aiAskCalls.length,
+			"Should call AI for moderation, tags, and poll estimation."
+		)
+		
+		const pollEstimateCall = aiAskCalls.find(call => call.type === 'poll_estimate')
+		assertEquals(
+			true,
+			pollEstimateCall !== undefined,
+			"Should call AI for poll estimation on poll update."
+		)
+		
+		// Verify successful response
+		const responseData = JSON.parse(res.getResponseData())
+		assertEquals(
+			true,
+			responseData.success,
+			"Should succeed with poll update."
+		)
+	}
+}
+
+// Restore original functions after tests
+const cleanup = () => {
+	// Restore original modules
+	delete require.cache[awsS3Path]
+	delete require.cache[aiPath]
+	delete require.cache[nodeCryptoPath]
+	delete require.cache[cryptoPath]
+	delete require.cache[saveTopicPath]
+}
+
+runTests(path.basename(__filename), Object.values(tests))
+cleanup()
