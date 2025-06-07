@@ -57,12 +57,7 @@ const tests = {
 
 		// 3. Navigate to Notifications Page
 		const $notificationsFooterIcon = $("footer icon[notifications]")
-		assertEquals(
-			true,
-			Boolean($notificationsFooterIcon),
-			"Notifications footer icon should exist.",
-		)
-
+		// If $notificationsFooterIcon is null, the next line (.click()) will fail.
 		$notificationsFooterIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -73,29 +68,16 @@ const tests = {
 
 		// 4. Verify Notifications Page Content
 		const $mainContentWrapper = $("main-content-wrapper[active]")
-		assertEquals(
-			true,
-			Boolean($mainContentWrapper),
-			"Main content wrapper for notifications page should be active.",
-		)
-
+		// If $mainContentWrapper is null, the next line (.$("main-content")) will fail.
 		const $mainContent = $mainContentWrapper.$("main-content")
-		assertEquals(
-			true,
-			Boolean($mainContent),
-			"Main content area should exist within the active wrapper.",
-		)
+		// If $mainContent is null, subsequent .$(...) calls on it will fail.
 
 		// Based on renderNotifications.js, when state.email is null (as in mock),
 		// the header is <topics[notifications-header]><topic><h2>Alerts</h2>...</topic></topics>
 		const $notificationsPageHeader = $mainContent.$(
 			"topics[notifications-header] topic h2",
 		)
-		assertEquals(
-			true,
-			Boolean($notificationsPageHeader),
-			"Notifications page H2 header should exist.",
-		)
+		// If $notificationsPageHeader is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Alerts",
 			$notificationsPageHeader.innerText.trim(),

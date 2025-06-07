@@ -73,11 +73,7 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	)
 
 	const $topicsWrapper = $("topics")
-	assertEquals(
-		$topicsWrapper !== null,
-		true,
-		"<topics> wrapper element should be present",
-	)
+	// If $topicsWrapper is null, the next line (.querySelectorAll) will fail.
 
 	const $renderedTopicElements = $topicsWrapper.querySelectorAll("topic")
 	assertEquals(
@@ -90,8 +86,9 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	const $firstTopic = $renderedTopicElements[0]
 
 	const $firstTitle = $firstTopic.querySelector("h2")
+	// If $firstTitle is null, the next line (.textContent.trim()) will fail.
 	assertEquals(
-		$firstTitle && $firstTitle.textContent.trim(),
+		$firstTitle.textContent.trim(),
 		"Tech Trends 2024",
 		"First topic title mismatch",
 	)
@@ -107,8 +104,9 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	const $secondTopic = $renderedTopicElements[1]
 
 	const $secondTitle = $secondTopic.querySelector("h2")
+	// If $secondTitle is null, the next line (.textContent.trim()) will fail.
 	assertEquals(
-		$secondTitle && $secondTitle.textContent.trim(),
+		$secondTitle.textContent.trim(),
 		"Science Discoveries",
 		"Second topic title mismatch",
 	)

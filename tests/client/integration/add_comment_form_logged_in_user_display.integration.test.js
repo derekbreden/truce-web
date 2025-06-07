@@ -91,11 +91,6 @@ const tests = {
 		)
 
 		const $topicLinkElement = $(`topic[trimmed] h2`)
-		assertEquals(
-			true,
-			Boolean($topicLinkElement),
-			`Topics page: Clickable topic titled '${mockTopic.title}' should be found.`,
-		)
 		$topicLinkElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -111,99 +106,46 @@ const tests = {
 
 		// 4. Locate and click the "Reply to topic" button
 		const $replyButton = $(`p[add-new-comment] button[alt]`)
-		assertEquals(
-			true,
-			Boolean($replyButton),
-			"Topic detail page: 'Reply to topic' button should exist.",
-		)
 		$replyButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// 5. Assertions for the "add new comment" form
 		const $addNewCommentForm = $(`add-new[comment]`)
-		assertEquals(
-			true,
-			Boolean($addNewCommentForm),
-			"Topic detail page: 'add-new[comment]' form should appear after clicking 'Reply to topic'.",
-		)
 
-		const $displayNameWrapper = $addNewCommentForm
-			? $addNewCommentForm.$(`display-name-wrapper`)
-			: null
-		assertEquals(
-			true,
-			Boolean($displayNameWrapper),
-			"Add comment form: 'display-name-wrapper' should be present for logged-in user. State display_name: " +
-				state.display_name,
-		)
+		const $displayNameWrapper = $addNewCommentForm.$(`display-name-wrapper`)
 
-		const $displayNameText = $displayNameWrapper
-			? $displayNameWrapper.$(`b span`)
-			: null
+		const $displayNameText = $displayNameWrapper.$(`b span`)
 		assertEquals(
 			mockUser.display_name + ":",
 			$displayNameText.innerText.trim(),
 			`Add comment form: Display name should be '${mockUser.display_name}:'. Actual: '${$displayNameText.innerText.trim()}'`,
 		)
 
-		const $profilePictureImg = $displayNameWrapper
-			? $displayNameWrapper.$(
-					`profile-picture img[src='/image/${mockUser.profile_picture_uuid}']`,
-				)
-			: null
-		const $profilePictureSvg = $displayNameWrapper
-			? $displayNameWrapper.$(`profile-picture svg`)
-			: null
-		assertEquals(
-			true,
-			Boolean($profilePictureImg) || Boolean($profilePictureSvg),
-			"Add comment form: Profile picture (img or svg) should be present. Img found: " +
-				Boolean($profilePictureImg) +
-				", Svg found: " +
-				Boolean($profilePictureSvg),
+		const $profilePictureImg = $displayNameWrapper.$(
+			`profile-picture img[src='/image/${mockUser.profile_picture_uuid}']`,
 		)
+		// If $profilePictureImg is null, the following getAttribute will fail, which is the desired behavior.
 		assertEquals(
 			`/image/${mockUser.profile_picture_uuid}`,
 			$profilePictureImg.getAttribute("src"),
 			"Profile picture src should match mock user.",
 		)
 
-		const $bodyTextarea = $addNewCommentForm
-			? $addNewCommentForm.$(`textarea[body]`)
-			: null
-		assertEquals(
-			true,
-			Boolean($bodyTextarea),
-			"Add comment form: Comment body textarea should be present.",
-		)
+		const $bodyTextarea = $addNewCommentForm.$(`textarea[body]`)
 		assertEquals(
 			"Comment",
 			$bodyTextarea.getAttribute("placeholder"),
 			"Body textarea placeholder should be 'Comment'.",
 		)
 
-		const $submitButton = $addNewCommentForm
-			? $addNewCommentForm.$(`button[submit]`)
-			: null
-		assertEquals(
-			true,
-			Boolean($submitButton),
-			"Add comment form: Submit button should be present.",
-		)
+		const $submitButton = $addNewCommentForm.$(`button[submit]`)
 		assertEquals(
 			"Add comment",
 			$submitButton.innerText.trim(),
 			"Submit button text should be 'Add comment'.",
 		)
 
-		const $cancelButton = $addNewCommentForm
-			? $addNewCommentForm.$(`button[alt][cancel]`)
-			: null
-		assertEquals(
-			true,
-			Boolean($cancelButton),
-			"Add comment form: Cancel button should be present.",
-		)
+		const $cancelButton = $addNewCommentForm.$(`button[alt][cancel]`)
 		assertEquals(
 			"Cancel",
 			$cancelButton.innerText.trim(),

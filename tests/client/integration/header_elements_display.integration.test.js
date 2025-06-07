@@ -11,7 +11,7 @@ const tests = {
 
 		// Test for header title <h1>Truce.</h1>
 		const $headerTitle = $("header h1")
-		assertEquals(true, Boolean($headerTitle), "Header title <h1> should exist.")
+		// If $headerTitle is null, the next line will fail, which is the desired behavior.
 		assertEquals(
 			"Truce.",
 			$headerTitle.textContent.trim(),
@@ -22,7 +22,7 @@ const tests = {
 		const $headerLogo = $(
 			"header img[alt='A bridge between ideological differences']",
 		)
-		assertEquals(true, Boolean($headerLogo), "Header logo image should exist.")
+		// If $headerLogo is null, the next lines that call getAttribute will fail, which is the desired behavior.
 		assertEquals(
 			"/icon2.svg?v=2",
 			$headerLogo.getAttribute("src"),

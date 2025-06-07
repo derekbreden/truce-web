@@ -63,11 +63,7 @@ const tests = {
 
 		// 3. Navigate to Tags Page
 		const $tagsFooterIcon = $("footer icon[tag]")
-		assertEquals(
-			true,
-			Boolean($tagsFooterIcon),
-			"Tags footer icon should exist.",
-		)
+		// If $tagsFooterIcon is null, the next line (.click()) will fail.
 		$tagsFooterIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
@@ -79,14 +75,10 @@ const tests = {
 		// 4. Verify Tags Page Content
 		// Selectors updated to match client/renderTags.js
 		const $mainContent = $("main-content-wrapper[active] main-content")
-		assertEquals(true, Boolean($mainContent), "Main content area should exist.")
+		// If $mainContent is null, subsequent .$(...) calls will fail.
 
 		const $tagsListContainer = $mainContent.$("tags[tags-list]")
-		assertEquals(
-			true,
-			Boolean($tagsListContainer),
-			"A <tags tags-list> container should be present on the tags page.",
-		)
+		// If $tagsListContainer is null, subsequent .querySelectorAll or .$(...) calls will fail.
 
 		const $renderedTagElements = $tagsListContainer.querySelectorAll("tag[tag]") // Selects all elements like <tag tag="...">
 		assertEquals(
@@ -97,18 +89,10 @@ const tests = {
 
 		// Assert content of the first tag ("science")
 		const $firstTag = $tagsListContainer.$("tag[tag='science']")
-		assertEquals(
-			true,
-			Boolean($firstTag),
-			"First tag (science) element should be found.",
-		)
+		// If $firstTag is null, subsequent .$(...) calls will fail.
 
 		const $firstNameElement = $firstTag.$("tagname name")
-		assertEquals(
-			true,
-			Boolean($firstNameElement),
-			"First tag should have a <name> element.",
-		)
+		// If $firstNameElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Science",
 			$firstNameElement.innerText.trim(),
@@ -116,11 +100,7 @@ const tests = {
 		)
 
 		const $firstCountElement = $firstTag.$("tagname count")
-		assertEquals(
-			true,
-			Boolean($firstCountElement),
-			"First tag should have a <count> element.",
-		)
+		// If $firstCountElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"10",
 			$firstCountElement.innerText.trim(),
@@ -128,11 +108,7 @@ const tests = {
 		)
 
 		const $firstSubtitleElement = $firstTag.$("subtitle")
-		assertEquals(
-			true,
-			Boolean($firstSubtitleElement),
-			"First tag should have a <subtitle> element.",
-		)
+		// If $firstSubtitleElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"All about science",
 			$firstSubtitleElement.innerText.trim(),
@@ -141,18 +117,10 @@ const tests = {
 
 		// Assert content of the second tag ("history")
 		const $secondTag = $tagsListContainer.$("tag[tag='history']")
-		assertEquals(
-			true,
-			Boolean($secondTag),
-			"Second tag (history) element should be found.",
-		)
+		// If $secondTag is null, subsequent .$(...) calls will fail.
 
 		const $secondNameElement = $secondTag.$("tagname name")
-		assertEquals(
-			true,
-			Boolean($secondNameElement),
-			"Second tag should have a <name> element.",
-		)
+		// If $secondNameElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"History",
 			$secondNameElement.innerText.trim(),
@@ -160,11 +128,7 @@ const tests = {
 		)
 
 		const $secondCountElement = $secondTag.$("tagname count")
-		assertEquals(
-			true,
-			Boolean($secondCountElement),
-			"Second tag should have a <count> element.",
-		)
+		// If $secondCountElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"5",
 			$secondCountElement.innerText.trim(),
@@ -172,11 +136,7 @@ const tests = {
 		)
 
 		const $secondSubtitleElement = $secondTag.$("subtitle")
-		assertEquals(
-			true,
-			Boolean($secondSubtitleElement),
-			"Second tag should have a <subtitle> element.",
-		)
+		// If $secondSubtitleElement is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"History discussions",
 			$secondSubtitleElement.innerText.trim(),
@@ -185,11 +145,7 @@ const tests = {
 
 		// Check for the overall page structure (header for tags page)
 		const $tagsPageHeader = $mainContent.$("topics topic h2[tags] span") // As per renderTags.js structure
-		assertEquals(
-			true,
-			Boolean($tagsPageHeader),
-			"Tags page header (h2 > span) should exist.",
-		)
+		// If $tagsPageHeader is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Tags",
 			$tagsPageHeader.innerText.trim(),

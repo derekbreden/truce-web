@@ -118,11 +118,7 @@ const tests = {
 		// The manual topic injection is no longer needed as fetch mock will provide the topic.
 
 		const $firstTopicElement = $("topics > topic[trimmed]")
-		assertEquals(
-			true,
-			Boolean($firstTopicElement),
-			"First topic element should be found on the /topics page.",
-		)
+		// If $firstTopicElement is null, the next line (.click()) will fail.
 
 		// 3. Click the topic to navigate to its detail page
 		$firstTopicElement.click()
@@ -142,26 +138,14 @@ const tests = {
 		const $topicDetailsWrapper = $(
 			"main-content-wrapper[active] topic topic-details[detail-wrapper]",
 		)
-		assertEquals(
-			true,
-			Boolean($topicDetailsWrapper),
-			"Topic details wrapper (`topic-details[detail-wrapper]`) should be present on the topic detail page.",
-		)
+		// If $topicDetailsWrapper is null, subsequent .querySelector calls will fail.
 
 		const $favoritesDetail =
 			$topicDetailsWrapper.querySelector("detail[favorites]")
-		assertEquals(
-			true,
-			Boolean($favoritesDetail),
-			"Favorites detail element (`detail[favorites]`) should be present within the topic details wrapper.",
-		)
+		// If $favoritesDetail is null, the next line (.querySelector) will fail.
 
 		const $favoriteCountElement = $favoritesDetail.querySelector("p")
-		assertEquals(
-			true,
-			Boolean($favoriteCountElement),
-			"Favorite count <p> element should be present.",
-		)
+		// If $favoriteCountElement is null, the next line (.innerText.trim()) will fail.
 		// Assert the actual count from the mocked API response
 		assertEquals(
 			"3",
@@ -171,18 +155,10 @@ const tests = {
 
 		const $commentsDetail =
 			$topicDetailsWrapper.querySelector("detail[comments]")
-		assertEquals(
-			true,
-			Boolean($commentsDetail),
-			"Comments detail element (`detail[comments]`) should be present within the topic details wrapper.",
-		)
+		// If $commentsDetail is null, the next line (.querySelector) will fail.
 
 		const $commentCountElement = $commentsDetail.querySelector("p")
-		assertEquals(
-			true,
-			Boolean($commentCountElement),
-			"Comment count <p> element should be present.",
-		)
+		// If $commentCountElement is null, the next line (.innerText.trim()) will fail.
 		// Assert the actual count from the mocked API response
 		assertEquals(
 			"5",
