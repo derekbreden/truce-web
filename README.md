@@ -71,18 +71,11 @@ The primary way to run automated tests is using the `npm test` command from the 
 		This executes all test files (`*.test.js`) located within the `tests/` directory and its subdirectories. The output will be categorized into "Integration Tests" and "Other Tests" (if any), each with its own summary.
 
 *	 **To run a specific test file:**
-		Provide the path to the test file relative to the project root:
+		Provide the filename:
 		```bash
-		npm test tests/client/integration/navigation.integration.test.js
+		npm test navigation.integration.test.js
 		```
 		**Pro Tip:** `tests/client/integration/navigation.integration.test.js` is an excellent, up-to-date example to reference for common patterns, including initial page navigation (like clicking 'Join the Discussion'). Always consult existing tests like this one when writing new ones.
-
-*	 **To run specific categories of tests:**
-		You can run all integration tests using the following command:
-		*	 **Integration Tests** (tests located in any subdirectory named `integration` within `tests/`):
-				```bash
-				npm test integration
-				```
 
 Make sure you have run `npm install jsdom` before running tests.
 

@@ -9,29 +9,6 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// Check if a known SVG icon can be queried before renderTopic is called
-		const testIconSvg = window.$("icons icon[more] svg")
-		assertEquals(
-			true,
-			Boolean(testIconSvg),
-			`Test query for "icons icon[more] svg" should find an element.`,
-		)
-		if (testIconSvg) {
-			assertEquals(
-				"svg",
-				testIconSvg.tagName?.toLowerCase(),
-				"The found element should be an SVG tag.",
-			)
-		}
-
-		// 1. Agree to terms to navigate to /topics
-		const $joinButton = $(`a[href="/topics"][big]`)
-		assertEquals(
-			true,
-			Boolean($joinButton),
-			"Agree button should exist on the welcome page.",
-		)
-
 		// Set fetch response for topics and specific topic
 		window.setMockFetchResponseForPaths({
 			"/topics": {
@@ -98,10 +75,9 @@ const tests = {
 			},
 		})
 
-		// Click the join button
+		// 1. Agree to terms to navigate to /topics
+		const $joinButton = $(`a[href="/topics"][big]`)
 		$joinButton.click()
-
-		// Wait for navigation and rendering (increased delay for page load)
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// Verify navigation to /topics
@@ -133,21 +109,6 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// 3. Assert navigation to the topic detail path
-		// The exact slug might be hard to predict if topics are dynamic,
-		// so check if path starts with /topic/ and is not /topics
-		assertEquals(
-			true,
-			state.path.startsWith("/topic/"),
-			`Path should start with /topic/ after clicking a topic. Actual path: ${state.path}`,
-		)
-		assertEquals(
-			false,
-			state.path === "/topics",
-			`Path should no longer be /topics. Actual path: ${state.path}`,
-		)
-
-		// To get the specific slug for a more precise check, we"d ideally get it from the mock data.
-		// For this example, we"ll assume the first topic rendered was "test-topic-1"
 		const expectedTopicPath = "/topic/test-topic-1"
 		assertEquals(
 			expectedTopicPath,
@@ -164,14 +125,17 @@ const tests = {
 			"Comments wrapper element should be present on the topic detail page.",
 		)
 
-		// Check that the main topic display is no longer "trimmed" (if it was the same element being re-rendered)
-		// Or, more simply, check if a full topic body indicative element exists.
-		// renderTopic uses markdownToElements. Let"s assume a <p> tag will be part of the body.
-		const $topicBodyIndicator = $("main-content-wrapper[active] topic p")
+		// Assert the topic includes the detail rendered text
+		const $topicPSpan = $("main-content-wrapper[active] topic p span")
 		assertEquals(
 			true,
-			Boolean($topicBodyIndicator),
-			"A <p> tag (indicator of topic body) should be present in the main content of the topic detail page.",
+			Boolean($topicPSpan),
+			"Topic p span should be present",
+		)
+		assertEquals(
+			true,
+			$topicPSpan.innerText.includes("Full detailed body for test-topic-1"),
+			`Topic p span should include text "Full detailed body for test-topic-1"`,
 		)
 	},
 }
