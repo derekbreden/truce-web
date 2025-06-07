@@ -358,35 +358,35 @@ const getMoreRecent = () => {
 					const comment_text = topic_count.comment_count
 					const favorite_text = topic_count.favorite_count
 
-          // If we found a match in the cache
-          if (found_topic || found_activity) {
-            // Update the cached data
-            ;(found_topic || found_activity).comment_count =
-              topic_count.comment_count
-            ;(found_topic || found_activity).favorite_count =
-              topic_count.favorite_count
+					// If we found a match in the cache
+					if (found_topic || found_activity) {
+						// Update the cached data
+						;(found_topic || found_activity).comment_count =
+							topic_count.comment_count
+						;(found_topic || found_activity).favorite_count =
+							topic_count.favorite_count
 
-            // Update the markup
-            ;(found_topic || found_activity).$topic.$(
+						// Update the markup
+						;(found_topic || found_activity).$topic.$(
 							"[comments] p"
 						).innerText = comment_text
-            ;(found_topic || found_activity).$topic.$(
-              "[favorites] p",
-            ).innerText = favorite_text
+						;(found_topic || found_activity).$topic.$(
+							"[favorites] p",
+						).innerText = favorite_text
 
-            // Poll requires a complete re-render
-            if (
-              (found_topic || found_activity).poll_1 &&
-              topic_count.poll_counts
-            ) {
+						// Poll requires a complete re-render
+						if (
+							(found_topic || found_activity).poll_1 &&
+							topic_count.poll_counts
+						) {
 							console.warn("FAVORITES WHY?")
-              ;(found_topic || found_activity).poll_counts =
-                topic_count.poll_counts
-              ;(found_topic || found_activity).$topic.replaceWith(
-                renderTopic(found_topic || found_activity),
-              )
-            }
-          }
+							;(found_topic || found_activity).poll_counts =
+								topic_count.poll_counts
+							;(found_topic || found_activity).$topic.replaceWith(
+								renderTopic(found_topic || found_activity),
+							)
+						}
+					}
 				})
 			}
 
