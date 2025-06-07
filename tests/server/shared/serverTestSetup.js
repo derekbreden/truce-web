@@ -57,6 +57,7 @@ function createMockRequest(body = {}, session = {}) {
 function createMockResponse() {
 	let ended = false
 	let responseData = null
+	const headers = {}
 	
 	return {
 		writableEnded: ended,
@@ -64,8 +65,12 @@ function createMockResponse() {
 			ended = true
 			responseData = data
 		},
+		setHeader: (name, value) => {
+			headers[name] = value
+		},
 		getResponseData: () => responseData,
-		isEnded: () => ended
+		isEnded: () => ended,
+		getHeaders: () => headers
 	}
 }
 
