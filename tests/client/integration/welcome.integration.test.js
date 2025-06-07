@@ -5,28 +5,9 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testInitialPageShowsWelcomeOrTerms: () => {
-		const window = setupIntegrationTestEnvironment()
+	testInitialPageShowsWelcomeOrTerms: async () => {
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
-
-		// Mock for initial load of "/" path
-		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
-		})
 
 		// The welcome header is specifically <h2 welcome><span>Terms and conditions</span></h2>
 		const $welcomeHeaderSpan = $("h2[welcome] span")
@@ -57,26 +38,11 @@ const tests = {
 	},
 
 	testAgreeingToTermsNavigatesToNextPageAndSetsLocalStorage: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Setup mock API responses for this test
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				path: "/topics",
 				topics: [], // Empty topics list is fine for this test"s assertions

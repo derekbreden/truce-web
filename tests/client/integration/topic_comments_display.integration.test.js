@@ -10,21 +10,6 @@ const tests = {
 		const { state, $ } = window
 
 		window.setMockFetchResponseForPaths({
-			"/": {
-				path: "/",
-				topics: [],
-				comments: [],
-				activities: [],
-				notifications: [],
-				user_slug: null,
-				subscribed_to_users: 0,
-				user_id: null,
-				email: null,
-				display_name: null,
-				profile_picture_uuid: null,
-				display_name_index: 0,
-				has_more: false,
-			},
 			"/topics": {
 				path: "/topics",
 				topics: [

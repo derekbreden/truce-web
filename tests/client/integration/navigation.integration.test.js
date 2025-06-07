@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
 	testNavigateToFirstTopicDetail: async () => {
-		const window = setupIntegrationTestEnvironment()
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Check if a known SVG icon can be queried before renderTopic is called

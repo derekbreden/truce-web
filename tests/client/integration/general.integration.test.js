@@ -5,8 +5,8 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testRealIndexHtmlLoads: () => {
-		const window = setupIntegrationTestEnvironment()
+	testRealIndexHtmlLoads: async () => {
+		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 		// $ and state are exposed to the window from consts by options.constsToExpose by default
 		assertEquals("function", typeof $)

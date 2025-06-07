@@ -2,7 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const { JSDOM, VirtualConsole } = require("jsdom")
 
-function setupIntegrationTestEnvironment(options) {
+async function setupIntegrationTestEnvironment(options) {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
@@ -105,18 +105,50 @@ function setupIntegrationTestEnvironment(options) {
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
 		beforeParse(window) {
-			let mockFetchResponseForPaths = {}
-
+			//
+			// Mock Fetch
+			let mockFetchResponseForPaths = {
+				// Default fetch responses for a few common paths
+				... {
+					"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
+					"/unread_count_unseen_count": {
+						path: "/", topics: [], comments: [], activities: [], notifications: []
+					},
+				},
+				// All defaults to be passed by options as well
+				...options.mockFetchResponseForPaths
+			}
 			window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
 				mockFetchResponseForPaths = {
 					...mockFetchResponseForPaths,
 					...newFetchResponsesForPaths,
 				}
 			}
-
+			window.fetch = async function (url, fetchOptions) {
+				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
+				if (url === "/session") {
+					const body = JSON.parse(fetchOptions.body)
+					for (const path of Object.keys(mockFetchResponseForPaths)) {
+						if (body.path === path) {
+							return Promise.resolve({
+								status: 200,
+								json: async () => mockFetchResponseForPaths[path],
+							})
+						}
+					}
+					console.error("Unmocked fetch path", body.path)
+				}
+				return Promise.resolve({
+					status: 500,
+					json: async () => ({
+						error: "Test error: Unmocked fetch path",
+					}),
+				})
+			}
+			//
 			// Mock scrollIntoView
 			window.HTMLElement.prototype.scrollIntoView = () => {}
-
+			//
 			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
 			window.WebSocket = function (url) {
 				this.url = url;
@@ -156,42 +188,17 @@ function setupIntegrationTestEnvironment(options) {
 					}
 				};
 			}
-
+			//
 			// Mock setTimeout to be instant, to avoid delays
 			window.setTimeout = (fn) => {
 				fn()
 			}
-
+			//
 			// Mock matchMedia
 			window.matchMedia = function (query) {
 				return {
 					matches: false,
 				}
-			}
-
-			// Mock fetch
-			window.fetch = async function (url, fetchOptions) {
-				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
-				for (const path of Object.keys(mockFetchResponseForPaths)) {
-					if (url === "/session") {
-						const body = JSON.parse(fetchOptions.body)
-						if (body.path === path) {
-							return Promise.resolve({
-								status: 200,
-								json: async () => mockFetchResponseForPaths[path],
-							})
-						}
-					}
-				}
-
-				// Otherwise return an error
-				console.warn("Unmocked fetch path")
-				return Promise.resolve({
-					status: 500,
-					json: async () => ({
-						error: "Test error: Unmocked fetch path",
-					}),
-				})
 			}
 		},
 	})
@@ -200,6 +207,9 @@ function setupIntegrationTestEnvironment(options) {
 	// --------------------------------------------------------------------------
 
 	const { window } = dom
+
+	// Wait for initial render
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	return window
 }

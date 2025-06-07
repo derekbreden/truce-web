@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js") // Corrected path
 
 async function testCommentCountUpdate() {
-	const window = setupIntegrationTestEnvironment()
+	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window // Destructure after window is defined
 
 	// 1. Setup: Initial Topic Data
@@ -28,13 +28,10 @@ async function testCommentCountUpdate() {
 		note: "",
 		poll_1: null,
 		image_uuids: null,
-		poll_counts: "0,0,0,0", // Expected by renderTopic if poll_1 exists
-		poll_counts_estimated: "0,0,0,0", // Expected by renderTopic if poll_1 exists
 	}
 
 	// Mock fetch responses for initial page load
 	window.setMockFetchResponseForPaths({
-		"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
 		"/topics": {
 			path: "/topics",
 			topics: [initialTopic],
@@ -68,21 +65,16 @@ async function testCommentCountUpdate() {
 			comments: [],
 			activities: [],
 			notifications: [],
-			topic_counts: [{ topic_id: 1, comment_count: 10, favorite_count: initialTopic.favorite_count, poll_counts: initialTopic.poll_counts }],
+			topic_counts: [{ topic_id: 1, comment_count: 10, favorite_count: initialTopic.favorite_count }],
 		},
 	})
 
 	// 4. Trigger WebSocket Update
 	state.ws.triggerMessage("UPDATE")
-	await new Promise(resolve => setTimeout(resolve, 0));
+	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Re-select the comment count element as the DOM might have been re-rendered
-	const $reselectedTopicElement = $("topics > topic")
-	const $reselectedCommentCountElement = $reselectedTopicElement.$("detail[comments] p");
-
-	// 5. Verify Updated Comment Count
-	assertEquals(true, Boolean($reselectedCommentCountElement), "Comment count element should still exist after update.")
-	assertEquals("10", $reselectedCommentCountElement.innerText.trim(), "Updated comment count should be 10.")
+	// Assert is now 10
+	assertEquals("10", String($commentCountElement.innerText).trim(), "Updated comment count should be 10.")
 
 	const updatedCachedTopic = state.cache["/topics"]?.topics.find(t => t.topic_id === initialTopic.topic_id)
 	assertEquals(true, Boolean(updatedCachedTopic), "Topic should still be in cache after update.")
