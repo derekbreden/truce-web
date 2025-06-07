@@ -188,6 +188,75 @@ Make sure you have run `npm install jsdom` before running tests.
 *	 **JSDOM `innerText` Behavior:** Remember that JSDOM's `innerText` might not behave identically to a browser, especially regarding parent/child text propagation. Always target the most specific element containing the text. Refer to the "Understanding innerText vs. textContent" guideline for more details on choosing between `innerText` and `textContent`.
 *	 **Test Simplicity (Style Note):** Write tests to be clear and direct. Avoid unnecessary conditional logic (like early returns or overly defensive checks for elements you expect to be present) if a simple, direct assertion would make the test fail clearly when something is wrong. A failing test due to an inability to find an element is often the desired outcome as it points directly to the issue. This helps in quickly identifying the root cause of a problem.
 
+### Critical Testing Philosophy: No Guard Assertions
+
+**This project strictly prohibits "guard assertions" in favor of direct failure patterns that provide superior debugging information.**
+
+#### What Are Guard Assertions?
+Guard assertions are defensive checks that verify an element exists before testing its properties:
+
+```javascript
+// ❌ AVOID: Guard assertion pattern
+const $element = $("my-selector")
+assertEquals(true, Boolean($element), "Element should exist")
+assertEquals("expected text", $element.innerText.trim(), "Text should match")
+```
+
+#### Why We Reject Guard Assertions
+
+1. **Modern JSDOM Environment**: Unlike legacy testing environments where null access could crash entire test suites, modern JSDOM provides excellent error messages and isolated test failures.
+
+2. **Superior Error Information**: Direct access failures provide more actionable debugging information:
+   ```javascript
+   // Direct approach gives: "Cannot read properties of null (reading 'innerText')"
+   // This immediately tells you: selector failed, you wanted innerText, exact failure point
+   
+   // Guard assertion gives: "Expected: true, Actual: false - Element should exist"  
+   // This tells you much less and requires additional debugging
+   ```
+
+3. **Reduced Code Noise**: Guard assertions double the assertion count and obscure the actual test intent. The real test is about the text content, not element existence.
+
+4. **Natural Application Mirroring**: If the application would fail when an element is missing, the test should fail the same way. This tests realistic conditions.
+
+5. **Easier Maintenance**: When selectors change, you only update the real assertion, not redundant guard checks.
+
+#### Our Preferred Pattern
+
+```javascript
+// ✅ CORRECT: Direct assertion pattern
+const $element = $("my-selector")
+assertEquals("expected text", $element.innerText.trim(), "Text should match")
+
+// Or even more direct:
+assertEquals("expected text", $("my-selector").innerText.trim(), "Text should match")
+```
+
+When `$("my-selector")` returns null, you get an immediate, clear error pointing to the exact problem. This is **more informative** than a guard assertion.
+
+#### When Elements Genuinely Might Not Exist
+
+In rare cases where element absence is a valid test condition, use explicit null checks as part of the actual test logic:
+
+```javascript
+// Testing conditional rendering
+const $optionalElement = $("optional-feature")
+if (someCondition) {
+  assertEquals("Expected text", $optionalElement.innerText.trim(), "Optional element should have text when condition is true")
+} else {
+  assertEquals(null, $optionalElement, "Optional element should not exist when condition is false")
+}
+```
+
+#### Historical Context
+
+Guard assertions became prevalent in older testing environments where:
+- Null access could terminate entire test suites
+- Stack traces were poor
+- Test isolation was incomplete
+
+**These conditions do not apply to our modern JSDOM environment.** The conventional wisdom around guard assertions is outdated cargo cult programming that optimizes for problems we no longer have while creating new problems (code noise, reduced debugging information).
+
 ### AI Agent Collaboration & Testing Best Practices
 
 To ensure efficient collaboration with AI coding assistants and maintain code quality, please adhere to the following guidelines when generating or modifying tests:
