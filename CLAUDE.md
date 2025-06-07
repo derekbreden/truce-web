@@ -133,9 +133,21 @@ async function testFeature() {
   const window = await setupIntegrationTestEnvironment()
   const { state, $ } = window
 
-  // Mock API responses
+  // Mock API responses by path (simple cases)
   window.setMockFetchResponseForPaths({
     "/path": { data: "mock response" }
+  })
+
+  // Mock API responses with custom logic (complex cases)
+  window.addMockFetchMatcher({
+    match: (url, options) => {
+      if (url === "/session" && options?.method === "POST") {
+        const body = JSON.parse(options.body)
+        return body.display_name && body.body // Match comment submissions
+      }
+      return false
+    },
+    response: { success: true, user_id: "123" }
   })
 
   // Test navigation and assertions
@@ -145,6 +157,25 @@ async function testFeature() {
 }
 
 runTests("test.js", [testFeature])
+```
+
+### Fetch Mocking System
+**Path-based mocking** (simple): Use `setMockFetchResponseForPaths` for basic path matching
+**Custom matching** (flexible): Use `addMockFetchMatcher` for POST body content, headers, etc.
+
+```javascript
+// Custom matcher example for form submissions
+window.addMockFetchMatcher({
+  match: (url, options) => {
+    if (url === "/session" && options?.method === "POST") {
+      const body = JSON.parse(options.body)
+      return body.body && body.display_name // Comment submission
+    }
+    return false
+  },
+  status: 200, // Optional, defaults to 200
+  response: { success: true, user_id: "123" }
+})
 ```
 
 ### Testing Gotchas

@@ -102,27 +102,27 @@ const tests = {
 		// Track API calls
 		let commentSubmissionCalled = false
 		let submittedCommentData = null
-		const originalFetch = window.fetch
-		window.fetch = async function(url, options) {
-			if (url === "/session" && options?.method === "POST") {
-				const body = JSON.parse(options.body)
-				if (body.body && body.display_name && body.path) {
-					// This is a comment submission
-					commentSubmissionCalled = true
-					submittedCommentData = body
-					return Promise.resolve({
-						status: 200,
-						json: async () => ({
-							success: true,
-							user_id: mockUser.user_id,
-							display_name: mockUser.display_name,
-						}),
-					})
+		
+		// Use the new flexible matcher system
+		window.addMockFetchMatcher({
+			match: (url, options) => {
+				if (url === "/session" && options?.method === "POST") {
+					const body = JSON.parse(options.body)
+					if (body.body && body.display_name && body.path) {
+						// This is a comment submission
+						commentSubmissionCalled = true
+						submittedCommentData = body
+						return true
+					}
 				}
+				return false
+			},
+			response: {
+				success: true,
+				user_id: mockUser.user_id,
+				display_name: mockUser.display_name,
 			}
-			// Fall back to original fetch for other requests
-			return originalFetch.call(this, url, options)
-		}
+		})
 
 		// 1. Navigate to topics page
 		const $joinButton = $("a[href='/topics'][big]")

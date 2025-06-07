@@ -118,13 +118,37 @@ async function setupIntegrationTestEnvironment(options) {
 				// All defaults to be passed by options as well
 				...options.mockFetchResponseForPaths
 			}
+			
+			// Flexible fetch matchers for more complex scenarios
+			let customFetchMatchers = []
+			
 			window.setMockFetchResponseForPaths = (newFetchResponsesForPaths) => {
 				mockFetchResponseForPaths = {
 					...mockFetchResponseForPaths,
 					...newFetchResponsesForPaths,
 				}
 			}
+			
+			// Add flexible matcher system
+			window.addMockFetchMatcher = (matcher) => {
+				customFetchMatchers.push(matcher)
+			}
+			
+			window.clearMockFetchMatchers = () => {
+				customFetchMatchers = []
+			}
+			
 			window.fetch = async function (url, fetchOptions) {
+				// Check custom matchers first (more specific)
+				for (const matcher of customFetchMatchers) {
+					if (matcher.match(url, fetchOptions)) {
+						return Promise.resolve({
+							status: matcher.status || 200,
+							json: async () => matcher.response,
+						})
+					}
+				}
+				
 				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
 				if (url === "/session") {
 					const body = JSON.parse(fetchOptions.body)
