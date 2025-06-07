@@ -110,16 +110,13 @@ const tests = {
 
 		// Navigate from topics page to topic detail page
 		const $topicLink = $("topics > topic[trimmed]") // Assuming first topic is the one
-		assertEquals(
-			true,
-			Boolean($topicLink),
-			"Topic link should be present on /topics page.",
-		)
+		// If $topicLink is null, subsequent .$(...) or .click() calls will fail.
 		// Check title instead of slug attribute directly on topic[trimmed]
 		const $topicTitle = $topicLink.$("h2")
+		// If $topicTitle is null, the next line (.textContent.trim()) will fail.
 		assertEquals(
 			"Test Topic for Comments",
-			$topicTitle?.textContent.trim(),
+			$topicTitle.textContent.trim(),
 			"Topic title mismatch on /topics page.",
 		)
 		$topicLink.click()
@@ -132,11 +129,7 @@ const tests = {
 
 		// Assertions for Comments
 		const $commentsWrapper = $("main-content-wrapper[active] comments")
-		assertEquals(
-			true,
-			Boolean($commentsWrapper),
-			"Comments wrapper element should be present on the topic detail page.",
-		)
+		// If $commentsWrapper is null, the next line (.querySelectorAll) will fail.
 
 		// Based on renderComments.js, root comments are directly appended to <comments>
 		// and each comment is represented by a <comment> custom element.
@@ -155,11 +148,7 @@ const tests = {
 
 		// Author Name (structure: comment > h3 > author > span)
 		const $authorName1 = $comment1.$("author span")
-		assertEquals(
-			true,
-			Boolean($authorName1),
-			"First comment author's name span should exist.",
-		)
+		// If $authorName1 is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Commenter One",
 			$authorName1.innerText.trim(),
@@ -168,7 +157,7 @@ const tests = {
 
 		// Comment Body (structure: comment > p > span, from markdownToElements)
 		const $body1 = $comment1.$(":scope > p > span")
-		assertEquals(true, Boolean($body1), "First comment body span should exist.")
+		// If $body1 is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"This is the first test comment.",
 			$body1.innerText.trim(),
@@ -180,11 +169,7 @@ const tests = {
 
 		// Author Name
 		const $authorName2 = $comment2.$("author span")
-		assertEquals(
-			true,
-			Boolean($authorName2),
-			"Second comment author's name span should exist.",
-		)
+		// If $authorName2 is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Commenter Two",
 			$authorName2.innerText.trim(),
@@ -193,11 +178,7 @@ const tests = {
 
 		// Comment Body
 		const $body2 = $comment2.$(":scope > p > span")
-		assertEquals(
-			true,
-			Boolean($body2),
-			"Second comment body span should exist.",
-		)
+		// If $body2 is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"A second insightful comment here.",
 			$body2.innerText.trim(),

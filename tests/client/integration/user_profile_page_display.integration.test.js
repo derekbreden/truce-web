@@ -89,11 +89,7 @@ const tests = {
 
 		// 3. Ensure the topic is rendered on /topics
 		const $topicAuthorElement = $(`topics > topic author[slug="test-user"]`)
-		assertEquals(
-			true,
-			Boolean($topicAuthorElement),
-			"Author element for 'test-user' should be found on the /topics page.",
-		)
+		// If $topicAuthorElement is null, the next line (.click()) will fail.
 
 		// 4. Navigate to User Profile by clicking the author element
 		$topicAuthorElement.click()
@@ -106,29 +102,16 @@ const tests = {
 
 		// 5. Verify User Profile Page Content
 		const $mainContentWrapper = $("main-content-wrapper[active]")
-		assertEquals(
-			true,
-			Boolean($mainContentWrapper),
-			"Main content wrapper for user profile page should be active.",
-		)
-
+		// If $mainContentWrapper is null, the next line (.$("main-content")) will fail.
 		const $mainContent = $mainContentWrapper.$("main-content")
-		assertEquals(
-			true,
-			Boolean($mainContent),
-			"Main content area should exist within the active wrapper.",
-		)
+		// If $mainContent is null, subsequent .$(...) calls on it will fail.
 
 		// Verify the user's name is displayed as a header.
 		// renderTopics.js creates a structure like: topic[user] > h2[user] > author > span
 		const $userProfileHeaderSpan = $mainContent.$(
 			"topic[user] h2[user] author span",
 		)
-		assertEquals(
-			true,
-			Boolean($userProfileHeaderSpan),
-			"User profile header (topic[user] h2[user] author span) should exist.",
-		)
+		// If $userProfileHeaderSpan is null, the next line (.innerText.trim()) will fail.
 		assertEquals(
 			"Test User Name",
 			$userProfileHeaderSpan.innerText.trim(),
@@ -138,11 +121,7 @@ const tests = {
 		// Verify that a <topics> element (container for the user's topics) is present.
 		// renderTopics.js will create this, even if the topics array is empty.
 		const $userTopicsContainer = $mainContent.$("topics")
-		assertEquals(
-			true,
-			Boolean($userTopicsContainer),
-			"A <topics> container for user's topics should be present on the profile page.",
-		)
+		// If $userTopicsContainer is null, the next line (.querySelectorAll) will fail.
 
 		// Check that no topics are rendered if the mock data has topics: [] for the user page
 		const $renderedUserTopicElements =

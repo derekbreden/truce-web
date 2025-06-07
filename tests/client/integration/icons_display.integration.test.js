@@ -46,11 +46,7 @@ const tests = {
 		footerIconsToTest.forEach((iconName) => {
 			const selector = `footer icon[${iconName}] svg`
 			const $iconSvg = $(selector)
-			assertEquals(
-				true,
-				Boolean($iconSvg),
-				`Footer icon <${iconName}> SVG should exist. Selector: ${selector}`,
-			)
+			// If $iconSvg is null, the next line will fail, which is the desired behavior.
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),
@@ -65,28 +61,22 @@ const tests = {
 		const { $ } = window
 
 		const $hamburgerImg = $("header hamburger img")
+		// If $hamburgerImg is null, the following lines will fail, which is the desired behavior.
 		assertEquals(
-			true,
-			Boolean($hamburgerImg),
-			"Hamburger image should exist in the header.",
+			"img",
+			$hamburgerImg.tagName?.toLowerCase(),
+			"Hamburger element should be an <img> tag.",
 		)
-		if ($hamburgerImg) {
-			assertEquals(
-				"img",
-				$hamburgerImg.tagName?.toLowerCase(),
-				"Hamburger element should be an <img> tag.",
-			)
-			assertEquals(
-				"/hamburger.svg",
-				$hamburgerImg.getAttribute("src"),
-				"Hamburger image src attribute should be correct.",
-			)
-			assertEquals(
-				"Menu",
-				$hamburgerImg.getAttribute("alt"),
-				"Hamburger image alt attribute should be correct.",
-			)
-		}
+		assertEquals(
+			"/hamburger.svg",
+			$hamburgerImg.getAttribute("src"),
+			"Hamburger image src attribute should be correct.",
+		)
+		assertEquals(
+			"Menu",
+			$hamburgerImg.getAttribute("alt"),
+			"Hamburger image alt attribute should be correct.",
+		)
 	},
 
 	testGlobalIconsAreAvailable: async () => {
@@ -101,11 +91,7 @@ const tests = {
 
 		globalIconsToTest.forEach((iconInfo) => {
 			const $iconSvg = $(iconInfo.selector)
-			assertEquals(
-				true,
-				Boolean($iconSvg),
-				`Global icon <${iconInfo.name}> SVG should exist. Selector: ${iconInfo.selector}`,
-			)
+			// If $iconSvg is null, the next line will fail, which is the desired behavior.
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),

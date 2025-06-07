@@ -35,29 +35,15 @@ const tests = {
 
 		// Open the menu
 		const $hamburgerIcon = $("header hamburger")
-		assertEquals(
-			true,
-			Boolean($hamburgerIcon),
-			"Hamburger menu icon should exist in the header.",
-		)
-
+		// If $hamburgerIcon is null, the next line ($hamburgerIcon.click) will fail.
 		$hamburgerIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// Verify menu container is visible (using menu-wrapper)
 		const $menuWrapper = $("menu-wrapper")
-		assertEquals(
-			true,
-			Boolean($menuWrapper),
-			"Menu wrapper should be visible after clicking hamburger.",
-		)
-
+		// If $menuWrapper is null, the next line ($menuWrapper.$("menu")) will fail.
 		const $menu = $menuWrapper.$("menu")
-		assertEquals(
-			true,
-			Boolean($menu),
-			"Menu element should exist within the wrapper.",
-		)
+		// If $menu is null, subsequent .$ calls on it will fail.
 
 		// Assertions for logged-out user
 		// Settings link (NOT visible for logged-out user as per menu.js)
@@ -71,20 +57,12 @@ const tests = {
 		// Sign In / Sign Up form (visible when not logged in)
 		// menu.js adds a form with a submit button, not separate links
 		const $signInForm = $menu.$("menu sign-in") // Check within $menu, then 'menu' tag, then 'sign-in' tag
-		assertEquals(
-			true,
-			Boolean($signInForm),
-			"Sign In form element should exist in the menu for a logged-out user.",
-		)
+		// If $signInForm is null, the next line ($signInForm.$("button[submit]")) will fail.
 		const $submitButton = $signInForm.$("button[submit]")
-		assertEquals(
-			true,
-			Boolean($submitButton),
-			"Sign In form should have a submit button.",
-		)
+		// If $submitButton is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Sign up / Sign in",
-			$submitButton?.innerText?.trim(),
+			$submitButton.innerText.trim(),
 			"Submit button text should be 'Sign up / Sign in'.",
 		)
 
@@ -156,47 +134,25 @@ const tests = {
 
 		// Open the menu
 		const $hamburgerIcon = $("header hamburger")
-		assertEquals(
-			true,
-			Boolean($hamburgerIcon),
-			"Hamburger menu icon should exist in the header.",
-		)
-
+		// If $hamburgerIcon is null, the next line ($hamburgerIcon.click) will fail.
 		$hamburgerIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// Verify menu container is visible (using menu-wrapper based on subtask feedback)
 		const $menuWrapper = $("menu-wrapper")
-		assertEquals(
-			true,
-			Boolean($menuWrapper),
-			"Menu wrapper should be visible after clicking hamburger.",
-		)
-
+		// If $menuWrapper is null, the next line ($menuWrapper.$("menu")) will fail.
 		const $menu = $menuWrapper.$("menu")
-		assertEquals(
-			true,
-			Boolean($menu),
-			"Menu element should exist within the wrapper.",
-		)
+		// If $menu is null, subsequent .$ calls on it will fail.
 
 		// Assertions for logged-in user
 		// Settings link (visible for logged-in user)
 		const $settingsLink = $menu.$("links a[href='/settings']")
-		assertEquals(
-			true,
-			Boolean($settingsLink),
-			"Settings link (a[href='/settings']) should exist in the menu for a logged-in user.",
-		)
+		// If $settingsLink is null, the next line ($settingsLink.$("p")) will fail.
 		const $settingsLinkText = $settingsLink.$("p") // menu.js structure: a > icon + p
-		assertEquals(
-			true,
-			Boolean($settingsLinkText),
-			"Settings link should have a <p> tag for text.",
-		)
+		// If $settingsLinkText is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Account settings",
-			$settingsLinkText?.innerText?.trim(),
+			$settingsLinkText.innerText.trim(),
 			"Settings link text should be 'Account settings'.",
 		)
 
@@ -213,20 +169,12 @@ const tests = {
 		// Logout button (visible for logged-in user)
 		// menu.js appends 'signed-in' element containing 'button[sign-out]' to menu.$("menu")
 		const $signedInSection = $menu.$("menu signed-in")
-		assertEquals(
-			true,
-			Boolean($signedInSection),
-			"Signed-in section should exist for a logged-in user.",
-		)
+		// If $signedInSection is null, the next line ($signedInSection.$("button[sign-out]")) will fail.
 		const $logoutButton = $signedInSection.$("button[sign-out]")
-		assertEquals(
-			true,
-			Boolean($logoutButton),
-			"Logout button (button[sign-out]) should exist for a logged-in user.",
-		)
+		// If $logoutButton is null, the next line (.innerText) will fail.
 		assertEquals(
 			"Log out",
-			$logoutButton?.innerText?.trim(),
+			$logoutButton.innerText.trim(),
 			"Logout button text should be 'Log out'.",
 		)
 

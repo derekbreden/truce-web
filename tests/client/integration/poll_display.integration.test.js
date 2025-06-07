@@ -66,17 +66,14 @@ const tests = {
 
 		// Find the topic element
 		const $topicElement = $(`topic[trimmed]`) // Assuming topics on /topics have 'trimmed' attribute
-		assertEquals(true, Boolean($topicElement), "Topic element should be present.")
-
+		// If $topicElement is null, the next line will fail, which is the desired behavior.
 		// Assert Poll Wrapper Exists
 		const $pollWrapper = $topicElement.$("poll-wrapper")
-		assertEquals(true, Boolean($pollWrapper), "Poll wrapper element should be present.")
-
+		// If $pollWrapper is null, the next line will fail, which is the desired behavior.
 		// Assert Poll Options Text
 		// When topic.edit is false and topic.voted is false, options are inside poll-vote-wrapper
 		const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper");
-		assertEquals(true, Boolean($pollVoteWrapper), "Poll vote wrapper should be present when user has not voted.");
-
+		// If $pollVoteWrapper is null, subsequent .$(...) calls on it will fail.
 		const $pollOption1 = $pollVoteWrapper.$("poll-1") // Corrected selector
 		assertEquals("Option A", $pollOption1.innerText.trim(), "Poll option 1 text should be 'Option A'.")
 
