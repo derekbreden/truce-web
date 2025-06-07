@@ -24,17 +24,17 @@ const tests = {
 		
 		// Setup mock database response for topic counts
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'topic-1',
+						post_id: 'topic-1',
 						favorite_count: 15,
 						poll_counts: '8,5,2',
 						comment_count: 12
 					},
 					{
-						topic_id: 'topic-2',
+						post_id: 'topic-2',
 						favorite_count: 7,
 						poll_counts: null,
 						comment_count: 3
@@ -56,7 +56,7 @@ const tests = {
 		)
 		assertEquals(
 			'topic-1',
-			req.results.topic_counts[0].topic_id,
+			req.results.topic_counts[0].post_id,
 			"First topic should have correct ID."
 		)
 		assertEquals(
@@ -76,7 +76,7 @@ const tests = {
 		)
 		assertEquals(
 			'topic-2',
-			req.results.topic_counts[1].topic_id,
+			req.results.topic_counts[1].post_id,
 			"Second topic should have correct ID."
 		)
 		assertEquals(
@@ -100,19 +100,19 @@ const tests = {
 		
 		// Setup mock database response for comment counts
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ 
 				rows: [
 					{
-						comment_id: 'comment-1',
+						reply_id: 'comment-1',
 						favorite_count: 5
 					},
 					{
-						comment_id: 'comment-2',
+						reply_id: 'comment-2',
 						favorite_count: 0
 					},
 					{
-						comment_id: 'comment-3',
+						reply_id: 'comment-3',
 						favorite_count: 23
 					}
 				]
@@ -132,7 +132,7 @@ const tests = {
 		)
 		assertEquals(
 			'comment-1',
-			req.results.comment_counts[0].comment_id,
+			req.results.comment_counts[0].reply_id,
 			"First comment should have correct ID."
 		)
 		assertEquals(
@@ -142,7 +142,7 @@ const tests = {
 		)
 		assertEquals(
 			'comment-2',
-			req.results.comment_counts[1].comment_id,
+			req.results.comment_counts[1].reply_id,
 			"Second comment should have correct ID."
 		)
 		assertEquals(
@@ -172,11 +172,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'topic-1',
+						post_id: 'topic-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
 						comment_count: 8
@@ -185,11 +185,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ 
 				rows: [
 					{
-						comment_id: 'comment-1',
+						reply_id: 'comment-1',
 						favorite_count: 2
 					}
 				]
@@ -214,12 +214,12 @@ const tests = {
 		)
 		assertEquals(
 			'topic-1',
-			req.results.topic_counts[0].topic_id,
+			req.results.topic_counts[0].post_id,
 			"Topic count should be correct."
 		)
 		assertEquals(
 			'comment-1',
-			req.results.comment_counts[0].comment_id,
+			req.results.comment_counts[0].reply_id,
 			"Comment count should be correct."
 		)
 	},
@@ -307,11 +307,11 @@ const tests = {
 		
 		// Setup mock database response only for comments
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ 
 				rows: [
 					{
-						comment_id: 'comment-1',
+						reply_id: 'comment-1',
 						favorite_count: 5
 					}
 				]
@@ -351,11 +351,11 @@ const tests = {
 		
 		// Setup mock database response only for topics
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'topic-1',
+						post_id: 'topic-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
 						comment_count: 8
@@ -395,11 +395,11 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'public-topic-1',
+						post_id: 'public-topic-1',
 						favorite_count: 5,
 						poll_counts: null,
 						comment_count: 2
@@ -420,7 +420,7 @@ const tests = {
 		)
 		assertEquals(
 			'public-topic-1',
-			req.results.topic_counts[0].topic_id,
+			req.results.topic_counts[0].post_id,
 			"Should return correct topic data for guest user."
 		)
 	},
@@ -440,11 +440,11 @@ const tests = {
 		
 		// Setup mock responses with no results
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ rows: [] }
 		)
 		
@@ -480,11 +480,11 @@ const tests = {
 		
 		// Setup mock responses with date-filtered results
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'recent-topic',
+						post_id: 'recent-topic',
 						favorite_count: 3,
 						poll_counts: '2,1',
 						comment_count: 1
@@ -493,11 +493,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ 
 				rows: [
 					{
-						comment_id: 'recent-comment',
+						reply_id: 'recent-comment',
 						favorite_count: 1
 					}
 				]
@@ -521,12 +521,12 @@ const tests = {
 		)
 		assertEquals(
 			'recent-topic',
-			req.results.topic_counts[0].topic_id,
+			req.results.topic_counts[0].post_id,
 			"Should return recent topic."
 		)
 		assertEquals(
 			'recent-comment',
-			req.results.comment_counts[0].comment_id,
+			req.results.comment_counts[0].reply_id,
 			"Should return recent comment."
 		)
 	},
@@ -544,11 +544,11 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts t',
 			{ 
 				rows: [
 					{
-						topic_id: 'complete-topic',
+						post_id: 'complete-topic',
 						favorite_count: 25,
 						poll_counts: '15,8,2',
 						comment_count: 42
@@ -564,7 +564,7 @@ const tests = {
 		const topicCount = req.results.topic_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-topic', topicCount.topic_id, "Should have topic_id.")
+		assertEquals('complete-topic', topicCount.post_id, "Should have post_id.")
 		assertEquals(25, topicCount.favorite_count, "Should have favorite_count.")
 		assertEquals('15,8,2', topicCount.poll_counts, "Should have poll_counts.")
 		assertEquals(42, topicCount.comment_count, "Should have comment_count.")
@@ -583,11 +583,11 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM comments c',
+			'FROM replies c',
 			{ 
 				rows: [
 					{
-						comment_id: 'complete-comment',
+						reply_id: 'complete-comment',
 						favorite_count: 18
 					}
 				]
@@ -601,7 +601,7 @@ const tests = {
 		const commentCount = req.results.comment_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-comment', commentCount.comment_id, "Should have comment_id.")
+		assertEquals('complete-comment', commentCount.reply_id, "Should have reply_id.")
 		assertEquals(18, commentCount.favorite_count, "Should have favorite_count.")
 	}
 }

@@ -11,53 +11,53 @@ module.exports = async (req, res) => {
 			const topic_results = await req.client.query(
 				`
         SELECT
-          t.create_date,
-          t.topic_id,
-          t.title,
+          p.create_date,
+          p.post_id as topic_id,
+          p.title,
           u.user_id,
           u.display_name,
           CASE WHEN u.display_name = '' THEN u.user_id ELSE u.display_name_index END as display_name_index,
           CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
-          t.slug,
-          t.body,
-          t.poll_1,
-          t.poll_2,
-          t.poll_3,
-          t.poll_4,
-          t.poll_counts,
-          t.poll_counts_estimated,
-          t.note,
-          t.favorite_count,
-          t.comment_count,
-          t.counts_max_create_date,
-          CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
-          t.image_uuids,
+          p.slug,
+          p.body,
+          p.poll_1,
+          p.poll_2,
+          p.poll_3,
+          p.poll_4,
+          p.poll_counts,
+          p.poll_counts_estimated,
+          p.note,
+          p.favorite_count,
+          p.comment_count,
+          p.counts_max_create_date,
+          CASE WHEN p.user_id = $1 THEN true ELSE false END AS edit,
+          p.image_uuids,
           CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           CASE WHEN EXISTS (
             SELECT 1
-            FROM comments c
-            WHERE c.parent_topic_id = t.topic_id
-              AND c.user_id = $1
+            FROM replies r
+            WHERE r.parent_post_id = p.post_id
+              AND r.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           (
             SELECT STRING_AGG(ts.tag_name, ',')
-            FROM topic_tags tt
-            INNER JOIN tags ts ON ts.tag_id = tt.tag_id
-            WHERE tt.topic_id = t.topic_id
+            FROM post_tags pt
+            INNER JOIN tags ts ON ts.tag_id = pt.tag_id
+            WHERE pt.post_id = p.post_id
           ) as tags
-        FROM topics t
-        LEFT JOIN users u ON u.user_id = t.user_id
-        LEFT JOIN favorite_topics f ON f.topic_id = t.topic_id AND f.user_id = $1
-        LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
-        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
-        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
+        FROM posts p
+        LEFT JOIN users u ON u.user_id = p.user_id
+        LEFT JOIN favorite_posts f ON f.post_id = p.post_id AND f.user_id = $1
+        LEFT JOIN post_poll_votes v ON v.post_id = p.post_id AND v.user_id = $1
+        LEFT JOIN flagged_posts l ON l.post_id = p.post_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = p.user_id AND b.user_id_blocking = $1
         WHERE
-          t.slug = $2
-          AND (t.create_date > $3 OR $3 IS NULL)
-          AND l.topic_id IS NULL
+          p.slug = $2
+          AND (p.create_date > $3 OR $3 IS NULL)
+          AND l.post_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
 				[
@@ -78,11 +78,11 @@ module.exports = async (req, res) => {
 		if (!topic_id) {
 			const topic_id_result = await req.client.query(
 				`
-        SELECT t.topic_id
-        FROM topics t
-        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
-        LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
-        WHERE t.slug = $2 AND l.topic_id IS NULL AND b.user_id_blocked IS NULL
+        SELECT p.post_id as topic_id
+        FROM posts p
+        LEFT JOIN flagged_posts l ON l.post_id = p.post_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = p.user_id AND b.user_id_blocking = $1
+        WHERE p.slug = $2 AND l.post_id IS NULL AND b.user_id_blocked IS NULL
         `,
 				[req.session.user_id || 0, slug],
 			)
@@ -97,35 +97,35 @@ module.exports = async (req, res) => {
 			const root_comments = await req.client.query(
 				`
         SELECT
-          c.create_date,
-          c.comment_id,
-          c.body,
-          c.note,
-          c.parent_comment_id,
-          c.favorite_count,
-          c.counts_max_create_date,
+          r.create_date,
+          r.reply_id as comment_id,
+          r.body,
+          r.note,
+          r.parent_reply_id as parent_comment_id,
+          r.favorite_count,
+          r.counts_max_create_date,
           u.user_id,
           u.display_name,
           u.display_name_index,
           CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          c.image_uuids,
+          CASE WHEN r.user_id = $1 THEN true ELSE false END AS edit,
+          r.image_uuids,
           CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
-        FROM comments c
-        INNER JOIN users u ON c.user_id = u.user_id
-        LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
-        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        FROM replies r
+        INNER JOIN users u ON r.user_id = u.user_id
+        LEFT JOIN favorite_replies f ON f.reply_id = r.reply_id AND f.user_id = $1
+        LEFT JOIN flagged_replies l ON l.reply_id = r.reply_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = r.user_id AND b.user_id_blocking = $1
         WHERE
-          c.parent_topic_id = $2
-          AND c.parent_comment_id IS NULL
-          AND (c.create_date > $3 OR $3 IS NULL)
-          AND (c.create_date < $4 OR $4 IS NULL)
-          AND l.comment_id IS NULL
+          r.parent_post_id = $2
+          AND r.parent_reply_id IS NULL
+          AND (r.create_date > $3 OR $3 IS NULL)
+          AND (r.create_date < $4 OR $4 IS NULL)
+          AND l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
-        ORDER BY c.create_date DESC
+        ORDER BY r.create_date DESC
         LIMIT 10
         `,
 				[
@@ -138,43 +138,43 @@ module.exports = async (req, res) => {
 			const reply_comments = await req.client.query(
 				`
         SELECT
-          c.create_date,
-          c.comment_id,
-          c.body,
-          c.note,
-          c.parent_comment_id,
-          c.favorite_count,
-          c.counts_max_create_date,
+          r.create_date,
+          r.reply_id as comment_id,
+          r.body,
+          r.note,
+          r.parent_reply_id as parent_comment_id,
+          r.favorite_count,
+          r.counts_max_create_date,
           u.user_id,
           u.display_name,
           u.display_name_index,
           CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
           u.profile_picture_uuid,
           CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
-          CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
-          c.image_uuids,
+          CASE WHEN r.user_id = $1 THEN true ELSE false END AS edit,
+          r.image_uuids,
           CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
-        FROM comments c
-        INNER JOIN users u ON c.user_id = u.user_id
-        LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $1
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
-        LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
+        FROM replies r
+        INNER JOIN users u ON r.user_id = u.user_id
+        LEFT JOIN favorite_replies f ON f.reply_id = r.reply_id AND f.user_id = $1
+        LEFT JOIN flagged_replies l ON l.reply_id = r.reply_id
+        LEFT JOIN blocked_users b ON b.user_id_blocked = r.user_id AND b.user_id_blocking = $1
         WHERE
-          c.parent_topic_id = $2
+          r.parent_post_id = $2
           AND (
-            c.comment_id IN (
-              SELECT comment_id
-              FROM comment_ancestors
-              WHERE ancestor_id = ANY($3::int[])
+            r.reply_id IN (
+              SELECT reply_id
+              FROM reply_ancestors
+              WHERE ancestor_reply_id = ANY($3::int[])
             )
             OR (
-              c.create_date > $4 AND $4 IS NOT NULL
-              AND c.parent_comment_id IS NOT NULL
+              r.create_date > $4 AND $4 IS NOT NULL
+              AND r.parent_reply_id IS NOT NULL
             )
           )
-          AND l.comment_id IS NULL
+          AND l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
-        ORDER BY c.create_date ASC
+        ORDER BY r.create_date ASC
         LIMIT 10
         `,
 				[

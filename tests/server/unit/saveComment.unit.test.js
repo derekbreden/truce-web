@@ -199,7 +199,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT topic_id',
+			'SELECT post_id as topic_id',
 			{ 
 				rows: [
 					{ topic_id: 'topic-789' }
@@ -207,7 +207,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT\n        t.title',
+			'SELECT\n        t.title,',
 			{ 
 				rows: [
 					{
@@ -221,18 +221,18 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO comments',
+			'INSERT INTO replies',
 			{ 
 				rows: [
 					{ comment_id: 'new-comment-123' }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
 		req.client.addQueryMock('UPDATE topics', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] }) // subscriptions
-		req.client.addQueryMock('SELECT user_id\n      FROM topics', { rows: [] }) // notifications
+		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] }) // notifications
 		
 		const res = createMockResponse()
 		
@@ -377,15 +377,15 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT parent_topic_id',
+			'SELECT parent_post_id',
 			{ 
 				rows: [
-					{ parent_topic_id: 'topic-for-comment' }
+					{ parent_post_id: 'topic-for-comment' }
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT\n        t.title',
+			'SELECT\n        t.title,',
 			{ 
 				rows: [
 					{
@@ -406,25 +406,25 @@ const tests = {
 						display_name: 'Parent Comment Author',
 						body: 'Parent comment content',
 						note: null,
-						comment_id: 'parent-comment-456',
+						reply_id: 'parent-comment-456',
 						image_uuids: null
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO comments',
+			'INSERT INTO replies',
 			{ 
 				rows: [
 					{ comment_id: 'reply-comment-789' }
 				]
 			}
 		)
-		req.client.addQueryMock('INSERT INTO comment_ancestors', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
+		req.client.addQueryMock('INSERT INTO reply_ancestors', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE topics', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM topics', { rows: [] })
+		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -493,8 +493,8 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT topic_id', { rows: [{ topic_id: 'topic-update' }] })
-		req.client.addQueryMock('SELECT\n        t.title', { 
+		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-update' }] })
+		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Topic Title',
 				body: 'Topic body',
@@ -503,9 +503,9 @@ const tests = {
 				image_uuids: null // No topic images
 			}]
 		})
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock(
-			'SELECT image_uuids\n        FROM comments',
+			'SELECT image_uuids',
 			{ 
 				rows: [
 					{ image_uuids: 'old-image1,old-image2' }
@@ -514,7 +514,7 @@ const tests = {
 		)
 		req.client.addQueryMock('UPDATE topics', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM topics', { rows: [] })
+		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -598,8 +598,8 @@ const tests = {
 		)
 		
 		// Setup minimal database mocks
-		req.client.addQueryMock('SELECT topic_id', { rows: [{ topic_id: 'topic-spam' }] })
-		req.client.addQueryMock('SELECT\n        t.title', { 
+		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-spam' }] })
+		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Topic Title',
 				body: 'Topic body',
@@ -694,8 +694,8 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT topic_id', { rows: [{ topic_id: 'topic-flag' }] })
-		req.client.addQueryMock('SELECT\n        t.title', { 
+		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-flag' }] })
+		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Topic Title',
 				body: 'Topic body',
@@ -705,18 +705,18 @@ const tests = {
 			}]
 		})
 		req.client.addQueryMock(
-			'INSERT INTO comments',
+			'INSERT INTO replies',
 			{ 
 				rows: [
 					{ comment_id: 'flagged-comment-456' }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
 		req.client.addQueryMock('UPDATE topics', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM topics', { rows: [] })
+		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -796,8 +796,8 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT topic_id', { rows: [{ topic_id: 'topic-notify' }] })
-		req.client.addQueryMock('SELECT\n        t.title', { 
+		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-notify' }] })
+		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Notify Topic',
 				body: 'Topic body',
@@ -807,14 +807,14 @@ const tests = {
 			}]
 		})
 		req.client.addQueryMock(
-			'INSERT INTO comments',
+			'INSERT INTO replies',
 			{ 
 				rows: [
 					{ comment_id: 'notify-comment-789' }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE topics', { rows: [] })
 		
 		// Mock subscriptions for notifications
@@ -838,7 +838,7 @@ const tests = {
 		
 		// Mock users to notify
 		req.client.addQueryMock(
-			'SELECT user_id\n      FROM topics',
+			'SELECT user_id\n      FROM posts',
 			{ 
 				rows: [
 					{ user_id: 'topic-author-user' },
@@ -848,7 +848,7 @@ const tests = {
 		)
 		
 		// Mock notification insertions
-		req.client.addQueryMock('INSERT INTO notifications', { rows: [] })
+		req.client.addQueryMock('INSERT INTO reply_notifications', { rows: [] })
 		
 		// Mock unread counts for badge
 		req.client.addQueryMock(
@@ -950,7 +950,7 @@ const tests = {
 		
 		// Setup database response for non-existent topic
 		req.client.addQueryMock(
-			'SELECT topic_id',
+			'SELECT post_id as topic_id',
 			{ rows: [] } // No topic found
 		)
 		
@@ -1011,7 +1011,7 @@ const tests = {
 		
 		// Setup database response for non-existent comment
 		req.client.addQueryMock(
-			'SELECT parent_topic_id',
+			'SELECT parent_post_id',
 			{ rows: [] } // No comment found
 		)
 		

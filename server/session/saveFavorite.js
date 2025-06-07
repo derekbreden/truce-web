@@ -10,27 +10,27 @@ module.exports = async (req, res) => {
 			if (req.body.topic_id_to_favorite) {
 				await req.client.query(
 					`
-          DELETE FROM favorite_topics
+          DELETE FROM favorite_posts
           WHERE
             user_id = $1
-            AND topic_id = $2
+            AND post_id = $2
           `,
 					[req.session.user_id, req.body.topic_id_to_favorite],
 				)
 				await req.client.query(
 					`
-          UPDATE topics
+          UPDATE posts
           SET
             favorite_count = COALESCE(subquery.favorite_count, 0),
             counts_max_create_date = NOW()
           FROM (
             SELECT
               COUNT(f.*) AS favorite_count
-            FROM favorite_topics f
-            LEFT JOIN flagged_topics l ON l.topic_id = f.topic_id
-            WHERE f.topic_id = $1
+            FROM favorite_posts f
+            LEFT JOIN flagged_posts l ON l.post_id = f.post_id
+            WHERE f.post_id = $1
           ) AS subquery
-          WHERE topics.topic_id = $1
+          WHERE posts.post_id = $1
           `,
 					[req.body.topic_id_to_favorite],
 				)
@@ -40,27 +40,27 @@ module.exports = async (req, res) => {
 			if (req.body.comment_id_to_favorite) {
 				await req.client.query(
 					`
-          DELETE FROM favorite_comments
+          DELETE FROM favorite_replies
           WHERE
             user_id = $1
-            AND comment_id = $2
+            AND reply_id = $2
           `,
 					[req.session.user_id, req.body.comment_id_to_favorite],
 				)
 				await req.client.query(
 					`
-          UPDATE comments
+          UPDATE replies
           SET
             favorite_count = COALESCE(subquery.favorite_count, 0),
             counts_max_create_date = NOW()
           FROM (
             SELECT
               COUNT(f.*) AS favorite_count
-            FROM favorite_comments f
-            LEFT JOIN flagged_comments l ON l.comment_id = f.comment_id
-            WHERE f.comment_id = $1
+            FROM favorite_replies f
+            LEFT JOIN flagged_replies l ON l.reply_id = f.reply_id
+            WHERE f.reply_id = $1
           ) AS subquery
-          WHERE comments.comment_id = $1
+          WHERE replies.reply_id = $1
           `,
 					[req.body.comment_id_to_favorite],
 				)
@@ -72,8 +72,8 @@ module.exports = async (req, res) => {
 			if (req.body.topic_id_to_favorite) {
 				await req.client.query(
 					`
-          INSERT INTO favorite_topics
-          (user_id, topic_id)
+          INSERT INTO favorite_posts
+          (user_id, post_id)
           VALUES
           ($1, $2)
           `,
@@ -81,18 +81,18 @@ module.exports = async (req, res) => {
 				)
 				await req.client.query(
 					`
-          UPDATE topics
+          UPDATE posts
           SET
             favorite_count = COALESCE(subquery.favorite_count, 0),
             counts_max_create_date = NOW()
           FROM (
             SELECT
               COUNT(f.*) AS favorite_count
-            FROM favorite_topics f
-            LEFT JOIN flagged_topics l ON l.topic_id = f.topic_id
-            WHERE f.topic_id = $1
+            FROM favorite_posts f
+            LEFT JOIN flagged_posts l ON l.post_id = f.post_id
+            WHERE f.post_id = $1
           ) AS subquery
-          WHERE topics.topic_id = $1
+          WHERE posts.post_id = $1
           `,
 					[req.body.topic_id_to_favorite],
 				)
@@ -102,8 +102,8 @@ module.exports = async (req, res) => {
 			if (req.body.comment_id_to_favorite) {
 				await req.client.query(
 					`
-          INSERT INTO favorite_comments
-          (user_id, comment_id)
+          INSERT INTO favorite_replies
+          (user_id, reply_id)
           VALUES
           ($1, $2)
           `,
@@ -111,18 +111,18 @@ module.exports = async (req, res) => {
 				)
 				await req.client.query(
 					`
-          UPDATE comments
+          UPDATE replies
           SET
             favorite_count = COALESCE(subquery.favorite_count, 0),
             counts_max_create_date = NOW()
           FROM (
             SELECT
               COUNT(f.*) AS favorite_count
-            FROM favorite_comments f
-            LEFT JOIN flagged_comments l ON l.comment_id = f.comment_id
-            WHERE f.comment_id = $1
+            FROM favorite_replies f
+            LEFT JOIN flagged_replies l ON l.reply_id = f.reply_id
+            WHERE f.reply_id = $1
           ) AS subquery
-          WHERE comments.comment_id = $1
+          WHERE replies.reply_id = $1
           `,
 					[req.body.comment_id_to_favorite],
 				)

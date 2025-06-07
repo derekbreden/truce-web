@@ -132,11 +132,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT slug FROM topics WHERE slug',
+			'SELECT slug FROM posts WHERE slug',
 			{ rows: [] } // Slug doesn't exist
 		)
 		req.client.addQueryMock(
-			'INSERT INTO topics',
+			'INSERT INTO posts',
 			{ 
 				rows: [
 					{
@@ -146,7 +146,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
@@ -160,11 +160,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'DELETE FROM topic_tags',
+			'DELETE FROM post_tags',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'INSERT INTO topic_tags',
+			'INSERT INTO post_tags',
 			{ rows: [] }
 		)
 		
@@ -319,11 +319,11 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'poll-topic-123' }] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'poll-topic-123' }] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -413,8 +413,8 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'SELECT image_uuids',
 			{ 
@@ -426,7 +426,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -580,11 +580,11 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'slug-topic' }] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'slug-topic' }] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -624,17 +624,17 @@ const tests = {
 		
 		// Setup mock database responses - slug exists
 		req.client.addQueryMock(
-			'SELECT slug FROM topics WHERE slug',
+			'SELECT slug FROM posts WHERE slug',
 			{ 
 				rows: [
 					{ slug: 'Duplicate_Title' }
 				]
 			}
 		)
-		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'collision-topic' }] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'collision-topic' }] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -687,9 +687,9 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'tag-topic' }] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'tag-topic' }] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'SELECT tag_id, tag_name FROM tags',
 			{ 
@@ -701,8 +701,8 @@ const tests = {
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('INSERT INTO post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -772,9 +772,9 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topics', { rows: [{ topic_id: 'poll-filter-topic' }] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'poll-filter-topic' }] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'SELECT tag_id, tag_name FROM tags',
 			{ 
@@ -785,8 +785,8 @@ const tests = {
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
-		req.client.addQueryMock('INSERT INTO topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('INSERT INTO post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -957,12 +957,12 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM topics WHERE slug', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT image_uuids', { rows: [{ image_uuids: '' }] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topic_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
 		
 		const res = createMockResponse()
 		

@@ -169,10 +169,10 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT comment_id, notification_id',
+			'SELECT reply_id, notification_id',
 			{ 
 				rows: [{ 
-					comment_id: 'comment-456',
+					reply_id: 'comment-456',
 					notification_id: 'notification-789'
 				}]
 			}

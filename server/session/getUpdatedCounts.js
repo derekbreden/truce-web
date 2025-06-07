@@ -8,17 +8,17 @@ module.exports = async (req, res) => {
 			const topic_counts = await req.client.query(
 				`
         SELECT
-          t.topic_id,
+          t.post_id,
           t.favorite_count,
           t.poll_counts,
           t.comment_count
-        FROM topics t
-        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        FROM posts t
+        LEFT JOIN flagged_posts l ON l.post_id = t.post_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
           t.create_date > $2
           AND t.counts_max_create_date > $3
-          AND l.topic_id IS NULL
+          AND l.post_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
 				[
@@ -33,15 +33,15 @@ module.exports = async (req, res) => {
 			const comment_counts = await req.client.query(
 				`
         SELECT
-          c.comment_id,
+          c.reply_id,
           c.favorite_count
-        FROM comments c
-          LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        FROM replies c
+          LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
           LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
         WHERE
           c.create_date > $2
           AND c.counts_max_create_date > $3
-          AND l.comment_id IS NULL
+          AND l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
         `,
 				[

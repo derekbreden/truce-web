@@ -102,21 +102,21 @@ const tests = {
 		)
 		
 		// Setup mocks for all deletion operations
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
 		
 		// Setup mocks for count updates
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		
 		// Setup mock for new session creation
 		req.client.addQueryMock(
@@ -254,19 +254,19 @@ const tests = {
 		)
 		
 		// Setup mocks for all deletion operations
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		
 		req.client.addQueryMock(
 			'INSERT INTO sessions',
@@ -332,19 +332,19 @@ const tests = {
 		)
 		
 		// Setup mocks for deletion operations
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		
 		req.client.addQueryMock(
 			'INSERT INTO sessions',
@@ -424,19 +424,19 @@ const tests = {
 		)
 		
 		// Setup mocks for deletion operations
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		
 		req.client.addQueryMock(
 			'INSERT INTO sessions',
@@ -496,17 +496,17 @@ const tests = {
 				dbOperations.push('SELECT_IMAGES')
 			} else if (sql.includes('SELECT profile_picture_uuid')) {
 				dbOperations.push('SELECT_PROFILE')
-			} else if (sql.includes('DELETE FROM comment_ancestors')) {
-				dbOperations.push('DELETE_COMMENT_ANCESTORS')
-			} else if (sql.includes('DELETE FROM favorite_topics')) {
-				dbOperations.push('DELETE_FAVORITE_TOPICS')
-			} else if (sql.includes('DELETE FROM favorite_comments')) {
-				dbOperations.push('DELETE_FAVORITE_COMMENTS')
+			} else if (sql.includes('DELETE FROM reply_ancestors')) {
+				dbOperations.push('DELETE_REPLY_ANCESTORS')
+			} else if (sql.includes('DELETE FROM favorite_posts')) {
+				dbOperations.push('DELETE_FAVORITE_POSTS')
+			} else if (sql.includes('DELETE FROM favorite_replies')) {
+				dbOperations.push('DELETE_FAVORITE_REPLIES')
 			} else if (sql.includes('DELETE FROM blocked_users')) {
 				dbOperations.push('DELETE_BLOCKED_USERS')
-			} else if (sql.includes('DELETE FROM poll_votes') && sql.includes('topic_id IN')) {
+			} else if (sql.includes('DELETE FROM post_poll_votes') && sql.includes('post_id IN')) {
 				dbOperations.push('DELETE_POLL_VOTES_BY_TOPIC')
-			} else if (sql.includes('DELETE FROM poll_votes') && sql.includes('user_id = $1')) {
+			} else if (sql.includes('DELETE FROM post_poll_votes') && sql.includes('user_id = $1')) {
 				dbOperations.push('DELETE_POLL_VOTES_BY_USER')
 			} else if (sql.includes('DELETE FROM subscribers')) {
 				dbOperations.push('DELETE_SUBSCRIBERS')
@@ -514,18 +514,18 @@ const tests = {
 				dbOperations.push('DELETE_SESSIONS')
 			} else if (sql.includes('DELETE FROM user_sessions')) {
 				dbOperations.push('DELETE_USER_SESSIONS')
-			} else if (sql.includes('DELETE FROM comments')) {
-				dbOperations.push('DELETE_COMMENTS')
-			} else if (sql.includes('DELETE FROM topics')) {
-				dbOperations.push('DELETE_TOPICS')
+			} else if (sql.includes('DELETE FROM replies')) {
+				dbOperations.push('DELETE_REPLIES')
+			} else if (sql.includes('DELETE FROM posts')) {
+				dbOperations.push('DELETE_POSTS')
 			} else if (sql.includes('DELETE FROM users')) {
 				dbOperations.push('DELETE_USERS')
-			} else if (sql.includes('UPDATE comments')) {
-				dbOperations.push('UPDATE_COMMENTS')
-			} else if (sql.includes('UPDATE topics') && sql.includes('favorite_count')) {
-				dbOperations.push('UPDATE_TOPICS_FAVORITES')
-			} else if (sql.includes('UPDATE topics') && sql.includes('comment_count')) {
-				dbOperations.push('UPDATE_TOPICS_COMMENTS')
+			} else if (sql.includes('UPDATE replies')) {
+				dbOperations.push('UPDATE_REPLIES')
+			} else if (sql.includes('UPDATE posts') && sql.includes('favorite_count')) {
+				dbOperations.push('UPDATE_POSTS_FAVORITES')
+			} else if (sql.includes('UPDATE posts') && sql.includes('comment_count')) {
+				dbOperations.push('UPDATE_POSTS_COMMENTS')
 			} else if (sql.includes('INSERT INTO sessions')) {
 				dbOperations.push('INSERT_SESSION')
 			}
@@ -537,19 +537,19 @@ const tests = {
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT image_uuids', { rows: [] })
 		req.client.addQueryMock('SELECT profile_picture_uuid', { rows: [{ profile_picture_uuid: null }] })
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('INSERT INTO sessions', { rows: [{ session_id: 'new-session' }] })
 		
 		const res = createMockResponse()
@@ -561,21 +561,21 @@ const tests = {
 		const expectedSequence = [
 			'SELECT_IMAGES',
 			'SELECT_PROFILE',
-			'DELETE_COMMENT_ANCESTORS',
-			'DELETE_FAVORITE_TOPICS',
-			'DELETE_FAVORITE_COMMENTS',
+			'DELETE_REPLY_ANCESTORS',
+			'DELETE_FAVORITE_POSTS',
+			'DELETE_FAVORITE_REPLIES',
 			'DELETE_BLOCKED_USERS',
 			'DELETE_POLL_VOTES_BY_TOPIC',
 			'DELETE_POLL_VOTES_BY_USER',
 			'DELETE_SUBSCRIBERS',
 			'DELETE_SESSIONS',
 			'DELETE_USER_SESSIONS',
-			'DELETE_COMMENTS',
-			'DELETE_TOPICS',
+			'DELETE_REPLIES',
+			'DELETE_POSTS',
 			'DELETE_USERS',
-			'UPDATE_COMMENTS',
-			'UPDATE_TOPICS_FAVORITES',
-			'UPDATE_TOPICS_COMMENTS',
+			'UPDATE_REPLIES',
+			'UPDATE_POSTS_FAVORITES',
+			'UPDATE_POSTS_COMMENTS',
 			'INSERT_SESSION'
 		]
 		
@@ -719,19 +719,19 @@ const tests = {
 		// Setup minimal mocks
 		req.client.addQueryMock('SELECT image_uuids', { rows: [] })
 		req.client.addQueryMock('SELECT profile_picture_uuid', { rows: [{ profile_picture_uuid: null }] })
-		req.client.addQueryMock('DELETE FROM comment_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_comments', { rows: [] })
+		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
+		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
 		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM poll_votes', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
 		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
 		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
 		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM comments', { rows: [] })
-		req.client.addQueryMock('DELETE FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
+		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
 		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE comments', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'INSERT INTO sessions',
 			{ 

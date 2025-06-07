@@ -76,7 +76,7 @@ B) ${req.body.poll_2}`
 			// If slug exists, add a uuid to it
 			const slug_exists = await req.client.query(
 				`
-        SELECT slug FROM topics WHERE slug = $1
+        SELECT slug FROM posts WHERE slug = $1
         `,
 				[slug],
 			)
@@ -88,7 +88,7 @@ B) ${req.body.poll_2}`
 			if (req.body.topic_id) {
 				await req.client.query(
 					`
-          UPDATE topics
+          UPDATE posts
           SET
             title = $1,
             slug = $2,
@@ -102,7 +102,7 @@ B) ${req.body.poll_2}`
             counts_max_create_date = NOW(),
             create_date = NOW()
           WHERE
-            topic_id = $10
+            post_id = $10
             AND user_id = $11
           `,
 					[
@@ -127,11 +127,11 @@ B) ${req.body.poll_2}`
 			} else {
 				const topic_result = await req.client.query(
 					`
-          INSERT INTO topics
+          INSERT INTO posts
             (title, slug, body, poll_1, poll_2, poll_3, poll_4, poll_counts, note, user_id)
           VALUES
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          RETURNING topic_id
+          RETURNING post_id as topic_id
           `,
 					[
 						req.body.title,
@@ -156,8 +156,8 @@ B) ${req.body.poll_2}`
 				const existing_images = await req.client.query(
 					`
           SELECT image_uuids
-          FROM topics
-          WHERE topic_id = $1
+          FROM posts
+          WHERE post_id = $1
           `,
 					[topic_id],
 				)
@@ -196,9 +196,9 @@ B) ${req.body.poll_2}`
 			}
 			await req.client.query(
 				`
-        UPDATE topics
+        UPDATE posts
         SET image_uuids = $1
-        WHERE topic_id = $2
+        WHERE post_id = $2
         `,
 				[image_uuids.join(","), topic_id],
 			)
@@ -207,8 +207,8 @@ B) ${req.body.poll_2}`
 			if (req.body.topic_id) {
 				await req.client.query(
 					`
-          DELETE FROM poll_votes
-          WHERE topic_id = $1
+          DELETE FROM post_poll_votes
+          WHERE post_id = $1
           `,
 					[topic_id],
 				)
@@ -229,8 +229,8 @@ B) ${req.body.poll_2}`
 
 			await req.client.query(
 				`
-        DELETE FROM topic_tags
-        WHERE topic_id = $1
+        DELETE FROM post_tags
+        WHERE post_id = $1
         `,
 				[topic_id],
 			)
@@ -251,8 +251,8 @@ B) ${req.body.poll_2}`
 				if (tag_ids[tag]) {
 					await req.client.query(
 						`
-            INSERT INTO topic_tags
-              (topic_id, tag_id)
+            INSERT INTO post_tags
+              (post_id, tag_id)
             VALUES
               ($1, $2)
             `,
@@ -300,11 +300,11 @@ B) ${req.body.poll_2}`
 					]
 					await req.client.query(
 						`
-            UPDATE topics
+            UPDATE posts
             SET
               poll_counts_estimated = $1,
               counts_max_create_date = NOW()
-            WHERE topic_id = $2
+            WHERE post_id = $2
             `,
 						[estimated.join(","), topic_id],
 					)

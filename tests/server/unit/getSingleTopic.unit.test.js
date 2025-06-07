@@ -20,7 +20,7 @@ const tests = {
 		
 		// Setup mock database responses for complete topic load
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -57,7 +57,7 @@ const tests = {
 		)
 		// Mock for root comments
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ 
 				rows: [
 					{
@@ -83,7 +83,7 @@ const tests = {
 		)
 		// Mock for reply comments
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'r.parent_reply_id IS NOT NULL',
 			{ 
 				rows: [
 					{
@@ -177,17 +177,17 @@ const tests = {
 		
 		// Setup mocks for topic_id lookup only
 		req.client.addQueryMock(
-			'SELECT t.topic_id',
+			'SELECT p.post_id as topic_id',
 			{ 
 				rows: [{ topic_id: 'topic-123' }]
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -223,11 +223,11 @@ const tests = {
 		
 		// Setup mock responses for no results
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT t.topic_id',
+			'SELECT p.post_id as topic_id',
 			{ rows: [] }
 		)
 		
@@ -319,7 +319,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'FROM topics t',
+				'FROM posts p',
 				{ 
 					rows: [
 						{
@@ -333,11 +333,11 @@ const tests = {
 				}
 			)
 			req.client.addQueryMock(
-				'c.parent_comment_id IS NULL',
+				'r.parent_reply_id IS NULL',
 				{ rows: [] }
 			)
 			req.client.addQueryMock(
-				'comment_ancestors',
+				'reply_ancestors',
 				{ rows: [] }
 			)
 			
@@ -362,7 +362,7 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -383,11 +383,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -416,7 +416,7 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -433,11 +433,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -463,7 +463,7 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -480,11 +480,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -519,7 +519,7 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -533,7 +533,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ 
 				rows: [
 					{
@@ -547,7 +547,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -577,7 +577,7 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ 
 				rows: [
 					{
@@ -613,11 +613,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'c.parent_comment_id IS NULL',
+			'r.parent_reply_id IS NULL',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'comment_ancestors',
+			'reply_ancestors',
 			{ rows: [] }
 		)
 		
@@ -664,11 +664,11 @@ const tests = {
 		req.results = { topics: [], comments: [] }
 		
 		req.client.addQueryMock(
-			'FROM topics t',
+			'FROM posts p',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT t.topic_id',
+			'SELECT p.post_id as topic_id',
 			{ rows: [] }
 		)
 		

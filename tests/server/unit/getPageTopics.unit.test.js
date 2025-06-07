@@ -28,7 +28,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{
@@ -230,7 +230,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{
@@ -305,7 +305,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{
@@ -385,7 +385,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{
@@ -465,7 +465,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{
@@ -547,7 +547,7 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          t.create_date,',
+			'SELECT\n          p.create_date,',
 			{ 
 				rows: [
 					{

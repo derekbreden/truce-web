@@ -4,7 +4,7 @@ module.exports = async (req, res) => {
 		if (req.body.mark_as_read) {
 			await req.client.query(
 				`
-        UPDATE notifications
+        UPDATE reply_notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE notification_id = ANY($1::int[]) AND user_id = $2
         `,
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
 		if (req.body.mark_all_as_read) {
 			await req.client.query(
 				`
-        UPDATE notifications
+        UPDATE reply_notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE
           user_id = $1
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
 		if (req.body.mark_all_as_seen) {
 			await req.client.query(
 				`
-        UPDATE notifications
+        UPDATE reply_notifications
         SET seen = TRUE
         WHERE
           user_id = $1
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
         SELECT 
           SUM(CASE WHEN read = FALSE THEN 1 ELSE 0 END) AS unread_count,
           SUM(CASE WHEN seen = FALSE THEN 1 ELSE 0 END) AS unseen_count
-        FROM notifications
+        FROM reply_notifications
         WHERE user_id = $1
         `,
 				[req.session.user_id],
@@ -62,15 +62,15 @@ module.exports = async (req, res) => {
 			if (counts.rows[0].unseen_count === "1") {
 				const comment = await req.client.query(
 					`
-          SELECT comment_id, notification_id
-          FROM notifications
+          SELECT reply_id, notification_id
+          FROM reply_notifications
           WHERE user_id = $1
           AND seen = FALSE
           ORDER BY create_date DESC
           `,
 					[req.session.user_id],
 				)
-				comment_id = comment.rows[0].comment_id
+				comment_id = comment.rows[0].reply_id
 				notification_id = comment.rows[0].notification_id
 			}
 
@@ -96,36 +96,36 @@ module.exports = async (req, res) => {
           n.create_date,
           u.display_name,
           u.display_name_index,
-          c.comment_id,
+          c.reply_id,
           LEFT(c.body, 51) as body,
           LEFT(c.note, 21) as note,
           LEFT(a.title, 21) as title,
           CASE
-            WHEN c.parent_comment_id is NULL THEN 'topic'
+            WHEN c.parent_reply_id is NULL THEN 'topic'
             WHEN p.user_id = $1 THEN 'comment'
             ELSE 'topic_comment'
           END AS reply_type
-        FROM notifications n
-        INNER JOIN comments c ON c.comment_id = n.comment_id
-        LEFT JOIN comments p ON p.comment_id = c.parent_comment_id
+        FROM reply_notifications n
+        INNER JOIN replies c ON c.reply_id = n.reply_id
+        LEFT JOIN replies p ON p.reply_id = c.parent_reply_id
         INNER JOIN users u ON u.user_id = c.user_id
-        INNER JOIN topics a ON a.topic_id = c.parent_topic_id
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        INNER JOIN posts a ON a.post_id = c.parent_post_id
+        LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
-        LEFT JOIN flagged_comments l2 ON l2.comment_id = p.comment_id
+        LEFT JOIN flagged_replies l2 ON l2.reply_id = p.reply_id
         LEFT JOIN blocked_users b2 ON b2.user_id_blocked = p.user_id AND b2.user_id_blocking = $1
-        LEFT JOIN flagged_topics l3 ON l3.topic_id = a.topic_id
+        LEFT JOIN flagged_posts l3 ON l3.post_id = a.post_id
         LEFT JOIN blocked_users b3 ON b3.user_id_blocked = a.user_id AND b3.user_id_blocking = $1
         WHERE
           n.user_id = $1
           AND read = FALSE
           AND (n.create_date < $2 OR $2 IS NULL)
           AND (n.create_date > $3 OR $3 IS NULL)
-          AND l.comment_id IS NULL
+          AND l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
-          AND l2.comment_id IS NULL
+          AND l2.reply_id IS NULL
           AND b2.user_id_blocked IS NULL
-          AND l3.topic_id IS NULL
+          AND l3.post_id IS NULL
           AND b3.user_id_blocked IS NULL
         ORDER BY n.create_date DESC
         LIMIT 30
@@ -145,36 +145,36 @@ module.exports = async (req, res) => {
           n.create_date,
           u.display_name,
           u.display_name_index,
-          c.comment_id,
+          c.reply_id,
           LEFT(c.body, 51) as body,
           LEFT(c.note, 21) as note,
           LEFT(a.title, 21) as title,
           CASE
-            WHEN c.parent_comment_id is NULL THEN 'topic'
+            WHEN c.parent_reply_id is NULL THEN 'topic'
             WHEN p.user_id = $1 THEN 'comment'
             ELSE 'topic_comment'
           END AS reply_type
-        FROM notifications n
-        INNER JOIN comments c ON c.comment_id = n.comment_id
-        LEFT JOIN comments p ON p.comment_id = c.parent_comment_id
+        FROM reply_notifications n
+        INNER JOIN replies c ON c.reply_id = n.reply_id
+        LEFT JOIN replies p ON p.reply_id = c.parent_reply_id
         INNER JOIN users u ON u.user_id = c.user_id
-        INNER JOIN topics a ON a.topic_id = c.parent_topic_id
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        INNER JOIN posts a ON a.post_id = c.parent_post_id
+        LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
-        LEFT JOIN flagged_comments l2 ON l2.comment_id = p.comment_id
+        LEFT JOIN flagged_replies l2 ON l2.reply_id = p.reply_id
         LEFT JOIN blocked_users b2 ON b2.user_id_blocked = p.user_id AND b2.user_id_blocking = $1
-        LEFT JOIN flagged_topics l3 ON l3.topic_id = a.topic_id
+        LEFT JOIN flagged_posts l3 ON l3.post_id = a.post_id
         LEFT JOIN blocked_users b3 ON b3.user_id_blocked = a.user_id AND b3.user_id_blocking = $1
         WHERE
           n.user_id = $1
           AND read = TRUE
           AND (n.create_date < $2 OR $2 IS NULL)
           AND (n.create_date > $3 OR $3 IS NULL)
-          AND l.comment_id IS NULL
+          AND l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
-          AND l2.comment_id IS NULL
+          AND l2.reply_id IS NULL
           AND b2.user_id_blocked IS NULL
-          AND l3.topic_id IS NULL
+          AND l3.post_id IS NULL
           AND b3.user_id_blocked IS NULL
         ORDER BY n.create_date DESC
         LIMIT 30

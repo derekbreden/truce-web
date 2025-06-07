@@ -10,11 +10,11 @@ module.exports = async (req, res) => {
 		const images = await req.client.query(
 			`
       SELECT image_uuids
-      FROM comments
+      FROM replies
       WHERE user_id = $1
       UNION
       SELECT image_uuids
-      FROM topics
+      FROM posts
       WHERE user_id = $1
       `,
 			[req.session.user_id],
@@ -57,10 +57,10 @@ module.exports = async (req, res) => {
 		// Delete comment ancestors
 		await req.client.query(
 			`
-      DELETE FROM comment_ancestors
-      WHERE comment_id IN (
-        SELECT comment_id
-        FROM comments
+      DELETE FROM reply_ancestors
+      WHERE reply_id IN (
+        SELECT reply_id
+        FROM replies
         WHERE user_id = $1
       )
       `,
@@ -70,13 +70,13 @@ module.exports = async (req, res) => {
 		// Delete favorites
 		await req.client.query(
 			`
-      DELETE FROM favorite_topics WHERE user_id = $1
+      DELETE FROM favorite_posts WHERE user_id = $1
       `,
 			[req.session.user_id],
 		)
 		await req.client.query(
 			`
-      DELETE FROM favorite_comments WHERE user_id = $1
+      DELETE FROM favorite_replies WHERE user_id = $1
       `,
 			[req.session.user_id],
 		)
@@ -90,10 +90,10 @@ module.exports = async (req, res) => {
 		// Delete polls
 		await req.client.query(
 			`
-      DELETE FROM poll_votes
-      WHERE topic_id IN (
-        SELECT topic_id
-        FROM topics
+      DELETE FROM post_poll_votes
+      WHERE post_id IN (
+        SELECT post_id
+        FROM posts
         WHERE user_id = $1
       )
       `,
@@ -101,7 +101,7 @@ module.exports = async (req, res) => {
 		)
 		await req.client.query(
 			`
-      DELETE FROM poll_votes
+      DELETE FROM post_poll_votes
       WHERE user_id = $1
       `,
 			[req.session.user_id],
@@ -136,13 +136,13 @@ module.exports = async (req, res) => {
 		// Comments / Topics / User
 		await req.client.query(
 			`
-      DELETE FROM comments WHERE user_id = $1
+      DELETE FROM replies WHERE user_id = $1
       `,
 			[req.session.user_id],
 		)
 		await req.client.query(
 			`
-      DELETE FROM topics WHERE user_id = $1
+      DELETE FROM posts WHERE user_id = $1
       `,
 			[req.session.user_id],
 		)
@@ -156,60 +156,60 @@ module.exports = async (req, res) => {
 		// Update favorite and comment count columns on comments and topics
 		await req.client.query(
 			`
-      UPDATE comments
+      UPDATE replies
       SET
         favorite_count = COALESCE(fav_counts.favorite_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          c.comment_id,
-          COUNT(fc.comment_id) AS favorite_count
-        FROM comments c
-        LEFT JOIN favorite_comments fc ON c.comment_id = fc.comment_id
-        GROUP BY c.comment_id
+          c.reply_id,
+          COUNT(fc.reply_id) AS favorite_count
+        FROM replies c
+        LEFT JOIN favorite_replies fc ON c.reply_id = fc.reply_id
+        GROUP BY c.reply_id
       ) AS fav_counts
-      WHERE comments.comment_id = fav_counts.comment_id
+      WHERE replies.reply_id = fav_counts.reply_id
       `,
 		)
 		await req.client.query(
 			`
-      UPDATE topics
+      UPDATE posts
       SET
         favorite_count = COALESCE(fav_counts.favorite_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          t.topic_id,
-          COUNT(ft.topic_id) AS favorite_count
-        FROM topics t
-        LEFT JOIN favorite_topics ft ON t.topic_id = ft.topic_id
-        GROUP BY t.topic_id
+          t.post_id,
+          COUNT(ft.post_id) AS favorite_count
+        FROM posts t
+        LEFT JOIN favorite_posts ft ON t.post_id = ft.post_id
+        GROUP BY t.post_id
       ) AS fav_counts
-      WHERE topics.topic_id = fav_counts.topic_id
+      WHERE posts.post_id = fav_counts.post_id
       `,
 		)
 		await req.client.query(
 			`
-      UPDATE topics
+      UPDATE posts
       SET
         comment_count = COALESCE(comment_counts.comment_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          t.topic_id,
+          t.post_id,
           SUM(
             CASE
-              WHEN l.comment_id IS NULL AND c.comment_id IS NOT NULL
+              WHEN l.reply_id IS NULL AND c.reply_id IS NOT NULL
                 THEN 1
               ELSE 0
             END
           ) AS comment_count
-        FROM topics t
-        LEFT JOIN comments c ON t.topic_id = c.parent_topic_id
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
-        GROUP BY t.topic_id
+        FROM posts t
+        LEFT JOIN replies c ON t.post_id = c.parent_post_id
+        LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
+        GROUP BY t.post_id
       ) AS comment_counts
-      WHERE topics.topic_id = comment_counts.topic_id
+      WHERE posts.post_id = comment_counts.post_id
       `,
 		)
 

@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 			`
       WITH combined AS (
         SELECT 
-          c.comment_id AS id,
+          c.reply_id AS id,
           c.create_date,
           NULL AS title,
           c.body,
@@ -26,8 +26,8 @@ module.exports = async (req, res) => {
           NULL as comment_count,
           c.counts_max_create_date,
           c.user_id,
-          c.parent_comment_id,
-          c.parent_topic_id,
+          c.parent_reply_id,
+          c.parent_post_id,
           CASE WHEN fc.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           fc.create_date as favorite_create_date,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
@@ -36,16 +36,16 @@ module.exports = async (req, res) => {
           FALSE as voted,
           'comment' AS type,
           '' AS tags
-        FROM comments c
-        LEFT JOIN favorite_comments fc ON c.comment_id = fc.comment_id AND fc.user_id = $1
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        FROM replies c
+        LEFT JOIN favorite_replies fc ON c.reply_id = fc.reply_id AND fc.user_id = $1
+        LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $1
         WHERE
-          l.comment_id IS NULL
+          l.reply_id IS NULL
           AND b.user_id_blocked IS NULL
         UNION
         SELECT
-          t.topic_id AS id,
+          t.post_id AS id,
           t.create_date,
           t.title,
           LEFT(t.body, 1000) as body,
@@ -61,33 +61,33 @@ module.exports = async (req, res) => {
           t.comment_count,
           t.counts_max_create_date,
           t.user_id,
-          NULL as parent_comment_id,
-          NULL as parent_topic_id,
+          NULL as parent_reply_id,
+          NULL as parent_post_id,
           CASE WHEN ft.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited,
           ft.create_date as favorite_create_date,
           CASE WHEN t.user_id = $1 THEN true ELSE false END AS edit,
           t.image_uuids,
           CASE WHEN EXISTS (
             SELECT 1
-            FROM comments c
-            WHERE c.parent_topic_id = t.topic_id
+            FROM replies c
+            WHERE c.parent_post_id = t.post_id
               AND c.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           'topic' AS type,
           (
             SELECT STRING_AGG(ts.tag_name, ',')
-            FROM topic_tags tt
+            FROM post_tags tt
             INNER JOIN tags ts ON ts.tag_id = tt.tag_id
-            WHERE tt.topic_id = t.topic_id
+            WHERE tt.post_id = t.post_id
           ) as tags
-        FROM topics t
-        LEFT JOIN favorite_topics ft ON t.topic_id = ft.topic_id AND ft.user_id = $1
-        LEFT JOIN poll_votes v ON v.topic_id = t.topic_id AND v.user_id = $1
-        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        FROM posts t
+        LEFT JOIN favorite_posts ft ON t.post_id = ft.post_id AND ft.user_id = $1
+        LEFT JOIN post_poll_votes v ON v.post_id = t.post_id AND v.user_id = $1
+        LEFT JOIN flagged_posts l ON l.post_id = t.post_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
         WHERE
-          l.topic_id IS NULL
+          l.post_id IS NULL
           AND b.user_id_blocked IS NULL
       )
       SELECT 
@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
         CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
         pt.title AS parent_topic_title,
         pt.slug AS parent_topic_slug,
-        pc.comment_id AS parent_comment_id,
+        pc.reply_id AS parent_reply_id,
         pc.body AS parent_comment_body,
         pc.note AS parent_comment_note,
         pcu.display_name AS parent_comment_display_name,
@@ -133,15 +133,15 @@ module.exports = async (req, res) => {
         combined.favorited
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id
-      LEFT JOIN topics pt ON combined.parent_topic_id = pt.topic_id
+      LEFT JOIN topics pt ON combined.parent_post_id = pt.post_id
       LEFT JOIN users pu ON pt.user_id = pu.user_id
-      LEFT JOIN comments pc ON combined.parent_comment_id = pc.comment_id
+      LEFT JOIN comments pc ON combined.parent_reply_id = pc.reply_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
-      LEFT JOIN favorite_comments pcf ON combined.id = pcf.comment_id AND pcf.user_id = $1
-      LEFT JOIN flagged_comments l ON l.comment_id = pc.comment_id
+      LEFT JOIN favorite_replies pcf ON combined.id = pcf.reply_id AND pcf.user_id = $1
+      LEFT JOIN flagged_replies l ON l.reply_id = pc.reply_id
       LEFT JOIN blocked_users b ON b.user_id_blocked = pc.user_id AND b.user_id_blocking = $1
       WHERE
-        l.comment_id IS NULL
+        l.reply_id IS NULL
         AND b.user_id_blocked IS NULL
         ${
 					req.body.path === "/favorites"

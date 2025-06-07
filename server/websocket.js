@@ -26,34 +26,34 @@ module.exports = {
 							if (message.path.substr(0, 7) === "/topic/") {
 								const topic = await client.query(
 									`
-                    SELECT topic_id
-                    FROM topics
+                    SELECT post_id
+                    FROM posts
                     WHERE slug = $1
                   `,
 									[message.path.substr(7)],
 								)
-								this.ws_active[ws_uuid].active_topic_id = topic.rows.length
-									? topic.rows[0].topic_id
+								this.ws_active[ws_uuid].active_post_id = topic.rows.length
+									? topic.rows[0].post_id
 									: false
 							} else if (message.path.substr(0, 9) === "/comment/") {
 								const comment = await client.query(
 									`
-                    SELECT parent_topic_id
-                    FROM comments
+                    SELECT parent_post_id
+                    FROM replies
                     WHERE comment_id = $1
                   `,
 									[message.path.substr(9)],
 								)
-								this.ws_active[ws_uuid].active_topic_id = comment.rows.length
-									? comment.rows[0].parent_topic_id
+								this.ws_active[ws_uuid].active_post_id = comment.rows.length
+									? comment.rows[0].parent_post_id
 									: false
 							} else {
-								delete this.ws_active[ws_uuid].active_topic_id
+								delete this.ws_active[ws_uuid].active_post_id
 							}
 						} catch (err) {
 							console.error("Websocket error", err)
 							try {
-								delete this.ws_active[ws_uuid].active_topic_id
+								delete this.ws_active[ws_uuid].active_post_id
 							} catch (err) {
 								console.error("Websocket error deleting", err)
 							}
@@ -66,14 +66,14 @@ module.exports = {
 			ws.send("UPDATE")
 		})
 	},
-	sendMessage(message, topic_id) {
+	sendMessage(message, post_id) {
 		console.log(`Found ${Object.keys(this.ws_active).length} total clients`)
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (
-				!this.ws_active[ws_uuid].active_topic_id ||
-				this.ws_active[ws_uuid].active_topic_id === topic_id
+				!this.ws_active[ws_uuid].active_post_id ||
+				this.ws_active[ws_uuid].active_post_id === post_id
 			) {
-				console.log(`Sending message to ${ws_uuid} for ${topic_id}`)
+				console.log(`Sending message to ${ws_uuid} for ${post_id}`)
 				this.ws_active[ws_uuid].send(message)
 			}
 		})

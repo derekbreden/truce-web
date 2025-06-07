@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
 		if (req.body.topic_id_to_block) {
 			const topic_result = await req.client.query(
 				`
-        SELECT user_id FROM topics WHERE topic_id = $1
+        SELECT user_id FROM posts WHERE post_id = $1
         `,
 				[req.body.topic_id_to_block],
 			)
@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 		if (req.body.comment_id_to_block) {
 			const comment_result = await req.client.query(
 				`
-        SELECT user_id FROM comments WHERE comment_id = $1
+        SELECT user_id FROM replies WHERE reply_id = $1
         `,
 				[req.body.comment_id_to_block],
 			)

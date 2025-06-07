@@ -8,25 +8,25 @@ module.exports = async (req, res) => {
 		const comment_results = await req.client.query(
 			`
       WITH root_comment AS (
-        SELECT comment_id
-        FROM comments
+        SELECT reply_id
+        FROM replies
         WHERE
-          parent_comment_id IS NULL
-          AND comment_id IN (
-            SELECT ancestor_id AS comment_id
-            FROM comment_ancestors
-            WHERE comment_id = $1
+          parent_reply_id IS NULL
+          AND reply_id IN (
+            SELECT ancestor_id AS reply_id
+            FROM reply_ancestors
+            WHERE reply_id = $1
             UNION
-            SELECT $1 as comment_id
+            SELECT $1 as reply_id
           )
       )
       SELECT
         c.create_date,
-        c.comment_id,
+        c.reply_id,
         c.body,
         c.note,
         c.favorite_count,
-        c.parent_comment_id,
+        c.parent_reply_id,
         u.user_id,
         u.display_name,
         u.display_name_index,
@@ -36,26 +36,26 @@ module.exports = async (req, res) => {
         CASE WHEN c.user_id = $2 THEN true ELSE false END AS edit,
         c.image_uuids,
         CASE WHEN f.user_id IS NOT NULL THEN TRUE ELSE FALSE END as favorited
-      FROM comments c
+      FROM replies c
       INNER JOIN users u ON c.user_id = u.user_id
-      LEFT JOIN favorite_comments f ON f.comment_id = c.comment_id AND f.user_id = $2
-      LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+      LEFT JOIN favorite_replies f ON f.reply_id = c.reply_id AND f.user_id = $2
+      LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
       LEFT JOIN blocked_users b ON b.user_id_blocked = c.user_id AND b.user_id_blocking = $2
       WHERE
         (
-          c.comment_id IN (
-            SELECT comment_id FROM root_comment
-          ) OR c.comment_id IN (
-            SELECT comment_id
-            FROM comment_ancestors
+          c.reply_id IN (
+            SELECT reply_id FROM root_comment
+          ) OR c.reply_id IN (
+            SELECT reply_id
+            FROM reply_ancestors
             WHERE ancestor_id IN (
-              SELECT comment_id FROM root_comment
+              SELECT reply_id FROM root_comment
             )
           )
         ) AND (
           c.create_date > $3 OR $3 IS NULL
         )
-        AND l.comment_id IS NULL
+        AND l.reply_id IS NULL
         AND b.user_id_blocked IS NULL
       ORDER BY c.create_date ASC
       `,
@@ -69,15 +69,15 @@ module.exports = async (req, res) => {
 			const topic_result = await req.client.query(
 				`
         SELECT t.title, t.slug
-        FROM topics t
-        LEFT JOIN flagged_topics l ON l.topic_id = t.topic_id
+        FROM posts t
+        LEFT JOIN flagged_posts l ON l.post_id = t.post_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
-        WHERE t.topic_id IN (
-          SELECT parent_topic_id
-          FROM comments
-          WHERE comment_id = $2
+        WHERE t.post_id IN (
+          SELECT parent_post_id
+          FROM replies
+          WHERE reply_id = $2
         )
-        AND l.topic_id IS NULL
+        AND l.post_id IS NULL
         AND b.user_id_blocked IS NULL
         `,
 				[req.session.user_id || 0, comment_id],

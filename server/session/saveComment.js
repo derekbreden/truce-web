@@ -40,8 +40,8 @@ module.exports = async (req, res) => {
 			const slug = req.body.path.substr(7)
 			const topic_results = await req.client.query(
 				`
-        SELECT topic_id
-        FROM topics
+        SELECT post_id as topic_id
+        FROM posts
         WHERE slug = $1
         `,
 				[slug],
@@ -61,14 +61,14 @@ module.exports = async (req, res) => {
 			const ancestor_comment_id = req.body.path.substr(9)
 			const ancestor_topic_results = await req.client.query(
 				`
-        SELECT parent_topic_id
-        FROM comments
-        WHERE comment_id = $1
+        SELECT parent_post_id
+        FROM replies
+        WHERE reply_id = $1
         `,
 				[ancestor_comment_id],
 			)
 			if (ancestor_topic_results.rows.length) {
-				topic_id = ancestor_topic_results.rows[0].parent_topic_id
+				topic_id = ancestor_topic_results.rows[0].parent_post_id
 			} else {
 				res.end(
 					JSON.stringify({
@@ -88,7 +88,7 @@ module.exports = async (req, res) => {
         t.note,
         u.display_name,
         t.image_uuids
-      FROM topics t
+      FROM posts t
       INNER JOIN users u ON t.user_id = u.user_id
       WHERE t.topic_id = $1
       ORDER BY t.create_date ASC
@@ -155,28 +155,28 @@ module.exports = async (req, res) => {
 				name: "Admin",
 				content: "Comments:",
 			})
-			const comment_ancestors = await req.client.query(
+			const reply_ancestors = await req.client.query(
 				`
         SELECT
           u.display_name,
           c.body,
           c.note,
-          c.comment_id,
+          c.reply_id,
           c.image_uuids
-        FROM comments c
+        FROM replies c
         INNER JOIN users u ON u.user_id = c.user_id
         WHERE
-          c.comment_id = $1
-          OR c.comment_id IN (
+          c.reply_id = $1
+          OR c.reply_id IN (
             SELECT ancestor_id
-            FROM comment_ancestors
-            WHERE comment_id = $1
+            FROM reply_ancestors
+            WHERE reply_id = $1
           )
         ORDER BY c.create_date ASC
         `,
 				[req.body.parent_comment_id],
 			)
-			for (const comment_ancestor of comment_ancestors.rows) {
+			for (const comment_ancestor of reply_ancestors.rows) {
 				// Get base64 image urls from object store
 				const pngs = comment_ancestor.image_uuids
 					? (
@@ -235,7 +235,7 @@ module.exports = async (req, res) => {
 					})
 				}
 			}
-			ancestor_ids.push(...comment_ancestors.rows.map((c) => c.comment_id))
+			ancestor_ids.push(...reply_ancestors.rows.map((c) => c.reply_id))
 		}
 		messages.push({
 			role: "user",
@@ -278,10 +278,10 @@ module.exports = async (req, res) => {
 			if (req.body.comment_id) {
 				await req.client.query(
 					`
-          UPDATE comments
+          UPDATE replies
           SET body = $1, note = NULL, create_date = NOW()
           WHERE
-            comment_id = $2
+            reply_id = $2
             AND user_id = $3
           `,
 					[req.body.body, req.body.comment_id, req.session.user_id],
@@ -289,11 +289,11 @@ module.exports = async (req, res) => {
 			} else {
 				const comment_inserted = await req.client.query(
 					`
-          INSERT INTO comments
-            (body, parent_topic_id, user_id, parent_comment_id)
+          INSERT INTO replies
+            (body, parent_post_id, user_id, parent_reply_id)
           VALUES
             ($1, $2, $3, $4)
-          RETURNING comment_id
+          RETURNING reply_id as comment_id
           `,
 					[
 						req.body.body,
@@ -308,10 +308,10 @@ module.exports = async (req, res) => {
 			if (req.body.comment_id) {
 				await req.client.query(
 					`
-          UPDATE comments
+          UPDATE replies
           SET body = $1, note = $2, create_date = NOW()
           WHERE
-            comment_id = $3
+            reply_id = $3
             AND user_id = $4
           `,
 					[
@@ -324,11 +324,11 @@ module.exports = async (req, res) => {
 			} else {
 				const comment_inserted = await req.client.query(
 					`
-          INSERT INTO comments
-            (body, note, parent_topic_id, user_id, parent_comment_id)
+          INSERT INTO replies
+            (body, note, parent_post_id, user_id, parent_reply_id)
           VALUES
             ($1, $2, $3, $4, $5)
-          RETURNING comment_id
+          RETURNING reply_id as comment_id
           `,
 					[
 						req.body.body,
@@ -355,7 +355,7 @@ module.exports = async (req, res) => {
 			// Execute the bulk insert query
 			await req.client.query(
 				`
-        INSERT INTO comment_ancestors (comment_id, ancestor_id)
+        INSERT INTO reply_ancestors (reply_id, ancestor_reply_id)
         VALUES ${values}
         `,
 				[comment_id, ...ancestor_ids],
@@ -367,8 +367,8 @@ module.exports = async (req, res) => {
 			const existing_images = await req.client.query(
 				`
         SELECT image_uuids
-        FROM comments
-        WHERE comment_id = $1
+        FROM replies
+        WHERE reply_id = $1
         `,
 				[comment_id],
 			)
@@ -407,9 +407,9 @@ module.exports = async (req, res) => {
 		}
 		await req.client.query(
 			`
-      UPDATE comments
+      UPDATE replies
       SET image_uuids = $1
-      WHERE comment_id = $2
+      WHERE reply_id = $2
       `,
 			[image_uuids.join(","), comment_id],
 		)
@@ -424,11 +424,11 @@ module.exports = async (req, res) => {
       FROM (
         SELECT
           COUNT(c.*) AS comment_count
-        FROM comments c
-        LEFT JOIN flagged_comments l ON l.comment_id = c.comment_id
+        FROM replies c
+        LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         WHERE
-          c.parent_topic_id = $1
-          AND l.comment_id IS NULL
+          c.parent_post_id = $1
+          AND l.reply_id IS NULL
       ) AS subquery
       WHERE topics.topic_id = $1
       `,
@@ -454,15 +454,15 @@ module.exports = async (req, res) => {
       FROM subscriptions
       WHERE user_id IN (
         SELECT user_id
-        FROM topics
+        FROM posts
         WHERE topic_id = $1
         UNION
         SELECT user_id
-        FROM comments
-        WHERE comment_id IN (
+        FROM replies
+        WHERE reply_id IN (
           SELECT ancestor_id
-          FROM comment_ancestors
-          WHERE comment_id = $2
+          FROM reply_ancestors
+          WHERE reply_id = $2
         )
       ) AND user_id <> $3
       AND active = TRUE
@@ -474,18 +474,18 @@ module.exports = async (req, res) => {
 		const user_ids_to_notify = await req.client.query(
 			`
       SELECT user_id
-      FROM topics
+      FROM posts
       WHERE
         topic_id = $1
         AND user_id <> $3
       UNION
       SELECT user_id
-      FROM comments
+      FROM replies
       WHERE
-        comment_id IN (
+        reply_id IN (
           SELECT ancestor_id
-          FROM comment_ancestors
-          WHERE comment_id = $2
+          FROM reply_ancestors
+          WHERE reply_id = $2
         )
         AND user_id <> $3
       `,
@@ -497,8 +497,8 @@ module.exports = async (req, res) => {
 			// Insert notifications records for unread notifications
 			await req.client.query(
 				`
-        INSERT INTO notifications
-          (user_id, comment_id)
+        INSERT INTO reply_notifications
+          (user_id, reply_id)
         VALUES
           ($1, $2)
         `,
@@ -529,7 +529,7 @@ module.exports = async (req, res) => {
 				`
         SELECT 
           COUNT(*) AS unread_count
-        FROM notifications
+        FROM reply_notifications
         WHERE
           user_id = $1
           AND read = FALSE

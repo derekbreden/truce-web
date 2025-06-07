@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
         COUNT(tt.tag_id) AS topics
       FROM
         tags ts
-        LEFT JOIN topic_tags tt ON ts.tag_id = tt.tag_id
+        LEFT JOIN post_tags tt ON ts.tag_id = tt.tag_id
       GROUP BY
         ts.tag_id,
         ts.tag_name,
