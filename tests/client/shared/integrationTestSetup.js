@@ -119,9 +119,42 @@ function setupIntegrationTestEnvironment(options) {
 
 			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
 			window.WebSocket = function (url) {
-				this.send = function (data) {}
-				this.close = function () {}
-				this.addEventListener = function (event, callback) {}
+				this.url = url;
+				this.isMockWebSocket = true; // Identify mock
+				this.send = function (data) {
+					// console.log(`Mock WebSocket sent: ${data}`);
+				};
+				this.close = function () {
+					// console.log("Mock WebSocket closed");
+				};
+				this.messageCallback = null;
+				this.addEventListener = function (event, callback) {
+					if (event === "message") {
+						this.messageCallback = callback;
+					}
+					// Add stubs for other events if necessary, e.g., open, close, error
+					if (event === "open" && this.onopen) {
+						this.onopen();
+					}
+					if (event === "close" && this.onclose) {
+						this.onclose();
+					}
+				};
+				this.triggerMessage = function (data) {
+					if (this.messageCallback) {
+						// Simulate a MessageEvent object
+						this.messageCallback({ data: data });
+					} else {
+						// console.log("Mock WebSocket: No message callback registered to trigger.");
+					}
+				};
+				// Helper to simulate 'open' event if client code expects it
+				// and if addEventListener isn't used for open
+				this.simulateOpen = function() {
+					if (this.onopen) {
+						this.onopen();
+					}
+				};
 			}
 
 			// Mock setTimeout to be instant, to avoid delays
@@ -138,28 +171,51 @@ function setupIntegrationTestEnvironment(options) {
 
 			// Mock fetch
 			window.fetch = async function (url, fetchOptions) {
-				// Return response for any path set by setMockFetchResponseForPaths({"/path": {"success":true}})
-				for (const path of Object.keys(mockFetchResponseForPaths)) {
-					if (url === "/session") {
-						const body = JSON.parse(fetchOptions.body)
-						if (body.path === path) {
-							return Promise.resolve({
-								status: 200,
-								json: async () => mockFetchResponseForPaths[path],
-							})
-						}
+				const body = fetchOptions?.body ? JSON.parse(fetchOptions.body) : null;
+
+				if (url === "/session") {
+					console.log("FETCH MOCK: /session call. Body:", JSON.stringify(body));
+					console.log("FETCH MOCK: mockFetchResponseForPaths['/session'] exists?", Boolean(mockFetchResponseForPaths["/session"]));
+					if (body) {
+						console.log("FETCH MOCK: body.min_create_date undefined?", body.min_create_date === undefined);
+						console.log("FETCH MOCK: body.min_counts_create_date undefined?", body.min_counts_create_date === undefined);
+					}
+
+					// Prioritize mockFetchResponseForPaths["/session"] if it looks like a getMoreRecent call
+					if (mockFetchResponseForPaths["/session"] && (body?.min_create_date !== undefined || body?.min_counts_create_date !== undefined)) {
+						console.log("FETCH MOCK (Hybrid): getMoreRecent-like call, serving data from mockFetchResponseForPaths['/session']");
+						return Promise.resolve({ status: 200, json: async () => mockFetchResponseForPaths["/session"] });
+					}
+
+					// Fallback for general /session calls
+					if (body && body.path && mockFetchResponseForPaths[body.path]) {
+						console.log(`FETCH MOCK (Hybrid): /session call for body.path ${body.path}, serving data from mockFetchResponseForPaths['${body.path}']`);
+						return Promise.resolve({ status: 200, json: async () => mockFetchResponseForPaths[body.path] });
+					}
+
+					// If the above specific /session conditions don't match, but a general "/session" mock exists, use it.
+					if (mockFetchResponseForPaths["/session"]) {
+						console.log("FETCH MOCK (Hybrid): Fallback /session call, serving data from mockFetchResponseForPaths['/session']");
+						return Promise.resolve({ status: 200, json: async () => mockFetchResponseForPaths["/session"] });
+					}
+
+				} else { // For non-/session URLs like "/topics", "/" (direct navigation or initial load not via /session)
+					const pathData = mockFetchResponseForPaths[url];
+					if (pathData) {
+						// console.log(`FETCH MOCK (Hybrid): Direct URL match for ${url}, serving data`);
+						return Promise.resolve({ status: 200, json: async () => pathData });
 					}
 				}
 
-				// Otherwise return an error
+				console.error(`FETCH MOCK (Hybrid): Unmocked fetch for URL: ${url}`, fetchOptions ? `with options: ${JSON.stringify(fetchOptions)}` : "");
 				return Promise.resolve({
 					status: 500,
 					json: async () => ({
 						success: false,
-						error: "Test error: Unmocked fetch path",
+						error: `Test error: Unmocked fetch for URL: ${url}`,
 					}),
-				})
-			}
+				});
+			};
 		},
 	})
 	// --------------------------------------------------------------------------

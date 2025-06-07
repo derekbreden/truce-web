@@ -360,30 +360,32 @@ const getMoreRecent = () => {
 
 					// If we found a match in the cache
 					if (found_topic || found_activity) {
+						const target_object = found_topic || found_activity;
+
 						// Update the cached data
-						;(found_topic || found_activity).comment_count =
-							topic_count.comment_count(
-								found_topic || found_activity,
-							).favorite_count =
-							topic_count
-								.favorite_count(
-									// Update the markup
-									found_topic || found_activity,
-								)
-								.$topic.$("[comments] p").innerText =
-							comment_text(found_topic || found_activity).$topic.$(
-								"[favorites] p",
-							).innerText =
-								favorite_text
+						target_object.comment_count = topic_count.comment_count;
+						target_object.favorite_count = topic_count.favorite_count;
+
+						// Update the markup, if the $topic element exists and its sub-elements are found
+						if (target_object.$topic) {
+							const comments_p = target_object.$topic.$("[comments] p");
+							if (comments_p) {
+								comments_p.innerText = String(comment_text); // Explicitly string
+							}
+							const favorites_p = target_object.$topic.$("[favorites] p");
+							if (favorites_p) {
+								favorites_p.innerText = String(favorite_text); // Explicitly string
+							}
+						}
 
 						// Poll requires a complete re-render
-						if (
-							(found_topic || found_activity).poll_1 &&
-							topic_count.poll_counts
-						) {
-							;(found_topic || found_activity).poll_counts = topic_count
-								.poll_counts(found_topic || found_activity)
-								.$topic.replaceWith(renderTopic(found_topic || found_activity))
+						if (target_object.poll_1 && topic_count.poll_counts) {
+							target_object.poll_counts = topic_count.poll_counts;
+							if (target_object.$topic) { // Check if $topic exists before trying to replaceWith
+								const newTopicElement = renderTopic(target_object);
+								target_object.$topic.replaceWith(newTopicElement);
+								target_object.$topic = newTopicElement; // Update reference in cache
+							}
 						}
 					}
 				})
@@ -414,9 +416,6 @@ const getMoreRecent = () => {
 
 			// Acknowledge we finished loading
 			state.loading_path = false
-
-			// Emit rendered event
-			$("body").dispatchEvent(new CustomEvent("page-updated"))
 		})
 		.catch(function (error) {
 			state.loading_path = false
