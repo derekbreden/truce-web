@@ -21,6 +21,8 @@ function findTestFiles(directory, categorizedFiles) {
 				const pathParts = fullPath.split(path.sep)
 				if (pathParts.includes("integration")) {
 					categorizedFiles.integration.push(fullPath)
+				} else if (pathParts.includes("unit")) {
+					categorizedFiles.unit.push(fullPath)
 				} else {
 					categorizedFiles.other.push(fullPath)
 				}
@@ -76,20 +78,16 @@ async function main() {
 		testTypeOrPathArg = "all"
 	}
 
-	const validTestTypes = ["integration", "all"]
-
-	if (testTypeOrPathArg === "unit") {
-		console.log(
-			"--- Unit tests are deprecated and no longer supported by this runner. ---",
-		)
-		process.exit(0)
-	}
+	const validTestTypes = ["integration", "unit", "all"]
 
 	if (validTestTypes.includes(testTypeOrPathArg)) {
 		runMode = testTypeOrPathArg
 		switch (runMode) {
 			case "integration":
 				mainHeader = "Running Integration Tests"
+				break
+			case "unit":
+				mainHeader = "Running Unit Tests"
 				break
 			case "all":
 				mainHeader = "Running All Tests"
@@ -110,8 +108,7 @@ async function main() {
 	}
 	console.log(`--- ${mainHeader} ---`)
 
-	// Removed 'unit' from categorizedFiles
-	const categorizedFiles = { integration: [], other: [], single: [] }
+	const categorizedFiles = { integration: [], unit: [], other: [], single: [] }
 
 	if (runMode === "single") {
 		categorizedFiles.single.push(singleFilePath)
@@ -138,6 +135,15 @@ async function main() {
 			},
 		]
 		totalFilesFound = categorizedFiles.integration.length
+	} else if (runMode === "unit") {
+		filesToRun = [
+			{
+				category: "unit",
+				files: categorizedFiles.unit,
+				header: "Unit Tests",
+			},
+		]
+		totalFilesFound = categorizedFiles.unit.length
 	} else if (runMode === "all") {
 		filesToRun = [
 			{
@@ -146,14 +152,18 @@ async function main() {
 				header: "Integration Tests",
 			},
 			{
+				category: "unit",
+				files: categorizedFiles.unit,
+				header: "Unit Tests",
+			},
+			{
 				category: "other",
 				files: categorizedFiles.other,
 				header: "Other Tests",
 			},
 		]
-		// Removed categorizedFiles.unit.length from total
 		totalFilesFound =
-			categorizedFiles.integration.length + categorizedFiles.other.length
+			categorizedFiles.integration.length + categorizedFiles.unit.length + categorizedFiles.other.length
 	} else if (runMode === "single") {
 		filesToRun = [
 			{
@@ -181,17 +191,18 @@ async function main() {
 		`Found ${totalFilesFound} test file(s) for ${runMode === "single" ? `path '${testTypeOrPathArg}'` : `type '${runMode}'`}.`,
 	)
 	if (runMode === "all") {
-		// Removed unit test count log
 		if (categorizedFiles.integration.length > 0)
 			console.log(`  Integration Tests: ${categorizedFiles.integration.length}`)
+		if (categorizedFiles.unit.length > 0)
+			console.log(`  Unit Tests: ${categorizedFiles.unit.length}`)
 		if (categorizedFiles.other.length > 0)
 			console.log(`  Other Tests: ${categorizedFiles.other.length}`)
 	}
 	console.log("")
 
-	// Removed 'unit' from results
 	const results = {
 		integration: { passed: 0, failed: 0, failedFiles: [] },
+		unit: { passed: 0, failed: 0, failedFiles: [] },
 		other: { passed: 0, failed: 0, failedFiles: [] },
 		single: { passed: 0, failed: 0, failedFiles: [] },
 	}
@@ -234,8 +245,7 @@ async function main() {
 	console.log(`\n--- ${mainHeader} Summary ---`)
 
 	if (runMode === "all") {
-		// Removed 'unit' from categoriesToReport
-		const categoriesToReport = ["integration", "other"]
+		const categoriesToReport = ["integration", "unit", "other"]
 		categoriesToReport.forEach((catKey) => {
 			if (
 				categorizedFiles[catKey] &&
