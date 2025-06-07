@@ -26,7 +26,6 @@ const tests = {
 				has_more: false,
 			},
 			"/topics": {
-				success: true,
 				path: "/topics",
 				topics: [
 					{
@@ -58,7 +57,6 @@ const tests = {
 				subscribed_to_users: 0,
 			},
 			"/topic/test-comments-topic": {
-				success: true,
 				path: "/topic/test-comments-topic",
 				topics: [
 					{

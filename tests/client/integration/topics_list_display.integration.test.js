@@ -13,7 +13,6 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 
 	window.setMockFetchResponseForPaths({
 		"/topics": {
-			success: true,
 			path: "/topics",
 			topics: [
 				{

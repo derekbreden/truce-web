@@ -35,7 +35,6 @@ const tests = {
 		// Set fetch response for topics and specific topic
 		window.setMockFetchResponseForPaths({
 			"/topics": {
-				success: true,
 				path: "/topics",
 				topics: [
 					{
@@ -65,7 +64,6 @@ const tests = {
 				subscribed_to_users: 0,
 			},
 			"/topic/test-topic-1": {
-				success: true,
 				path: "/topic/test-topic-1",
 				topics: [
 					// Server returns topic detail in a "topics" array

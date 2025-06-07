@@ -105,8 +105,8 @@ Make sure you have run `npm install jsdom` before running tests.
 			// Most integration tests need to simulate the initial "Join the Discussion" click.
 			// 1. Mock initial and target path responses:
 			window.setMockFetchResponseForPaths({
-				"/": { success: true, path: "/", topics: [], comments: [], user: {} }, // Mock for welcome page
-				"/topics": { success: true, path: "/topics", topics: [{slug: "example-topic", title:"Example Topic", body: "Body of example topic", user_slug: "user-slug", display_name: "User Name"}], comments: [], user: {} } // Mock for topics page
+				"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] }, // Mock for welcome page
+				"/topics": { path: "/topics", topics: [{slug: "example-topic", title:"Example Topic", body: "Body of example topic", user_slug: "user-slug", display_name: "User Name"}], comments: [], activities: [], notifications: [] } // Mock for topics page
 			})
 
 			// 2. Find and click the "Join the Discussion" button:
