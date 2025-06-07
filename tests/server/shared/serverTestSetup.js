@@ -1,8 +1,9 @@
 const { assertEquals, runTests } = require("../../client/shared/testUtils.js")
 
 // Mock database client for server unit tests
-function createMockDatabaseClient() {
+function createMockDatabaseClient(options = {}) {
 	const queryMocks = []
+	const { verbose = false } = options
 	
 	const mockClient = {
 		query: async (sql, params) => {
@@ -13,8 +14,10 @@ function createMockDatabaseClient() {
 				}
 			}
 			
-			// Default response if no mock matched
-			console.warn(`Unmocked database query: ${sql}`)
+			// Only log unmocked queries if verbose mode is enabled
+			if (verbose) {
+				console.warn(`Unmocked database query: ${sql}`)
+			}
 			return { rows: [] }
 		},
 		
@@ -38,8 +41,9 @@ function createMockDatabaseClient() {
 }
 
 // Mock request/response objects for server unit tests
-function createMockRequest(body = {}, session = {}) {
-	const mockClient = createMockDatabaseClient()
+// Pass { verbose: true } in options to enable logging of unmocked database queries
+function createMockRequest(body = {}, session = {}, options = {}) {
+	const mockClient = createMockDatabaseClient(options)
 	
 	return {
 		body,
