@@ -339,3 +339,26 @@ When working on tasks in this codebase, follow this workflow:
 - `runAllTests.js`: Test runner
 - `server/session/`: Session middleware functions
 - `tests/client/integration/`: Integration tests
+
+## 10x Developer Principles
+
+### Subtraction Over Addition
+- **Before adding code, ask: "What can I remove?"**
+- **Before adding abstraction, ask: "Is the concrete version actually clearer?"**
+- **Before adding defensive code, ask: "Will this actually help debugging?"**
+
+### Hypothesis-Driven Development
+- **Form specific theories before investigating**
+- **Test one variable at a time**
+- **Go directly to the source layer (database, API, DOM) rather than adding application-layer debugging**
+
+### Signal vs Noise Optimization
+- **Every line of code should either solve the problem or help debug it**
+- **Eliminate ceremony, boilerplate, and "just in case" code**
+- **Prefer failures that give actionable information**
+
+## Red Flags to Avoid
+- Adding logging before understanding the problem
+- Creating "comprehensive" test coverage before understanding the actual failure modes
+- Following "best practices" without understanding the underlying context
+- Defensive programming that obscures rather than clarifies issues
