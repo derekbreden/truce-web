@@ -70,7 +70,7 @@ const toggleFavorite = async (post_or_reply) => {
 			$favoritesSvg.replaceWith(
 				post_or_reply.favorited
 					? $("icons icon[favorited] svg").cloneNode(true)
-					: $("icons icon[favorited] svg").cloneNode(true),
+					: $("icons icon[favorites] svg").cloneNode(true),
 			)
 		}
 		const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")

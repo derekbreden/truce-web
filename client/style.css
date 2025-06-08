@@ -1953,8 +1953,8 @@ post-details detail {
   padding: 10px;
 }
 
-reply-wrapper detail:not([favorited]),
-reply-wrapper detail[favorited] p,
+reply-wrapper detail:not([favorites]),
+reply-wrapper detail[favorites] p,
 post-details detail:not([favorited]),
 post-details detail[favorited] p {
   opacity: .5;
