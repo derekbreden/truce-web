@@ -123,8 +123,7 @@ async function testMessageDisplayWithContent() {
 	assertEquals(true, $secondMessage.$("message-content span").innerText.includes("Hey there!"), "Second message should have correct content")
 
 	// Verify no empty state when messages exist
-	const $emptyState = $messagesContainer.querySelector("empty-state")
-	assertEquals(false, Boolean($emptyState), "Empty state should not exist when messages are present")
+	assertEquals(null, $messagesContainer.querySelector("empty-state"), "Empty state should not exist when messages are present")
 
 	// Verify conversation header shows other participant
 	const $conversationHeader = $("conversation-header participants h2")

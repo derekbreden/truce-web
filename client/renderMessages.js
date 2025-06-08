@@ -1,3 +1,17 @@
+const renderMessageImages = (image_uuids) => {
+	return image_uuids.reverse().map(image_uuid => {
+		const $image = $(
+			`
+			p[img]
+				img[src=$1]
+			`,
+			["/image/" + image_uuid]
+		)
+		bindImageClick($image, image_uuid)
+		return $image
+	})
+}
+
 const renderMessage = (message) => {
 	const isOwnMessage = message.sender_user_id === state.user_id
 	const timeAgo = new Date(message.create_date).toLocaleString()
@@ -44,7 +58,7 @@ const renderMessage = (message) => {
 			timeAgo,
 			$message_body,
 			message.image_uuids
-				? renderImages(message.image_uuids.split(",").filter(x => x))
+				? renderMessageImages(message.image_uuids.split(",").filter(x => x))
 				: []
 		]
 	)

@@ -51,9 +51,14 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 
 		for (const file of $imageInput.files) {
 			if (file.type.startsWith("image/")) {
-				try {
-					const pngData = await imageToPng(file)
-					selectedImages.push({ url: pngData })
+				imageToPng(URL.createObjectURL(file), (result) => {
+					if (result.error) {
+						console.error("Error processing image:", result.message)
+						modalError("Error processing image. Please try again.")
+						return
+					}
+					
+					selectedImages.push({ url: result.url })
 					
 					const $preview = $(
 						`
@@ -64,13 +69,13 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 									$2
 						`,
 						[
-							pngData,
+							result.url,
 							$("icons icon[remove] svg").cloneNode(true)
 						]
 					)
 					
 					$preview.$("remove-button").on("click", () => {
-						const index = selectedImages.findIndex(img => img.url === pngData)
+						const index = selectedImages.findIndex(img => img.url === result.url)
 						if (index > -1) {
 							selectedImages.splice(index, 1)
 							$preview.remove()
@@ -78,10 +83,7 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 					})
 					
 					$imagePreview.appendChild($preview)
-				} catch (error) {
-					console.error("Error processing image:", error)
-					modalError("Error processing image. Please try again.")
-				}
+				})
 			}
 		}
 	})
@@ -228,9 +230,14 @@ const showEditMessageModal = (message) => {
 	$imageInput.on("change", async () => {
 		for (const file of $imageInput.files) {
 			if (file.type.startsWith("image/")) {
-				try {
-					const pngData = await imageToPng(file)
-					selectedImages.push({ url: pngData })
+				imageToPng(URL.createObjectURL(file), (result) => {
+					if (result.error) {
+						console.error("Error processing image:", result.message)
+						modalError("Error processing image. Please try again.")
+						return
+					}
+					
+					selectedImages.push({ url: result.url })
 					
 					const $preview = $(
 						`
@@ -241,13 +248,13 @@ const showEditMessageModal = (message) => {
 									$2
 						`,
 						[
-							pngData,
+							result.url,
 							$("icons icon[remove] svg").cloneNode(true)
 						]
 					)
 					
 					$preview.$("remove-button").on("click", () => {
-						const index = selectedImages.findIndex(img => img.url === pngData)
+						const index = selectedImages.findIndex(img => img.url === result.url)
 						if (index > -1) {
 							selectedImages.splice(index, 1)
 							$preview.remove()
@@ -255,10 +262,7 @@ const showEditMessageModal = (message) => {
 					})
 					
 					$imagePreview.appendChild($preview)
-				} catch (error) {
-					console.error("Error processing image:", error)
-					modalError("Error processing image. Please try again.")
-				}
+				})
 			}
 		}
 	})

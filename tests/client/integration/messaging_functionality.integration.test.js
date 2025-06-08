@@ -54,8 +54,7 @@ async function testNavigateToMessagesViaMenu() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify menu opened
-	const $menu = $("menu-wrapper")
-	assertEquals(true, Boolean($menu), "Menu should open when hamburger is clicked")
+	assertEquals("menu", $("menu-wrapper menu").tagName.toLowerCase(), "Menu should open when hamburger is clicked")
 
 	// Click Messages link in menu
 	const $messagesLink = $("menu-wrapper a[href='/conversations']")
@@ -67,8 +66,7 @@ async function testNavigateToMessagesViaMenu() {
 
 	// Verify conversation is displayed
 	const $conversationsContainer = $("conversations")
-	const $conversations = $conversationsContainer.querySelectorAll("conversation")
-	assertEquals(true, $conversations.length > 0, "Should display conversations")
+	assertEquals("conversation", $conversationsContainer.$("conversation").tagName.toLowerCase(), "Should display conversations")
 }
 
 async function testNavigateToSpecificMessage() {
@@ -144,9 +142,7 @@ async function testNavigateToSpecificMessage() {
 
 	// Click on the specific conversation
 	const $conversationsContainer = $("conversations")
-	const $conversations = $conversationsContainer.querySelectorAll("conversation")
-	assertEquals(true, $conversations.length > 0, "Conversation element should exist")
-	const $conversation = $conversations[0]
+	const $conversation = $conversationsContainer.$("conversation")
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
@@ -154,14 +150,11 @@ async function testNavigateToSpecificMessage() {
 	assertEquals("/messages/conv-456", state.path, "Should navigate to specific message thread")
 
 	// Verify empty state is displayed (tests our replaceChildren fix)
-	const $emptyState = $("main-content-wrapper[active] empty-state")
-	assertEquals(true, Boolean($emptyState), "Empty state should be displayed for empty conversation")
+	assertEquals("empty-state", $("main-content-wrapper[active] empty-state").tagName.toLowerCase(), "Empty state should be displayed for empty conversation")
 
 	// Verify message interface exists
-	const $textarea = $("main-content-wrapper[active] textarea")
-	const $sendButton = $("main-content-wrapper[active] send-button")
-	assertEquals(true, Boolean($textarea), "Message input should exist")
-	assertEquals(true, Boolean($sendButton), "Send button should exist")
+	assertEquals("textarea", $("main-content-wrapper[active] textarea").tagName.toLowerCase(), "Message input should exist")
+	assertEquals("send-button", $("main-content-wrapper[active] send-button").tagName.toLowerCase(), "Send button should exist")
 }
 
 async function testMessageSendingFlow() {
@@ -285,18 +278,15 @@ async function testMessageSendingFlow() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $conversationsContainer = $("conversations")
-	const $conversations = $conversationsContainer.querySelectorAll("conversation")
-	assertEquals(true, $conversations.length > 0, "Conversation element should exist before clicking")
-	const $conversation = $conversations[0]
+	const $conversation = $conversationsContainer.$("conversation")
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we're on the right page
 	assertEquals("/messages/conv-send", state.path, "Should be on message thread page")
 
-	// Verify empty state shows initially
-	const $emptyState = $("main-content-wrapper[active] empty-state")
-	assertEquals(true, Boolean($emptyState), "Empty state should be displayed initially")
+	// Verify empty state shows initially  
+	assertEquals("empty-state", $("main-content-wrapper[active] empty-state").tagName.toLowerCase(), "Empty state should be displayed initially")
 
 	// Type a message and send it
 	const $textarea = $("main-content-wrapper[active] textarea")
