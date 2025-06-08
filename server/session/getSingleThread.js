@@ -2,9 +2,9 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		(req.body.path.substr(0, 9) === "/reply/" || req.body.path.substr(0, 7) === "/reply/")
+		req.body.path.startsWith("/reply/")
 	) {
-		const reply_id = req.body.path.substr(0, 9) === "/reply/" ? req.body.path.substr(9) : req.body.path.substr(7)
+		const reply_id = req.body.path.split("/")[2]
 		const reply_results = await req.client.query(
 			`
       WITH root_reply AS (

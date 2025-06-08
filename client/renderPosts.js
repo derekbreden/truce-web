@@ -2,11 +2,11 @@ const renderPosts = (posts, topic, user) => {
 	let skip_posts = false
 	if (
 		state.path === "/settings" ||
-		(state.path.substr(0, 6) === "/user/" && state.path.split("/")[3]) ||
+		(state.path.startsWith("/user/") && state.path.split("/")[3]) ||
 		state.path === "/favorites" ||
 		state.path === "/notifications" ||
-		state.path.substr(0, 7) === "/reply/" ||
-		state.path.substr(0, 10) === "/messages/" ||
+		state.path.startsWith("/reply/") ||
+		state.path.startsWith("/messages/") ||
 		state.path === "/conversations"
 	) {
 		skip_posts = true
@@ -31,7 +31,7 @@ const renderPosts = (posts, topic, user) => {
 		.map(renderPost)
 
 	if (!skip_posts) {
-		if (window.innerWidth > 1000 && state.path.substr(0, 7) === "/topic/") {
+		if (window.innerWidth > 1000 && state.path.startsWith("/topic/")) {
 			const $posts_1 = $posts.filter((x, i) => i % 2 === 0)
 			const $posts_2 = $posts.filter((x, i) => i % 2 === 1)
 			$("main-content-wrapper[active] main-content posts")?.replaceChildren(
@@ -57,7 +57,7 @@ const renderPosts = (posts, topic, user) => {
 					),
 				)
 			}
-		} else if (state.path.substr(0, 6) === "/user/") {
+		} else if (state.path.startsWith("/user/")) {
 			$("main-content-wrapper[active] main-content-2").replaceChildren(
 				$(
 					`
@@ -101,7 +101,7 @@ const renderPosts = (posts, topic, user) => {
 	}
 
 	// User
-	if (state.path.substr(0, 6) === "/user/") {
+	if (state.path.startsWith("/user/")) {
 		$("post[user]")?.remove()
 		$("main-content-wrapper[active] main-content posts").prepend(
 			$(
@@ -224,7 +224,7 @@ const renderPosts = (posts, topic, user) => {
 	}
 
 	// Topic
-	if (state.path.substr(0, 7) === "/topic/") {
+	if (state.path.startsWith("/topic/")) {
 		$("post[topic]")?.remove()
 		if (posts.length === 0) {
 			$("main-content-wrapper[active] main-content posts").prepend(
@@ -274,7 +274,7 @@ const renderPosts = (posts, topic, user) => {
 
 	// User profile navigation
 
-	if (state.path.substr(0, 5) === "/user") {
+	if (state.path.startsWith("/user")) {
 		if (state.path.split("/")[3] === "subscribers") {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
@@ -426,7 +426,7 @@ const renderPosts = (posts, topic, user) => {
 	afterDomUpdate()
 	$("posts [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
-		if (new_path.substr(0, 1) === "/") {
+		if (new_path.startsWith("/")) {
 			$a.on("click", ($event) => {
 				$event.stopPropagation()
 				$event.preventDefault()

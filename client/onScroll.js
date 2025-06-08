@@ -13,8 +13,8 @@ const bindScrollEvent = () => {
 			(state.path === "/posts" ||
 				state.path === "/posts/all" ||
 				state.path === "/favorites" ||
-				state.path.substr(0, 7) === "/topic/" ||
-				state.path.substr(0, 6) === "/user/") &&
+				state.path.startsWith("/topic/") ||
+				state.path.startsWith("/user/")) &&
 			state.cache[state.path] &&
 			!state.cache[state.path].finished
 		) {
@@ -64,7 +64,7 @@ const bindScrollEvent = () => {
 						// Stop when we reach the end (no more results returned)
 						if (
 							state.path === "/favorites" ||
-							(state.path.substr(0, 5) === "/user" &&
+							(state.path.startsWith("/user") &&
 								state.path.split("/")[3] === "replies")
 						) {
 							if (data.activities && !data.activities.length) {
@@ -106,7 +106,7 @@ const bindScrollEvent = () => {
 
 		// Replies load older
 		if (
-			state.path.substr(0, 6) === "/post/" &&
+			state.path.startsWith("/post/") &&
 			state.cache[state.path] &&
 			!state.cache[state.path].replies_finished
 		) {

@@ -28,8 +28,8 @@ module.exports = async (req, res) => {
 		req.body.pngs
 	) {
 		let post_id = 0
-		if (req.body.path.substr(0, 7) === "/post/" || req.body.path.substr(0, 6) === "/post/") {
-			const slug = req.body.path.substr(0, 7) === "/post/" ? req.body.path.substr(7) : req.body.path.substr(6)
+		if (req.body.path.startsWith("/post/")) {
+			const slug = req.body.path.split("/")[2]
 			const post_results = await req.client.query(
 				`
         SELECT post_id as post_id
@@ -49,8 +49,8 @@ module.exports = async (req, res) => {
 				return
 			}
 		}
-		if (req.body.path.substr(0, 8) === "/reply" || req.body.path.substr(0, 6) === "/reply") {
-			const ancestor_reply_id = req.body.path.substr(0, 8) === "/reply" ? req.body.path.substr(9) : req.body.path.substr(7)
+		if (req.body.path.startsWith("/reply")) {
+			const ancestor_reply_id = req.body.path.split("/")[2]
 			const ancestor_post_results = await req.client.query(
 				`
         SELECT parent_post_id
@@ -503,11 +503,11 @@ module.exports = async (req, res) => {
 			// Create data for the push
 			const short_display_name =
 				req.body.display_name.length > 20
-					? req.body.display_name.substr(0, 20) + "..."
+					? req.body.display_name.substring(0, 20) + "..."
 					: req.body.display_name
 			const short_body =
 				req.body.body.length > 50
-					? req.body.body.substr(0, 50) + "..."
+					? req.body.body.substring(0, 50) + "..."
 					: req.body.body
 			let topic = `post:${post_id}`
 

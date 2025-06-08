@@ -2,9 +2,9 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		(req.body.path.substr(0, 7) === "/post/" || req.body.path.substr(0, 6) === "/post/")
+		req.body.path.startsWith("/post/")
 	) {
-		const slug = req.body.path.substr(0, 7) === "/post/" ? req.body.path.substr(7) : req.body.path.substr(6)
+		const slug = req.body.path.split("/")[2]
 		let post_id = ""
 
 		if (!req.body.max_reply_create_date) {

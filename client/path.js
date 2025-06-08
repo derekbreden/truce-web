@@ -66,7 +66,7 @@ if (state.path === "/") {
 
 // New path for /topic/ is same as /topics
 let new_path_parsed = state.path
-if (state.path.substr(0, 7) === "/topic/") {
+if (state.path.startsWith("/topic/")) {
 	new_path_parsed = "/topics"
 }
 

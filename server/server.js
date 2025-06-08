@@ -26,13 +26,13 @@ module.exports = {
 				}
 
 				// Path image
-				if (req.path.substr(0, 5) === "image" && req.path.length > 20) {
+				if (req.path.startsWith("image") && req.path.length > 20) {
 					await require("./handleImage")(req, res)
 					return
 				}
 
 				// Path mp3
-				if (req.path.substr(0, 3) === "mp3" && req.path.length > 20) {
+				if (req.path.startsWith("mp3") && req.path.length > 20) {
 					await require("./handleMp3")(req, res)
 					return
 				}

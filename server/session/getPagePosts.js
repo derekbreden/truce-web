@@ -16,8 +16,8 @@ module.exports = async (req, res) => {
 			req.body.path === "/posts/all" ||
 			req.body.path === "/posts" ||
 			req.body.path === "/posts/all" ||
-			req.body.path?.substr(0, 7) === "/topic/" ||
-			req.body.path?.substr(0, 6) === "/user/")
+			req.body.path?.startsWith("/topic/") ||
+			req.body.path?.startsWith("/user/"))
 	) {
 		if (!req.body.max_reply_create_date) {
 			const post_results = await req.client.query(
@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
           AND l.post_id IS NULL
           AND b.user_id_blocked IS NULL
           ${
-						req.body.path.substr(0, 7) === "/topic/"
+						req.body.path.startsWith("/topic/")
 							? `
                 AND p.post_id IN (
                   SELECT post_id
@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
 							: ""
 					}
           ${
-						req.body.path.substr(0, 6) === "/user/"
+						req.body.path.startsWith("/user/")
 							? `
                 AND p.user_id IN (
                   SELECT user_id
@@ -121,9 +121,9 @@ module.exports = async (req, res) => {
 					req.session.user_id || 0,
 					req.body.min_post_create_date || null,
 					req.body.max_post_create_date || null,
-					req.body.path.substr(0, 7) === "/topic/"
-						? req.body.path.substr(7)
-						: req.body.path.substr(0, 6) === "/user/"
+					req.body.path.startsWith("/topic/")
+						? req.body.path.split("/")[2]
+						: req.body.path.startsWith("/user/")
 							? req.body.path.split("/")[2]
 							: undefined,
 				].filter((x) => x !== undefined),

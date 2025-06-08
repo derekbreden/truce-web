@@ -152,7 +152,7 @@ const renderActivities = (activities) => {
 			"main-content-wrapper[active] main-content-2 activities",
 		)?.replaceChildren(...$activities_2)
 	} else if (
-		state.path.substr(0, 5) === "/user" &&
+		state.path.startsWith("/user") &&
 		state.path.split("/")[3] === "replies"
 	) {
 		$("main-content-wrapper[active] main-content-2 activities").replaceChildren(
@@ -183,7 +183,7 @@ const renderActivities = (activities) => {
 
 	$("activities [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
-		if (new_path.substr(0, 1) === "/") {
+		if (new_path.startsWith("/")) {
 			$a.on("click", ($event) => {
 				$event.stopPropagation()
 				$event.preventDefault()

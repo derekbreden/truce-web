@@ -10,8 +10,8 @@ const renderPost = (post) => {
 		state.path === "/posts" ||
 		state.path === "/posts/all" ||
 		state.path === "/favorites" ||
-		state.path.substr(0, 7) === "/topic/" ||
-		state.path.substr(0, 6) === "/user/"
+		state.path.startsWith("/topic/") ||
+		state.path.startsWith("/user/")
 	) {
 		summary_only = true
 	}

@@ -161,10 +161,10 @@ const renderReplies = (replies) => {
 
 	// Add each thread to the DOM
 	beforeDomUpdate()
-	const showReplyList = state.path.substr(0, 6) === "/post/"
+	const showReplyList = state.path.startsWith("/post/")
 	if (!$("main-content-wrapper[active] replies")) {
 		const target =
-			state.path.substr(0, 7) === "/reply/"
+			state.path.startsWith("/reply/")
 				? "main-content-wrapper[active] main-content"
 				: "main-content-wrapper[active] main-content-2"
 		$(target).appendChild(
@@ -229,8 +229,8 @@ const renderReplies = (replies) => {
 	afterDomUpdate()
 
 	// Highlight a reply in a thread we've navigated to specifically
-	if (state.path.substr(0, 6) === "/reply") {
-		const reply_id = state.path.substr(9)
+	if (state.path.startsWith("/reply")) {
+		const reply_id = state.path.split("/")[2]
 		const reply = replies.find((c) => c.reply_id === reply_id)
 		if (reply.$reply.style.display === "none") {
 			reply.$reply.$expand_button.dispatchEvent(
@@ -248,7 +248,7 @@ const renderReplies = (replies) => {
 	}
 
 	// Only render a single reply thread as a thread
-	if (state.path.substr(0, 6) === "/reply") {
+	if (state.path.startsWith("/reply")) {
 		$("main-content-wrapper[active] replies").setAttribute("thread", "")
 	} else {
 		$("main-content-wrapper[active] replies").removeAttribute("thread")

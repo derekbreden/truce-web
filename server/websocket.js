@@ -35,37 +35,35 @@ module.exports = {
 						try {
 							client = await pool.pool.connect()
 
-							if (message.path.substr(0, 7) === "/post/" || message.path.substr(0, 6) === "/post/") {
+							if (message.path.startsWith("/post/")) {
 								const post = await client.query(
 									`
                     SELECT post_id
                     FROM posts
                     WHERE slug = $1
                   `,
-									[message.path.substr(0, 7) === "/post/" ? message.path.substr(7) : message.path.substr(6)],
+									[message.path.split("/")[2]],
 								)
 								this.ws_active[ws_uuid].active_post_id = post.rows.length
 									? post.rows[0].post_id
 									: false
 								delete this.ws_active[ws_uuid].active_conversation_id
-							} else if (message.path.substr(0, 9) === "/reply/" || message.path.substr(0, 7) === "/reply/") {
+							} else if (message.path.startsWith("/reply/")) {
 								const reply = await client.query(
 									`
                     SELECT parent_post_id
                     FROM replies
                     WHERE reply_id = $1
                   `,
-									[message.path.substr(0, 9) === "/reply/" ? message.path.substr(9) : message.path.substr(7)],
+									[message.path.split("/")[2]],
 								)
 								this.ws_active[ws_uuid].active_post_id = reply.rows.length
 									? reply.rows[0].parent_post_id
 									: false
 								delete this.ws_active[ws_uuid].active_conversation_id
-							} else if (message.path.substr(0, 10) === "/messages/" || message.path.substr(0, 9) === "/messages/") {
+							} else if (message.path.startsWith("/messages/")) {
 								// Handle conversation tracking for messaging
-								const conversation_id = message.path.substr(0, 10) === "/messages/" 
-									? message.path.substr(10) 
-									: message.path.substr(9)
+								const conversation_id = message.path.split("/")[2]
 								
 								if (conversation_id && this.ws_active[ws_uuid].user_id) {
 									// Verify user is participant in this conversation

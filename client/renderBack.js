@@ -4,9 +4,9 @@ const renderBack = () => {
 
 	// Sometimes add new wrapper
 	if (
-		state.path.substr(0, 6) === "/post/" ||
-		state.path.substr(0, 6) === "/reply" ||
-		state.path.substr(0, 6) === "/user/"
+		state.path.startsWith("/post/") ||
+		state.path.startsWith("/reply") ||
+		state.path.startsWith("/user/")
 	) {
 		let previous_path = state.path_history[state.path_history.length - 1]
 		if (previous_path === state.path) {
@@ -26,9 +26,9 @@ const renderBack = () => {
 			[
 				previous_path === "/posts" || previous_path === "/posts/all"
 					? "Posts"
-					: previous_path?.substr(0, 6) === "/reply"
+					: previous_path?.startsWith("/reply")
 						? "Reply thread"
-						: previous_path?.substr(0, 6) === "/post/"
+						: previous_path?.startsWith("/post/")
 							? state.cache[previous_path].posts[0].title
 							: previous_path === "/"
 								? "Terms and conditions"
@@ -36,10 +36,10 @@ const renderBack = () => {
 									? "Notifications"
 									: previous_path === "/favorites"
 										? "Favorites"
-										: previous_path?.substr(0, 7) === "/topic/"
-											? previous_path.substr(7)[0].toUpperCase() +
-												previous_path.substr(7).slice(1)
-											: previous_path?.substr(0, 6) === "/user/"
+										: previous_path?.startsWith("/topic/")
+											? previous_path.split("/")[2][0].toUpperCase() +
+												previous_path.split("/")[2].slice(1)
+											: previous_path?.startsWith("/user/")
 												? renderName(
 														state.cache[previous_path].user.display_name,
 														state.cache[previous_path].user.display_name_index,

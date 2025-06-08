@@ -52,7 +52,7 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 	}
 
 	// Check if the input is a template string for creating new elements
-	if (selector_or_flint.substr(0, 1) === "\n") {
+	if (selector_or_flint.startsWith("\n")) {
 		let flint = selector_or_flint
 		const flint_args = flint_args_or_element
 

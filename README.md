@@ -312,7 +312,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 $("[href]").forEach(($el) => {
 	$el.on("click", ($event) => {
 		const new_path = $el.getAttribute("href")
-		if (new_path.substr(0, 1) === "/") {
+		if (new_path.startsWith("/")) {
 			$event.preventDefault()
 			goToPath(new_path)
 		}

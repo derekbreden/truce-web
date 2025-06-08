@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		req.body.path.substr(0, 7) === "/topic/"
+		req.body.path.startsWith("/topic/")
 	) {
 		const topic = await req.client.query(
 			`
@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       WHERE
         ts.topic_name = $1
       `,
-			[req.body.path.substr(7)],
+			[req.body.path.split("/")[2]],
 		)
 		req.results.topic = topic.rows[0] || {}
 	}

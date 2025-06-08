@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		((req.body.path === "/favorites" && req.session.user_id) ||
-			(req.body.path?.substr(0, 6) === "/user/" &&
+			(req.body.path?.startsWith("/user/") &&
 				(req.body.path?.split("/")[3] === "replies" || req.body.path?.split("/")[3] === "replies")))
 	) {
 		req.results.path = req.body.path
@@ -154,7 +154,7 @@ module.exports = async (req, res) => {
 						: ``
 				}
         ${
-					req.body.path.substr(0, 6) === "/user/" &&
+					req.body.path.startsWith("/user/") &&
 					req.body.path.split("/")[3] === "replies"
 						? `
               AND combined.type = 'reply'
@@ -172,7 +172,7 @@ module.exports = async (req, res) => {
 				req.session.user_id || 0,
 				req.body.max_create_date || null,
 				req.body.min_create_date || null,
-				req.body.path.substr(0, 6) === "/user/"
+				req.body.path.startsWith("/user/")
 					? req.body.path.split("/")[2]
 					: undefined,
 			].filter((x) => x !== undefined),

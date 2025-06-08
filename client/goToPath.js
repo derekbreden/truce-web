@@ -33,7 +33,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 		// New path for /topic/ is same as /topics
 		let new_path_parsed = new_path
-		if (new_path.substr(0, 7) === "/topic/") {
+		if (new_path.startsWith("/topic/")) {
 			new_path_parsed = "/topics"
 		}
 
@@ -44,8 +44,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		// Slide left and right on user profile sub-pages
 		let sequence_is_user = false
 		if (
-			state.path.substr(0, 6) === "/user/" &&
-			new_path_parsed.substr(0, 6) === "/user/"
+			state.path.startsWith("/user/") &&
+			new_path_parsed.startsWith("/user/")
 		) {
 			const this_user_slug = state.path.split("/")[2]
 			const user_path_sequence = [

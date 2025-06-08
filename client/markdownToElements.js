@@ -24,8 +24,8 @@ const markdownToElements = (text) => {
 				// Null check for matches
 				for (let match of matches) {
 					// Declared match with let
-					if (match.substr(match.length - 1, 1) === ".") {
-						match = match.substr(0, match.length - 1)
+					if (match.endsWith(".")) {
+						match = match.substring(0, match.length - 1)
 					}
 					let abbreviated = match.replace(/(https?:\/\/)(www\.)?/, "")
 					if (abbreviated.length > 32) {
@@ -43,25 +43,25 @@ const markdownToElements = (text) => {
 		}
 
 		// Support for >
-		if (p_content.substr(0, 2) === "> ") {
+		if (p_content.startsWith("> ")) {
 			p_element.setAttribute("quote", "")
 			p_content = p_content.replace(/> /g, "")
 		}
 
 		// Support for #
-		if (p_content.substr(0, 2) === "# " || p_content.substr(0, 2) === "##") {
+		if (p_content.startsWith("# ") || p_content.startsWith("##")) {
 			p_element.setAttribute("bold", "")
 			p_content = p_content.replace(/#{1,} /g, "").replace(/\*{2,}/g, "")
 		}
 
 		// Support for **
-		if (p_content.substr(0, 2) === "**") {
+		if (p_content.startsWith("**")) {
 			p_element.setAttribute("bold", "")
 			p_content = p_content.replace(/\*{2,}/g, "")
 		}
 
 		// Support for *
-		if (p_content.substr(0, 1) === "*") {
+		if (p_content.startsWith("*")) {
 			p_element.setAttribute("italic", "")
 			p_content = p_content.replace(/\*{1,}/g, "")
 		}
@@ -73,7 +73,7 @@ const markdownToElements = (text) => {
 		}
 
 		// Support for -
-		if (p_content.substr(0, 2) === "- ") {
+		if (p_content.startsWith("- ")) {
 			const li_contents = p_content.split("\n")
 			if (
 				li_contents.length > 1 ||
@@ -115,7 +115,7 @@ const markdownToElements = (text) => {
 		}
 
 		// Support for /mp3/
-		if (p_content.substr(0, 5) === "/mp3/") {
+		if (p_content.startsWith("/mp3/")) {
 			return $(
 				`
 				audio[controls][src=$1]
