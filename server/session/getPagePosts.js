@@ -119,8 +119,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					req.body.min_post_create_date || null,
-					req.body.max_post_create_date || null,
+					req.body.min_post_create_date ? new Date(req.body.min_post_create_date) : null,
+					req.body.max_post_create_date ? new Date(req.body.max_post_create_date) : null,
 					req.body.path.startsWith("/topic/")
 						? req.body.path.split("/")[2]
 						: req.body.path.startsWith("/user/")
