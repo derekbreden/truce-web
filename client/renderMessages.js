@@ -209,14 +209,14 @@ const renderMessages = (messages, conversation) => {
 				lastTypingTime = now
 				
 				// Start typing indicator
-				// sendTypingIndicator(true, conversation.conversation_id)
+				sendTypingIndicator(true, conversation.conversation_id)
 				
 				// Stop typing after 1 second of no input
-				// setTimeout(() => {
-				//	if (Date.now() - lastTypingTime >= 1000) {
-				//		sendTypingIndicator(false, conversation.conversation_id)
-				//	}
-				// }, 1000)
+				setTimeout(() => {
+					if (Date.now() - lastTypingTime >= 1000) {
+						sendTypingIndicator(false, conversation.conversation_id)
+					}
+				}, 1000)
 			}
 		})
 
@@ -235,7 +235,3 @@ const renderMessages = (messages, conversation) => {
 	}
 }
 
-const showEditMessageModal = (message) => {
-	// This will be implemented when we create the modal system
-	console.log("Edit message:", message)
-}

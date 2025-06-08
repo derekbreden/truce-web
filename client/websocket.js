@@ -66,12 +66,22 @@ const handleTypingIndicator = (data) => {
 		if (data.typing) {
 			// Show typing indicator if not already present
 			if (!typingIndicator) {
+				// Get display name from cached conversation data
+				const conversation = state.cache[state.path]
+				let displayName = data.user_id // fallback
+				if (conversation && conversation.participants) {
+					const participant = conversation.participants.find(p => p.user_id === data.user_id)
+					if (participant) {
+						displayName = participant.display_name
+					}
+				}
+				
 				const $indicator = $(
 					`
 					typing-indicator
 						span $1 is typing...
 					`,
-					[data.user_id] // In real app, you'd show the user's display name
+					[displayName]
 				)
 				$("main-content-wrapper[active] messages").appendChild($indicator)
 			}
