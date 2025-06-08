@@ -87,6 +87,7 @@ const state = {
 - **Semicolons**: Omit semicolons
 - **DOM variables**: Prefix with `$` like `const $button = $("button")`
 - **String methods**: Use modern methods like `.startsWith()` and `.endsWith()` instead of `.substr(0, n) === "prefix"`
+- **Array methods**: Use `.includes()` instead of `.indexOf() === -1` or `.indexOf() > -1` for existence checks
 - **Path extraction**: Use `path.split("/")[index]` pattern consistently instead of `substring()` for URL path parsing
 
 ### Testing Philosophy: No Guard Assertions
@@ -308,6 +309,16 @@ if (parsed.keyword === "Spam") {
   return
 }
 ```
+
+## Development Workflow
+
+When working on tasks in this codebase, follow this workflow:
+- Use the TodoWrite tool to plan the task if required
+- Use the available search tools to understand the codebase and the user's query
+- Implement the solution using all tools available to you
+- **ALWAYS run `npm test` after making any changes** to verify everything still works
+- **ALWAYS create a commit after tests pass** with a descriptive message about what was changed
+- The user handles pushing to remote - you should only commit locally
 
 ## Key Files
 - `index.js`: Application entry point

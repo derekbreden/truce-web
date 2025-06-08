@@ -42,7 +42,7 @@ module.exports = {
 				let filename = "index.html"
 				let content_type = "text/html; charset=utf-8"
 				let encoding = "utf-8"
-				if (this.resources.indexOf(req.path) > -1) {
+				if (this.resources.includes(req.path)) {
 					filename = "resources/" + req.path
 					if (!req.path.endsWith(".js")) {
 						res.setHeader(
@@ -83,7 +83,7 @@ module.exports = {
 					const parseData = async (data) => {
 						const lines = data.split("\n")
 						for (const line of lines) {
-							if (line.indexOf('<!--#include file="') > -1) {
+							if (line.includes('<!--#include file="')) {
 								const file = line.split('"')[1]
 
 								// Tests are skipped when not on the test path

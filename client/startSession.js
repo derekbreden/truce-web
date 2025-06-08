@@ -272,7 +272,7 @@ const getMoreRecent = () => {
 			if (data.notifications?.length) {
 				const new_ids = data.notifications.map((n) => n.notification_id)
 				current_cache.notifications = current_cache.notifications.filter(
-					(n) => new_ids.indexOf(n.notification_id) === -1,
+					(n) => !new_ids.includes(n.notification_id),
 				)
 				current_cache.notifications.unshift(...data.notifications)
 				renderNotifications(current_cache.notifications)
@@ -293,7 +293,7 @@ const getMoreRecent = () => {
 			if (data.replies?.length) {
 				const new_ids = data.replies.map((reply) => reply.reply_id)
 				current_cache.replies = current_cache.replies.filter(
-					(c) => new_ids.indexOf(c.reply_id) === -1,
+					(c) => !new_ids.includes(c.reply_id),
 				)
 				current_cache.replies.push(...data.replies)
 				renderReplies(current_cache.replies)
@@ -310,7 +310,7 @@ const getMoreRecent = () => {
 			if (data.posts?.length) {
 				const new_ids = data.posts.map((post) => post.post_id)
 				current_cache.posts = current_cache.posts.filter(
-					(a) => new_ids.indexOf(a.post_id) === -1,
+					(a) => !new_ids.includes(a.post_id),
 				)
 				current_cache.posts.unshift(...data.posts)
 				renderPosts(
@@ -334,7 +334,7 @@ const getMoreRecent = () => {
 				}
 				const new_ids = data.messages.map((message) => message.message_id)
 				current_cache.messages = current_cache.messages.filter(
-					(m) => new_ids.indexOf(m.message_id) === -1,
+					(m) => !new_ids.includes(m.message_id),
 				)
 				current_cache.messages.push(...data.messages)
 				if (data.conversation) {
@@ -350,7 +350,7 @@ const getMoreRecent = () => {
 				}
 				const new_ids = data.conversations.map((conversation) => conversation.conversation_id)
 				current_cache.conversations = current_cache.conversations.filter(
-					(c) => new_ids.indexOf(c.conversation_id) === -1,
+					(c) => !new_ids.includes(c.conversation_id),
 				)
 				current_cache.conversations.unshift(...data.conversations)
 				renderConversations(current_cache.conversations)

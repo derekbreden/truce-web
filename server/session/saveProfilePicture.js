@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
 		}
 		const first_word = ai_response_parsed.keyword
 		console.log("Profile picture AI response", ai_response_parsed.keyword)
-		if (["Spam", "Violent", "Hateful", "Sexual"].indexOf(first_word) === -1) {
+		if (!["Spam", "Violent", "Hateful", "Sexual"].includes(first_word)) {
 			const profile_picture_uuid = crypto.randomUUID()
 			try {
 				// Upload the new picture
