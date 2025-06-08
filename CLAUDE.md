@@ -320,6 +320,18 @@ When working on tasks in this codebase, follow this workflow:
 - **ALWAYS create a commit after tests pass** with a descriptive message about what was changed
 - The user handles pushing to remote - you should only commit locally
 
+## Debugging Philosophy
+- **Test the suspected layer directly** - If you suspect database issues, write a minimal database test
+- **Subtract complexity, don't add it** - Remove application layers to isolate the problem  
+- **One variable at a time** - Change only the thing you're testing
+- **Hypothesis-driven** - Form specific theories ("CockroachDB doesn't like ISO strings") and test them
+- **Avoid cargo cult debugging** - Don't add logging everywhere, guard assertions, or "comprehensive" edge case testing before understanding the core issue
+
+## Anti-Patterns to Avoid
+- **Debugging by addition** - Adding logging, complexity, or "safety" before understanding the problem
+- **Shotgun debugging** - Changing multiple things hoping one fixes it
+- **Environmental complexity** - When you suspect environment differences, test the underlying systems directly, don't add application-layer workarounds
+
 ## Key Files
 - `index.js`: Application entry point
 - `server/server.js`: HTTP server and client file concatenation
