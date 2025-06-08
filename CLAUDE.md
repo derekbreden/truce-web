@@ -263,6 +263,19 @@ state.ws.dispatchEvent(new MessageEvent("message", { data: "UPDATE" }))
 state.ws.triggerMessage("UPDATE")
 ```
 
+**getMoreRecent() Response Handling**: Ensure all data types are handled in startSession.js:
+```javascript
+// The getMoreRecent() function in startSession.js must handle all response data types
+// Missing handlers will cause WebSocket updates to be ignored:
+if (data.conversations?.length) {
+  // Update cache and call renderConversations()
+}
+if (data.messages?.length) {
+  // Update cache and call renderMessages()
+}
+// Similar patterns for posts, replies, activities, notifications
+```
+
 ## Database and AI Integration
 
 ### Database Queries

@@ -343,13 +343,27 @@ const getMoreRecent = () => {
 				renderMessages(current_cache.messages, current_cache.conversation)
 			}
 
+			// Render conversations if appropriate
+			if (data.conversations?.length) {
+				if (!current_cache.conversations) {
+					current_cache.conversations = []
+				}
+				const new_ids = data.conversations.map((conversation) => conversation.conversation_id)
+				current_cache.conversations = current_cache.conversations.filter(
+					(c) => new_ids.indexOf(c.conversation_id) === -1,
+				)
+				current_cache.conversations.unshift(...data.conversations)
+				renderConversations(current_cache.conversations)
+			}
+
 			// Restore scroll position if we re-rendered anything
 			if (
 				data.activities?.length ||
 				data.replies?.length ||
 				data.posts?.length ||
 				data.notifications?.length ||
-				data.messages?.length
+				data.messages?.length ||
+				data.conversations?.length
 			) {
 				// Set a min threshold of scroll to do anything
 				let min_threshold = 0
