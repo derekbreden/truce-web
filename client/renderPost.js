@@ -198,7 +198,7 @@ const renderPost = (post) => {
 					post.favorited,
 					post.favorited
 						? $("icons icon[favorited] svg").cloneNode(true)
-						: $("footer icon[favorites] svg").cloneNode(true),
+						: $("icons icon[favorited] svg").cloneNode(true),
 					post.favorite_count,
 					post.replyed
 						? $("icons icon[replyed] svg").cloneNode(true)

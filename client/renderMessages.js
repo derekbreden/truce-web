@@ -137,9 +137,13 @@ const renderMessages = (messages, conversation) => {
 				...$messages
 			)
 			
-			// Scroll to bottom
-			const $messagesContainer = $("main-content-wrapper[active] messages")
-			$messagesContainer.scrollTop = $messagesContainer.scrollHeight
+			// Scroll to bottom after DOM update
+			requestAnimationFrame(() => {
+				const $messagesContainer = $("main-content-wrapper[active] messages")
+				if ($messagesContainer) {
+					$messagesContainer.scrollTop = $messagesContainer.scrollHeight
+				}
+			})
 		}
 
 		// Set up message sending
@@ -206,6 +210,14 @@ const renderMessages = (messages, conversation) => {
 		if (conversation) {
 			state.active_conversation_id = conversation.conversation_id
 		}
+		
+		// Ensure initial scroll to bottom
+		requestAnimationFrame(() => {
+			const $messagesContainer = $("main-content-wrapper[active] messages")
+			if ($messagesContainer) {
+				$messagesContainer.scrollTop = $messagesContainer.scrollHeight
+			}
+		})
 	}
 }
 

@@ -41,7 +41,7 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		const footerIconsToTest = ["posts", "topic", "favorites", "notifications"]
+		const footerIconsToTest = ["posts", "topic", "mail", "notifications"]
 
 		footerIconsToTest.forEach((iconName) => {
 			const selector = `footer icon[${iconName}] svg`

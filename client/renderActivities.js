@@ -17,8 +17,8 @@ const renderActivities = (activities) => {
 							span on a post or reply, it will display here.
 					`,
 					[
-						$("footer icon[favorites] svg").cloneNode(true),
-						$("footer icon[favorites] svg").cloneNode(true),
+						$("icons icon[favorited] svg").cloneNode(true),
+						$("icons icon[favorited] svg").cloneNode(true),
 					],
 				),
 			)
@@ -38,8 +38,8 @@ const renderActivities = (activities) => {
 							span on a post or reply, it will display here.
 					`,
 					[
-						$("footer icon[favorites] svg").cloneNode(true),
-						$("footer icon[favorites] svg").cloneNode(true),
+						$("icons icon[favorited] svg").cloneNode(true),
+						$("icons icon[favorited] svg").cloneNode(true),
 					],
 				),
 			)

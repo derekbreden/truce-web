@@ -6,7 +6,7 @@ const path_sequence = [
 	"/posts/all",
 	"/topics",
 	"/conversations",
-	"/favorites",
+	"/messages",
 	"/notifications",
 	"/settings",
 ]

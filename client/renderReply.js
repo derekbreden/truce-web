@@ -99,7 +99,7 @@ const renderReply = (reply) => {
 					reply.favorited,
 					reply.favorited
 						? $("icons icon[favorited] svg").cloneNode(true)
-						: $("footer icon[favorites] svg").cloneNode(true),
+						: $("icons icon[favorited] svg").cloneNode(true),
 					reply.favorite_count,
 					$("icons icon[forward] svg").cloneNode(true),
 				],

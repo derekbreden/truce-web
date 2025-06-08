@@ -55,14 +55,18 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Navigate to Favorites Page
-		const $favoritesFooterIcon = $("footer icon[favorites]")
-		$favoritesFooterIcon.click()
+		// 3. Navigate to Favorites Page via menu
+		const $hamburger = $("hamburger")
+		$hamburger.click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+		
+		const $favoritesMenuLink = $("menu-wrapper a[href='/favorites']")
+		$favoritesMenuLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			"/favorites",
 			state.path,
-			"Path should be /favorites after clicking the favorites footer icon.",
+			"Path should be /favorites after clicking the favorites menu link.",
 		)
 
 		// 4. Verify Favorites Page Content
@@ -186,14 +190,18 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Navigate to Favorites Page
-		const $favoritesFooterIcon = $("footer icon[favorites]")
-		$favoritesFooterIcon.click()
+		// 3. Navigate to Favorites Page via menu
+		const $hamburger = $("hamburger")
+		$hamburger.click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+		
+		const $favoritesMenuLink = $("menu-wrapper a[href='/favorites']")
+		$favoritesMenuLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			"/favorites",
 			state.path,
-			"Path should be /favorites after clicking the favorites footer icon.",
+			"Path should be /favorites after clicking the favorites menu link.",
 		)
 
 		// Find the first activities container

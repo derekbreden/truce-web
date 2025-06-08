@@ -42,7 +42,7 @@ const showMenu = () => {
 		.appendChild($("footer icon[mail] svg").cloneNode(true))
 	$menu
 		.$("icon[favorites]")
-		.appendChild($("footer icon[favorites] svg").cloneNode(true))
+		.appendChild($("icons icon[favorited] svg").cloneNode(true))
 	$menu
 		.$("icon[notifications]")
 		.appendChild($("footer icon[notifications] svg").cloneNode(true))
