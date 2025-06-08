@@ -9,15 +9,15 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// Setup mock API responses with topic containing images
+		// Setup mock API responses with post containing images
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-topic-with-images",
+						slug: "test-post-with-images",
 						title: "Test Post with Images",
-						body: "This topic contains images for testing modal functionality.",
+						body: "This post contains images for testing modal functionality.",
 						user_slug: "user-images",
 						display_name: "User Images",
 						tags: "general",
@@ -47,13 +47,13 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/post/test-topic-with-images": {
-				path: "/post/test-topic-with-images",
+			"/post/test-post-with-images": {
+				path: "/post/test-post-with-images",
 				posts: [
 					{
-						slug: "test-topic-with-images",
+						slug: "test-post-with-images",
 						title: "Test Post with Images",
-						body: "This topic contains images for testing modal functionality.",
+						body: "This post contains images for testing modal functionality.",
 						user_slug: "user-images",
 						display_name: "User Images",
 						tags: "general",
@@ -103,28 +103,28 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 2. Click on the topic to navigate to detail page
-		const $firstPostElement = $("posts > topic[trimmed]")
+		// 2. Click on the post to navigate to detail page
+		const $firstPostElement = $("posts > post[trimmed]")
 		$firstPostElement.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/post/test-topic-with-images",
+			"/post/test-post-with-images",
 			state.path,
-			"Path should be /post/test-topic-with-images after clicking the topic.",
+			"Path should be /post/test-post-with-images after clicking the post.",
 		)
 
-		// 3. Verify images are rendered in the topic detail page
-		const $topic = $("main-content-wrapper[active] topic")
+		// 3. Verify images are rendered in the post detail page
+		const $post = $("main-content-wrapper[active] post")
 		assertEquals(
 			true,
-			Boolean($topic),
+			Boolean($post),
 			"Post element should exist on detail page.",
 		)
 
 		// 4. Get the first image element
-		const $allImages = $("topic p[img] img")
+		const $allImages = $("post p[img] img")
 		const $firstImage = $allImages[0] // Get first element from NodeList
 		assertEquals(
 			true,

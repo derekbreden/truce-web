@@ -355,26 +355,26 @@ p img {
 }
 
 reply[trimmed] p img,
-topic[trimmed] p img {
+post[trimmed] p img {
   cursor: pointer;
   height: 100px;
 }
-topic[trimmed] p[img][total-images="1"] {
+post[trimmed] p[img][total-images="1"] {
   width: 100%;
   justify-content: center;
 }
-topic[trimmed] p[img][total-images="1"] img {
+post[trimmed] p[img][total-images="1"] img {
   height: unset;
   max-height: 300px;
 }
 
 reply[trimmed] p[img],
-topic[trimmed] p[img] {
+post[trimmed] p[img] {
   display: inline-flex;
 }
 
 reply[trimmed] p[img]+p[img],
-topic[trimmed] p[img]+p[img] {
+post[trimmed] p[img]+p[img] {
   margin-left: 10px;
 }
 
@@ -1543,13 +1543,13 @@ posts {
 }
 
 activities activity,
-posts topic {
+posts post {
   padding-bottom: 21px;
   position: relative;
 }
 
-posts topic info-wrapper,
-activities activity[topic] info-wrapper {
+posts post info-wrapper,
+activities activity[post] info-wrapper {
   display: flex;
   margin-top: 10px;
 }
@@ -1559,7 +1559,7 @@ activities activity {
   flex-direction: column;
 }
 
-topic author-tags {
+post author-tags {
   display: flex;
   justify-content: space-between;
   font-size: .786rem;
@@ -1568,50 +1568,50 @@ topic author-tags {
   align-items: flex-start;
 }
 
-topic author-tags author profile-picture image {
+post author-tags author profile-picture image {
   width: 20px;
   height: 20px;
 }
 
-topic author-tags author profile-picture svg {
+post author-tags author profile-picture svg {
   height: 25px;
   width: 25px;
   margin: -3px;
   opacity: .5;
 }
 
-topic author-tags author {
+post author-tags author {
   display: flex;
   gap: 3px;
   align-items: center;
 }
 
-topic author-tags author by {
+post author-tags author by {
   margin-left: 2px;
   opacity: .5;
 }
 
-topic author-tags author name {
+post author-tags author name {
   display: flex;
   gap: 3px;
   align-items: center;
 }
-topic author-tags author name span {
+post author-tags author name span {
   font-weight: 700;
   opacity: .5;
 }
-topic author-tags author name icon {
+post author-tags author name icon {
   font-size: 0;
   opacity: .5;
 }
-topic author-tags author name icon svg {
+post author-tags author name icon svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 18px;
   width: 18px;
 }
 
-topic author-tags tags {
+post author-tags tags {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1620,17 +1620,17 @@ topic author-tags tags {
   opacity: .5;
 }
 
-topic author-tags tags tag {
+post author-tags tags tag {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
-topic author-tags tags tag icon {
+post author-tags tags tag icon {
   font-size: 0;
 }
 
-topic author-tags tags tag svg {
+post author-tags tags tag svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 20px;
@@ -1788,7 +1788,7 @@ activities[favorites] activity::after,
 notifications notification::after,
 users user:after,
 tags[tags-list][big]:after,
-posts topic::before {
+posts post::before {
   content: "";
   display: flex;
   position: absolute;
@@ -1863,12 +1863,12 @@ activity>h2>span:last-child {
   text-align: right;
 }
 
-topic>h2>icon[more] {
+post>h2>icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;
 }
 
-topic>h2>icon[more] svg {
+post>h2>icon[more] svg {
   height: 30px;
   width: 30px;
   fill: #000;
@@ -1941,13 +1941,13 @@ activity>[parent-reply] reply {
   }
 }
 
-topic-details {
+post-details {
   margin: 0 -10px -10px -10px;
   display: flex;
 }
 
 reply-wrapper detail,
-topic-details detail {
+post-details detail {
   display: flex;
   align-items: center;
   padding: 10px;
@@ -1955,29 +1955,29 @@ topic-details detail {
 
 reply-wrapper detail:not([favorited]),
 reply-wrapper detail[favorited] p,
-topic-details detail:not([favorited]),
-topic-details detail[favorited] p {
+post-details detail:not([favorited]),
+post-details detail[favorited] p {
   opacity: .5;
 }
 
 detail[favorites],
-topic-details detail[more] {
+post-details detail[more] {
   cursor: pointer;
 }
 
-topic-details detail[replies] {
+post-details detail[replies] {
   flex: 1;
 }
 
 reply-wrapper detail icon,
-topic-details icon {
+post-details icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 reply-wrapper svg,
-topic-details svg {
+post-details svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   width: 32px;
@@ -1985,7 +1985,7 @@ topic-details svg {
 }
 
 reply-wrapper p,
-topic-details p {
+post-details p {
   margin-top: -1.5px;
   font-weight: 600;
 }
@@ -2017,7 +2017,7 @@ detail[more] svg {
   width: 26px;
 }
 
-topic:not([trimmed]) detail[more] {
+post:not([trimmed]) detail[more] {
   display: none;
 }
 

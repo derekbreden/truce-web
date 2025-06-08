@@ -3,8 +3,8 @@ const forEachCachedPost = (callback) => {
 	for (const cache_key of cache_keys) {
 		state.cache[cache_key].posts.forEach(callback)
 		state.cache[cache_key].activities.forEach((activity) => {
-			if (activity.type === "topic") {
-				activity.topic_id = activity.id
+			if (activity.type === "post") {
+				activity.post_id = activity.id
 				callback(activity)
 			}
 		})

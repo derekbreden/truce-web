@@ -101,9 +101,9 @@ module.exports = async (req, res) => {
           LEFT(c.note, 21) as note,
           LEFT(a.title, 21) as title,
           CASE
-            WHEN c.parent_reply_id is NULL THEN 'topic'
+            WHEN c.parent_reply_id is NULL THEN 'post'
             WHEN p.user_id = $1 THEN 'reply'
-            ELSE 'topic_reply'
+            ELSE 'post_reply'
           END AS reply_type
         FROM reply_notifications n
         INNER JOIN replies c ON c.reply_id = n.reply_id
@@ -150,9 +150,9 @@ module.exports = async (req, res) => {
           LEFT(c.note, 21) as note,
           LEFT(a.title, 21) as title,
           CASE
-            WHEN c.parent_reply_id is NULL THEN 'topic'
+            WHEN c.parent_reply_id is NULL THEN 'post'
             WHEN p.user_id = $1 THEN 'reply'
-            ELSE 'topic_reply'
+            ELSE 'post_reply'
           END AS reply_type
         FROM reply_notifications n
         INNER JOIN replies c ON c.reply_id = n.reply_id

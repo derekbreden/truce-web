@@ -14,10 +14,10 @@ const tests = {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-replies-topic",
+						slug: "test-replies-post",
 						title: "Test Post for Replies",
-						body: "A topic to test reply display.",
-						user_slug: "topic-author",
+						body: "A post to test reply display.",
+						user_slug: "post-author",
 						display_name: "Post Author",
 						tags: "general", // Changed from "testing" to "general"
 						reply_count: 2,
@@ -30,7 +30,7 @@ const tests = {
 						user_verified: false,
 						note: "",
 						poll_1: null,
-						topic_id: 456, // Added topic_id
+						post_id: 456, // Added post_id
 						create_date: "2023-01-02T00:00:00Z", // Added create_date
 					},
 				],
@@ -41,14 +41,14 @@ const tests = {
 				tag: {},
 				subscribed_to_users: 0,
 			},
-			"/post/test-replies-topic": {
-				path: "/post/test-replies-topic",
+			"/post/test-replies-post": {
+				path: "/post/test-replies-post",
 				posts: [
 					{
-						slug: "test-replies-topic",
+						slug: "test-replies-post",
 						title: "Test Post for Replies",
-						body: "Full body of the test topic for replies.",
-						user_slug: "topic-author",
+						body: "Full body of the test post for replies.",
+						user_slug: "post-author",
 						display_name: "Post Author",
 						tags: "general", // Changed from "testing" to "general"
 						reply_count: 2,
@@ -61,7 +61,7 @@ const tests = {
 						user_verified: false,
 						note: "",
 						poll_1: null,
-						topic_id: 123,
+						post_id: 123,
 						created_at: "2023-01-01T00:00:00Z",
 						updated_at: "2023-01-01T00:00:00Z",
 					},
@@ -108,21 +108,21 @@ const tests = {
 			"Clicking join button should navigate to /posts.",
 		)
 
-		// Navigate from posts page to topic detail page
-		const $topicLink = $("posts > topic[trimmed]") // Assuming first topic is the one
-		// Check title instead of slug attribute directly on topic[trimmed]
-		const $topicTitle = $topicLink.$("h2")
+		// Navigate from posts page to post detail page
+		const $postLink = $("posts > post[trimmed]") // Assuming first post is the one
+		// Check title instead of slug attribute directly on post[trimmed]
+		const $postTitle = $postLink.$("h2")
 		assertEquals(
 			"Test Post for Replies",
-			$topicTitle.textContent.trim(),
+			$postTitle.textContent.trim(),
 			"Post title mismatch on /posts page.",
 		)
-		$topicLink.click()
+		$postLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM update
 		assertEquals(
-			"/post/test-replies-topic",
+			"/post/test-replies-post",
 			state.path,
-			"Clicking topic link should navigate to topic detail page.",
+			"Clicking post link should navigate to post detail page.",
 		)
 
 		// Assertions for Replies

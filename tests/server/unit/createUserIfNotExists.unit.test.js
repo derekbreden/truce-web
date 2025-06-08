@@ -83,7 +83,7 @@ const tests = {
 	testCreateUserOnFavoriteActions: async () => {
 		// Test various favorite actions trigger user creation
 		const favoriteActions = [
-			{ topic_id_to_favorite: 'topic-123' },
+			{ post_id_to_favorite: 'post-123' },
 			{ reply_id_to_favorite: 'reply-456' }
 		]
 		
@@ -120,7 +120,7 @@ const tests = {
 	testCreateUserOnBlockActions: async () => {
 		// Test various block actions trigger user creation
 		const blockActions = [
-			{ topic_id_to_block: 'topic-123' },
+			{ post_id_to_block: 'post-123' },
 			{ reply_id_to_block: 'reply-456' }
 		]
 		
@@ -157,7 +157,7 @@ const tests = {
 	testCreateUserOnFlagActions: async () => {
 		// Test various flag actions trigger user creation
 		const flagActions = [
-			{ topic_id_to_flag: 'topic-123' },
+			{ post_id_to_flag: 'post-123' },
 			{ reply_id_to_flag: 'reply-456' }
 		]
 		
@@ -194,7 +194,7 @@ const tests = {
 	testCreateUserOnPollChoice: async () => {
 		// Test poll voting triggers user creation
 		const req = createMockRequest(
-			{ topic_id: 'poll-topic-123', poll_choice: 'option-a' },
+			{ post_id: 'poll-post-123', poll_choice: 'option-a' },
 			{ session_id: 'session-123', user_id: null }
 		)
 		req.results = {}
@@ -412,7 +412,7 @@ const tests = {
 			{ 
 				display_name: "Multi User",
 				title: "New Post",
-				topic_id_to_favorite: 'topic-123'
+				post_id_to_favorite: 'post-123'
 			},
 			{ session_id: 'session-123', user_id: undefined }
 		)
@@ -440,12 +440,12 @@ const tests = {
 	},
 
 	testPollChoiceRequiresBothFields: async () => {
-		// Test that poll choice requires both topic_id and poll_choice
+		// Test that poll choice requires both post_id and poll_choice
 		const incompletePolls = [
-			{ topic_id: 'poll-topic', poll_choice: null },
-			{ topic_id: null, poll_choice: 'option-a' },
-			{ topic_id: 'poll-topic' }, // no poll_choice
-			{ poll_choice: 'option-a' } // no topic_id
+			{ post_id: 'poll-post', poll_choice: null },
+			{ post_id: null, poll_choice: 'option-a' },
+			{ post_id: 'poll-post' }, // no poll_choice
+			{ poll_choice: 'option-a' } // no post_id
 		]
 		
 		for (let i = 0; i < incompletePolls.length; i++) {

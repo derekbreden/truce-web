@@ -18,7 +18,7 @@ const testPostsListDisplaysFetchedPosts = async () => {
 				{
 					slug: "tech-trends",
 					title: "Tech Trends 2024",
-					body: "Exploring upcoming tech.\n\nThis is the first topic.",
+					body: "Exploring upcoming tech.\n\nThis is the first post.",
 					user_slug: "jdoe",
 					display_name: "John Doe",
 					tags: "work",
@@ -36,7 +36,7 @@ const testPostsListDisplaysFetchedPosts = async () => {
 				{
 					slug: "science-discoveries",
 					title: "Science Discoveries",
-					body: "Latest in science.\n\nThis is the second topic.",
+					body: "Latest in science.\n\nThis is the second post.",
 					user_slug: "jane",
 					display_name: "Jane Roe",
 					tags: "science",
@@ -74,45 +74,45 @@ const testPostsListDisplaysFetchedPosts = async () => {
 
 	const $postsWrapper = $("posts")
 
-	const $renderedPostElements = $postsWrapper.querySelectorAll("topic")
+	const $renderedPostElements = $postsWrapper.querySelectorAll("post")
 	assertEquals(
 		$renderedPostElements.length,
 		2,
-		"Should render 2 topic elements based on mock data",
+		"Should render 2 post elements based on mock data",
 	)
 
-	// Assert content of the first topic
+	// Assert content of the first post
 	const $firstPost = $renderedPostElements[0]
 
 	const $firstTitle = $firstPost.querySelector("h2")
 	assertEquals(
 		$firstTitle.textContent.trim(),
 		"Tech Trends 2024",
-		"First topic title mismatch",
+		"First post title mismatch",
 	)
 
 	const $firstBodySpan = $firstPost.querySelector("p > span") // Target the span inside the first p
 	assertEquals(
 		$firstBodySpan !== null,
 		true,
-		"First topic body span should exist",
+		"First post body span should exist",
 	)
 
-	// Assert content of the second topic
+	// Assert content of the second post
 	const $secondPost = $renderedPostElements[1]
 
 	const $secondTitle = $secondPost.querySelector("h2")
 	assertEquals(
 		$secondTitle.textContent.trim(),
 		"Science Discoveries",
-		"Second topic title mismatch",
+		"Second post title mismatch",
 	)
 
 	const $secondBodySpan = $secondPost.querySelector("p > span") // Target the span inside the first p
 	assertEquals(
 		$secondBodySpan !== null,
 		true,
-		"Second topic body span should exist",
+		"Second post body span should exist",
 	)
 }
 

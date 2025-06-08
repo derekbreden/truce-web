@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
 			],
 		)
 		if (reply_results.rows.length) {
-			const topic_result = await req.client.query(
+			const post_result = await req.client.query(
 				`
         SELECT t.title, t.slug
         FROM posts t
@@ -82,9 +82,9 @@ module.exports = async (req, res) => {
         `,
 				[req.session.user_id || 0, reply_id],
 			)
-			req.results.parent_topic = {
-				title: topic_result.rows[0].title,
-				slug: topic_result.rows[0].slug,
+			req.results.parent_post = {
+				title: post_result.rows[0].title,
+				slug: post_result.rows[0].slug,
 			}
 			req.results.path = `/reply/${reply_id}`
 			req.results.replies.push(...reply_results.rows)

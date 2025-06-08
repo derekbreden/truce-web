@@ -11,9 +11,9 @@ const saveFavorite = require("../../../server/session/saveFavorite.js")
 
 const tests = {
 	testAddPostFavorite: async () => {
-		// Setup mock request with topic favorite data
+		// Setup mock request with post favorite data
 		const req = createMockRequest({
-			topic_id_to_favorite: 'topic-123',
+			post_id_to_favorite: 'post-123',
 			was_favorited: false // Adding a favorite
 		})
 		
@@ -58,9 +58,9 @@ const tests = {
 	},
 
 	testRemovePostFavorite: async () => {
-		// Setup mock request with topic unfavorite data
+		// Setup mock request with post unfavorite data
 		const req = createMockRequest({
-			topic_id_to_favorite: 'topic-123',
+			post_id_to_favorite: 'post-123',
 			was_favorited: true // Removing a favorite
 		})
 		
@@ -134,7 +134,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id_to_favorite: 'topic-123',
+			post_id_to_favorite: 'post-123',
 			was_favorited: false
 		})
 		
@@ -156,7 +156,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			topic_id_to_favorite: 'topic-123',
+			post_id_to_favorite: 'post-123',
 			was_favorited: false
 		}, { user_id: null })
 		
@@ -174,10 +174,10 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or reply_id
+		// Setup mock request without post_id or reply_id
 		const req = createMockRequest({
 			was_favorited: false
-			// No topic_id_to_favorite or reply_id_to_favorite
+			// No post_id_to_favorite or reply_id_to_favorite
 		})
 		
 		const res = createMockResponse()

@@ -19,10 +19,10 @@ const tests = {
 		}
 
 		const mockPost = {
-			topic_id: "topic-id-789",
-			slug: "test-topic-slug",
+			post_id: "post-id-789",
+			slug: "test-post-slug",
 			title: "Test Post Title",
-			body: "This is the body of the test topic.",
+			body: "This is the body of the test post.",
 			user_slug: "another-user",
 			display_name: "Post Author Name",
 			tags: "general",
@@ -90,13 +90,13 @@ const tests = {
 			"state.user_id should be set from /posts mock. Actual: " + state.user_id,
 		)
 
-		const $topicLinkElement = $(`topic[trimmed] h2`)
-		$topicLinkElement.click()
+		const $postLinkElement = $(`post[trimmed] h2`)
+		$postLinkElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			`/post/${mockPost.slug}`,
 			state.path,
-			`After clicking topic, path should be /post/${mockPost.slug}.`,
+			`After clicking post, path should be /post/${mockPost.slug}.`,
 		)
 		assertEquals(
 			mockUser.user_id,
@@ -104,7 +104,7 @@ const tests = {
 			`state.user_id should be set from /post/${mockPost.slug} mock. Actual: ${state.user_id}`,
 		)
 
-		// 4. Locate and click the "Reply to topic" button
+		// 4. Locate and click the "Reply to post" button
 		const $replyButton = $(`p[add-new-reply] button[alt]`)
 		$replyButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))

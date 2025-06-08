@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		req.body.topic_id &&
+		req.body.post_id &&
 		req.body.poll_choice
 	) {
 		// Save new vote
@@ -13,10 +13,10 @@ module.exports = async (req, res) => {
       VALUES
       ($1, $2, $3)
       `,
-			[req.body.topic_id, req.session.user_id, req.body.poll_choice],
+			[req.body.post_id, req.session.user_id, req.body.poll_choice],
 		)
 
-		// Get counts for this topic_id
+		// Get counts for this post_id
 		const poll_counts_query = await req.client.query(
 			`
       SELECT
@@ -29,14 +29,14 @@ module.exports = async (req, res) => {
       GROUP BY
         poll_choice
       `,
-			[req.body.topic_id],
+			[req.body.post_id],
 		)
 		const poll_counts = [0, 0, 0, 0]
 		for (const row of poll_counts_query.rows) {
 			poll_counts[row.poll_choice - 1] = row.count
 		}
 
-		// Update topic
+		// Update post
 		await req.client.query(
 			`
       UPDATE posts
@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
       WHERE
         post_id = $2
       `,
-			[poll_counts.join(","), req.body.topic_id],
+			[poll_counts.join(","), req.body.post_id],
 		)
 
 		res.end(

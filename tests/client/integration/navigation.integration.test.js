@@ -15,7 +15,7 @@ const tests = {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-topic-1",
+						slug: "test-post-1",
 						title: "Test Post 1",
 						body: "Short body for list",
 						user_slug: "user1",
@@ -40,14 +40,14 @@ const tests = {
 				tag: {},
 				subscribed_to_users: 0,
 			},
-			"/post/test-topic-1": {
-				path: "/post/test-topic-1",
+			"/post/test-post-1": {
+				path: "/post/test-post-1",
 				posts: [
-					// Server returns topic detail in a "posts" array
+					// Server returns post detail in a "posts" array
 					{
-						slug: "test-topic-1",
+						slug: "test-post-1",
 						title: "Test Post 1",
-						body: "Full detailed body for test-topic-1. This should appear on the detail page.",
+						body: "Full detailed body for test-post-1. This should appear on the detail page.",
 						user_slug: "user1",
 						display_name: "User One",
 						tags: "politics",
@@ -61,7 +61,7 @@ const tests = {
 						user_verified: false,
 						note: "",
 						poll_1: null,
-						topic_id: 1,
+						post_id: 1,
 						created_at: "2023-01-01T00:00:00Z",
 						updated_at: "2023-01-01T00:00:00Z",
 					},
@@ -87,25 +87,25 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Find and click the first topic link/element
-		const $firstPostElement = $("posts > topic[trimmed]")
+		// 3. Find and click the first post link/element
+		const $firstPostElement = $("posts > post[trimmed]")
 		$firstPostElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 4. Assert navigation to the topic detail path
-		const expectedPostPath = "/post/test-topic-1"
+		// 4. Assert navigation to the post detail path
+		const expectedPostPath = "/post/test-post-1"
 		assertEquals(
 			expectedPostPath,
 			state.path,
-			`Path should be "${expectedPostPath}" after clicking the first topic.`,
+			`Path should be "${expectedPostPath}" after clicking the first post.`,
 		)
 
-		// 5. Assert the topic includes the detail rendered text
-		const $topicPSpan = $("main-content-wrapper[active] topic p span")
+		// 5. Assert the post includes the detail rendered text
+		const $postPSpan = $("main-content-wrapper[active] post p span")
 		assertEquals(
 			true,
-			$topicPSpan.innerText.includes("Full detailed body for test-topic-1"),
-			`Post p span should include text "Full detailed body for test-topic-1"`,
+			$postPSpan.innerText.includes("Full detailed body for test-post-1"),
+			`Post p span should include text "Full detailed body for test-post-1"`,
 		)
 	},
 }

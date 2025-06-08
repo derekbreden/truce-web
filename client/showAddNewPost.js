@@ -2,27 +2,27 @@ const showAddNewPost = (post) => {
 	// If this is the main prompt, show a post prompt
 	let content_placeholder = `Content`
 	if (!post) {
-		let topic_prompts_index =
-			localStorage.getItem(`${window.local_storage_key}:topic_prompts_index`) ||
+		let post_prompts_index =
+			localStorage.getItem(`${window.local_storage_key}:post_prompts_index`) ||
 			-1
-		topic_prompts_index++
-		if (topic_prompts_index >= topic_prompts.length) {
-			topic_prompts_index = 0
+		post_prompts_index++
+		if (post_prompts_index >= post_prompts.length) {
+			post_prompts_index = 0
 		}
 		localStorage.setItem(
-			`${window.local_storage_key}:topic_prompts_index`,
-			topic_prompts_index,
+			`${window.local_storage_key}:post_prompts_index`,
+			post_prompts_index,
 		)
 		content_placeholder = `Content
 
 
 
-e.g. ${topic_prompts[topic_prompts_index]}`
+e.g. ${post_prompts[post_prompts_index]}`
 	}
 
 	const $add_new = $(
 		`
-		add-new[topic]
+		add-new[post]
 			input[title][placeholder=Title][maxlength=140][value=$4]
 			title-wrapper
 				label[poll]
@@ -203,8 +203,8 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 	})
 	if (post) {
 		$add_new.$("[cancel]").on("click", () => {
-			$add_new.replaceWith(post.$topic)
-			delete state.active_add_new_topic
+			$add_new.replaceWith(post.$post)
+			delete state.active_add_new_post
 		})
 	} else {
 		$add_new.$("[cancel]").remove()
@@ -262,7 +262,7 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 				poll_3,
 				poll_4,
 				pngs,
-				topic_id: post ? post.topic_id : undefined,
+				post_id: post ? post.post_id : undefined,
 			}),
 		})
 			.then((response) => response.json())
@@ -299,9 +299,9 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 					$add_new.$("[cancel]")?.removeAttribute("disabled")
 				}
 				// Handle case where title changes slug when updating a post
-				delete state.active_add_new_topic
+				delete state.active_add_new_post
 				if (post && data.slug) {
-					state.path = `/topic/${data.slug}`
+					state.path = `/post/${data.slug}`
 					startSession()
 				} else {
 					getMoreRecent()
@@ -320,14 +320,14 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 				addPostError("Network error")
 			})
 	})
-	state.active_add_new_topic = $add_new
+	state.active_add_new_post = $add_new
 	if (post) {
-		state.active_add_new_topic.is_edit = post.topic_id
+		state.active_add_new_post.is_edit = post.post_id
 	} else {
-		state.active_add_new_topic.is_root = true
+		state.active_add_new_post.is_root = true
 	}
 	return $add_new
 }
 const focusAddNewPost = () => {
-	state.active_add_new_topic.$("[title]").focus()
+	state.active_add_new_post.$("[title]").focus()
 }

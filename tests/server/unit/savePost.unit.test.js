@@ -106,11 +106,11 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Setup mock request for new topic
+		// Setup mock request for new post
 		const req = createMockRequest(
 			{ 
 				title: 'Test Post Title',
-				body: 'This is a test topic body with some content.',
+				body: 'This is a test post body with some content.',
 				path: '/posts',
 				pngs: [
 					{ url: 'data:image/png;base64,image1data' },
@@ -125,9 +125,9 @@ const tests = {
 		)
 		
 		// Mock websocket functionality
-		req.sendWsMessage = (type, topicId) => {
+		req.sendWsMessage = (type, postId) => {
 			req.wsMessages = req.wsMessages || []
-			req.wsMessages.push({ type, topicId })
+			req.wsMessages.push({ type, postId })
 		}
 		
 		// Setup mock database responses
@@ -140,7 +140,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						topic_id: 'new-topic-789'
+						post_id: 'new-post-789'
 					}
 				]
 			}
@@ -203,7 +203,7 @@ const tests = {
 			"Should sanitize display name (removes uppercase and spaces)."
 		)
 		assertEquals(
-			'Test Post Title\n\nThis is a test topic body with some content.',
+			'Test Post Title\n\nThis is a test post body with some content.',
 			moderationCall.messages[0].content[0].text,
 			"Should combine title and body for moderation."
 		)
@@ -287,9 +287,9 @@ const tests = {
 			"Should send UPDATE message."
 		)
 		assertEquals(
-			'new-topic-789',
-			req.wsMessages[0].topicId,
-			"Should send correct topic ID."
+			'new-post-789',
+			req.wsMessages[0].postId,
+			"Should send correct post ID."
 		)
 	},
 
@@ -298,7 +298,7 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Setup mock request for poll topic
+		// Setup mock request for poll post
 		const req = createMockRequest(
 			{ 
 				title: 'Poll Post',
@@ -320,7 +320,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'poll-topic-123' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-post-123' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
 		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
@@ -392,7 +392,7 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Setup mock request for topic update
+		// Setup mock request for post update
 		const req = createMockRequest(
 			{ 
 				title: 'Updated Post Title',
@@ -401,7 +401,7 @@ const tests = {
 				pngs: [
 					{ url: 'data:image/png;base64,newimage' }
 				],
-				topic_id: 'existing-topic-456'
+				post_id: 'existing-post-456'
 			},
 			{ 
 				session_id: 'session-update',
@@ -470,7 +470,7 @@ const tests = {
 		assertEquals(
 			true,
 			responseData.success,
-			"Should succeed with topic update."
+			"Should succeed with post update."
 		)
 	},
 
@@ -581,7 +581,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'slug-topic' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'slug-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
 		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
@@ -631,7 +631,7 @@ const tests = {
 				]
 			}
 		)
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'collision-topic' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'collision-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
 		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
@@ -688,7 +688,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'tag-topic' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'tag-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'SELECT tag_id, tag_name FROM tags',
@@ -773,7 +773,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ topic_id: 'poll-filter-topic' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-filter-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
 			'SELECT tag_id, tag_name FROM tags',
@@ -936,7 +936,7 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Setup mock request for poll topic update
+		// Setup mock request for poll post update
 		const req = createMockRequest(
 			{ 
 				title: 'Updated Poll',
@@ -945,7 +945,7 @@ const tests = {
 				pngs: [],
 				poll_1: 'New Option A',
 				poll_2: 'New Option B',
-				topic_id: 'existing-poll-topic'
+				post_id: 'existing-poll-post'
 			},
 			{ 
 				session_id: 'session-poll-update',

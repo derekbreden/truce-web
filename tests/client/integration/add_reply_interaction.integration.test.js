@@ -24,10 +24,10 @@ const tests = {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-topic-for-reply",
+						slug: "test-post-for-reply",
 						title: "Test Post for Adding Reply",
-						body: "This topic will receive a new reply.",
-						user_slug: "topic-author",
+						body: "This post will receive a new reply.",
+						user_slug: "post-author",
 						display_name: "Post Author",
 						tags: "general",
 						profile_picture_uuid: null,
@@ -56,14 +56,14 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/post/test-topic-for-reply": {
-				path: "/post/test-topic-for-reply",
+			"/post/test-post-for-reply": {
+				path: "/post/test-post-for-reply",
 				posts: [
 					{
-						slug: "test-topic-for-reply",
+						slug: "test-post-for-reply",
 						title: "Test Post for Adding Reply",
-						body: "This topic will receive a new reply.",
-						user_slug: "topic-author",
+						body: "This post will receive a new reply.",
+						user_slug: "post-author",
 						display_name: "Post Author",
 						tags: "general",
 						profile_picture_uuid: null,
@@ -131,7 +131,7 @@ const tests = {
 			match: (url, options) => {
 				if (url === "/session" && options?.method === "POST") {
 					const body = JSON.parse(options.body)
-					if (body.path === "/post/test-topic-for-reply" && 
+					if (body.path === "/post/test-post-for-reply" && 
 						(body.min_create_date !== undefined || body.min_reply_create_date !== undefined)) {
 						// This is getMoreRecent fetching updates
 						getMoreRecentCalled = true
@@ -141,7 +141,7 @@ const tests = {
 				return false
 			},
 			response: {
-				path: "/post/test-topic-for-reply",
+				path: "/post/test-post-for-reply",
 				posts: [], // No new posts
 				replies: [
 					{
@@ -184,16 +184,16 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 2. Click on the topic to navigate to detail page
-		const $firstPostElement = $("posts > topic[trimmed]")
+		// 2. Click on the post to navigate to detail page
+		const $firstPostElement = $("posts > post[trimmed]")
 		$firstPostElement.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/post/test-topic-for-reply",
+			"/post/test-post-for-reply",
 			state.path,
-			"Path should be /post/test-topic-for-reply after clicking the topic.",
+			"Path should be /post/test-post-for-reply after clicking the post.",
 		)
 
 		// 3. Verify initial state - no replies
@@ -286,9 +286,9 @@ const tests = {
 			"Submitted display name should match user's name.",
 		)
 		assertEquals(
-			"/post/test-topic-for-reply",
+			"/post/test-post-for-reply",
 			submittedReplyData.path,
-			"Submitted path should match current topic path.",
+			"Submitted path should match current post path.",
 		)
 
 		// 12. Wait for both fetch calls to complete (submission + refresh)

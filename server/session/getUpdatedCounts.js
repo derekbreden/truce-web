@@ -5,10 +5,10 @@ module.exports = async (req, res) => {
 		req.body.min_counts_create_date
 	) {
 		if (req.body.has_posts) {
-			const topic_counts = await req.client.query(
+			const post_counts = await req.client.query(
 				`
         SELECT
-          t.post_id as topic_id,
+          t.post_id as post_id,
           t.favorite_count,
           t.poll_counts,
           t.reply_count
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 					req.body.min_counts_create_date,
 				],
 			)
-			req.results.topic_counts = topic_counts.rows
+			req.results.post_counts = post_counts.rows
 		}
 		if (req.body.has_replies) {
 			const reply_counts = await req.client.query(

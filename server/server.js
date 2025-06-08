@@ -130,7 +130,7 @@ module.exports = {
 			console.error(err)
 		})
 	},
-	sendWsMessage(message, topic_id) {
-		require("./websocket").sendMessage(message, topic_id)
+	sendWsMessage(message, post_id) {
+		require("./websocket").sendMessage(message, post_id)
 	},
 }

@@ -83,9 +83,9 @@ B) ${req.body.poll_2}`
 			if (slug_exists.rows.length > 0) {
 				slug = (slug + "-" + crypto.randomUUID()).replace(/\-/g, "_")
 			}
-			let topic_id = 0
+			let post_id = 0
 			// Update existing
-			if (req.body.topic_id) {
+			if (req.body.post_id) {
 				await req.client.query(
 					`
           UPDATE posts
@@ -117,21 +117,21 @@ B) ${req.body.poll_2}`
 						ai_response_parsed.keyword === "OK"
 							? null
 							: `${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
-						req.body.topic_id,
+						req.body.post_id,
 						req.session.user_id,
 					],
 				)
-				topic_id = req.body.topic_id
+				post_id = req.body.post_id
 
 				// Add new
 			} else {
-				const topic_result = await req.client.query(
+				const post_result = await req.client.query(
 					`
           INSERT INTO posts
             (title, slug, body, poll_1, poll_2, poll_3, poll_4, poll_counts, note, user_id)
           VALUES
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          RETURNING post_id as topic_id
+          RETURNING post_id as post_id
           `,
 					[
 						req.body.title,
@@ -148,18 +148,18 @@ B) ${req.body.poll_2}`
 						req.session.user_id,
 					],
 				)
-				topic_id = topic_result.rows[0].topic_id
+				post_id = post_result.rows[0].post_id
 			}
 
 			// Remove existing images
-			if (req.body.topic_id) {
+			if (req.body.post_id) {
 				const existing_images = await req.client.query(
 					`
           SELECT image_uuids
           FROM posts
           WHERE post_id = $1
           `,
-					[topic_id],
+					[post_id],
 				)
 				for (const existing_image of existing_images.rows) {
 					for (const image_uuid of existing_image.image_uuids.split(",")) {
@@ -200,17 +200,17 @@ B) ${req.body.poll_2}`
         SET image_uuids = $1
         WHERE post_id = $2
         `,
-				[image_uuids.join(","), topic_id],
+				[image_uuids.join(","), post_id],
 			)
 
 			// Remove existing poll votes
-			if (req.body.topic_id) {
+			if (req.body.post_id) {
 				await req.client.query(
 					`
           DELETE FROM post_poll_votes
           WHERE post_id = $1
           `,
-					[topic_id],
+					[post_id],
 				)
 			}
 
@@ -232,7 +232,7 @@ B) ${req.body.poll_2}`
         DELETE FROM post_tags
         WHERE post_id = $1
         `,
-				[topic_id],
+				[post_id],
 			)
 
 			const tag_id_query = await req.client.query(
@@ -256,7 +256,7 @@ B) ${req.body.poll_2}`
             VALUES
               ($1, $2)
             `,
-						[topic_id, tag_ids[tag]],
+						[post_id, tag_ids[tag]],
 					)
 				} else {
 					console.error("Unable to find tag", tag)
@@ -306,7 +306,7 @@ B) ${req.body.poll_2}`
               counts_max_create_date = NOW()
             WHERE post_id = $2
             `,
-						[estimated.join(","), topic_id],
+						[estimated.join(","), post_id],
 					)
 				} catch (e) {
 					console.error("Error poll response:", e)
@@ -314,7 +314,7 @@ B) ${req.body.poll_2}`
 			}
 
 			// Send websocket update
-			req.sendWsMessage("UPDATE", topic_id)
+			req.sendWsMessage("UPDATE", post_id)
 
 			// Respond with success so the client reloads
 			res.end(

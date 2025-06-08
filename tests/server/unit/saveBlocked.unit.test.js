@@ -11,15 +11,15 @@ const saveBlocked = require("../../../server/session/saveBlocked.js")
 
 const tests = {
 	testBlockUserFromPost: async () => {
-		// Setup mock request with topic blocking data
+		// Setup mock request with post blocking data
 		const req = createMockRequest({
-			topic_id_to_block: 'topic-456'
+			post_id_to_block: 'post-456'
 		})
 		
 		// Setup mock database responses
-		// First query: Get user_id from topic
+		// First query: Get user_id from post
 		req.client.addQueryMock(
-			'SELECT user_id FROM posts WHERE topic_id = $1',
+			'SELECT user_id FROM posts WHERE post_id = $1',
 			{ rows: [{ user_id: 'author-user-789' }] }
 		)
 		// Second query: Insert blocked user relationship
@@ -97,15 +97,15 @@ const tests = {
 	},
 
 	testBlockPostWithNoResults: async () => {
-		// Setup mock request with topic blocking data
+		// Setup mock request with post blocking data
 		const req = createMockRequest({
-			topic_id_to_block: 'nonexistent-topic'
+			post_id_to_block: 'nonexistent-post'
 		})
 		
 		// Setup mock database responses
 		// Post query returns no results
 		req.client.addQueryMock(
-			'SELECT user_id FROM posts WHERE topic_id = $1',
+			'SELECT user_id FROM posts WHERE post_id = $1',
 			{ rows: [] }
 		)
 		// Insert should still happen but with user_id 0
@@ -124,7 +124,7 @@ const tests = {
 		assertEquals(
 			true,
 			responseData.success,
-			"Response should indicate success even when topic not found."
+			"Response should indicate success even when post not found."
 		)
 	},
 
@@ -163,7 +163,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id_to_block: 'topic-123'
+			post_id_to_block: 'post-123'
 		})
 		
 		const res = createMockResponse()
@@ -184,7 +184,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			topic_id_to_block: 'topic-123'
+			post_id_to_block: 'post-123'
 		}, { user_id: null })
 		
 		const res = createMockResponse()
@@ -201,9 +201,9 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or reply_id
+		// Setup mock request without post_id or reply_id
 		const req = createMockRequest({
-			// No topic_id_to_block or reply_id_to_block
+			// No post_id_to_block or reply_id_to_block
 		})
 		
 		const res = createMockResponse()
@@ -220,17 +220,17 @@ const tests = {
 	},
 
 	testBothPostAndReplyIds: async () => {
-		// Edge case: both topic_id and reply_id provided
-		// Handler should process reply_id since it comes after topic_id
+		// Edge case: both post_id and reply_id provided
+		// Handler should process reply_id since it comes after post_id
 		const req = createMockRequest({
-			topic_id_to_block: 'topic-123',
+			post_id_to_block: 'post-123',
 			reply_id_to_block: 'reply-456'
 		})
 		
 		// Setup mock database responses for both queries
 		req.client.addQueryMock(
-			'SELECT user_id FROM posts WHERE topic_id = $1',
-			{ rows: [{ user_id: 'topic-author-123' }] }
+			'SELECT user_id FROM posts WHERE post_id = $1',
+			{ rows: [{ user_id: 'post-author-123' }] }
 		)
 		req.client.addQueryMock(
 			'SELECT user_id FROM replies WHERE reply_id = $1',

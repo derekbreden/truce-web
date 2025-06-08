@@ -70,9 +70,9 @@ const tests = {
 		const $mainContent = $mainContentWrapper.$("main-content")
 
 		// Based on renderNotifications.js, when state.email is null (as in mock),
-		// the header is <posts[notifications-header]><topic><h2>Alerts</h2>...</topic></posts>
+		// the header is <posts[notifications-header]><post><h2>Alerts</h2>...</post></posts>
 		const $notificationsPageHeader = $mainContent.$(
-			"posts[notifications-header] topic h2",
+			"posts[notifications-header] post h2",
 		)
 		assertEquals(
 			"Alerts",

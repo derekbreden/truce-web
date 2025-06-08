@@ -33,7 +33,7 @@ const renderPage = (data) => {
 	renderTags(data.tags)
 
 	// Render Forward Button on reply thread
-	renderForward(data.parent_topic)
+	renderForward(data.parent_post)
 
 	// Render Mark all as read on notifications
 	renderMarkAllAsRead()

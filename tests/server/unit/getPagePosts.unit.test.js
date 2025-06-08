@@ -33,7 +33,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-15T10:30:00Z',
-						topic_id: 'topic-1',
+						post_id: 'post-1',
 						title: 'First Post',
 						user_id: 'author-1',
 						display_name: 'John Doe',
@@ -41,8 +41,8 @@ const tests = {
 						user_slug: 'john-doe',
 						profile_picture_uuid: 'profile-uuid-1',
 						user_verified: true,
-						slug: 'first-topic',
-						body: 'This is the first topic content...',
+						slug: 'first-post',
+						body: 'This is the first post content...',
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -62,7 +62,7 @@ const tests = {
 					},
 					{
 						create_date: '2024-01-14T15:20:00Z',
-						topic_id: 'topic-2',
+						post_id: 'post-2',
 						title: 'Poll Post',
 						user_id: 'user-456',
 						display_name: 'Test User',
@@ -70,7 +70,7 @@ const tests = {
 						user_slug: 'test-user',
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'poll-topic',
+						slug: 'poll-post',
 						body: 'What do you think about this?',
 						poll_1: 'Option A',
 						poll_2: 'Option B',
@@ -110,17 +110,17 @@ const tests = {
 			"Should add posts to results."
 		)
 		
-		// Verify first topic data
+		// Verify first post data
 		const firstPost = req.results.posts[0]
 		assertEquals(
-			'topic-1',
-			firstPost.topic_id,
-			"Should include topic ID."
+			'post-1',
+			firstPost.post_id,
+			"Should include post ID."
 		)
 		assertEquals(
 			'First Post',
 			firstPost.title,
-			"Should include topic title."
+			"Should include post title."
 		)
 		assertEquals(
 			'author-1',
@@ -133,9 +133,9 @@ const tests = {
 			"Should include author display name."
 		)
 		assertEquals(
-			'first-topic',
+			'first-post',
 			firstPost.slug,
-			"Should include topic slug."
+			"Should include post slug."
 		)
 		assertEquals(
 			5,
@@ -165,15 +165,15 @@ const tests = {
 		assertEquals(
 			'general,technology',
 			firstPost.tags,
-			"Should include topic tags."
+			"Should include post tags."
 		)
 		
-		// Verify second topic (poll) data
+		// Verify second post (poll) data
 		const secondPost = req.results.posts[1]
 		assertEquals(
 			'Poll Post',
 			secondPost.title,
-			"Should include poll topic title."
+			"Should include poll post title."
 		)
 		assertEquals(
 			'Option A',
@@ -235,7 +235,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-15T10:30:00Z',
-						topic_id: 'topic-all-1',
+						post_id: 'post-all-1',
 						title: 'All Posts Test',
 						user_id: 'author-all',
 						display_name: 'All Author',
@@ -285,7 +285,7 @@ const tests = {
 		assertEquals(
 			'All Posts Test',
 			req.results.posts[0].title,
-			"Should include topic from all posts query."
+			"Should include post from all posts query."
 		)
 	},
 
@@ -310,7 +310,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-15T09:00:00Z',
-						topic_id: 'topic-tech-1',
+						post_id: 'post-tech-1',
 						title: 'Technology Post',
 						user_id: 'tech-author',
 						display_name: 'Tech Expert',
@@ -318,7 +318,7 @@ const tests = {
 						user_slug: 'tech-expert',
 						profile_picture_uuid: 'tech-profile',
 						user_verified: true,
-						slug: 'technology-topic',
+						slug: 'technology-post',
 						body: 'This is about technology...',
 						poll_1: null,
 						poll_2: null,
@@ -360,7 +360,7 @@ const tests = {
 		assertEquals(
 			'Technology Post',
 			req.results.posts[0].title,
-			"Should include topic from tag query."
+			"Should include post from tag query."
 		)
 		assertEquals(
 			'technology,science',
@@ -390,7 +390,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-14T14:00:00Z',
-						topic_id: 'user-topic-1',
+						post_id: 'user-post-1',
 						title: 'User Post',
 						user_id: '123',
 						display_name: 'User 123',
@@ -398,7 +398,7 @@ const tests = {
 						user_slug: 'user-123',
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'user-topic',
+						slug: 'user-post',
 						body: 'This is from user 123...',
 						poll_1: null,
 						poll_2: null,
@@ -440,7 +440,7 @@ const tests = {
 		assertEquals(
 			'User Post',
 			req.results.posts[0].title,
-			"Should include topic from user query."
+			"Should include post from user query."
 		)
 		assertEquals(
 			'123',
@@ -470,7 +470,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-13T12:00:00Z',
-						topic_id: 'slug-topic-1',
+						post_id: 'slug-post-1',
 						title: 'Slug User Post',
 						user_id: 'slug-user-456',
 						display_name: 'John Doe',
@@ -478,7 +478,7 @@ const tests = {
 						user_slug: 'john-doe',
 						profile_picture_uuid: 'john-profile',
 						user_verified: true,
-						slug: 'slug-user-topic',
+						slug: 'slug-user-post',
 						body: 'This is from john-doe slug...',
 						poll_1: null,
 						poll_2: null,
@@ -520,7 +520,7 @@ const tests = {
 		assertEquals(
 			'Slug User Post',
 			req.results.posts[0].title,
-			"Should include topic from user slug query."
+			"Should include post from user slug query."
 		)
 		assertEquals(
 			'john-doe',
@@ -534,8 +534,8 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				path: '/posts/all',
-				min_topic_create_date: '2024-01-01T00:00:00Z',
-				max_topic_create_date: '2024-01-31T23:59:59Z'
+				min_post_create_date: '2024-01-01T00:00:00Z',
+				max_post_create_date: '2024-01-31T23:59:59Z'
 			},
 			{ 
 				session_id: 'session-dates',
@@ -552,7 +552,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						topic_id: 'date-topic-1',
+						post_id: 'date-post-1',
 						title: 'Date Filtered Post',
 						user_id: 'date-author',
 						display_name: 'Date Author',
@@ -560,8 +560,8 @@ const tests = {
 						user_slug: 'date-author',
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'date-filtered-topic',
-						body: 'This topic is within date range...',
+						slug: 'date-filtered-post',
+						body: 'This post is within date range...',
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -602,12 +602,12 @@ const tests = {
 		assertEquals(
 			'Date Filtered Post',
 			req.results.posts[0].title,
-			"Should include topic within date range."
+			"Should include post within date range."
 		)
 	},
 
 	testNoActionWhenMaxReplyCreateDate: async () => {
-		// Setup mock request with max_reply_create_date (disables topic loading)
+		// Setup mock request with max_reply_create_date (disables post loading)
 		const req = createMockRequest(
 			{ 
 				path: '/posts',

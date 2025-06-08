@@ -65,7 +65,7 @@ const tests = {
 		assertEquals(
 			'5',
 			req.results.tags[0].posts,
-			"First tag should have topic count."
+			"First tag should have post count."
 		)
 	},
 
@@ -355,7 +355,7 @@ const tests = {
 		assertEquals(
 			'0',
 			req.results.tags[0].posts,
-			"Should show correct topic count of zero."
+			"Should show correct post count of zero."
 		)
 	}
 }

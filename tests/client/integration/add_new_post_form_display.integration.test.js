@@ -52,7 +52,7 @@ const tests = {
 		)
 
 		const $formContainer = $(
-			"main-content-wrapper[active] main-content add-new[topic]",
+			"main-content-wrapper[active] main-content add-new[post]",
 		)
 		const $titleInput = $formContainer.$("input[title]")
 		assertEquals(
@@ -105,7 +105,7 @@ const tests = {
 		assertEquals(
 			false,
 			Boolean($cancelButton),
-			"Cancel button should NOT be present for a new topic form.",
+			"Cancel button should NOT be present for a new post form.",
 		)
 	},
 }

@@ -2,12 +2,12 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		(req.body.topic_id_to_favorite || req.body.reply_id_to_favorite)
+		(req.body.post_id_to_favorite || req.body.reply_id_to_favorite)
 	) {
 		// Remove the favorite
 		if (req.body.was_favorited) {
-			// For topic_id
-			if (req.body.topic_id_to_favorite) {
+			// For post_id
+			if (req.body.post_id_to_favorite) {
 				await req.client.query(
 					`
           DELETE FROM favorite_posts
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
             user_id = $1
             AND post_id = $2
           `,
-					[req.session.user_id, req.body.topic_id_to_favorite],
+					[req.session.user_id, req.body.post_id_to_favorite],
 				)
 				await req.client.query(
 					`
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
           ) AS subquery
           WHERE posts.post_id = $1
           `,
-					[req.body.topic_id_to_favorite],
+					[req.body.post_id_to_favorite],
 				)
 			}
 
@@ -68,8 +68,8 @@ module.exports = async (req, res) => {
 
 			// Add the favorite
 		} else {
-			// For topic_id
-			if (req.body.topic_id_to_favorite) {
+			// For post_id
+			if (req.body.post_id_to_favorite) {
 				await req.client.query(
 					`
           INSERT INTO favorite_posts
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
           VALUES
           ($1, $2)
           `,
-					[req.session.user_id, req.body.topic_id_to_favorite],
+					[req.session.user_id, req.body.post_id_to_favorite],
 				)
 				await req.client.query(
 					`
@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
           ) AS subquery
           WHERE posts.post_id = $1
           `,
-					[req.body.topic_id_to_favorite],
+					[req.body.post_id_to_favorite],
 				)
 			}
 

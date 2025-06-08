@@ -383,7 +383,7 @@ const tests = {
 	testNoActionWhenWrongPathPrefix: async () => {
 		// Setup mock request with wrong path prefix
 		const req = createMockRequest({
-			path: "/topic/123" // Wrong prefix, should be /user/
+			path: "/post/123" // Wrong prefix, should be /user/
 		})
 		req.results = {}
 		

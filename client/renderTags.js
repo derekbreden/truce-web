@@ -6,7 +6,7 @@ const renderTags = (tags) => {
 		$(
 			`
 			posts
-				topic
+				post
 					h2[tags]
 						span Tags
 						$1

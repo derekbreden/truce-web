@@ -85,11 +85,11 @@ const tests = {
 		// Adjusted container selector: Look for any <posts> container.
 		const $favoritesListContainer = $mainContent.$("posts")
 		const $renderedPostElements =
-			$favoritesListContainer.querySelectorAll("topic[trimmed]")
+			$favoritesListContainer.querySelectorAll("post[trimmed]")
 		assertEquals(
 			0,
 			$renderedPostElements.length,
-			"Should render 0 topic elements if mock data for /favorites has posts: [].",
+			"Should render 0 post elements if mock data for /favorites has posts: [].",
 		)
 	},
 	testFavoritesPageDisplayWithActivities: async () => {
@@ -123,9 +123,9 @@ const tests = {
 					{
 						// Post activity fields
 						type: "post",
-						slug: "test-activity-topic-1",
+						slug: "test-activity-post-1",
 						title: "Activity Post Title 1",
-						body: "Body of activity topic 1",
+						body: "Body of activity post 1",
 						user_slug: "activity-user-1",
 						display_name: "Activity User One",
 						tags: "general",
@@ -145,8 +145,8 @@ const tests = {
 						// Reply activity fields
 						type: "reply",
 						id: "activity-reply-1",
-						parent_topic_title: "Parent Post for Reply Activity",
-						parent_topic_slug: "parent-topic-reply-activity",
+						parent_post_title: "Parent Post for Reply Activity",
+						parent_post_slug: "parent-post-reply-activity",
 						body: "This is an activity for a new reply.",
 						user_slug: "activity-user-2",
 						display_name: "Activity User Two",
@@ -155,7 +155,7 @@ const tests = {
 						display_name_index: 0,
 						user_verified: false,
 						note: "",
-						topic_id: "topic-for-reply-activity",
+						post_id: "post-for-reply-activity",
 						parent_reply_body: null,
 						parent_reply_display_name: null,
 						parent_reply_display_name_index: null,
@@ -210,12 +210,12 @@ const tests = {
 			"Reply activity element should be present.",
 		)
 
-		// renderActivities > renderReplyActivity > h2 for parent topic title
-		const $topicTitle = $replyActivity.$("h2")
+		// renderActivities > renderReplyActivity > h2 for parent post title
+		const $postTitle = $replyActivity.$("h2")
 		assertEquals(
 			"Parent Post for Reply Activity",
-			$topicTitle?.innerText.trim(),
-			"Reply activity's parent topic title mismatch.",
+			$postTitle?.innerText.trim(),
+			"Reply activity's parent post title mismatch.",
 		)
 
 		// renderActivities > renderReplyActivity > renderReply > p > span for body  
@@ -243,7 +243,7 @@ const tests = {
 		const $postActivity = $activitiesContainer2WithData.$("activity[post]")
 
 		// Title
-		const $titleElement = $postActivity.$("topic h2")
+		const $titleElement = $postActivity.$("post h2")
 		const titleText = $titleElement.firstChild?.textContent?.trim()
 		assertEquals(
 			"Activity Post Title 1",
@@ -252,7 +252,7 @@ const tests = {
 		)
 
 		// Author
-		const $author = $postActivity.$("topic author span")
+		const $author = $postActivity.$("post author span")
 		assertEquals(
 			"Activity User One",
 			$author?.innerText.trim(),

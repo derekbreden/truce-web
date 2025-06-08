@@ -10,10 +10,10 @@ async function testReplyCountUpdate() {
 
 	// 1. Setup: Initial Post Data
 	const initialPost = {
-		topic_id: 1,
-		slug: "test-topic-1",
+		post_id: 1,
+		slug: "test-post-1",
 		title: "Test Post 1",
-		body: "Initial body for test topic 1. This is a summary.",
+		body: "Initial body for test post 1. This is a summary.",
 		user_slug: "user1",
 		display_name: "User One",
 		reply_count: 5,
@@ -49,8 +49,8 @@ async function testReplyCountUpdate() {
 	assertEquals("/posts", state.path, "Should have navigated to /posts.")
 
 	// 2. Verify Initial Reply Count
-	const $topicElement = $("posts > topic")
-	const $replyCountElement = $topicElement.$("detail[replies] p")
+	const $postElement = $("posts > post")
+	const $replyCountElement = $postElement.$("detail[replies] p")
 	assertEquals("5", $replyCountElement.innerText.trim(), "Initial reply count should be 5.")
 
 	// 3. Prepare for Update (Mock response for getMoreRecent's fetch)
@@ -61,7 +61,7 @@ async function testReplyCountUpdate() {
 			replies: [],
 			activities: [],
 			notifications: [],
-			topic_counts: [{ topic_id: 1, reply_count: 10, favorite_count: initialPost.favorite_count }],
+			post_counts: [{ post_id: 1, reply_count: 10, favorite_count: initialPost.favorite_count }],
 		},
 	})
 
@@ -72,7 +72,7 @@ async function testReplyCountUpdate() {
 	// Assert is now 10
 	assertEquals("10", String($replyCountElement.innerText).trim(), "Updated reply count should be 10.")
 
-	const updatedCachedPost = state.cache["/posts"]?.posts.find(t => t.topic_id === initialPost.topic_id)
+	const updatedCachedPost = state.cache["/posts"]?.posts.find(t => t.post_id === initialPost.post_id)
 	assertEquals(10, updatedCachedPost.reply_count, "Reply count in cache should be updated to 10.")
 }
 

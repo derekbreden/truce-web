@@ -37,7 +37,7 @@ const renderPost = (post) => {
 	}
 	const $post = $(
 		`
-		topic
+		post
 			h2
 				$1
 				$2
@@ -181,7 +181,7 @@ const renderPost = (post) => {
 			: [],
 			$(
 				`
-				topic-details[detail-wrapper]
+				post-details[detail-wrapper]
 					detail[favorites][favorited=$1]
 						icon
 							$2
@@ -281,7 +281,7 @@ const renderPost = (post) => {
 			fetch("/session", {
 				method: "POST",
 				body: JSON.stringify({
-					topic_id: post.topic_id,
+					post_id: post.post_id,
 					poll_choice,
 				}),
 			})

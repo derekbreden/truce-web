@@ -15,7 +15,7 @@ const tests = {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-topic-for-details",
+						slug: "test-post-for-details",
 						title: "Test Post for Details",
 						body: "Short body for testing details display.",
 						user_slug: "user-details",
@@ -47,21 +47,21 @@ const tests = {
 				display_name_index: 0,
 				has_more: false, // Important for renderPosts to know if "load more" should be shown
 			},
-			"/post/test-topic-for-details": {
-				path: "/post/test-topic-for-details",
+			"/post/test-post-for-details": {
+				path: "/post/test-post-for-details",
 				posts: [
 					{
 						// getSinglePost returns data in "posts" array
-						slug: "test-topic-for-details",
+						slug: "test-post-for-details",
 						title: "Test Post for Details",
-						body: "Full body for the test topic, ensuring details are shown.",
+						body: "Full body for the test post, ensuring details are shown.",
 						user_slug: "user-details",
 						display_name: "User Details",
 						tags: "general",
 						profile_picture_uuid: null,
 						display_name_index: 0,
 						user_verified: false,
-						note: "Detailed note for the topic.",
+						note: "Detailed note for the post.",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -112,34 +112,34 @@ const tests = {
 			"Posts wrapper element should be present on /posts page.",
 		)
 
-		// 2. Simulate at least one topic appearing on the /posts page
-		// This is necessary to be able to click on a topic to navigate to its detail page.
+		// 2. Simulate at least one post appearing on the /posts page
+		// This is necessary to be able to click on a post to navigate to its detail page.
 		// The navigation.integration.test.js uses a similar approach.
-		// The manual topic injection is no longer needed as fetch mock will provide the topic.
+		// The manual post injection is no longer needed as fetch mock will provide the post.
 
-		const $firstPostElement = $("posts > topic[trimmed]")
+		const $firstPostElement = $("posts > post[trimmed]")
 
-		// 3. Click the topic to navigate to its detail page
+		// 3. Click the post to navigate to its detail page
 		$firstPostElement.click()
 
 		// Wait for navigation and rendering to the detail page
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		const expectedPostPath = "/post/test-topic-for-details"
+		const expectedPostPath = "/post/test-post-for-details"
 		assertEquals(
 			expectedPostPath,
 			state.path,
-			`Path should be "${expectedPostPath}" after clicking the topic.`,
+			`Path should be "${expectedPostPath}" after clicking the post.`,
 		)
 
-		// 4. Assert that topic detail specific elements are rendered
-		// As per renderPost.js, these details are within a "topic-details[detail-wrapper]"
-		const $topicDetailsWrapper = $(
-			"main-content-wrapper[active] topic topic-details[detail-wrapper]",
+		// 4. Assert that post detail specific elements are rendered
+		// As per renderPost.js, these details are within a "post-details[detail-wrapper]"
+		const $postDetailsWrapper = $(
+			"main-content-wrapper[active] post post-details[detail-wrapper]",
 		)
 
 		const $favoritesDetail =
-			$topicDetailsWrapper.querySelector("detail[favorites]")
+			$postDetailsWrapper.querySelector("detail[favorites]")
 
 		const $favoriteCountElement = $favoritesDetail.querySelector("p")
 		// Assert the actual count from the mocked API response
@@ -150,7 +150,7 @@ const tests = {
 		)
 
 		const $repliesDetail =
-			$topicDetailsWrapper.querySelector("detail[replies]")
+			$postDetailsWrapper.querySelector("detail[replies]")
 
 		const $replyCountElement = $repliesDetail.querySelector("p")
 		// Assert the actual count from the mocked API response

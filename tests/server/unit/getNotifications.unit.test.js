@@ -230,7 +230,7 @@ const tests = {
 						body: 'This is an unread notification reply...',
 						note: 'Note text',
 						title: 'Post Title',
-						reply_type: 'topic'
+						reply_type: 'post'
 					}
 				]
 			}
@@ -350,10 +350,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						notification_id: 'notif-topic',
-						reply_type: 'topic',
-						reply_id: 'reply-topic',
-						body: 'Reply to topic'
+						notification_id: 'notif-post',
+						reply_type: 'post',
+						reply_id: 'reply-post',
+						body: 'Reply to post'
 					},
 					{
 						notification_id: 'notif-reply',
@@ -362,10 +362,10 @@ const tests = {
 						body: 'Reply to reply'
 					},
 					{
-						notification_id: 'notif-topic-reply',
-						reply_type: 'topic_reply',
-						reply_id: 'reply-topic-reply',
-						body: 'Reply on topic thread'
+						notification_id: 'notif-post-reply',
+						reply_type: 'post_reply',
+						reply_id: 'reply-post-reply',
+						body: 'Reply on post thread'
 					}
 				]
 			}
@@ -386,9 +386,9 @@ const tests = {
 			"Should return all notification types."
 		)
 		assertEquals(
-			'topic',
+			'post',
 			req.results.notifications[0].reply_type,
-			"Should have topic reply type."
+			"Should have post reply type."
 		)
 		assertEquals(
 			'reply',
@@ -396,9 +396,9 @@ const tests = {
 			"Should have reply reply type."
 		)
 		assertEquals(
-			'topic_reply',
+			'post_reply',
 			req.results.notifications[2].reply_type,
-			"Should have topic_reply reply type."
+			"Should have post_reply reply type."
 		)
 	},
 
@@ -576,7 +576,7 @@ const tests = {
 						notification_id: 'truncate-test',
 						body: 'This is a very long reply body that should be truncated at 51 characters max according to the LEFT function in SQL',
 						note: 'This is a long note that should be truncated at 21 chars',
-						title: 'This is a long topic title that should be truncated at 21 chars'
+						title: 'This is a long post title that should be truncated at 21 chars'
 					}
 				]
 			}

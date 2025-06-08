@@ -170,7 +170,7 @@ const handlerToTest = require("../../../server/session/handlerName.js")
 async function testHandler() {
   // Create mock request with body and session data
   const req = createMockRequest({
-    topic_id_to_favorite: 'topic-123',
+    post_id_to_favorite: 'post-123',
     was_favorited: false
   }, {
     user_id: 'test-user-123',

@@ -147,8 +147,8 @@ const getMoreRecent = () => {
 		},
 		"",
 	)
-	const min_topic_create_date = current_cache.posts.reduce((max, topic) => {
-		return max > topic.create_date ? max : topic.create_date
+	const min_post_create_date = current_cache.posts.reduce((max, post) => {
+		return max > post.create_date ? max : post.create_date
 	}, "")
 	const min_notification_unread_create_date =
 		current_cache.notifications.reduce((max, notification) => {
@@ -169,10 +169,10 @@ const getMoreRecent = () => {
 		"",
 	)
 
-	// Find oldest topic create_date for reply count, and max of the counts_max_create_date for the posts
+	// Find oldest post create_date for reply count, and max of the counts_max_create_date for the posts
 	const min_create_date_for_counts_1 = current_cache.posts.reduce(
-		(min, topic) => {
-			return min < topic.create_date ? min : topic.create_date
+		(min, post) => {
+			return min < post.create_date ? min : post.create_date
 		},
 		new Date().toISOString(),
 	)
@@ -195,10 +195,10 @@ const getMoreRecent = () => {
 	if (min_create_date_for_counts_3 < min_create_date_for_counts) {
 		min_create_date_for_counts = min_create_date_for_counts_3
 	}
-	const min_counts_create_date_1 = current_cache.posts.reduce((max, topic) => {
-		return max > topic.counts_max_create_date
+	const min_counts_create_date_1 = current_cache.posts.reduce((max, post) => {
+		return max > post.counts_max_create_date
 			? max
-			: topic.counts_max_create_date
+			: post.counts_max_create_date
 	}, "")
 	const min_counts_create_date_2 = current_cache.replies.reduce(
 		(max, reply) => {
@@ -230,7 +230,7 @@ const getMoreRecent = () => {
 	)
 	const has_posts = Boolean(
 		current_cache.posts.length ||
-			current_cache.activities.filter((a) => a.type === "topic").length,
+			current_cache.activities.filter((a) => a.type === "post").length,
 	)
 
 	// Use that to load anything newer than that (our max is the min of what we want returned)
@@ -241,7 +241,7 @@ const getMoreRecent = () => {
 			path: current_path,
 			min_create_date,
 			min_reply_create_date,
-			min_topic_create_date,
+			min_post_create_date,
 			min_notification_unread_create_date,
 			min_notification_read_create_date,
 			min_counts_create_date,
@@ -301,9 +301,9 @@ const getMoreRecent = () => {
 
 			// Render posts if appropriate
 			if (data.posts?.length) {
-				const new_ids = data.posts.map((topic) => topic.topic_id)
+				const new_ids = data.posts.map((post) => post.post_id)
 				current_cache.posts = current_cache.posts.filter(
-					(a) => new_ids.indexOf(a.topic_id) === -1,
+					(a) => new_ids.indexOf(a.post_id) === -1,
 				)
 				current_cache.posts.unshift(...data.posts)
 				renderPosts(
@@ -313,9 +313,9 @@ const getMoreRecent = () => {
 				)
 
 				// Flash any newly added items
-				data.posts.forEach((topic) => {
-					if (topic.$post) {
-						topic.$post.setAttribute("flash-long-focus", "")
+				data.posts.forEach((post) => {
+					if (post.$post) {
+						post.$post.setAttribute("flash-long-focus", "")
 					}
 				})
 			}
@@ -346,48 +346,48 @@ const getMoreRecent = () => {
 				}
 			}
 
-			// Render updated topic reply counts
-			if (data.topic_counts?.length) {
-				data.topic_counts.forEach((topic_count) => {
+			// Render updated post reply counts
+			if (data.post_counts?.length) {
+				data.post_counts.forEach((post_count) => {
 					// See if we can find a match in the cache
-					const found_topic = current_cache.posts.find(
-						(topic) => topic.topic_id === topic_count.topic_id,
+					const found_post = current_cache.posts.find(
+						(post) => post.post_id === post_count.post_id,
 					)
 					const found_activity = current_cache.activities.find(
 						(activity) =>
-							activity.id === topic_count.topic_id && activity.type === "post",
+							activity.id === post_count.post_id && activity.type === "post",
 					)
 
 					// Prepare the text for the markup
-					const reply_text = topic_count.reply_count
-					const favorite_text = topic_count.favorite_count
+					const reply_text = post_count.reply_count
+					const favorite_text = post_count.favorite_count
 
 					// If we found a match in the cache
-					if (found_topic || found_activity) {
+					if (found_post || found_activity) {
 						// Update the cached data
-						;(found_topic || found_activity).reply_count =
-							topic_count.reply_count
-						;(found_topic || found_activity).favorite_count =
-							topic_count.favorite_count
+						;(found_post || found_activity).reply_count =
+							post_count.reply_count
+						;(found_post || found_activity).favorite_count =
+							post_count.favorite_count
 
 						// Update the markup
-						;(found_topic || found_activity).$post.$(
+						;(found_post || found_activity).$post.$(
 							"[replies] p"
 						).innerText = reply_text
-						;(found_topic || found_activity).$post.$(
+						;(found_post || found_activity).$post.$(
 							"[favorites] p",
 						).innerText = favorite_text
 
 						// Poll requires a complete re-render
 						if (
-							(found_topic || found_activity).poll_1 &&
-							topic_count.poll_counts
+							(found_post || found_activity).poll_1 &&
+							post_count.poll_counts
 						) {
 							console.warn("FAVORITES WHY?")
-							;(found_topic || found_activity).poll_counts =
-								topic_count.poll_counts
-							;(found_topic || found_activity).$post.replaceWith(
-								renderPost(found_topic || found_activity),
+							;(found_post || found_activity).poll_counts =
+								post_count.poll_counts
+							;(found_post || found_activity).$post.replaceWith(
+								renderPost(found_post || found_activity),
 							)
 						}
 					}

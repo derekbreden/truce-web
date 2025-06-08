@@ -2,11 +2,11 @@ const renderActivities = (activities) => {
 	// Empty favorites?
 	if (state.path === "/favorites") {
 		if (activities.length === 0) {
-			$("topic[favorites]")?.remove()
+			$("post[favorites]")?.remove()
 			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
-					topic[favorites]
+					post[favorites]
 						h2[favorites]
 							span Favorites
 							icon
@@ -23,11 +23,11 @@ const renderActivities = (activities) => {
 				),
 			)
 		} else {
-			$("topic[favorites]")?.remove()
+			$("post[favorites]")?.remove()
 			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
-					topic[favorites]
+					post[favorites]
 						h2[favorites]
 							span Favorites
 							icon
@@ -119,7 +119,7 @@ const renderActivities = (activities) => {
 							h2 $1
 							$2
 					`,
-					[activity.parent_topic_title, $reply_wrapper],
+					[activity.parent_post_title, $reply_wrapper],
 				)
 				$activity.on("click", ($event) => {
 					if ($event.target.tagName !== "A") {

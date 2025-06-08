@@ -91,20 +91,20 @@ const renderPosts = (posts, tag, user) => {
 		}
 	}
 
-	if (state.active_add_new_topic?.is_edit) {
+	if (state.active_add_new_post?.is_edit) {
 		const post = posts.find(
-			(a) => a.topic_id === state.active_add_new_topic.is_edit,
+			(a) => a.post_id === state.active_add_new_post.is_edit,
 		)
-		post.$topic.replaceWith(state.active_add_new_topic)
+		post.$post.replaceWith(state.active_add_new_post)
 	}
 
 	// User
 	if (state.path.substr(0, 6) === "/user/") {
-		$("topic[user]")?.remove()
+		$("post[user]")?.remove()
 		$("main-content-wrapper[active] main-content posts").prepend(
 			$(
 				`
-					topic[user]
+					post[user]
 						h2[user]
 							author
 								span $1
@@ -173,7 +173,7 @@ const renderPosts = (posts, tag, user) => {
 				],
 			),
 		)
-		bindSubscribeUser($("topic[user] button[subscribe]"), user)
+		bindSubscribeUser($("post[user] button[subscribe]"), user)
 		$("button[edit][small]")?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath("/settings")
@@ -186,7 +186,7 @@ const renderPosts = (posts, tag, user) => {
 
 	// Tag
 	if (state.path.substr(0, 5) === "/tag/") {
-		$("topic[tag]")?.remove()
+		$("post[tag]")?.remove()
 		if (posts.length === 0) {
 			$("main-content-wrapper[active] main-content posts").prepend(
 				$(

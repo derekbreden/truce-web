@@ -11,9 +11,9 @@ const renderNotification = (notification) => {
 	const reply_text =
 		notification.reply_type === "reply"
 			? "to your reply on"
-			: notification.reply_type === "topic_reply"
-				? "to a reply on your topic"
-				: "to your topic"
+			: notification.reply_type === "post_reply"
+				? "to a reply on your post"
+				: "to your post"
 
 	const note = notification.note || ""
 	const note_keyword = note.split(" ")[0]
@@ -74,7 +74,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          topic
+          post
             h2 Alerts
             p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.
         `,
@@ -85,9 +85,9 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          topic
+          post
             h2 Alerts
-            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a topic or reply you have posted.
+            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a post or reply you have posted.
         `,
 			),
 		)
@@ -96,7 +96,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          topic
+          post
             h2 Alerts
             p You must enable notifications for this app in settings
         `,
@@ -107,7 +107,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          topic
+          post
             h2 Alerts
             p[add-to-home]
               span To enable alerts, tap the
@@ -421,7 +421,7 @@ const renderMarkAllAsRead = () => {
 			})
 		}
 		if (state.push_available || state.fcm_push_available) {
-			$("posts[notifications-header] topic").appendChild($toggle_wrapper)
+			$("posts[notifications-header] post").appendChild($toggle_wrapper)
 			if (!state.email) {
 				$toggle_wrapper.setAttribute("disabled", "")
 			}

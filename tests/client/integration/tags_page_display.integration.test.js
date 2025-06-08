@@ -133,7 +133,7 @@ const tests = {
 		)
 
 		// Check for the overall page structure (header for tags page)
-		const $tagsPageHeader = $mainContent.$("posts topic h2[tags] span") // As per renderTags.js structure
+		const $tagsPageHeader = $mainContent.$("posts post h2[tags] span") // As per renderTags.js structure
 		assertEquals(
 			"Tags",
 			$tagsPageHeader.innerText.trim(),

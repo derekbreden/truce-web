@@ -174,12 +174,12 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request for new reply on topic
+		// Setup mock request for new reply on post
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'This is a test reply on a topic.',
-				path: '/topic/test-topic-slug',
+				body: 'This is a test reply on a post.',
+				path: '/post/test-post-slug',
 				pngs: [
 					{ url: 'data:image/png;base64,image1data' }
 				]
@@ -192,17 +192,17 @@ const tests = {
 		)
 		
 		// Mock websocket functionality
-		req.sendWsMessage = (type, topicId) => {
+		req.sendWsMessage = (type, postId) => {
 			req.wsMessages = req.wsMessages || []
-			req.wsMessages.push({ type, topicId })
+			req.wsMessages.push({ type, postId })
 		}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT post_id as topic_id',
+			'SELECT post_id as post_id',
 			{ 
 				rows: [
-					{ topic_id: 'topic-789' }
+					{ post_id: 'post-789' }
 				]
 			}
 		)
@@ -212,10 +212,10 @@ const tests = {
 				rows: [
 					{
 						title: 'Test Post Title',
-						body: 'Test topic body content',
+						body: 'Test post body content',
 						note: null,
 						display_name: 'Post Author',
-						image_uuids: 'topic-image-uuid'
+						image_uuids: 'post-image-uuid'
 					}
 				]
 			}
@@ -271,19 +271,19 @@ const tests = {
 			"Should use common response format."
 		)
 		
-		// Verify moderation includes topic context
+		// Verify moderation includes post context
 		assertEquals(
 			true,
 			moderationCall.messages.length >= 3,
-			"Should include topic, system response, and reply in messages."
+			"Should include post, system response, and reply in messages."
 		)
 		assertEquals(
-			'Test Post Title\n\nTest topic body content',
+			'Test Post Title\n\nTest post body content',
 			moderationCall.messages[0].content[0].text,
-			"Should include topic title and body."
+			"Should include post title and body."
 		)
 		assertEquals(
-			'Test User:\nThis is a test reply on a topic.',
+			'Test User:\nThis is a test reply on a post.',
 			moderationCall.messages[2].content[0].text,
 			"Should include reply with display name (original in content)."
 		)
@@ -292,12 +292,12 @@ const tests = {
 		assertEquals(
 			2,
 			s3SendCalls.length,
-			"Should perform 2 S3 operations: get topic image + upload reply image."
+			"Should perform 2 S3 operations: get post image + upload reply image."
 		)
 		assertEquals(
 			'GetObject',
 			s3SendCalls[0].commandType,
-			"First S3 operation should get topic image."
+			"First S3 operation should get post image."
 		)
 		assertEquals(
 			'PutObject',
@@ -343,9 +343,9 @@ const tests = {
 			"Should send UPDATE message."
 		)
 		assertEquals(
-			'topic-789',
-			req.wsMessages[0].topicId,
-			"Should send correct topic ID."
+			'post-789',
+			req.wsMessages[0].postId,
+			"Should send correct post ID."
 		)
 	},
 
@@ -380,7 +380,7 @@ const tests = {
 			'SELECT parent_post_id',
 			{ 
 				rows: [
-					{ parent_post_id: 'topic-for-reply' }
+					{ parent_post_id: 'post-for-reply' }
 				]
 			}
 		)
@@ -390,7 +390,7 @@ const tests = {
 				rows: [
 					{
 						title: 'Parent Post',
-						body: 'Parent topic content',
+						body: 'Parent post content',
 						note: null,
 						display_name: 'Post Creator',
 						image_uuids: null
@@ -442,7 +442,7 @@ const tests = {
 		assertEquals(
 			true,
 			moderationCall.messages.length >= 5,
-			"Should include topic, system, replies header, parent reply, system, and reply."
+			"Should include post, system, replies header, parent reply, system, and reply."
 		)
 		assertEquals(
 			'Replies:',
@@ -477,7 +477,7 @@ const tests = {
 			{ 
 				display_name: 'Update User',
 				body: 'Updated reply content.',
-				path: '/topic/test-slug',
+				path: '/post/test-slug',
 				pngs: [
 					{ url: 'data:image/png;base64,newimage' }
 				],
@@ -493,14 +493,14 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-update' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-update' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
 				body: 'Post body',
 				note: null,
 				display_name: 'Post Author',
-				image_uuids: null // No topic images
+				image_uuids: null // No post images
 			}]
 		})
 		req.client.addQueryMock('UPDATE replies', { rows: [] })
@@ -524,7 +524,7 @@ const tests = {
 		// Allow async operations to complete
 		await new Promise(resolve => setTimeout(resolve, 10))
 		
-		// Verify old images were deleted from S3 (no topic image since image_uuids is null)
+		// Verify old images were deleted from S3 (no post image since image_uuids is null)
 		assertEquals(
 			3,
 			s3SendCalls.length,
@@ -587,7 +587,7 @@ const tests = {
 			{ 
 				display_name: 'Spam User',
 				body: 'Spam reply content',
-				path: '/topic/test-slug',
+				path: '/post/test-slug',
 				pngs: []
 			},
 			{ 
@@ -598,14 +598,14 @@ const tests = {
 		)
 		
 		// Setup minimal database mocks
-		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-spam' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-spam' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
 				body: 'Post body',
 				note: null,
 				display_name: 'Post Author',
-				image_uuids: null // No topic images
+				image_uuids: null // No post images
 			}]
 		})
 		
@@ -621,7 +621,7 @@ const tests = {
 			"Should call AI for moderation."
 		)
 		
-		// Verify no S3 operations for spam (no topic images to get)
+		// Verify no S3 operations for spam (no post images to get)
 		assertEquals(
 			0,
 			s3SendCalls.length,
@@ -681,7 +681,7 @@ const tests = {
 			{ 
 				display_name: 'Flag User',
 				body: 'Inappropriate reply content',
-				path: '/topic/test-slug',
+				path: '/post/test-slug',
 				pngs: []
 			},
 			{ 
@@ -694,14 +694,14 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-flag' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-flag' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
 				body: 'Post body',
 				note: null,
 				display_name: 'Post Author',
-				image_uuids: null // No topic images
+				image_uuids: null // No post images
 			}]
 		})
 		req.client.addQueryMock(
@@ -743,7 +743,7 @@ const tests = {
 			"Should call AI for moderation."
 		)
 		
-		// Verify reply was still created but flagged (no topic images, no reply images)
+		// Verify reply was still created but flagged (no post images, no reply images)
 		assertEquals(
 			0,
 			s3SendCalls.length,
@@ -783,7 +783,7 @@ const tests = {
 			{ 
 				display_name: 'Notification User',
 				body: 'This reply should trigger notifications',
-				path: '/topic/notify-topic',
+				path: '/post/notify-post',
 				pngs: []
 			},
 			{ 
@@ -796,7 +796,7 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-notify' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-notify' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Notify Post',
@@ -823,7 +823,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						user_id: 'topic-author-user',
+						user_id: 'post-author-user',
 						subscription_json: '{"endpoint":"https://fcm.googleapis.com/fcm/send/test"}',
 						fcm_token: null
 					},
@@ -841,7 +841,7 @@ const tests = {
 			'SELECT user_id\n      FROM posts',
 			{ 
 				rows: [
-					{ user_id: 'topic-author-user' },
+					{ user_id: 'post-author-user' },
 					{ user_id: 'other-replyer' }
 				]
 			}
@@ -933,12 +933,12 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request with non-existent topic
+		// Setup mock request with non-existent post
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'Reply on non-existent topic',
-				path: '/topic/non-existent-slug',
+				body: 'Reply on non-existent post',
+				path: '/post/non-existent-slug',
 				pngs: []
 			},
 			{ 
@@ -948,10 +948,10 @@ const tests = {
 			}
 		)
 		
-		// Setup database response for non-existent topic
+		// Setup database response for non-existent post
 		req.client.addQueryMock(
-			'SELECT post_id as topic_id',
-			{ rows: [] } // No topic found
+			'SELECT post_id as post_id',
+			{ rows: [] } // No post found
 		)
 		
 		const res = createMockResponse()
@@ -963,12 +963,12 @@ const tests = {
 		assertEquals(
 			0,
 			aiAskCalls.length,
-			"Should not call AI when topic not found."
+			"Should not call AI when post not found."
 		)
 		assertEquals(
 			0,
 			s3SendCalls.length,
-			"Should not perform S3 operations when topic not found."
+			"Should not perform S3 operations when post not found."
 		)
 		
 		// Verify error response
@@ -1086,7 +1086,7 @@ const tests = {
 			{ 
 				display_name: 'Test User',
 				body: 'Test reply',
-				path: '/topic/test-slug',
+				path: '/post/test-slug',
 				pngs: []
 			},
 			{ 

@@ -34,7 +34,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		)
 	}
 	if (state.path === "/posts" || state.path === "/posts/all") {
-		if (!state.active_add_new_topic?.is_root) {
+		if (!state.active_add_new_post?.is_root) {
 			$(
 				"main-content-wrapper[active] main-content > add-new:first-child",
 			)?.remove()
@@ -51,7 +51,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				`
 				posts
-					topic
+					post
 						h2[welcome]
 							span Terms and conditions
 							$1
@@ -77,7 +77,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					document.referrer !== "android-app://net.truce.twa/"
 						? $(
 								`
-								topic
+								post
 									app-store-wrapper
 										a[href=$1]
 											img[src=/play_store.png]
@@ -98,7 +98,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				`
 				posts
-					topic
+					post
 						h2[moderation]
 							span Our Approach to Moderation
 							$1
@@ -194,7 +194,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						button[expand-left]
 						p Terms and conditions
 				posts
-					topic
+					post
 						h2 Privacy Policy
 						p[bold] Information Collection
 						p We do not collect any personal data from users of our app. The email address and password you provide are used solely to facilitate account recovery.
@@ -224,7 +224,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		const $settings = $(
 			`
 			posts
-				topic
+				post
 					h2[settings]
 						span Account settings
 						button[profile][small][slug=$1]
@@ -232,7 +232,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								$2
 							span View profile
 					p You may change your profile picture or your display name here. You may also remove your account.
-				topic
+				post
 					p[bold] Profile picture
 					label[profile-picture][large]
 						image
@@ -243,7 +243,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						input[type=text][display-name][value=$4]
 					p[button]
 						button[save] Save display name
-				topic
+				post
 					p[bold] Remove account
 					p[button]
 						button[remove][alt] Remove Account

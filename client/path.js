@@ -16,7 +16,7 @@ const parsePath = () => {
 	const new_paths = window.location.pathname.split("/").filter((x) => x)
 	if (new_paths[0] === "reset") {
 		state.reset_token_uuid = new_paths[1] || ""
-	} else if ((new_paths[0] === "topic" || new_paths[0] === "post") && new_paths[1]) {
+	} else if ((new_paths[0] === "post" || new_paths[0] === "post") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if ((new_paths[0] === "reply" || new_paths[0] === "reply") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]

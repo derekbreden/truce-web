@@ -78,9 +78,9 @@ const tests = {
 
 		// Verify the header of the settings page
 		// The settings page title is rendered by client/loadingPage.js
-		// Structure: posts > topic > h2[settings] > span:first-child
+		// Structure: posts > post > h2[settings] > span:first-child
 		const $settingsPageHeaderSpan = $mainContent.$(
-			"posts topic h2[settings] > span:first-child",
+			"posts post h2[settings] > span:first-child",
 		)
 		assertEquals(
 			"Account settings",

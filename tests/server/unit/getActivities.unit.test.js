@@ -24,10 +24,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'topic-1',
-						type: 'topic',
+						id: 'post-1',
+						type: 'post',
 						title: 'Favorite Post',
-						body: 'This is a favorite topic',
+						body: 'This is a favorite post',
 						favorited: true,
 						favorite_create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-456',
@@ -42,7 +42,7 @@ const tests = {
 						favorite_create_date: '2024-01-14T09:00:00Z',
 						user_id: 'user-789',
 						display_name: 'Reply Author',
-						parent_topic_title: 'Parent Post'
+						parent_post_title: 'Parent Post'
 					}
 				]
 			}
@@ -65,14 +65,14 @@ const tests = {
 			"Should return array of favorite activities."
 		)
 		assertEquals(
-			'topic',
+			'post',
 			req.results.activities[0].type,
-			"First activity should be a topic."
+			"First activity should be a post."
 		)
 		assertEquals(
 			'Favorite Post',
 			req.results.activities[0].title,
-			"Should include topic title."
+			"Should include post title."
 		)
 		assertEquals(
 			true,
@@ -102,8 +102,8 @@ const tests = {
 						user_id: 'user-456',
 						display_name: 'The User',
 						favorited: false,
-						parent_topic_title: 'Discussion Post',
-						parent_topic_slug: 'discussion-topic'
+						parent_post_title: 'Discussion Post',
+						parent_post_slug: 'discussion-post'
 					},
 					{
 						id: 'reply-2',
@@ -278,8 +278,8 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'filtered-topic-1',
-						type: 'topic',
+						id: 'filtered-post-1',
+						type: 'post',
 						title: 'Filtered Post',
 						favorited: true,
 						favorite_create_date: '2024-01-12T10:00:00Z'
@@ -318,14 +318,14 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'field-test-topic',
-						type: 'topic',
+						id: 'field-test-post',
+						type: 'post',
 						title: 'Field Test Post',
 						body: 'Post body content',
 						poll_1: 'Option A',
 						poll_2: 'Option B',
 						poll_counts: '10,5',
-						slug: 'field-test-topic',
+						slug: 'field-test-post',
 						favorite_count: 25,
 						reply_count: 12,
 						favorited: true,
@@ -336,7 +336,7 @@ const tests = {
 						user_id: 'author-123',
 						display_name: 'Post Author',
 						display_name_index: 0,
-						user_slug: 'topic-author',
+						user_slug: 'post-author',
 						profile_picture_uuid: 'profile-uuid',
 						user_verified: true,
 						tags: 'tag1,tag2'
@@ -352,7 +352,7 @@ const tests = {
 		const activity = req.results.activities[0]
 		
 		// Verify key fields are present
-		assertEquals('topic', activity.type, "Should have type field.")
+		assertEquals('post', activity.type, "Should have type field.")
 		assertEquals('Field Test Post', activity.title, "Should have title field.")
 		assertEquals('Post body content', activity.body, "Should have body field.")
 		assertEquals('Option A', activity.poll_1, "Should have poll fields.")

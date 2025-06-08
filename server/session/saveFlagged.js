@@ -2,10 +2,10 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		(req.body.topic_id_to_flag || req.body.reply_id_to_flag)
+		(req.body.post_id_to_flag || req.body.reply_id_to_flag)
 	) {
 		// For post_id
-		if (req.body.topic_id_to_flag) {
+		if (req.body.post_id_to_flag) {
 			await req.client.query(
 				`
         INSERT INTO flagged_posts
@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
         VALUES
         ($1, $2)
         `,
-				[req.session.user_id, req.body.topic_id_to_flag],
+				[req.session.user_id, req.body.post_id_to_flag],
 			)
 		}
 		// For reply_id

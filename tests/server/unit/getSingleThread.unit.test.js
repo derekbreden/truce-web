@@ -66,7 +66,7 @@ const tests = {
 				rows: [
 					{
 						title: 'Parent Post Title',
-						slug: 'parent-topic-slug'
+						slug: 'parent-post-slug'
 					}
 				]
 			}
@@ -109,16 +109,16 @@ const tests = {
 			"Reply should reference parent reply."
 		)
 		
-		// Verify parent topic was loaded
+		// Verify parent post was loaded
 		assertEquals(
 			'Parent Post Title',
-			req.results.parent_topic.title,
-			"Should include parent topic title."
+			req.results.parent_post.title,
+			"Should include parent post title."
 		)
 		assertEquals(
-			'parent-topic-slug',
-			req.results.parent_topic.slug,
-			"Should include parent topic slug."
+			'parent-post-slug',
+			req.results.parent_post.slug,
+			"Should include parent post slug."
 		)
 	},
 
@@ -154,8 +154,8 @@ const tests = {
 		)
 		assertEquals(
 			undefined,
-			req.results.parent_topic,
-			"Should not set parent_topic when no replies."
+			req.results.parent_post,
+			"Should not set parent_post when no replies."
 		)
 	},
 
@@ -191,7 +191,7 @@ const tests = {
 				rows: [
 					{
 						title: 'Post Title',
-						slug: 'topic-slug'
+						slug: 'post-slug'
 					}
 				]
 			}
@@ -251,7 +251,7 @@ const tests = {
 	testNoActionWhenWrongPath: async () => {
 		// Setup mock request with wrong path format
 		const req = createMockRequest(
-			{ path: "/topic/123" },
+			{ path: "/post/123" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { replies: [] }
@@ -350,7 +350,7 @@ const tests = {
 			req.client.addQueryMock(
 				'SELECT t.title, t.slug',
 				{ 
-					rows: [{ title: 'Post', slug: 'topic' }]
+					rows: [{ title: 'Post', slug: 'post' }]
 				}
 			)
 			
@@ -399,7 +399,7 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Post', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'post' }] }
 		)
 		
 		const res = createMockResponse()
@@ -454,7 +454,7 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Post', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'post' }] }
 		)
 		
 		const res = createMockResponse()
@@ -513,7 +513,7 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Post', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'post' }] }
 		)
 		
 		const res = createMockResponse()

@@ -13,7 +13,7 @@ const tests = {
 	testSavePollChoiceWithSingleVote: async () => {
 		// Setup mock request with poll choice data
 		const req = createMockRequest({
-			topic_id: 'topic-123',
+			post_id: 'post-123',
 			poll_choice: '2'
 		})
 		
@@ -32,7 +32,7 @@ const tests = {
 				] 
 			}
 		)
-		// Third query: Update topic with counts
+		// Third query: Update post with counts
 		req.client.addQueryMock(
 			'UPDATE posts',
 			{ rows: [] }
@@ -71,7 +71,7 @@ const tests = {
 	testSavePollChoiceWithMultipleVotes: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id: 'topic-456',
+			post_id: 'post-456',
 			poll_choice: '1'
 		})
 		
@@ -113,7 +113,7 @@ const tests = {
 	testSavePollChoiceWithNoExistingVotes: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id: 'new-topic-789',
+			post_id: 'new-post-789',
 			poll_choice: '3'
 		})
 		
@@ -149,7 +149,7 @@ const tests = {
 	testSavePollChoiceEdgeCases: async () => {
 		// Test with poll choice 4 (highest valid choice)
 		const req = createMockRequest({
-			topic_id: 'topic-edge',
+			post_id: 'post-edge',
 			poll_choice: '4'
 		})
 		
@@ -192,7 +192,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id: 'topic-123',
+			post_id: 'post-123',
 			poll_choice: '1'
 		})
 		
@@ -214,7 +214,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			topic_id: 'topic-123',
+			post_id: 'post-123',
 			poll_choice: '1'
 		}, { user_id: null })
 		
@@ -232,10 +232,10 @@ const tests = {
 	},
 
 	testNoActionWhenMissingPostId: async () => {
-		// Setup mock request without topic_id
+		// Setup mock request without post_id
 		const req = createMockRequest({
 			poll_choice: '1'
-			// No topic_id
+			// No post_id
 		})
 		
 		const res = createMockResponse()
@@ -247,14 +247,14 @@ const tests = {
 		assertEquals(
 			null,
 			res.getResponseData(),
-			"No response should be sent when topic_id is missing."
+			"No response should be sent when post_id is missing."
 		)
 	},
 
 	testNoActionWhenMissingPollChoice: async () => {
 		// Setup mock request without poll_choice
 		const req = createMockRequest({
-			topic_id: 'topic-123'
+			post_id: 'post-123'
 			// No poll_choice
 		})
 		
@@ -274,7 +274,7 @@ const tests = {
 	testSavePollChoiceWithStringNumbers: async () => {
 		// Test that handler works with string numbers (typical from web forms)
 		const req = createMockRequest({
-			topic_id: 'topic-string',
+			post_id: 'post-string',
 			poll_choice: '1' // String, not number
 		})
 		
@@ -313,7 +313,7 @@ const tests = {
 	testPollCountArrayFormatting: async () => {
 		// Test that poll counts are formatted correctly as comma-separated string
 		const req = createMockRequest({
-			topic_id: 'topic-format',
+			post_id: 'post-format',
 			poll_choice: '2'
 		})
 		

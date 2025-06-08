@@ -20,11 +20,11 @@ module.exports = async (req, res) => {
 			req.body.path?.substr(0, 6) === "/user/")
 	) {
 		if (!req.body.max_reply_create_date) {
-			const topic_results = await req.client.query(
+			const post_results = await req.client.query(
 				`
         SELECT
           p.create_date,
-          p.post_id as topic_id,
+          p.post_id as post_id,
           p.title,
           u.user_id,
           u.display_name,
@@ -119,8 +119,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					req.body.min_topic_create_date || null,
-					req.body.max_topic_create_date || null,
+					req.body.min_post_create_date || null,
+					req.body.max_post_create_date || null,
 					req.body.path.substr(0, 5) === "/tag/"
 						? req.body.path.substr(5)
 						: req.body.path.substr(0, 6) === "/user/"
@@ -129,10 +129,10 @@ module.exports = async (req, res) => {
 				].filter((x) => x !== undefined),
 			)
 			req.results.path = req.body.path
-			req.results.posts.push(...topic_results.rows)
+			req.results.posts.push(...post_results.rows)
 
 			//       let delayed = 0
-			//       topic_results.rows.forEach(async (topic) => {
+			//       post_results.rows.forEach(async (post) => {
 			//         delayed += 2000
 			//         await sleep(delayed)
 
@@ -140,26 +140,26 @@ module.exports = async (req, res) => {
 			//         try {
 			//           const messages = []
 
-			//           let text_to_evaluate = topic.title + "\n\n" + topic.body
+			//           let text_to_evaluate = post.title + "\n\n" + post.body
 			//           let poll_counts = ""
-			//           if (topic.poll_1) {
-			//             text_to_evaluate = `${topic.title}
+			//           if (post.poll_1) {
+			//             text_to_evaluate = `${post.title}
 
-			// ${topic.body}
+			// ${post.body}
 
-			// A) ${topic.poll_1}
-			// B) ${topic.poll_2}`
-			//             if (topic.poll_3) {
-			//               text_to_evaluate += `\nC) ${topic.poll_3}`
+			// A) ${post.poll_1}
+			// B) ${post.poll_2}`
+			//             if (post.poll_3) {
+			//               text_to_evaluate += `\nC) ${post.poll_3}`
 			//             }
-			//             if (topic.poll_4) {
-			//               text_to_evaluate += `\nD) ${topic.poll_4}`
+			//             if (post.poll_4) {
+			//               text_to_evaluate += `\nD) ${post.poll_4}`
 			//             }
 			//             poll_counts = "0,0,0,0"
 			//           }
 
 			//           const pngs = []
-			//           for (const image_uuid of topic.image_uuids
+			//           for (const image_uuid of post.image_uuids
 			//             .split(",")
 			//             .filter((x) => x)) {
 			//             if (image_uuid) {
@@ -181,7 +181,7 @@ module.exports = async (req, res) => {
 			//           messages.push({
 			//             role: "user",
 			//             name:
-			//               (topic.display_name || "Anonymous").replace(
+			//               (post.display_name || "Anonymous").replace(
 			//                 /[^a-z0-9_\-]/gi,
 			//                 "",
 			//               ) || "Anonymous",
@@ -210,14 +210,14 @@ module.exports = async (req, res) => {
 			//           } catch (e) {
 			//             console.error("Failed to parse AI JSON", ai_tags_response, e)
 			//           }
-			//           console.warn(topic.title, ai_tags_response_parsed.tags)
+			//           console.warn(post.title, ai_tags_response_parsed.tags)
 
 			//           await client.query(
 			//             `
-			//           DELETE FROM topic_tags
-			//           WHERE topic_id = $1
+			//           DELETE FROM post_tags
+			//           WHERE post_id = $1
 			//           `,
-			//             [topic.topic_id],
+			//             [post.post_id],
 			//           )
 
 			//           const tag_id_query = await client.query(
@@ -239,12 +239,12 @@ module.exports = async (req, res) => {
 			//             if (tag_ids[tag]) {
 			//               await client.query(
 			//                 `
-			//               INSERT INTO topic_tags
-			//                 (topic_id, tag_id)
+			//               INSERT INTO post_tags
+			//                 (post_id, tag_id)
 			//               VALUES
 			//                 ($1, $2)
 			//               `,
-			//                 [topic.topic_id, tag_ids[tag]],
+			//                 [post.post_id, tag_ids[tag]],
 			//               )
 			//             } else {
 			//               console.error("Unable to find tag", tag)

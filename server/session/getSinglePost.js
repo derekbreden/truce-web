@@ -2,17 +2,17 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		(req.body.path.substr(0, 7) === "/topic/" || req.body.path.substr(0, 6) === "/post/")
+		(req.body.path.substr(0, 7) === "/post/" || req.body.path.substr(0, 6) === "/post/")
 	) {
-		const slug = req.body.path.substr(0, 7) === "/topic/" ? req.body.path.substr(7) : req.body.path.substr(6)
-		let topic_id = ""
+		const slug = req.body.path.substr(0, 7) === "/post/" ? req.body.path.substr(7) : req.body.path.substr(6)
+		let post_id = ""
 
 		if (!req.body.max_reply_create_date) {
-			const topic_results = await req.client.query(
+			const post_results = await req.client.query(
 				`
         SELECT
           p.create_date,
-          p.post_id as topic_id,
+          p.post_id as post_id,
           p.title,
           u.user_id,
           u.display_name,
@@ -63,22 +63,22 @@ module.exports = async (req, res) => {
 				[
 					req.session.user_id || 0,
 					slug,
-					req.body.min_topic_create_date || null,
+					req.body.min_post_create_date || null,
 				],
 			)
-			req.results.posts.push(...topic_results.rows)
+			req.results.posts.push(...post_results.rows)
 			// We set path here to ensure the path goes to a default if there are no results
-			if (topic_results.rows.length) {
+			if (post_results.rows.length) {
 				req.results.path = `/post/${slug}`
-				topic_id = topic_results.rows[0].topic_id
+				post_id = post_results.rows[0].post_id
 			}
 		}
 
-		// Also get the topic_id if the topic was not updated
-		if (!topic_id) {
-			const topic_id_result = await req.client.query(
+		// Also get the post_id if the post was not updated
+		if (!post_id) {
+			const post_id_result = await req.client.query(
 				`
-        SELECT p.post_id as topic_id
+        SELECT p.post_id as post_id
         FROM posts p
         LEFT JOIN flagged_posts l ON l.post_id = p.post_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = p.user_id AND b.user_id_blocking = $1
@@ -86,14 +86,14 @@ module.exports = async (req, res) => {
         `,
 				[req.session.user_id || 0, slug],
 			)
-			if (topic_id_result.rows.length) {
+			if (post_id_result.rows.length) {
 				req.results.path = `/post/${slug}`
-				topic_id = topic_id_result.rows[0].topic_id
+				post_id = post_id_result.rows[0].post_id
 			}
 		}
 
 		// Get the replies
-		if (topic_id) {
+		if (post_id) {
 			const root_replies = await req.client.query(
 				`
         SELECT
@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					topic_id,
+					post_id,
 					req.body.min_reply_create_date || null,
 					req.body.max_reply_create_date || null,
 				],
@@ -179,7 +179,7 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					topic_id,
+					post_id,
 					root_replies.rows.map((c) => c.reply_id),
 					req.body.min_reply_create_date || null,
 				],

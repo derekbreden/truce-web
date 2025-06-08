@@ -2,19 +2,19 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		(req.body.topic_id_to_block || req.body.reply_id_to_block)
+		(req.body.post_id_to_block || req.body.reply_id_to_block)
 	) {
 		let user_id_blocked = 0
-		// For topic_id
-		if (req.body.topic_id_to_block) {
-			const topic_result = await req.client.query(
+		// For post_id
+		if (req.body.post_id_to_block) {
+			const post_result = await req.client.query(
 				`
         SELECT user_id FROM posts WHERE post_id = $1
         `,
-				[req.body.topic_id_to_block],
+				[req.body.post_id_to_block],
 			)
-			if (topic_result.rows.length > 0) {
-				user_id_blocked = topic_result.rows[0].user_id
+			if (post_result.rows.length > 0) {
+				user_id_blocked = post_result.rows[0].user_id
 			}
 		}
 		// For reply_id

@@ -26,9 +26,9 @@ const bindScrollEvent = () => {
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
-				const max_topic_create_date = state.cache[state.path].posts.reduce(
-					(min, topic) => {
-						return min < topic.create_date ? min : topic.create_date
+				const max_post_create_date = state.cache[state.path].posts.reduce(
+					(min, post) => {
+						return min < post.create_date ? min : post.create_date
 					},
 					new Date().toISOString(),
 				)
@@ -55,7 +55,7 @@ const bindScrollEvent = () => {
 					method: "POST",
 					body: JSON.stringify({
 						path: state.path,
-						max_topic_create_date,
+						max_post_create_date,
 						max_create_date,
 					}),
 				})

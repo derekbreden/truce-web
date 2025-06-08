@@ -11,7 +11,7 @@ const getUpdatedCounts = require("../../../server/session/getUpdatedCounts.js")
 
 const tests = {
 	testGetPostCounts: async () => {
-		// Setup mock request to get topic counts
+		// Setup mock request to get post counts
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
@@ -22,19 +22,19 @@ const tests = {
 		)
 		req.results = {}
 		
-		// Setup mock database response for topic counts
+		// Setup mock database response for post counts
 		req.client.addQueryMock(
 			'FROM posts t',
 			{ 
 				rows: [
 					{
-						post_id: 'topic-1',
+						post_id: 'post-1',
 						favorite_count: 15,
 						poll_counts: '8,5,2',
 						reply_count: 12
 					},
 					{
-						post_id: 'topic-2',
+						post_id: 'post-2',
 						favorite_count: 7,
 						poll_counts: null,
 						reply_count: 3
@@ -48,41 +48,41 @@ const tests = {
 		// Execute the handler
 		await getUpdatedCounts(req, res)
 		
-		// Verify topic counts were loaded
+		// Verify post counts were loaded
 		assertEquals(
 			2,
-			req.results.topic_counts.length,
-			"Should return array of topic counts."
+			req.results.post_counts.length,
+			"Should return array of post counts."
 		)
 		assertEquals(
-			'topic-1',
-			req.results.topic_counts[0].post_id,
-			"First topic should have correct ID."
+			'post-1',
+			req.results.post_counts[0].post_id,
+			"First post should have correct ID."
 		)
 		assertEquals(
 			15,
-			req.results.topic_counts[0].favorite_count,
-			"First topic should have correct favorite count."
+			req.results.post_counts[0].favorite_count,
+			"First post should have correct favorite count."
 		)
 		assertEquals(
 			'8,5,2',
-			req.results.topic_counts[0].poll_counts,
-			"First topic should have poll counts."
+			req.results.post_counts[0].poll_counts,
+			"First post should have poll counts."
 		)
 		assertEquals(
 			12,
-			req.results.topic_counts[0].reply_count,
-			"First topic should have reply count."
+			req.results.post_counts[0].reply_count,
+			"First post should have reply count."
 		)
 		assertEquals(
-			'topic-2',
-			req.results.topic_counts[1].post_id,
-			"Second topic should have correct ID."
+			'post-2',
+			req.results.post_counts[1].post_id,
+			"Second post should have correct ID."
 		)
 		assertEquals(
 			null,
-			req.results.topic_counts[1].poll_counts,
-			"Second topic should handle null poll counts."
+			req.results.post_counts[1].poll_counts,
+			"Second post should handle null poll counts."
 		)
 	},
 
@@ -158,7 +158,7 @@ const tests = {
 	},
 
 	testGetBothPostAndReplyCounts: async () => {
-		// Setup mock request to get both topic and reply counts
+		// Setup mock request to get both post and reply counts
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
@@ -176,7 +176,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'topic-1',
+						post_id: 'post-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
 						reply_count: 8
@@ -204,8 +204,8 @@ const tests = {
 		// Verify both counts were loaded
 		assertEquals(
 			1,
-			req.results.topic_counts.length,
-			"Should return topic counts."
+			req.results.post_counts.length,
+			"Should return post counts."
 		)
 		assertEquals(
 			1,
@@ -213,8 +213,8 @@ const tests = {
 			"Should return reply counts."
 		)
 		assertEquals(
-			'topic-1',
-			req.results.topic_counts[0].post_id,
+			'post-1',
+			req.results.post_counts[0].post_id,
 			"Post count should be correct."
 		)
 		assertEquals(
@@ -254,8 +254,8 @@ const tests = {
 			// Should not set any results
 			assertEquals(
 				undefined,
-				req.results.topic_counts,
-				`Should not set topic_counts when required fields missing: ${JSON.stringify(testData)}.`
+				req.results.post_counts,
+				`Should not set post_counts when required fields missing: ${JSON.stringify(testData)}.`
 			)
 			assertEquals(
 				undefined,
@@ -287,7 +287,7 @@ const tests = {
 		// Verify no action taken
 		assertEquals(
 			undefined,
-			req.results.topic_counts,
+			req.results.post_counts,
 			"Should not set results when response already ended."
 		)
 	},
@@ -326,8 +326,8 @@ const tests = {
 		// Should only load replies, not posts
 		assertEquals(
 			undefined,
-			req.results.topic_counts,
-			"Should not load topic counts when has_posts is false."
+			req.results.post_counts,
+			"Should not load post counts when has_posts is false."
 		)
 		assertEquals(
 			1,
@@ -355,7 +355,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'topic-1',
+						post_id: 'post-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
 						reply_count: 8
@@ -372,8 +372,8 @@ const tests = {
 		// Should only load posts, not replies
 		assertEquals(
 			1,
-			req.results.topic_counts.length,
-			"Should load topic counts when has_posts is true."
+			req.results.post_counts.length,
+			"Should load post counts when has_posts is true."
 		)
 		assertEquals(
 			undefined,
@@ -399,7 +399,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'public-topic-1',
+						post_id: 'public-post-1',
 						favorite_count: 5,
 						poll_counts: null,
 						reply_count: 2
@@ -415,13 +415,13 @@ const tests = {
 		// Guest user should be able to get counts
 		assertEquals(
 			1,
-			req.results.topic_counts.length,
-			"Guest user should be able to get topic counts."
+			req.results.post_counts.length,
+			"Guest user should be able to get post counts."
 		)
 		assertEquals(
-			'public-topic-1',
-			req.results.topic_counts[0].post_id,
-			"Should return correct topic data for guest user."
+			'public-post-1',
+			req.results.post_counts[0].post_id,
+			"Should return correct post data for guest user."
 		)
 	},
 
@@ -455,8 +455,8 @@ const tests = {
 		// Should handle empty results gracefully
 		assertEquals(
 			0,
-			req.results.topic_counts.length,
-			"Should handle empty topic counts gracefully."
+			req.results.post_counts.length,
+			"Should handle empty post counts gracefully."
 		)
 		assertEquals(
 			0,
@@ -484,7 +484,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'recent-topic',
+						post_id: 'recent-post',
 						favorite_count: 3,
 						poll_counts: '2,1',
 						reply_count: 1
@@ -511,8 +511,8 @@ const tests = {
 		// Should return filtered results
 		assertEquals(
 			1,
-			req.results.topic_counts.length,
-			"Should return date-filtered topic counts."
+			req.results.post_counts.length,
+			"Should return date-filtered post counts."
 		)
 		assertEquals(
 			1,
@@ -520,9 +520,9 @@ const tests = {
 			"Should return date-filtered reply counts."
 		)
 		assertEquals(
-			'recent-topic',
-			req.results.topic_counts[0].post_id,
-			"Should return recent topic."
+			'recent-post',
+			req.results.post_counts[0].post_id,
+			"Should return recent post."
 		)
 		assertEquals(
 			'recent-reply',
@@ -532,7 +532,7 @@ const tests = {
 	},
 
 	testPostCountFields: async () => {
-		// Test that all expected topic count fields are present
+		// Test that all expected post count fields are present
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
@@ -548,7 +548,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'complete-topic',
+						post_id: 'complete-post',
 						favorite_count: 25,
 						poll_counts: '15,8,2',
 						reply_count: 42
@@ -561,13 +561,13 @@ const tests = {
 		
 		await getUpdatedCounts(req, res)
 		
-		const topicCount = req.results.topic_counts[0]
+		const postCount = req.results.post_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-topic', topicCount.post_id, "Should have post_id.")
-		assertEquals(25, topicCount.favorite_count, "Should have favorite_count.")
-		assertEquals('15,8,2', topicCount.poll_counts, "Should have poll_counts.")
-		assertEquals(42, topicCount.reply_count, "Should have reply_count.")
+		assertEquals('complete-post', postCount.post_id, "Should have post_id.")
+		assertEquals(25, postCount.favorite_count, "Should have favorite_count.")
+		assertEquals('15,8,2', postCount.poll_counts, "Should have poll_counts.")
+		assertEquals(42, postCount.reply_count, "Should have reply_count.")
 	},
 
 	testReplyCountFields: async () => {

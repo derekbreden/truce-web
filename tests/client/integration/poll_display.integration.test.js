@@ -10,17 +10,17 @@ const tests = {
 		const { state, $ } = window
 
 		// Mock initial fetch responses for "/" and "/posts"
-		// The /posts response will include a topic with poll data.
+		// The /posts response will include a post with poll data.
 		window.setMockFetchResponseForPaths({
 			"/": { path: "/", posts: [], replies: [], activities: [], notifications: [] },
 			"/posts": {
 				path: "/posts",
 				posts: [
 					{
-						topic_id: 1,
-						slug: "poll-topic-1",
+						post_id: 1,
+						slug: "poll-post-1",
 						title: "Post with a Poll",
-						body: "This topic has a poll.",
+						body: "This post has a poll.",
 						user_slug: "testuser",
 						display_name: "Test User",
 						tags: "general",
@@ -64,12 +64,12 @@ const tests = {
 			"Path should be /posts after clicking 'Join the Discussion'.",
 		)
 
-		// Find the topic element
-		const $topicElement = $(`topic[trimmed]`) // Assuming posts on /posts have 'trimmed' attribute
+		// Find the post element
+		const $postElement = $(`post[trimmed]`) // Assuming posts on /posts have 'trimmed' attribute
 		// Assert Poll Wrapper Exists
-		const $pollWrapper = $topicElement.$("poll-wrapper")
+		const $pollWrapper = $postElement.$("poll-wrapper")
 		// Assert Poll Options Text
-		// When topic.edit is false and topic.voted is false, options are inside poll-vote-wrapper
+		// When post.edit is false and post.voted is false, options are inside poll-vote-wrapper
 		const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper");
 		const $pollOption1 = $pollVoteWrapper.$("poll-1") // Corrected selector
 		assertEquals("Option A", $pollOption1.innerText.trim(), "Poll option 1 text should be 'Option A'.")
@@ -85,7 +85,7 @@ const tests = {
 		assertEquals(false, Boolean($pollOption4), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
 
 		// Assert Poll Results Sections are NOT present (since user hasn't voted and edit is false)
-		// client/renderPost.js removes these if topic.edit is false and topic.voted is false
+		// client/renderPost.js removes these if post.edit is false and post.voted is false
 		const $pollCountsActual = $pollWrapper.$("poll-counts-actual")
 		assertEquals(false, Boolean($pollCountsActual), "Actual poll counts element should NOT be present when user has not voted.")
 

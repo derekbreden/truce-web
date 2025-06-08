@@ -11,9 +11,9 @@ const saveFlagged = require("../../../server/session/saveFlagged.js")
 
 const tests = {
 	testFlagPost: async () => {
-		// Setup mock request with topic flagging data
+		// Setup mock request with post flagging data
 		const req = createMockRequest({
-			topic_id_to_flag: 'topic-456'
+			post_id_to_flag: 'post-456'
 		})
 		
 		// Setup mock database responses
@@ -95,9 +95,9 @@ const tests = {
 	},
 
 	testFlagBothPostAndReply: async () => {
-		// Edge case: both topic_id and reply_id provided
+		// Edge case: both post_id and reply_id provided
 		const req = createMockRequest({
-			topic_id_to_flag: 'topic-123',
+			post_id_to_flag: 'post-123',
 			reply_id_to_flag: 'reply-456'
 		})
 		
@@ -137,7 +137,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			topic_id_to_flag: 'topic-123'
+			post_id_to_flag: 'post-123'
 		})
 		
 		const res = createMockResponse()
@@ -158,7 +158,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			topic_id_to_flag: 'topic-123'
+			post_id_to_flag: 'post-123'
 		}, { user_id: null })
 		
 		const res = createMockResponse()
@@ -175,9 +175,9 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or reply_id
+		// Setup mock request without post_id or reply_id
 		const req = createMockRequest({
-			// No topic_id_to_flag or reply_id_to_flag
+			// No post_id_to_flag or reply_id_to_flag
 		})
 		
 		const res = createMockResponse()
@@ -195,11 +195,11 @@ const tests = {
 
 	testFlagMultiplePosts: async () => {
 		// Test flagging multiple posts (sequential calls)
-		const topicIds = ['topic-1', 'topic-2', 'topic-3']
+		const postIds = ['post-1', 'post-2', 'post-3']
 		
-		for (const topicId of topicIds) {
+		for (const postId of postIds) {
 			const req = createMockRequest({
-				topic_id_to_flag: topicId
+				post_id_to_flag: postId
 			})
 			
 			req.client.clearQueryMocks()
@@ -218,7 +218,7 @@ const tests = {
 			assertEquals(
 				true,
 				responseData.success,
-				`Should succeed flagging topic ${topicId}.`
+				`Should succeed flagging post ${postId}.`
 			)
 		}
 	},
@@ -268,7 +268,7 @@ const tests = {
 	testResponseStructure: async () => {
 		// Test that response has correct structure
 		const req = createMockRequest({
-			topic_id_to_flag: 'response-test-topic'
+			post_id_to_flag: 'response-test-post'
 		})
 		
 		req.client.addQueryMock(

@@ -20,9 +20,9 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 	if (state.path !== new_path) {
 		was_same_path = false
-		// Cancel any open active reply or topic
+		// Cancel any open active reply or post
 		delete state.active_add_new_reply
-		delete state.active_add_new_topic
+		delete state.active_add_new_post
 
 		// Always track scroll position on cached paths
 		if (state.cache[state.path]) {
@@ -67,7 +67,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		) {
 			clicked_back = true
 
-			// From a sub page (topic / reply) to a main page
+			// From a sub page (post / reply) to a main page
 		} else if (next_sequence !== -1 && previous_sequence === -1) {
 			// Find the main page they were at most recently
 			const most_recent_sequence_page = state.path_history

@@ -25,12 +25,12 @@ These files are processed by `server/server.js` and concatenated into a single `
 Use arrow functions consistently:
 ```javascript
 // ✅ Correct
-const renderPost = (topic) => {
+const renderPost = (post) => {
 	// function body
 }
 
 // ❌ Avoid
-function renderPost(topic) {
+function renderPost(post) {
 	// function body
 }
 ```
@@ -40,7 +40,7 @@ Use double quotes consistently:
 ```javascript
 // ✅ Correct
 const message = "Hello world"
-const className = "topic-wrapper"
+const className = "post-wrapper"
 
 // ❌ Avoid	
 const message = 'Hello world'
@@ -98,7 +98,7 @@ async function testMyFeature() {
 
 	// Test assertions
 	assertEquals("/posts", state.path, "Should navigate to posts")
-	assertEquals("Example", $("topic h2").innerText.trim(), "Should show topic title")
+	assertEquals("Example", $("post h2").innerText.trim(), "Should show post title")
 }
 
 runTests("myFeature.test.js", [testMyFeature])
@@ -178,14 +178,14 @@ $button.on("click", ($event) => {
 Flint.js uses indentation-based templates with `$1`, `$2` placeholders:
 
 ```javascript
-const $topic = $(
+const $post = $(
 	`
-	topic
+	post
 		h2 $1
 		author[slug=$2] $3
 		p $4
 	`,
-	[topic.title, topic.user_slug, topic.display_name, topic.body]
+	[post.title, post.user_slug, post.display_name, post.body]
 )
 ```
 
@@ -256,37 +256,37 @@ const posts = await req.client.query(
 
 ### Render Functions
 ```javascript
-const renderPost = (topic) => {
-	const $topic = $(
+const renderPost = (post) => {
+	const $post = $(
 		`
-		topic
+		post
 			h2 $1
 			p $2
 			author $3
 		`,
-		[topic.title, topic.body, topic.display_name]
+		[post.title, post.body, post.display_name]
 	)
 	
-	$topic.on("click", () => {
-		goToPath(`/topic/${topic.slug}`)
+	$post.on("click", () => {
+		goToPath(`/post/${post.slug}`)
 	})
 	
 	// Cache DOM reference for updates
-	topic.$topic = $topic
-	return $topic
+	post.$post = $post
+	return $post
 }
 ```
 
 ### Update Pattern
 ```javascript
 const updateCounts = (data) => {
-	data.topic_counts?.forEach((count) => {
-		const found_topic = state.cache[state.path].posts.find(
-			(topic) => topic.topic_id === count.topic_id
+	data.post_counts?.forEach((count) => {
+		const found_post = state.cache[state.path].posts.find(
+			(post) => post.post_id === count.post_id
 		)
-		if (found_topic) {
-			found_topic.reply_count = count.reply_count
-			found_topic.$topic.$("[replies] p").innerText = count.reply_count
+		if (found_post) {
+			found_post.reply_count = count.reply_count
+			found_post.$post.$("[replies] p").innerText = count.reply_count
 		}
 	})
 }
@@ -332,7 +332,7 @@ state.ws.addEventListener("message", (event) => {
 })
 
 // Server sends updates
-req.sendWsMessage("UPDATE", topic_id)
+req.sendWsMessage("UPDATE", post_id)
 ```
 
 ## AI Integration

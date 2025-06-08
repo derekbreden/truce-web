@@ -16,10 +16,10 @@ const tests = {
 				path: "/posts",
 				posts: [
 					{
-						slug: "test-topic-1",
+						slug: "test-post-1",
 						title: "Test Post 1",
-						body: "Body for test topic 1",
-						user_slug: "test-user", // Author of the topic
+						body: "Body for test post 1",
+						user_slug: "test-user", // Author of the post
 						display_name: "Test User Name",
 						tags: "general",
 						profile_picture_uuid: null,
@@ -87,11 +87,11 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Ensure the topic is rendered on /posts
-		const $topicAuthorElement = $(`posts > topic author[slug="test-user"]`)
+		// 3. Ensure the post is rendered on /posts
+		const $postAuthorElement = $(`posts > post author[slug="test-user"]`)
 
 		// 4. Navigate to User Profile by clicking the author element
-		$topicAuthorElement.click()
+		$postAuthorElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			"/user/test-user",
@@ -104,9 +104,9 @@ const tests = {
 		const $mainContent = $mainContentWrapper.$("main-content")
 
 		// Verify the user's name is displayed as a header.
-		// renderPosts.js creates a structure like: topic[user] > h2[user] > author > span
+		// renderPosts.js creates a structure like: post[user] > h2[user] > author > span
 		const $userProfileHeaderSpan = $mainContent.$(
-			"topic[user] h2[user] author span",
+			"post[user] h2[user] author span",
 		)
 		assertEquals(
 			"Test User Name",
@@ -120,11 +120,11 @@ const tests = {
 
 		// Check that no posts are rendered if the mock data has posts: [] for the user page
 		const $renderedUserPostElements =
-			$userPostsContainer.querySelectorAll("topic:not([user])") // Exclude the header topic, which is topic[user]
+			$userPostsContainer.querySelectorAll("post:not([user])") // Exclude the header post, which is post[user]
 		assertEquals(
 			0,
 			$renderedUserPostElements.length,
-			"Should render 0 actual topic elements if mock data for /user/test-user has posts: [].",
+			"Should render 0 actual post elements if mock data for /user/test-user has posts: [].",
 		)
 	},
 }

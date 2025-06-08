@@ -11,30 +11,30 @@ const getSinglePost = require("../../../server/session/getSinglePost.js")
 
 const tests = {
 	testGetSinglePostWithReplies: async () => {
-		// Setup mock request for topic path
+		// Setup mock request for post path
 		const req = createMockRequest(
-			{ path: "/post/sample-topic-slug" },
+			{ path: "/post/sample-post-slug" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
 		
-		// Setup mock database responses for complete topic load
+		// Setup mock database responses for complete post load
 		req.client.addQueryMock(
 			'FROM posts p',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						topic_id: 'topic-123',
+						post_id: 'post-123',
 						title: 'Sample Post Title',
 						user_id: 'user-789',
 						display_name: 'Post Author',
 						display_name_index: 0,
-						user_slug: 'topic-author',
+						user_slug: 'post-author',
 						profile_picture_uuid: 'pic-uuid-1',
 						user_verified: true,
-						slug: 'sample-topic-slug',
-						body: 'This is the topic body content',
+						slug: 'sample-post-slug',
+						body: 'This is the post body content',
 						poll_1: 'Option A',
 						poll_2: 'Option B',
 						poll_3: null,
@@ -109,31 +109,31 @@ const tests = {
 		// Execute the handler
 		await getSinglePost(req, res)
 		
-		// Verify topic was loaded
+		// Verify post was loaded
 		assertEquals(
-			"/post/sample-topic-slug",
+			"/post/sample-post-slug",
 			req.results.path,
 			"Path should be set in results."
 		)
 		assertEquals(
 			1,
 			req.results.posts.length,
-			"Should return single topic."
+			"Should return single post."
 		)
 		assertEquals(
 			'Sample Post Title',
 			req.results.posts[0].title,
-			"Should include topic title."
+			"Should include post title."
 		)
 		assertEquals(
-			'This is the topic body content',
+			'This is the post body content',
 			req.results.posts[0].body,
-			"Should include topic body."
+			"Should include post body."
 		)
 		assertEquals(
 			'technology,science',
 			req.results.posts[0].tags,
-			"Should include topic tags."
+			"Should include post tags."
 		)
 		
 		// Verify replies were loaded
@@ -165,21 +165,21 @@ const tests = {
 	},
 
 	testGetPostOnlyWithMaxReplyDate: async () => {
-		// Test when max_reply_create_date is provided (skips topic loading)
+		// Test when max_reply_create_date is provided (skips post loading)
 		const req = createMockRequest(
 			{ 
-				path: "/post/sample-topic-slug",
+				path: "/post/sample-post-slug",
 				max_reply_create_date: '2024-01-15T12:00:00Z'
 			},
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
 		
-		// Setup mocks for topic_id lookup only
+		// Setup mocks for post_id lookup only
 		req.client.addQueryMock(
-			'SELECT p.post_id as topic_id',
+			'SELECT p.post_id as post_id',
 			{ 
-				rows: [{ topic_id: 'topic-123' }]
+				rows: [{ post_id: 'post-123' }]
 			}
 		)
 		req.client.addQueryMock(
@@ -195,16 +195,16 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		// Should set path but not load topic details
+		// Should set path but not load post details
 		assertEquals(
-			"/post/sample-topic-slug",
+			"/post/sample-post-slug",
 			req.results.path,
 			"Path should be set."
 		)
 		assertEquals(
 			0,
 			req.results.posts.length,
-			"Should not load topic when max_reply_create_date provided."
+			"Should not load post when max_reply_create_date provided."
 		)
 		assertEquals(
 			0,
@@ -214,9 +214,9 @@ const tests = {
 	},
 
 	testPostNotFound: async () => {
-		// Test when topic doesn't exist or is blocked/flagged
+		// Test when post doesn't exist or is blocked/flagged
 		const req = createMockRequest(
-			{ path: "/topic/nonexistent-topic" },
+			{ path: "/post/nonexistent-post" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -227,7 +227,7 @@ const tests = {
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT p.post_id as topic_id',
+			'SELECT p.post_id as post_id',
 			{ rows: [] }
 		)
 		
@@ -239,7 +239,7 @@ const tests = {
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Path should not be set when topic not found."
+			"Path should not be set when post not found."
 		)
 		assertEquals(
 			0,
@@ -275,14 +275,14 @@ const tests = {
 		assertEquals(
 			0,
 			req.results.posts.length,
-			"Should not load topic for wrong path."
+			"Should not load post for wrong path."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest(
-			{ path: "/topic/sample-topic" },
+			{ path: "/post/sample-post" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -303,11 +303,11 @@ const tests = {
 	},
 
 	testSlugExtraction: async () => {
-		// Test various topic slug formats
+		// Test various post slug formats
 		const testCases = [
-			{ path: "/topic/simple", expectedSlug: "simple" },
-			{ path: "/topic/topic-with-dashes", expectedSlug: "topic-with-dashes" },
-			{ path: "/topic/123-numeric-slug", expectedSlug: "123-numeric-slug" }
+			{ path: "/post/simple", expectedSlug: "simple" },
+			{ path: "/post/post-with-dashes", expectedSlug: "post-with-dashes" },
+			{ path: "/post/123-numeric-slug", expectedSlug: "123-numeric-slug" }
 		]
 		
 		for (const testCase of testCases) {
@@ -323,7 +323,7 @@ const tests = {
 				{ 
 					rows: [
 						{
-							topic_id: 'topic-test',
+							post_id: 'post-test',
 							title: 'Test Post',
 							slug: testCase.expectedSlug,
 							user_id: 'user-789',
@@ -356,7 +356,7 @@ const tests = {
 	testPollData: async () => {
 		// Test poll data handling
 		const req = createMockRequest(
-			{ path: "/topic/poll-topic" },
+			{ path: "/post/poll-post" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -366,9 +366,9 @@ const tests = {
 			{ 
 				rows: [
 					{
-						topic_id: 'poll-topic-123',
+						post_id: 'poll-post-123',
 						title: 'Poll Post',
-						slug: 'poll-topic',
+						slug: 'poll-post',
 						poll_1: 'Yes',
 						poll_2: 'No',
 						poll_3: 'Maybe',
@@ -395,22 +395,22 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		const topic = req.results.posts[0]
+		const post = req.results.posts[0]
 		
 		// Verify poll data
-		assertEquals('Yes', topic.poll_1, "Should include poll option 1.")
-		assertEquals('No', topic.poll_2, "Should include poll option 2.")
-		assertEquals('Maybe', topic.poll_3, "Should include poll option 3.")
-		assertEquals(null, topic.poll_4, "Should handle null poll option 4.")
-		assertEquals('10,5,2', topic.poll_counts, "Should include poll counts.")
-		assertEquals(false, topic.poll_counts_estimated, "Should include poll estimation status.")
-		assertEquals(true, topic.voted, "Should indicate if user voted.")
+		assertEquals('Yes', post.poll_1, "Should include poll option 1.")
+		assertEquals('No', post.poll_2, "Should include poll option 2.")
+		assertEquals('Maybe', post.poll_3, "Should include poll option 3.")
+		assertEquals(null, post.poll_4, "Should handle null poll option 4.")
+		assertEquals('10,5,2', post.poll_counts, "Should include poll counts.")
+		assertEquals(false, post.poll_counts_estimated, "Should include poll estimation status.")
+		assertEquals(true, post.voted, "Should indicate if user voted.")
 	},
 
 	testUserPermissions: async () => {
 		// Test edit permissions and user status
 		const req = createMockRequest(
-			{ path: "/topic/user-topic" },
+			{ path: "/post/user-post" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -420,7 +420,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						topic_id: 'user-topic-123',
+						post_id: 'user-post-123',
 						title: 'User Post',
 						user_id: 'user-456', // Same as requesting user
 						display_name: 'Current User',
@@ -445,19 +445,19 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		const topic = req.results.posts[0]
+		const post = req.results.posts[0]
 		
 		// Verify user permissions and status
-		assertEquals(true, topic.edit, "User should be able to edit their own topic.")
-		assertEquals(false, topic.favorited, "Should show favorited status.")
-		assertEquals(true, topic.replyed, "Should show if user replyed.")
-		assertEquals(false, topic.voted, "Should show if user voted.")
+		assertEquals(true, post.edit, "User should be able to edit their own post.")
+		assertEquals(false, post.favorited, "Should show favorited status.")
+		assertEquals(true, post.replyed, "Should show if user replyed.")
+		assertEquals(false, post.voted, "Should show if user voted.")
 	},
 
 	testGuestUserAccess: async () => {
 		// Test access without logged in user
 		const req = createMockRequest(
-			{ path: "/topic/public-topic" },
+			{ path: "/post/public-post" },
 			{ user_id: undefined }
 		)
 		req.results = { posts: [], replies: [] }
@@ -467,7 +467,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						topic_id: 'public-topic-123',
+						post_id: 'public-post-123',
 						title: 'Public Post',
 						user_id: 'user-789',
 						display_name: 'Author',
@@ -492,11 +492,11 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		// Guest user should be able to view topic
+		// Guest user should be able to view post
 		assertEquals(
 			1,
 			req.results.posts.length,
-			"Guest user should be able to view topic."
+			"Guest user should be able to view post."
 		)
 		assertEquals(
 			false,
@@ -506,13 +506,13 @@ const tests = {
 	},
 
 	testWithDateFilters: async () => {
-		// Test with date filtering for topic and replies
+		// Test with date filtering for post and replies
 		const req = createMockRequest(
 			{ 
-				path: "/topic/filtered-topic",
-				min_topic_create_date: '2024-01-10T00:00:00Z',
+				path: "/post/filtered-post",
+				min_post_create_date: '2024-01-10T00:00:00Z',
 				min_reply_create_date: '2024-01-12T00:00:00Z'
-				// max_reply_create_date removed so topic will be loaded
+				// max_reply_create_date removed so post will be loaded
 			},
 			{ user_id: 'user-456' }
 		)
@@ -523,7 +523,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						topic_id: 'filtered-topic-123',
+						post_id: 'filtered-post-123',
 						title: 'Filtered Post',
 						create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-789',
@@ -555,11 +555,11 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		// Should handle date filtering (topic date 2024-01-15 > min date 2024-01-10)
+		// Should handle date filtering (post date 2024-01-15 > min date 2024-01-10)
 		assertEquals(
 			1,
 			req.results.posts.length,
-			"Should return filtered topic."
+			"Should return filtered post."
 		)
 		assertEquals(
 			1,
@@ -569,9 +569,9 @@ const tests = {
 	},
 
 	testPostFields: async () => {
-		// Test that all expected topic fields are present
+		// Test that all expected post fields are present
 		const req = createMockRequest(
-			{ path: "/topic/complete-topic" },
+			{ path: "/post/complete-post" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -582,7 +582,7 @@ const tests = {
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						topic_id: 'complete-topic-123',
+						post_id: 'complete-post-123',
 						title: 'Complete Post Title',
 						user_id: 'user-789',
 						display_name: 'Complete Author',
@@ -590,8 +590,8 @@ const tests = {
 						user_slug: 'complete-author',
 						profile_picture_uuid: 'pic-uuid',
 						user_verified: true,
-						slug: 'complete-topic',
-						body: 'Complete topic body',
+						slug: 'complete-post',
+						body: 'Complete post body',
 						poll_1: 'Poll Option 1',
 						poll_2: 'Poll Option 2',
 						poll_3: null,
@@ -625,40 +625,40 @@ const tests = {
 		
 		await getSinglePost(req, res)
 		
-		const topic = req.results.posts[0]
+		const post = req.results.posts[0]
 		
 		// Verify all fields are present
-		assertEquals('2024-01-15T10:00:00Z', topic.create_date, "Should have create_date.")
-		assertEquals('complete-topic-123', topic.topic_id, "Should have topic_id.")
-		assertEquals('Complete Post Title', topic.title, "Should have title.")
-		assertEquals('user-789', topic.user_id, "Should have user_id.")
-		assertEquals('Complete Author', topic.display_name, "Should have display_name.")
-		assertEquals(2, topic.display_name_index, "Should have display_name_index.")
-		assertEquals('complete-author', topic.user_slug, "Should have user_slug.")
-		assertEquals('pic-uuid', topic.profile_picture_uuid, "Should have profile_picture_uuid.")
-		assertEquals(true, topic.user_verified, "Should have user_verified.")
-		assertEquals('complete-topic', topic.slug, "Should have slug.")
-		assertEquals('Complete topic body', topic.body, "Should have body.")
-		assertEquals('Poll Option 1', topic.poll_1, "Should have poll_1.")
-		assertEquals('Poll Option 2', topic.poll_2, "Should have poll_2.")
-		assertEquals('8,3', topic.poll_counts, "Should have poll_counts.")
-		assertEquals(true, topic.poll_counts_estimated, "Should have poll_counts_estimated.")
-		assertEquals('Post note', topic.note, "Should have note.")
-		assertEquals(15, topic.favorite_count, "Should have favorite_count.")
-		assertEquals(8, topic.reply_count, "Should have reply_count.")
-		assertEquals('2024-01-15T11:00:00Z', topic.counts_max_create_date, "Should have counts_max_create_date.")
-		assertEquals(false, topic.edit, "Should have edit permission.")
-		assertEquals('img1,img2,img3', topic.image_uuids, "Should have image_uuids.")
-		assertEquals(true, topic.favorited, "Should have favorited status.")
-		assertEquals(true, topic.replyed, "Should have replyed status.")
-		assertEquals(false, topic.voted, "Should have voted status.")
-		assertEquals('technology,science,innovation', topic.tags, "Should have tags.")
+		assertEquals('2024-01-15T10:00:00Z', post.create_date, "Should have create_date.")
+		assertEquals('complete-post-123', post.post_id, "Should have post_id.")
+		assertEquals('Complete Post Title', post.title, "Should have title.")
+		assertEquals('user-789', post.user_id, "Should have user_id.")
+		assertEquals('Complete Author', post.display_name, "Should have display_name.")
+		assertEquals(2, post.display_name_index, "Should have display_name_index.")
+		assertEquals('complete-author', post.user_slug, "Should have user_slug.")
+		assertEquals('pic-uuid', post.profile_picture_uuid, "Should have profile_picture_uuid.")
+		assertEquals(true, post.user_verified, "Should have user_verified.")
+		assertEquals('complete-post', post.slug, "Should have slug.")
+		assertEquals('Complete post body', post.body, "Should have body.")
+		assertEquals('Poll Option 1', post.poll_1, "Should have poll_1.")
+		assertEquals('Poll Option 2', post.poll_2, "Should have poll_2.")
+		assertEquals('8,3', post.poll_counts, "Should have poll_counts.")
+		assertEquals(true, post.poll_counts_estimated, "Should have poll_counts_estimated.")
+		assertEquals('Post note', post.note, "Should have note.")
+		assertEquals(15, post.favorite_count, "Should have favorite_count.")
+		assertEquals(8, post.reply_count, "Should have reply_count.")
+		assertEquals('2024-01-15T11:00:00Z', post.counts_max_create_date, "Should have counts_max_create_date.")
+		assertEquals(false, post.edit, "Should have edit permission.")
+		assertEquals('img1,img2,img3', post.image_uuids, "Should have image_uuids.")
+		assertEquals(true, post.favorited, "Should have favorited status.")
+		assertEquals(true, post.replyed, "Should have replyed status.")
+		assertEquals(false, post.voted, "Should have voted status.")
+		assertEquals('technology,science,innovation', post.tags, "Should have tags.")
 	},
 
 	testEmptyPostSlug: async () => {
-		// Test edge case with empty topic slug
+		// Test edge case with empty post slug
 		const req = createMockRequest(
-			{ path: "/topic/" },
+			{ path: "/post/" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { posts: [], replies: [] }
@@ -668,7 +668,7 @@ const tests = {
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT p.post_id as topic_id',
+			'SELECT p.post_id as post_id',
 			{ rows: [] }
 		)
 		
@@ -680,7 +680,7 @@ const tests = {
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Should not set path for empty topic slug."
+			"Should not set path for empty post slug."
 		)
 		assertEquals(
 			0,

@@ -35,19 +35,19 @@ module.exports = async (req, res) => {
 		req.body.path &&
 		req.body.pngs
 	) {
-		let topic_id = 0
-		if (req.body.path.substr(0, 7) === "/topic/" || req.body.path.substr(0, 6) === "/post/") {
-			const slug = req.body.path.substr(0, 7) === "/topic/" ? req.body.path.substr(7) : req.body.path.substr(6)
-			const topic_results = await req.client.query(
+		let post_id = 0
+		if (req.body.path.substr(0, 7) === "/post/" || req.body.path.substr(0, 6) === "/post/") {
+			const slug = req.body.path.substr(0, 7) === "/post/" ? req.body.path.substr(7) : req.body.path.substr(6)
+			const post_results = await req.client.query(
 				`
-        SELECT post_id as topic_id
+        SELECT post_id as post_id
         FROM posts
         WHERE slug = $1
         `,
 				[slug],
 			)
-			if (topic_results.rows.length) {
-				topic_id = topic_results.rows[0].topic_id
+			if (post_results.rows.length) {
+				post_id = post_results.rows[0].post_id
 			} else {
 				res.end(
 					JSON.stringify({
@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
 		}
 		if (req.body.path.substr(0, 8) === "/reply" || req.body.path.substr(0, 6) === "/reply") {
 			const ancestor_reply_id = req.body.path.substr(0, 8) === "/reply" ? req.body.path.substr(9) : req.body.path.substr(7)
-			const ancestor_topic_results = await req.client.query(
+			const ancestor_post_results = await req.client.query(
 				`
         SELECT parent_post_id
         FROM replies
@@ -67,8 +67,8 @@ module.exports = async (req, res) => {
         `,
 				[ancestor_reply_id],
 			)
-			if (ancestor_topic_results.rows.length) {
-				topic_id = ancestor_topic_results.rows[0].parent_post_id
+			if (ancestor_post_results.rows.length) {
+				post_id = ancestor_post_results.rows[0].parent_post_id
 			} else {
 				res.end(
 					JSON.stringify({
@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
 		}
 
 		const messages = []
-		const topic_results = await req.client.query(
+		const post_results = await req.client.query(
 			`
       SELECT
         t.title,
@@ -90,17 +90,17 @@ module.exports = async (req, res) => {
         t.image_uuids
       FROM posts t
       INNER JOIN users u ON t.user_id = u.user_id
-      WHERE t.topic_id = $1
+      WHERE t.post_id = $1
       ORDER BY t.create_date ASC
       `,
-			[topic_id],
+			[post_id],
 		)
-		for (const topic of topic_results.rows) {
+		for (const post of post_results.rows) {
 			// Get base64 image urls from object store
-			const pngs = topic.image_uuids
+			const pngs = post.image_uuids
 				? (
 						await Promise.all(
-							topic.image_uuids.split(",").map(async (image_uuid) => {
+							post.image_uuids.split(",").map(async (image_uuid) => {
 								try {
 									const response = await object_client.send(
 										new GetObjectCommand({
@@ -118,12 +118,12 @@ module.exports = async (req, res) => {
 					).filter((x) => x)
 				: []
 
-			// Add a message for the topic(s) being replyed on
+			// Add a message for the post(s) being replyed on
 			messages.push({
 				role: "user",
-				name: (topic.display_name || "Anonymous").replace(/[^a-z0-9_\-]/gi, ""),
+				name: (post.display_name || "Anonymous").replace(/[^a-z0-9_\-]/gi, ""),
 				content: [
-					{ type: "text", text: topic.title + "\n\n" + topic.body },
+					{ type: "text", text: post.title + "\n\n" + post.body },
 					...pngs.map((png) => {
 						return {
 							image_url: {
@@ -136,10 +136,10 @@ module.exports = async (req, res) => {
 			})
 
 			// Add a message for the system response of a note or OK
-			if (topic.note) {
+			if (post.note) {
 				messages.push({
 					role: "system",
-					content: topic.note,
+					content: post.note,
 				})
 			} else {
 				messages.push({
@@ -297,7 +297,7 @@ module.exports = async (req, res) => {
           `,
 					[
 						req.body.body,
-						topic_id,
+						post_id,
 						req.session.user_id,
 						req.body.parent_reply_id,
 					],
@@ -333,7 +333,7 @@ module.exports = async (req, res) => {
 					[
 						req.body.body,
 						`${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
-						topic_id,
+						post_id,
 						req.session.user_id,
 						req.body.parent_reply_id,
 					],
@@ -414,7 +414,7 @@ module.exports = async (req, res) => {
 			[image_uuids.join(","), reply_id],
 		)
 
-		// Update the topic reply_count and counts_max_create_date
+		// Update the post reply_count and counts_max_create_date
 		await req.client.query(
 			`
       UPDATE posts
@@ -430,9 +430,9 @@ module.exports = async (req, res) => {
           c.parent_post_id = $1
           AND l.reply_id IS NULL
       ) AS subquery
-      WHERE posts.topic_id = $1
+      WHERE posts.post_id = $1
       `,
-			[topic_id],
+			[post_id],
 		)
 
 		// Respond with success so the client reloads
@@ -455,7 +455,7 @@ module.exports = async (req, res) => {
       WHERE user_id IN (
         SELECT user_id
         FROM posts
-        WHERE topic_id = $1
+        WHERE post_id = $1
         UNION
         SELECT user_id
         FROM replies
@@ -467,7 +467,7 @@ module.exports = async (req, res) => {
       ) AND user_id <> $3
       AND active = TRUE
       `,
-			[topic_id, reply_id, req.session.user_id],
+			[post_id, reply_id, req.session.user_id],
 		)
 
 		// Get user_id(s) to notify
@@ -476,7 +476,7 @@ module.exports = async (req, res) => {
       SELECT user_id
       FROM posts
       WHERE
-        topic_id = $1
+        post_id = $1
         AND user_id <> $3
       UNION
       SELECT user_id
@@ -489,7 +489,7 @@ module.exports = async (req, res) => {
         )
         AND user_id <> $3
       `,
-			[topic_id, reply_id, req.session.user_id],
+			[post_id, reply_id, req.session.user_id],
 		)
 
 		// Wait for all notifications to be inserted
@@ -517,7 +517,7 @@ module.exports = async (req, res) => {
 				req.body.body.length > 50
 					? req.body.body.substr(0, 50) + "..."
 					: req.body.body
-			let tag = `topic:${topic_id}`
+			let tag = `post:${post_id}`
 
 			// Chrome wants unique tags ¯\_(ツ)_/¯
 			if (String(subscription.subscription_json || "").match(/google/i)) {
@@ -606,6 +606,6 @@ module.exports = async (req, res) => {
 		})
 
 		// Send websocket update after all notifications have been inserted
-		req.sendWsMessage("UPDATE", topic_id)
+		req.sendWsMessage("UPDATE", post_id)
 	}
 }

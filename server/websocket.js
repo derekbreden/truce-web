@@ -23,17 +23,17 @@ module.exports = {
 						try {
 							client = await pool.pool.connect()
 
-							if (message.path.substr(0, 7) === "/topic/" || message.path.substr(0, 6) === "/post/") {
-								const topic = await client.query(
+							if (message.path.substr(0, 7) === "/post/" || message.path.substr(0, 6) === "/post/") {
+								const post = await client.query(
 									`
                     SELECT post_id
                     FROM posts
                     WHERE slug = $1
                   `,
-									[message.path.substr(0, 7) === "/topic/" ? message.path.substr(7) : message.path.substr(6)],
+									[message.path.substr(0, 7) === "/post/" ? message.path.substr(7) : message.path.substr(6)],
 								)
-								this.ws_active[ws_uuid].active_post_id = topic.rows.length
-									? topic.rows[0].post_id
+								this.ws_active[ws_uuid].active_post_id = post.rows.length
+									? post.rows[0].post_id
 									: false
 							} else if (message.path.substr(0, 9) === "/reply/" || message.path.substr(0, 7) === "/reply/") {
 								const reply = await client.query(
