@@ -9,10 +9,10 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// Mock API responses for initial load and navigation to /topics
+		// Mock API responses for initial load and navigation to /posts
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [], // Empty topics list is fine for this test's assertions
 				comments: [],
 				activities: [],
@@ -28,20 +28,20 @@ const tests = {
 			},
 		})
 
-		// Simulate agreeing to terms to navigate to /topics
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// Simulate agreeing to terms to navigate to /posts
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 
 		// Wait for navigation and rendering
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
-		const footerIconsToTest = ["topics", "tag", "favorites", "notifications"]
+		const footerIconsToTest = ["posts", "tag", "favorites", "notifications"]
 
 		footerIconsToTest.forEach((iconName) => {
 			const selector = `footer icon[${iconName}] svg`

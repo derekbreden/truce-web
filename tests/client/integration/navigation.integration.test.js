@@ -9,10 +9,10 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// Set fetch response for topics and specific topic
+		// Set fetch response for posts and specific post
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [
 					{
 						slug: "test-topic-1",
@@ -75,16 +75,16 @@ const tests = {
 			},
 		})
 
-		// 1. Agree to terms to navigate to /topics
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// 1. Agree to terms to navigate to /posts
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 2. Verify navigation to /topics
+		// 2. Verify navigation to /posts
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
 		// 3. Find and click the first topic link/element

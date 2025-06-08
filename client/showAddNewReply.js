@@ -37,12 +37,12 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 	)
 	if (reply) {
 		$add_new.$("[cancel]").on("click", () => {
-			$add_new.replaceWith(reply.$comment)
+			$add_new.replaceWith(reply.$reply)
 			delete state.active_add_new_comment
 		})
 	} else if (parent_reply) {
 		$add_new.$("[cancel]").on("click", () => {
-			parent_reply.$comment.$(":scope > reply-wrapper").style.display = "flex"
+			parent_reply.$reply.$(":scope > reply-wrapper").style.display = "flex"
 			$add_new.remove()
 			delete state.active_add_new_comment
 		})

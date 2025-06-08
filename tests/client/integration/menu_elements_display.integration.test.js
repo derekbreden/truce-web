@@ -11,8 +11,8 @@ const tests = {
 
 		// Mock API response for initial load (logged-out user)
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [],
 				comments: [],
 				activities: [],
@@ -29,7 +29,7 @@ const tests = {
 		})
 
 		// Click Join
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -105,8 +105,8 @@ const tests = {
 
 		// Mock API response for initial load (still good practice, though we override state)
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [],
 				comments: [],
 				activities: [],
@@ -123,7 +123,7 @@ const tests = {
 		})
 
 		// Click Join
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 

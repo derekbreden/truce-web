@@ -8,12 +8,12 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	const { window } = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Simulate agreeing to terms to navigate to /topics
-	const $joinButton = $(`a[href="/topics"][big]`)
+	// Simulate agreeing to terms to navigate to /posts
+	const $joinButton = $(`a[href="/posts"][big]`)
 
 	window.setMockFetchResponseForPaths({
-		"/topics": {
-			path: "/topics",
+		"/posts": {
+			path: "/posts",
 			topics: [
 				{
 					slug: "tech-trends",
@@ -68,8 +68,8 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 
 	assertEquals(
 		state.path,
-		"/topics",
-		"State path should be /topics after navigation",
+		"/posts",
+		"State path should be /posts after navigation",
 	)
 
 	const $topicsWrapper = $("topics")

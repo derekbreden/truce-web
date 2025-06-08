@@ -2,8 +2,8 @@
 const path_sequence = [
 	"/",
 	"/privacy",
-	"/topics",
-	"/topics/all",
+	"/posts",
+	"/posts/all",
 	"/tags",
 	"/favorites",
 	"/notifications",
@@ -16,15 +16,15 @@ const parsePath = () => {
 	const new_paths = window.location.pathname.split("/").filter((x) => x)
 	if (new_paths[0] === "reset") {
 		state.reset_token_uuid = new_paths[1] || ""
-	} else if (new_paths[0] === "topic" && new_paths[1]) {
+	} else if ((new_paths[0] === "topic" || new_paths[0] === "post") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "comment" && new_paths[1]) {
+	} else if ((new_paths[0] === "comment" || new_paths[0] === "reply") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "tag" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "user" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "topics" && new_paths[1] === "all") {
+	} else if ((new_paths[0] === "posts" || new_paths[0] === "topics") && new_paths[1] === "all") {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0]) {
 		new_path = "/" + new_paths[0]
@@ -41,10 +41,10 @@ if (
 	state.path = "/"
 }
 
-// Default to /topics instead of / when we have visited before
+// Default to /posts instead of / when we have visited before
 if (state.path === "/") {
-	if (localStorage.getItem(`${window.local_storage_key}:has_visited_topics`)) {
-		state.path = "/topics"
+	if (localStorage.getItem(`${window.local_storage_key}:has_visited_posts`)) {
+		state.path = "/posts"
 		state.path_index++
 		history.pushState({ path_index: state.path_index }, "", state.path)
 	}

@@ -41,8 +41,8 @@ const tests = {
 
 		// 2. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				user_id: mockUser.user_id,
 				email: mockUser.email,
 				user_slug: mockUser.user_slug,
@@ -76,18 +76,18 @@ const tests = {
 		})
 
 		// 3. Simulate Navigation
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"After clicking 'Join', path should be /topics.",
+			"After clicking 'Join', path should be /posts.",
 		)
 		assertEquals(
 			mockUser.user_id,
 			state.user_id,
-			"state.user_id should be set from /topics mock. Actual: " + state.user_id,
+			"state.user_id should be set from /posts mock. Actual: " + state.user_id,
 		)
 
 		const $topicLinkElement = $(`topic[trimmed] h2`)

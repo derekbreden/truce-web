@@ -14,6 +14,8 @@ module.exports = async (req, res) => {
 		!res.writableEnded &&
 		(req.body.path === "/topics" ||
 			req.body.path === "/topics/all" ||
+			req.body.path === "/posts" ||
+			req.body.path === "/posts/all" ||
 			req.body.path?.substr(0, 5) === "/tag/" ||
 			req.body.path?.substr(0, 6) === "/user/")
 	) {
@@ -101,7 +103,7 @@ module.exports = async (req, res) => {
 							: ""
 					}
           ${
-						req.body.path === "/topics" &&
+						(req.body.path === "/topics" || req.body.path === "/posts") &&
 						Number(req.session.subscribed_to_users) > 0
 							? `
                 AND p.user_id IN (

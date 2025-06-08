@@ -13,7 +13,7 @@ const renderPosts = (posts, tag, user) => {
 	beforeDomUpdate()
 	if (!$("main-content-wrapper[active] topics")) {
 		const target =
-			state.path === "/topics" || state.path === "/topics/all"
+			state.path === "/posts" || state.path === "/posts/all"
 				? "main-content-wrapper[active] main-content-2"
 				: "main-content-wrapper[active] main-content"
 		$(target).appendChild(
@@ -333,7 +333,7 @@ const renderPosts = (posts, tag, user) => {
 	}
 
 	// Subscribed or all posts
-	if (state.path === "/topics" && state.subscribed_to_users) {
+	if (state.path === "/posts" && state.subscribed_to_users) {
 		$("main-content-wrapper[active] main-content-2 topics").prepend(
 			$(
 				`
@@ -352,13 +352,13 @@ const renderPosts = (posts, tag, user) => {
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
-				`${window.local_storage_key}:topics_preference`,
-				"/topics/all",
+				`${window.local_storage_key}:posts_preference`,
+				"/posts/all",
 			)
-			goToPath("/topics/all")
+			goToPath("/posts/all")
 		})
 	}
-	if (state.path === "/topics/all" && state.subscribed_to_users) {
+	if (state.path === "/posts/all" && state.subscribed_to_users) {
 		$("main-content-wrapper[active] main-content-2 topics").prepend(
 			$(
 				`
@@ -377,10 +377,10 @@ const renderPosts = (posts, tag, user) => {
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
-				`${window.local_storage_key}:topics_preference`,
-				"/topics",
+				`${window.local_storage_key}:posts_preference`,
+				"/posts",
 			)
-			goToPath("/topics")
+			goToPath("/posts")
 		})
 	}
 

@@ -11,8 +11,8 @@ const tests = {
 
 		// Setup mock API responses with topic containing images
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [
 					{
 						slug: "test-topic-with-images",
@@ -90,17 +90,17 @@ const tests = {
 			},
 		})
 
-		// 1. Navigate to topics page
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// 1. Navigate to posts page
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
 		// 2. Click on the topic to navigate to detail page

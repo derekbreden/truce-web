@@ -7,7 +7,7 @@ const toggleFavorite = async (topic_or_comment) => {
 	const was_favorited = topic_or_comment.favorited
 
 	// Update any cached items
-	if (topic_or_comment.$topic) {
+	if (topic_or_comment.$post) {
 		forEachCachedTopic((topic) => {
 			if (topic.topic_id === topic_id) {
 				if (was_favorited) {
@@ -20,7 +20,7 @@ const toggleFavorite = async (topic_or_comment) => {
 			}
 		})
 	}
-	if (topic_or_comment.$comment) {
+	if (topic_or_comment.$reply) {
 		forEachCachedComment((comment) => {
 			if (comment.comment_id === comment_id) {
 				if (was_favorited) {
@@ -37,10 +37,10 @@ const toggleFavorite = async (topic_or_comment) => {
 	// Remove from the active dom / cache if unfavorited
 	state.cache["/favorites"]?.activities?.forEach((activity, activity_index) => {
 		if (
-			(topic_or_comment.$comment &&
+			(topic_or_comment.$reply &&
 				activity.type === "comment" &&
 				activity.id === comment_id) ||
-			(topic_or_comment.$topic &&
+			(topic_or_comment.$post &&
 				activity.type === "topic" &&
 				activity.id === topic_id)
 		) {
@@ -109,8 +109,8 @@ const toggleFavorite = async (topic_or_comment) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				topic_id_to_favorite: topic_or_comment.$topic ? topic_id : 0,
-				comment_id_to_favorite: topic_or_comment.$comment ? comment_id : 0,
+				topic_id_to_favorite: topic_or_comment.$post ? topic_id : 0,
+				comment_id_to_favorite: topic_or_comment.$reply ? comment_id : 0,
 				was_favorited: was_favorited,
 			}),
 		})

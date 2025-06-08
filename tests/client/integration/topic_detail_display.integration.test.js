@@ -11,8 +11,8 @@ const tests = {
 
 		// Setup mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [
 					{
 						slug: "test-topic-for-details",
@@ -91,8 +91,8 @@ const tests = {
 			},
 		})
 
-		// 1. Agree to terms to navigate to /topics
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// 1. Agree to terms to navigate to /posts
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 
 		// Wait for navigation and rendering
@@ -101,18 +101,18 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 		const $topicsWrapper = $("topics")
 		assertEquals(
 			true,
 			Boolean($topicsWrapper),
-			"Topics wrapper element should be present on /topics page.",
+			"Topics wrapper element should be present on /posts page.",
 		)
 
-		// 2. Simulate at least one topic appearing on the /topics page
+		// 2. Simulate at least one topic appearing on the /posts page
 		// This is necessary to be able to click on a topic to navigate to its detail page.
 		// The navigation.integration.test.js uses a similar approach.
 		// The manual topic injection is no longer needed as fetch mock will provide the topic.

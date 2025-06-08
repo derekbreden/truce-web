@@ -33,7 +33,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			),
 		)
 	}
-	if (state.path === "/topics" || state.path === "/topics/all") {
+	if (state.path === "/posts" || state.path === "/posts/all") {
 		if (!state.active_add_new_topic?.is_root) {
 			$(
 				"main-content-wrapper[active] main-content > add-new:first-child",
@@ -62,7 +62,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 							li Never name-call
 						p Then, please join us in this Truce.
 						p
-							a[big][href=/topics] Join the Discussion
+							a[big][href=/posts] Join the Discussion
 						p[notice]
 							span To be clear, there is no tolerance for objectionable content or abusive users.
 						p[notice][style="margin-top:5px;"]
@@ -172,7 +172,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					let new_path = $el.getAttribute("href")
 					if (new_path.startsWith("/")) {
 						$event.preventDefault()
-						if (new_path === "/topics") {
+						if (new_path === "/posts") {
 							localStorage.setItem(`${window.local_storage_key}:agreed`, true)
 							if (state.next_path) {
 								new_path = state.next_path

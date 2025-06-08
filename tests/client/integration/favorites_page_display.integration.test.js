@@ -11,9 +11,9 @@ const tests = {
 
 		// 1. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
+			"/posts": {
 				// For navigation after agreeing to terms
-				path: "/topics",
+				path: "/posts",
 				topics: [],
 				comments: [],
 				activities: [],
@@ -46,13 +46,13 @@ const tests = {
 		})
 
 		// 2. Initial Navigation (Welcome -> Topics)
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
 		// 3. Navigate to Favorites Page
@@ -98,9 +98,9 @@ const tests = {
 
 		// 1. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
+			"/posts": {
 				// For navigation after agreeing to terms
-				path: "/topics",
+				path: "/posts",
 				topics: [],
 				comments: [],
 				activities: [],
@@ -177,13 +177,13 @@ const tests = {
 		})
 
 		// 2. Initial Navigation (Welcome -> Topics)
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
 		// 3. Navigate to Favorites Page

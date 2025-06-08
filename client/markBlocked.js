@@ -14,8 +14,8 @@ const markBlocked = async (topic_or_comment) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				topic_id_to_block: topic_or_comment.$topic ? topic_id : 0,
-				comment_id_to_block: topic_or_comment.$comment ? comment_id : 0,
+				topic_id_to_block: topic_or_comment.$post ? topic_id : 0,
+				comment_id_to_block: topic_or_comment.$reply ? comment_id : 0,
 			}),
 		})
 			.then((response) => response.json())

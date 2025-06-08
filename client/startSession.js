@@ -330,8 +330,8 @@ const getMoreRecent = () => {
 				// Set a min threshold of scroll to do anything
 				let min_threshold = 0
 
-				// For /topics specifically we have the add-new element that won't be shifted so we want to be (mostly) past it (~200px of it still showing means shift it away?)
-				if (current_path === "/topics" || state.path === "/topics/all") {
+				// For /posts specifically we have the add-new element that won't be shifted so we want to be (mostly) past it (~200px of it still showing means shift it away?)
+				if (current_path === "/posts" || state.path === "/posts/all") {
 					const $add_new = $("main-content > add-new:first-child")
 					if ($add_new) {
 						min_threshold = $add_new?.offsetTop + $add_new?.offsetHeight - 200
@@ -406,13 +406,13 @@ const getMoreRecent = () => {
 							activity.type === "comment",
 					)
 					const favorite_text = comment_count.favorite_count
-					if (found_comment?.$comment?.$("[favorites] p")?.innerText) {
+					if (found_comment?.$reply?.$("[favorites] p")?.innerText) {
 						found_comment.favorite_count = comment_count.favorite_count
-						found_comment.$comment.$("[favorites] p").innerText = favorite_text
+						found_comment.$reply.$("[favorites] p").innerText = favorite_text
 					}
-					if (found_activity?.$comment?.$("[favorites] p")?.innerText) {
+					if (found_activity?.$reply?.$("[favorites] p")?.innerText) {
 						found_activity.favorite_count = comment_count.favorite_count
-						found_activity.$comment.$("[favorites] p").innerText = favorite_text
+						found_activity.$reply.$("[favorites] p").innerText = favorite_text
 					}
 				})
 			}

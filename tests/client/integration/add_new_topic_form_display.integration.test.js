@@ -11,15 +11,15 @@ const tests = {
 
 		// 1. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				// For the topics page
-				path: "/topics",
+			"/posts": {
+				// For the posts page
+				path: "/posts",
 				// Simulate a logged-in user
 				user_id: "test-user-123",
 				email: "test@example.com",
 				user_slug: "test-user",
 				display_name: "Test User",
-				// Other necessary data for /topics page
+				// Other necessary data for /posts page
 				topics: [], // No actual topics needed for this test
 				comments: [],
 				activities: [],
@@ -34,15 +34,15 @@ const tests = {
 		// Before clicking, state.user_id should be null (or whatever initial value)
 		const initialUserId = state.user_id
 
-		// 2. Actions: Navigate from Welcome to Topics page
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// 2. Actions: Navigate from Welcome to Posts page
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
 		assertEquals(

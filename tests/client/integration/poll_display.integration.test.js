@@ -9,12 +9,12 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// Mock initial fetch responses for "/" and "/topics"
-		// The /topics response will include a topic with poll data.
+		// Mock initial fetch responses for "/" and "/posts"
+		// The /posts response will include a topic with poll data.
 		window.setMockFetchResponseForPaths({
 			"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [
 					{
 						topic_id: 1,
@@ -52,20 +52,20 @@ const tests = {
 			},
 		})
 
-		// 1. Agree to terms to navigate to /topics
-		const $joinButton = $(`a[href="/topics"][big]`)
+		// 1. Agree to terms to navigate to /posts
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM updates
 
-		// Verify navigation to /topics
+		// Verify navigation to /posts
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after clicking 'Join the Discussion'.",
+			"Path should be /posts after clicking 'Join the Discussion'.",
 		)
 
 		// Find the topic element
-		const $topicElement = $(`topic[trimmed]`) // Assuming topics on /topics have 'trimmed' attribute
+		const $topicElement = $(`topic[trimmed]`) // Assuming topics on /posts have 'trimmed' attribute
 		// Assert Poll Wrapper Exists
 		const $pollWrapper = $topicElement.$("poll-wrapper")
 		// Assert Poll Options Text

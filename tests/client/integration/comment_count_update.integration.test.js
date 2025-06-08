@@ -32,8 +32,8 @@ async function testCommentCountUpdate() {
 
 	// Mock fetch responses for initial page load
 	window.setMockFetchResponseForPaths({
-		"/topics": {
-			path: "/topics",
+		"/posts": {
+			path: "/posts",
 			topics: [initialTopic],
 			comments: [],
 			activities: [],
@@ -41,12 +41,12 @@ async function testCommentCountUpdate() {
 		},
 	})
 
-	// Simulate "Join the Discussion" click to navigate to /topics
-	const $joinButton = $("a[href='/topics'][big]")
+	// Simulate "Join the Discussion" click to navigate to /posts
+	const $joinButton = $("a[href='/posts'][big]")
 	$joinButton.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/topics", state.path, "Should have navigated to /topics.")
+	assertEquals("/posts", state.path, "Should have navigated to /posts.")
 
 	// 2. Verify Initial Comment Count
 	const $topicElement = $("topics > topic")
@@ -55,8 +55,8 @@ async function testCommentCountUpdate() {
 
 	// 3. Prepare for Update (Mock response for getMoreRecent's fetch)
 	window.setMockFetchResponseForPaths({
-		"/topics": {
-			path: "/topics",
+		"/posts": {
+			path: "/posts",
 			topics: [],
 			comments: [],
 			activities: [],
@@ -72,7 +72,7 @@ async function testCommentCountUpdate() {
 	// Assert is now 10
 	assertEquals("10", String($commentCountElement.innerText).trim(), "Updated comment count should be 10.")
 
-	const updatedCachedTopic = state.cache["/topics"]?.topics.find(t => t.topic_id === initialTopic.topic_id)
+	const updatedCachedTopic = state.cache["/posts"]?.topics.find(t => t.topic_id === initialTopic.topic_id)
 	assertEquals(10, updatedCachedTopic.comment_count, "Comment count in cache should be updated to 10.")
 }
 

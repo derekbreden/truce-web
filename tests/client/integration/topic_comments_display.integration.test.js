@@ -10,8 +10,8 @@ const tests = {
 		const { state, $ } = window
 
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [
 					{
 						slug: "test-comments-topic",
@@ -98,24 +98,24 @@ const tests = {
 			},
 		})
 
-		// Navigate from welcome page to topics page
-		const $joinButton = $("a[href='/topics'][big]")
+		// Navigate from welcome page to posts page
+		const $joinButton = $("a[href='/posts'][big]")
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM update
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Clicking join button should navigate to /topics.",
+			"Clicking join button should navigate to /posts.",
 		)
 
-		// Navigate from topics page to topic detail page
+		// Navigate from posts page to topic detail page
 		const $topicLink = $("topics > topic[trimmed]") // Assuming first topic is the one
 		// Check title instead of slug attribute directly on topic[trimmed]
 		const $topicTitle = $topicLink.$("h2")
 		assertEquals(
 			"Test Topic for Comments",
 			$topicTitle.textContent.trim(),
-			"Topic title mismatch on /topics page.",
+			"Topic title mismatch on /posts page.",
 		)
 		$topicLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM update

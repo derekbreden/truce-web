@@ -6,11 +6,11 @@ const markFlagged = async (topic_or_comment) => {
 	const comment_id = topic_or_comment.comment_id || topic_or_comment.id
 
 	// Alert the user to the change
-	if (topic_or_comment.$topic) {
-		alertInfo("Topic was flagged")
+	if (topic_or_comment.$post) {
+		alertInfo("Post was flagged")
 	}
-	if (topic_or_comment.$comment) {
-		alertInfo("Comment was flagged")
+	if (topic_or_comment.$reply) {
+		alertInfo("Reply was flagged")
 	}
 
 	// Queue up the save
@@ -19,8 +19,8 @@ const markFlagged = async (topic_or_comment) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				topic_id_to_flag: topic_or_comment.$topic ? topic_id : 0,
-				comment_id_to_flag: topic_or_comment.$comment ? comment_id : 0,
+				topic_id_to_flag: topic_or_comment.$post ? topic_id : 0,
+				comment_id_to_flag: topic_or_comment.$reply ? comment_id : 0,
 			}),
 		})
 			.then((response) => response.json())

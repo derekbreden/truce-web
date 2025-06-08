@@ -11,9 +11,9 @@ const tests = {
 
 		// 1. Mock API responses
 		window.setMockFetchResponseForPaths({
-			"/topics": {
+			"/posts": {
 				// For navigation after agreeing to terms
-				path: "/topics",
+				path: "/posts",
 				topics: [
 					{
 						slug: "test-topic-1",
@@ -78,16 +78,16 @@ const tests = {
 		})
 
 		// 2. Initial Navigation (Welcome -> Topics)
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/topics",
+			"/posts",
 			state.path,
-			"Path should be /topics after agreeing to terms.",
+			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Ensure the topic is rendered on /topics
+		// 3. Ensure the topic is rendered on /posts
 		const $topicAuthorElement = $(`topics > topic author[slug="test-user"]`)
 
 		// 4. Navigate to User Profile by clicking the author element

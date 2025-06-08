@@ -104,18 +104,18 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			console.error(e)
 		}
 
-		if (state.path === "/topics") {
+		if (state.path === "/posts") {
 			localStorage.setItem(
-				`${window.local_storage_key}:has_visited_topics`,
+				`${window.local_storage_key}:has_visited_posts`,
 				true,
 			)
 		} else if (state.path === "/") {
-			localStorage.removeItem(`${window.local_storage_key}:has_visited_topics`)
+			localStorage.removeItem(`${window.local_storage_key}:has_visited_posts`)
 		}
 		if (
 			state.path === "/" ||
-			state.path === "/topics" ||
-			state.path === "/topics/all" ||
+			state.path === "/posts" ||
+			state.path === "/posts/all" ||
 			state.path.substr(0, 5) === "/tag/"
 		) {
 			localStorage.setItem(

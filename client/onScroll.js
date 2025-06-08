@@ -5,13 +5,13 @@ const bindScrollEvent = () => {
 			return
 		}
 
-		// Topics load older
+		// Posts load older
 		// Favorites load older
 		// Tags load older
 		// User load older
 		if (
-			(state.path === "/topics" ||
-				state.path === "/topics/all" ||
+			(state.path === "/posts" ||
+				state.path === "/posts/all" ||
 				state.path === "/favorites" ||
 				state.path.substr(0, 5) === "/tag/" ||
 				state.path.substr(0, 6) === "/user/") &&

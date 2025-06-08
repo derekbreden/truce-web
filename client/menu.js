@@ -12,9 +12,9 @@ const showMenu = () => {
 					a[href=/]
 						icon[welcome]
 						p Terms and conditions
-					a[href=/topics]
-						icon[topics]
-						p Topics
+					a[href=/posts]
+						icon[posts]
+						p Posts
 					a[href=/tags]
 						icon[tag]
 						p Tags
@@ -31,8 +31,8 @@ const showMenu = () => {
 		.$("icon[welcome]")
 		.appendChild($("icons icon[welcome] svg").cloneNode(true))
 	$menu
-		.$("icon[topics]")
-		.appendChild($("footer icon[topics] svg").cloneNode(true))
+		.$("icon[posts]")
+		.appendChild($("footer icon[posts] svg").cloneNode(true))
 	$menu.$("icon[tag]").appendChild($("footer icon[tag] svg").cloneNode(true))
 	$menu
 		.$("icon[favorites]")
@@ -110,7 +110,7 @@ const showMenu = () => {
 					// END Workaround
 
 					state.cache = {}
-					goToPath("/topics")
+					goToPath("/posts")
 					menuCancel()
 				})
 		})

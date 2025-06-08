@@ -18,7 +18,7 @@ const tests = {
 		)
 
 		// Corrected selector for the "Join the Discussion" button
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		assertEquals(
 			"Join the Discussion",
 			$joinButton.innerText.trim(),
@@ -32,8 +32,8 @@ const tests = {
 
 		// Setup mock API responses for this test
 		window.setMockFetchResponseForPaths({
-			"/topics": {
-				path: "/topics",
+			"/posts": {
+				path: "/posts",
 				topics: [], // Empty topics list is fine for this test"s assertions
 				comments: [],
 				activities: [],
@@ -49,7 +49,7 @@ const tests = {
 			},
 		})
 
-		const $joinButton = $(`a[href="/topics"][big]`)
+		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 
 		// Wait for render
@@ -86,7 +86,7 @@ const tests = {
 			"Topics wrapper element should be present after agreeing to terms.",
 		)
 
-		// Further check: The last_root_path in localStorage should be updated to /topics
+		// Further check: The last_root_path in localStorage should be updated to /posts
 		// The client-side goToPath function updates this.
 		const lastRootPath = window.localStorage.getItem(
 			window.local_storage_key
@@ -94,9 +94,9 @@ const tests = {
 				: "trucev1:last_root_path",
 		)
 		assertEquals(
-			"/topics",
+			"/posts",
 			lastRootPath,
-			`localStorage "last_root_path" should be set to "/topics".`,
+			`localStorage "last_root_path" should be set to "/posts".`,
 		)
 	},
 }

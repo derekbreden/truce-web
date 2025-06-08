@@ -7,8 +7,8 @@ const renderPost = (post) => {
 	let trimmed = false
 	let summary_only = false
 	if (
-		state.path === "/topics" ||
-		state.path === "/topics/all" ||
+		state.path === "/posts" ||
+		state.path === "/posts/all" ||
 		state.path === "/favorites" ||
 		state.path.substr(0, 5) === "/tag/" ||
 		state.path.substr(0, 6) === "/user/"
