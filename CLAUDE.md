@@ -86,6 +86,8 @@ const state = {
 - **Quotes**: Double quotes `"string"` not single quotes
 - **Semicolons**: Omit semicolons
 - **DOM variables**: Prefix with `$` like `const $button = $("button")`
+- **String methods**: Use modern methods like `.startsWith()` and `.endsWith()` instead of `.substr(0, n) === "prefix"`
+- **Path extraction**: Use `path.split("/")[index]` pattern consistently instead of `substring()` for URL path parsing
 
 ### Testing Philosophy: No Guard Assertions
 **Critical**: This project strictly prohibits ALL forms of "guard assertions":
@@ -164,6 +166,15 @@ runTests("test.js", [testFeature])
 Server unit tests focus on individual session handlers in isolation:
 
 ```javascript
+// Set up environment variables FIRST if handler uses external services
+process.env.FIREBASE_CREDENTIAL = JSON.stringify({
+  type: "service_account",
+  project_id: "test-project",
+  // ... other required fields
+})
+process.env.VAPID_PUBLIC_KEY = "test-vapid-public-key"
+process.env.VAPID_PRIVATE_KEY = "test-vapid-private-key"
+
 const { createMockRequest, createMockResponse, assertEquals, runTests } = require("../shared/serverTestSetup.js")
 const handlerToTest = require("../../../server/session/handlerName.js")
 
@@ -198,7 +209,8 @@ runTests("handler.unit.test.js", [testHandler])
 
 **Server Unit Test Philosophy:**
 - **Test individual handlers in isolation** - One session handler per test file
-- **Mock only the database client** - `req.client.query()` responses
+- **Mock external dependencies** - Database client, Firebase, web-push, AWS S3, etc.
+- **Set environment variables early** - Before importing modules that need them
 - **Use real handler code** - Import and execute actual session handlers
 - **Test all code paths** - Happy path, error cases, edge conditions
 - **Fast execution** - No external dependencies or network calls
