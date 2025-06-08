@@ -23,7 +23,7 @@ const tests = {
 						body: "This post has a poll.",
 						user_slug: "testuser",
 						display_name: "Test User",
-						tags: "general",
+						topics: "general",
 						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,
@@ -47,7 +47,7 @@ const tests = {
 				activities: [],
 				notifications: [],
 				user: {},
-				tag: {},
+				topic: {},
 				subscribed_to_users: 0,
 			},
 		})

@@ -10,7 +10,7 @@ const renderPost = (post) => {
 		state.path === "/posts" ||
 		state.path === "/posts/all" ||
 		state.path === "/favorites" ||
-		state.path.substr(0, 5) === "/tag/" ||
+		state.path.substr(0, 7) === "/topic/" ||
 		state.path.substr(0, 6) === "/user/"
 	) {
 		summary_only = true
@@ -26,12 +26,12 @@ const renderPost = (post) => {
 			return acc
 		}, [])
 		if (trimmed) {
-			let $last_tag = $post_body[$post_body.length - 1]
-			if ($last_tag?.tagName === "UL") {
-				$last_tag = $last_tag.querySelector("li:last-child")
+			let $last_topic = $post_body[$post_body.length - 1]
+			if ($last_topic?.tagName === "UL") {
+				$last_topic = $last_topic.querySelector("li:last-child")
 			}
-			if ($last_tag) {
-				$last_tag.innerText = $last_tag.innerText + "\n..."
+			if ($last_topic) {
+				$last_topic.innerText = $last_topic.innerText + "\n..."
 			}
 		}
 	}
@@ -58,7 +58,7 @@ const renderPost = (post) => {
 			),
 			$(
 				`
-				author-tags
+				author-topics
 					author[slug=$1]
 						profile-picture
 							image
@@ -67,7 +67,7 @@ const renderPost = (post) => {
 						name
 							span $3
 							$4
-					tags
+					topics
 						$5
 				`,
 				[
@@ -90,21 +90,21 @@ const renderPost = (post) => {
 								[$("icons icon[verified] svg").cloneNode(true)],
 							)
 						: [],
-					(post.tags || "")
+					(post.topics || "")
 						.split(",")
 						.filter((x) => x)
-						.map((tag) =>
+						.map((topic) =>
 							$(
 								`
-								tag[tag=$1]
+								topic[topic=$1]
 									icon
 										$2
 									span $3
 								`,
 								[
-									tag,
-									$(`icons icon[${tag}] svg`).cloneNode(true),
-									tag[0].toUpperCase() + tag.slice(1),
+									topic,
+									$(`icons icon[${topic}] svg`).cloneNode(true),
+									topic[0].toUpperCase() + topic.slice(1),
 								],
 							),
 						),
@@ -216,10 +216,10 @@ const renderPost = (post) => {
 			goToPath(`/user/${slug}`)
 		})
 	})
-	$post.$("tag").forEach(($tag) => {
-		$tag.on("click", ($event) => {
+	$post.$("topic").forEach(($topic) => {
+		$topic.on("click", ($event) => {
 			$event.stopPropagation()
-			goToPath("/tag/" + $tag.getAttribute("tag"))
+			goToPath("/topic/" + $topic.getAttribute("topic"))
 		})
 	})
 	if (post.poll_1) {
@@ -472,7 +472,7 @@ const renderPost = (post) => {
 			if (!summary_only) {
 				bindImageClick($image, image_uuid)
 			}
-			$post.$("author-tags").after($image)
+			$post.$("author-topics").after($image)
 		}
 	}
 	if (summary_only) {

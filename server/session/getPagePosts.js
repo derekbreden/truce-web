@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 			req.body.path === "/posts/all" ||
 			req.body.path === "/posts" ||
 			req.body.path === "/posts/all" ||
-			req.body.path?.substr(0, 5) === "/tag/" ||
+			req.body.path?.substr(0, 7) === "/topic/" ||
 			req.body.path?.substr(0, 6) === "/user/")
 	) {
 		if (!req.body.max_reply_create_date) {
@@ -55,11 +55,11 @@ module.exports = async (req, res) => {
           ) THEN TRUE ELSE FALSE END as replyed,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           (
-            SELECT STRING_AGG(ts.tag_name, ',')
-            FROM post_tags pt
-            INNER JOIN tags ts ON ts.tag_id = pt.tag_id
+            SELECT STRING_AGG(ts.topic_name, ',')
+            FROM post_topics pt
+            INNER JOIN topics ts ON ts.topic_id = pt.topic_id
             WHERE pt.post_id = p.post_id
-          ) as tags
+          ) as topics
         FROM posts p
         LEFT JOIN users u ON u.user_id = p.user_id
         LEFT JOIN favorite_posts f ON f.post_id = p.post_id AND f.user_id = $1
@@ -72,15 +72,15 @@ module.exports = async (req, res) => {
           AND l.post_id IS NULL
           AND b.user_id_blocked IS NULL
           ${
-						req.body.path.substr(0, 5) === "/tag/"
+						req.body.path.substr(0, 7) === "/topic/"
 							? `
                 AND p.post_id IN (
                   SELECT post_id
-                  FROM post_tags
-                  WHERE tag_id = (
-                    SELECT tag_id
-                    FROM tags
-                    WHERE tag_name = $4
+                  FROM post_topics
+                  WHERE topic_id = (
+                    SELECT topic_id
+                    FROM topics
+                    WHERE topic_name = $4
                   )
                 )
                 `
@@ -121,8 +121,8 @@ module.exports = async (req, res) => {
 					req.session.user_id || 0,
 					req.body.min_post_create_date || null,
 					req.body.max_post_create_date || null,
-					req.body.path.substr(0, 5) === "/tag/"
-						? req.body.path.substr(5)
+					req.body.path.substr(0, 7) === "/topic/"
+						? req.body.path.substr(7)
 						: req.body.path.substr(0, 6) === "/user/"
 							? req.body.path.split("/")[2]
 							: undefined,
@@ -198,56 +198,56 @@ module.exports = async (req, res) => {
 			//             ],
 			//           })
 
-			//           // Get the relevant tags
-			//           const ai_tags_response = await ai.ask(
+			//           // Get the relevant topics
+			//           const ai_topics_response = await ai.ask(
 			//             messages,
-			//             "tags",
-			//             prompts.tags_response_format,
+			//             "topics",
+			//             prompts.topics_response_format,
 			//           )
-			//           let ai_tags_response_parsed = []
+			//           let ai_topics_response_parsed = []
 			//           try {
-			//             ai_tags_response_parsed = JSON.parse(ai_tags_response)
+			//             ai_topics_response_parsed = JSON.parse(ai_topics_response)
 			//           } catch (e) {
-			//             console.error("Failed to parse AI JSON", ai_tags_response, e)
+			//             console.error("Failed to parse AI JSON", ai_topics_response, e)
 			//           }
-			//           console.warn(post.title, ai_tags_response_parsed.tags)
+			//           console.warn(post.title, ai_topics_response_parsed.topics)
 
 			//           await client.query(
 			//             `
-			//           DELETE FROM post_tags
+			//           DELETE FROM post_topics
 			//           WHERE post_id = $1
 			//           `,
 			//             [post.post_id],
 			//           )
 
-			//           const tag_id_query = await client.query(
+			//           const topic_id_query = await client.query(
 			//             `
-			//             SELECT tag_id, tag_name FROM tags
+			//             SELECT topic_id, topic_name FROM topics
 			//           `,
 			//           )
-			//           const tag_ids = tag_id_query.rows.reduce((acc, row) => {
-			//             acc[row.tag_name] = row.tag_id
+			//           const topic_ids = topic_id_query.rows.reduce((acc, row) => {
+			//             acc[row.topic_name] = row.topic_id
 			//             return acc
 			//           }, {})
-			//           for (const tag of ai_tags_response_parsed.tags) {
+			//           for (const topic of ai_topics_response_parsed.topics) {
 			//             if (
-			//               ai_tags_response_parsed.tags.includes("polls") &&
-			//               tag === "asks"
+			//               ai_topics_response_parsed.topics.includes("polls") &&
+			//               topic === "asks"
 			//             ) {
 			//               continue
 			//             }
-			//             if (tag_ids[tag]) {
+			//             if (topic_ids[topic]) {
 			//               await client.query(
 			//                 `
-			//               INSERT INTO post_tags
-			//                 (post_id, tag_id)
+			//               INSERT INTO post_topics
+			//                 (post_id, topic_id)
 			//               VALUES
 			//                 ($1, $2)
 			//               `,
-			//                 [post.post_id, tag_ids[tag]],
+			//                 [post.post_id, topic_ids[topic]],
 			//               )
 			//             } else {
-			//               console.error("Unable to find tag", tag)
+			//               console.error("Unable to find topic", topic)
 			//             }
 			//           }
 			//         } finally {

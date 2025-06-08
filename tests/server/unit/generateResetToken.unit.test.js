@@ -474,7 +474,7 @@ const tests = {
 		assertEquals(
 			true,
 			emailCall.html.includes('<p>'),
-			"Email HTML should contain HTML tags."
+			"Email HTML should contain HTML topics."
 		)
 		assertEquals(
 			true,

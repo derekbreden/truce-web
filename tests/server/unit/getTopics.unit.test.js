@@ -7,13 +7,13 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Import the handler we're testing
-const getTags = require("../../../server/session/getTags.js")
+const getTopics = require("../../../server/session/getTopics.js")
 
 const tests = {
-	testGetAllTags: async () => {
-		// Setup mock request for /tags path
+	testGetAllTopics: async () => {
+		// Setup mock request for /topics path
 		const req = createMockRequest({
-			path: "/tags"
+			path: "/topics"
 		})
 		req.results = {}
 		
@@ -23,17 +23,17 @@ const tests = {
 			{ 
 				rows: [
 					{
-						tag_name: 'technology',
+						topic_name: 'technology',
 						subtitle: 'Technology discussions',
 						posts: '5'
 					},
 					{
-						tag_name: 'general',
+						topic_name: 'general',
 						subtitle: 'General posts',
 						posts: '12'
 					},
 					{
-						tag_name: 'science',
+						topic_name: 'science',
 						subtitle: 'Science and research',
 						posts: '3'
 					}
@@ -44,35 +44,35 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
 		// Verify results were set
 		assertEquals(
-			"/tags",
+			"/topics",
 			req.results.path,
 			"Path should be set in results."
 		)
 		assertEquals(
 			3,
-			req.results.tags.length,
-			"Should return array of tags."
+			req.results.topics.length,
+			"Should return array of topics."
 		)
 		assertEquals(
 			'technology',
-			req.results.tags[0].tag_name,
-			"First tag should have correct name."
+			req.results.topics[0].topic_name,
+			"First topic should have correct name."
 		)
 		assertEquals(
 			'5',
-			req.results.tags[0].posts,
-			"First tag should have post count."
+			req.results.topics[0].posts,
+			"First topic should have post count."
 		)
 	},
 
-	testGetSingleTag: async () => {
-		// Setup mock request for specific tag
+	testGetSingleTopic: async () => {
+		// Setup mock request for specific topic
 		const req = createMockRequest({
-			path: "/tag/technology"
+			path: "/topic/technology"
 		})
 		req.results = {}
 		
@@ -81,7 +81,7 @@ const tests = {
 			'SELECT',
 			{ 
 				rows: [{
-					tag_name: 'technology',
+					topic_name: 'technology',
 					subtitle: 'Technology discussions'
 				}]
 			}
@@ -90,25 +90,25 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
-		// Verify single tag result
+		// Verify single topic result
 		assertEquals(
 			'technology',
-			req.results.tag.tag_name,
-			"Should return correct tag name."
+			req.results.topic.topic_name,
+			"Should return correct topic name."
 		)
 		assertEquals(
 			'Technology discussions',
-			req.results.tag.subtitle,
-			"Should return correct tag subtitle."
+			req.results.topic.subtitle,
+			"Should return correct topic subtitle."
 		)
 	},
 
-	testGetNonexistentTag: async () => {
-		// Setup mock request for tag that doesn't exist
+	testGetNonexistentTopic: async () => {
+		// Setup mock request for topic that doesn't exist
 		const req = createMockRequest({
-			path: "/tag/nonexistent"
+			path: "/topic/nonexistent"
 		})
 		req.results = {}
 		
@@ -121,73 +121,73 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
-		// Should return empty object for nonexistent tag
+		// Should return empty object for nonexistent topic
 		assertEquals(
 			'object',
-			typeof req.results.tag,
-			"Should return empty object for nonexistent tag."
+			typeof req.results.topic,
+			"Should return empty object for nonexistent topic."
 		)
 		assertEquals(
 			undefined,
-			req.results.tag.tag_name,
-			"Empty tag object should not have tag_name."
+			req.results.topic.topic_name,
+			"Empty topic object should not have topic_name."
 		)
 	},
 
 	testBothPathsInSequence: async () => {
-		// Test calling both /tags and /tag/specific in sequence
+		// Test calling both /topics and /topic/specific in sequence
 		
-		// First call: get all tags
-		const req1 = createMockRequest({ path: "/tags" })
+		// First call: get all topics
+		const req1 = createMockRequest({ path: "/topics" })
 		req1.results = {}
 		
 		req1.client.addQueryMock(
 			'SELECT',
 			{ 
 				rows: [
-					{ tag_name: 'general', subtitle: 'General', posts: '10' }
+					{ topic_name: 'general', subtitle: 'General', posts: '10' }
 				]
 			}
 		)
 		
 		const res1 = createMockResponse()
-		await getTags(req1, res1)
+		await getTopics(req1, res1)
 		
-		// Second call: get specific tag
-		const req2 = createMockRequest({ path: "/tag/general" })
+		// Second call: get specific topic
+		const req2 = createMockRequest({ path: "/topic/general" })
 		req2.results = {}
 		
 		req2.client.addQueryMock(
 			'SELECT',
 			{ 
 				rows: [
-					{ tag_name: 'general', subtitle: 'General posts' }
+					{ topic_name: 'general', subtitle: 'General posts' }
 				]
 			}
 		)
 		
 		const res2 = createMockResponse()
-		await getTags(req2, res2)
+		await getTopics(req2, res2)
 		
 		// Verify both results
 		assertEquals(
 			1,
-			req1.results.tags.length,
-			"First call should return tags array."
+			req1.results.topics.length,
+			"First call should return topics array."
 		)
 		assertEquals(
 			'general',
-			req2.results.tag.tag_name,
-			"Second call should return specific tag."
+			req2.results.topic.topic_name,
+			"Second call should return specific topic."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			path: "/tags"
+			path: "/topics"
 		})
 		req.results = {}
 		
@@ -196,7 +196,7 @@ const tests = {
 		res.writableEnded = true
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -216,18 +216,18 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
 		// Verify no action taken
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Should not set results for non-tags path."
+			"Should not set results for non-topics path."
 		)
 		assertEquals(
 			undefined,
-			req.results.tags,
-			"Should not set tags for wrong path."
+			req.results.topics,
+			"Should not set topics for wrong path."
 		)
 	},
 
@@ -241,7 +241,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -251,13 +251,13 @@ const tests = {
 		)
 	},
 
-	testTagPathExtraction: async () => {
-		// Test various tag path formats
+	testTopicPathExtraction: async () => {
+		// Test various topic path formats
 		const testCases = [
-			{ path: "/tag/tech", expectedTag: "tech" },
-			{ path: "/tag/science-fiction", expectedTag: "science-fiction" },
-			{ path: "/tag/general", expectedTag: "general" },
-			{ path: "/tag/", expectedTag: "" }
+			{ path: "/topic/tech", expectedTopic: "tech" },
+			{ path: "/topic/science-fiction", expectedTopic: "science-fiction" },
+			{ path: "/topic/general", expectedTopic: "general" },
+			{ path: "/topic/", expectedTopic: "" }
 		]
 		
 		for (const testCase of testCases) {
@@ -271,8 +271,8 @@ const tests = {
 				'SELECT',
 				{ 
 					rows: [{
-						tag_name: testCase.expectedTag,
-						subtitle: `Subtitle for ${testCase.expectedTag}`
+						topic_name: testCase.expectedTopic,
+						subtitle: `Subtitle for ${testCase.expectedTopic}`
 					}]
 				}
 			)
@@ -280,21 +280,21 @@ const tests = {
 			const res = createMockResponse()
 			
 			// Execute the handler
-			await getTags(req, res)
+			await getTopics(req, res)
 			
-			// Verify tag extraction
+			// Verify topic extraction
 			assertEquals(
-				testCase.expectedTag,
-				req.results.tag.tag_name,
-				`Path "${testCase.path}" should extract tag "${testCase.expectedTag}".`
+				testCase.expectedTopic,
+				req.results.topic.topic_name,
+				`Path "${testCase.path}" should extract topic "${testCase.expectedTopic}".`
 			)
 		}
 	},
 
-	testEmptyTagsResult: async () => {
-		// Test when no tags exist in database
+	testEmptyTopicsResult: async () => {
+		// Test when no topics exist in database
 		const req = createMockRequest({
-			path: "/tags"
+			path: "/topics"
 		})
 		req.results = {}
 		
@@ -306,25 +306,25 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
 		// Should handle empty result gracefully
 		assertEquals(
-			"/tags",
+			"/topics",
 			req.results.path,
 			"Path should still be set."
 		)
 		assertEquals(
 			0,
-			req.results.tags.length,
-			"Should return empty array when no tags exist."
+			req.results.topics.length,
+			"Should return empty array when no topics exist."
 		)
 	},
 
-	testTagsWithZeroPosts: async () => {
-		// Test tags that have no associated posts
+	testTopicsWithZeroPosts: async () => {
+		// Test topics that have no associated posts
 		const req = createMockRequest({
-			path: "/tags"
+			path: "/topics"
 		})
 		req.results = {}
 		
@@ -333,8 +333,8 @@ const tests = {
 			{ 
 				rows: [
 					{
-						tag_name: 'unused-tag',
-						subtitle: 'Unused tag',
+						topic_name: 'unused-topic',
+						subtitle: 'Unused topic',
 						posts: '0'
 					}
 				]
@@ -344,17 +344,17 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getTags(req, res)
+		await getTopics(req, res)
 		
-		// Should include tags with zero posts
+		// Should include topics with zero posts
 		assertEquals(
 			1,
-			req.results.tags.length,
-			"Should include tags with zero posts."
+			req.results.topics.length,
+			"Should include topics with zero posts."
 		)
 		assertEquals(
 			'0',
-			req.results.tags[0].posts,
+			req.results.topics[0].posts,
 			"Should show correct post count of zero."
 		)
 	}

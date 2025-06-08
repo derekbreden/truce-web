@@ -214,52 +214,52 @@ B) ${req.body.poll_2}`
 				)
 			}
 
-			// Get the relevant tags
-			const ai_tags_response = await ai.ask(
+			// Get the relevant topics
+			const ai_topics_response = await ai.ask(
 				messages,
-				"tags",
-				prompts.tags_response_format,
+				"topics",
+				prompts.topics_response_format,
 			)
-			let ai_tags_response_parsed = []
+			let ai_topics_response_parsed = []
 			try {
-				ai_tags_response_parsed = JSON.parse(ai_tags_response)
+				ai_topics_response_parsed = JSON.parse(ai_topics_response)
 			} catch (e) {
-				console.error("Failed to parse AI JSON", ai_tags_response, e)
+				console.error("Failed to parse AI JSON", ai_topics_response, e)
 			}
 
 			await req.client.query(
 				`
-        DELETE FROM post_tags
+        DELETE FROM post_topics
         WHERE post_id = $1
         `,
 				[post_id],
 			)
 
-			const tag_id_query = await req.client.query(
+			const topic_id_query = await req.client.query(
 				`
-          SELECT tag_id, tag_name FROM tags
+          SELECT topic_id, topic_name FROM topics
         `,
 			)
-			const tag_ids = tag_id_query.rows.reduce((acc, row) => {
-				acc[row.tag_name] = row.tag_id
+			const topic_ids = topic_id_query.rows.reduce((acc, row) => {
+				acc[row.topic_name] = row.topic_id
 				return acc
 			}, {})
-			for (const tag of ai_tags_response_parsed.tags) {
-				if (ai_tags_response_parsed.tags.includes("polls") && tag === "asks") {
+			for (const topic of ai_topics_response_parsed.topics) {
+				if (ai_topics_response_parsed.topics.includes("polls") && topic === "asks") {
 					continue
 				}
-				if (tag_ids[tag]) {
+				if (topic_ids[topic]) {
 					await req.client.query(
 						`
-            INSERT INTO post_tags
-              (post_id, tag_id)
+            INSERT INTO post_topics
+              (post_id, topic_id)
             VALUES
               ($1, $2)
             `,
-						[post_id, tag_ids[tag]],
+						[post_id, topic_ids[topic]],
 					)
 				} else {
-					console.error("Unable to find tag", tag)
+					console.error("Unable to find topic", topic)
 				}
 			}
 

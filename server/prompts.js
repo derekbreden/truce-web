@@ -228,7 +228,7 @@ By following these guidelines and examples, you will ensure that content moderat
 	},
 	poll_estimate: `You are the poll estimate bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
 
-You will provide a hypothetical estimate of how these people from United States would respond to the survey question. You will provide percentages for each choice available, as well as an estimated response rate.
+You will provide a hypothetical estimate of how these people from United States would respond to the survey question. You will provide percentopices for each choice available, as well as an estimated response rate.
    
 Your response will be in a JSON format, with a floating point number between 0 and 1 for each choice and the response rate.`,
 	poll_estimate_response_format: {
@@ -276,11 +276,11 @@ Your response will be in a JSON format, with a floating point number between 0 a
 			},
 		},
 	},
-	tags: `You are the tagging bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
+	topics: `You are the topicging bot for Truce, a social media site focused on civil and respectful cross ideological conversations, with no escalations or judgments or name-calling, and a goal of learning more about each other even as we still disagree.
 
-Your response will be in JSON format. You will provide a list of tags which apply to the post which was posted.
+Your response will be in JSON format. You will provide a list of topics which apply to the post which was posted.
 
-Tags:
+Topics:
    - politics
    - media
    - religion
@@ -301,11 +301,11 @@ Tags:
    - **politics**
       - Uniting our divides
       - If half the country disagrees, it is political
-      - When people are speaking from a perspective and bubble that the other half of the country disagrees with, this tag should be applied.
+      - When people are speaking from a perspective and bubble that the other half of the country disagrees with, this topic should be applied.
    
    - **media**
       - Movies, TV, books
-      - Anything remotely related to any sort of media explicitly or implicitly should get this tag.
+      - Anything remotely related to any sort of media explicitly or implicitly should get this topic.
       
    - **religion**
       - Ethics of any sort and philosophy of any should be included in this as well
@@ -351,7 +351,7 @@ Tags:
       - Anything to do with the economy
       - Anything to do with money
 `,
-	tags_response_format: {
+	topics_response_format: {
 		type: "json_schema",
 		json_schema: {
 			name: "response",
@@ -359,9 +359,9 @@ Tags:
 			schema: {
 				type: "object",
 				properties: {
-					tags: {
+					topics: {
 						type: "array",
-						description: "An array of tags which are even remotely relevant",
+						description: "An array of topics which are even remotely relevant",
 						items: {
 							enum: [
 								"politics",
@@ -382,7 +382,7 @@ Tags:
 						},
 					},
 				},
-				required: ["tags"],
+				required: ["topics"],
 				additionalProperties: false,
 			},
 		},

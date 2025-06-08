@@ -36,9 +36,9 @@ const renderBack = () => {
 									? "Notifications"
 									: previous_path === "/favorites"
 										? "Favorites"
-										: previous_path?.substr(0, 5) === "/tag/"
-											? previous_path.substr(5)[0].toUpperCase() +
-												previous_path.substr(5).slice(1)
+										: previous_path?.substr(0, 7) === "/topic/"
+											? previous_path.substr(7)[0].toUpperCase() +
+												previous_path.substr(7).slice(1)
 											: previous_path?.substr(0, 6) === "/user/"
 												? renderName(
 														state.cache[previous_path].user.display_name,

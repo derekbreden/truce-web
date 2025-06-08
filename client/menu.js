@@ -15,9 +15,9 @@ const showMenu = () => {
 					a[href=/posts]
 						icon[posts]
 						p Posts
-					a[href=/tags]
-						icon[tag]
-						p Tags
+					a[href=/topics]
+						icon[topic]
+						p Topics
 					a[href=/favorites]
 						icon[favorites]
 						p Favorites
@@ -33,7 +33,7 @@ const showMenu = () => {
 	$menu
 		.$("icon[posts]")
 		.appendChild($("footer icon[posts] svg").cloneNode(true))
-	$menu.$("icon[tag]").appendChild($("footer icon[tag] svg").cloneNode(true))
+	$menu.$("icon[topic]").appendChild($("footer icon[topic] svg").cloneNode(true))
 	$menu
 		.$("icon[favorites]")
 		.appendChild($("footer icon[favorites] svg").cloneNode(true))

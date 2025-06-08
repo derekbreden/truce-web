@@ -517,11 +517,11 @@ module.exports = async (req, res) => {
 				req.body.body.length > 50
 					? req.body.body.substr(0, 50) + "..."
 					: req.body.body
-			let tag = `post:${post_id}`
+			let topic = `post:${post_id}`
 
-			// Chrome wants unique tags ¯\_(ツ)_/¯
+			// Chrome wants unique topics ¯\_(ツ)_/¯
 			if (String(subscription.subscription_json || "").match(/google/i)) {
-				tag = `reply:${reply_id}`
+				topic = `reply:${reply_id}`
 			}
 
 			// Get the unread count for this user id
@@ -582,7 +582,7 @@ module.exports = async (req, res) => {
 						JSON.stringify({
 							title: `${short_display_name} replied`,
 							body: short_body,
-							tag,
+							topic,
 							unread_count,
 						}),
 					)

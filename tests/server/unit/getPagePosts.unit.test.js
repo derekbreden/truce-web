@@ -58,7 +58,7 @@ const tests = {
 						favorited: true,
 						replyed: false,
 						voted: false,
-						tags: 'general,technology'
+						topics: 'general,technology'
 					},
 					{
 						create_date: '2024-01-14T15:20:00Z',
@@ -87,7 +87,7 @@ const tests = {
 						favorited: false,
 						replyed: true,
 						voted: true,
-						tags: 'polls,asks'
+						topics: 'polls,asks'
 					}
 				]
 			}
@@ -164,8 +164,8 @@ const tests = {
 		)
 		assertEquals(
 			'general,technology',
-			firstPost.tags,
-			"Should include post tags."
+			firstPost.topics,
+			"Should include post topics."
 		)
 		
 		// Verify second post (poll) data
@@ -260,7 +260,7 @@ const tests = {
 						favorited: false,
 						replyed: false,
 						voted: false,
-						tags: 'general'
+						topics: 'general'
 					}
 				]
 			}
@@ -289,15 +289,15 @@ const tests = {
 		)
 	},
 
-	testTagPageLoad: async () => {
-		// Setup mock request for tag page
+	testTopicPageLoad: async () => {
+		// Setup mock request for topic page
 		const req = createMockRequest(
 			{ 
-				path: '/tag/technology'
+				path: '/topic/technology'
 			},
 			{ 
-				session_id: 'session-tag',
-				user_id: 'user-tag'
+				session_id: 'session-topic',
+				user_id: 'user-topic'
 			}
 		)
 		
@@ -335,7 +335,7 @@ const tests = {
 						favorited: false,
 						replyed: false,
 						voted: false,
-						tags: 'technology,science'
+						topics: 'technology,science'
 					}
 				]
 			}
@@ -348,9 +348,9 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/tag/technology',
+			'/topic/technology',
 			req.results.path,
-			"Should set correct path for tag page."
+			"Should set correct path for topic page."
 		)
 		assertEquals(
 			1,
@@ -360,12 +360,12 @@ const tests = {
 		assertEquals(
 			'Technology Post',
 			req.results.posts[0].title,
-			"Should include post from tag query."
+			"Should include post from topic query."
 		)
 		assertEquals(
 			'technology,science',
-			req.results.posts[0].tags,
-			"Should include technology tag."
+			req.results.posts[0].topics,
+			"Should include technology topic."
 		)
 	},
 
@@ -415,7 +415,7 @@ const tests = {
 						favorited: false,
 						replyed: false,
 						voted: false,
-						tags: 'general'
+						topics: 'general'
 					}
 				]
 			}
@@ -495,7 +495,7 @@ const tests = {
 						favorited: true,
 						replyed: false,
 						voted: false,
-						tags: 'general,personal'
+						topics: 'general,personal'
 					}
 				]
 			}
@@ -577,7 +577,7 @@ const tests = {
 						favorited: false,
 						replyed: false,
 						voted: false,
-						tags: 'general'
+						topics: 'general'
 					}
 				]
 			}

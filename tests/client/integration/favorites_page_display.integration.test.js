@@ -128,7 +128,7 @@ const tests = {
 						body: "Body of activity post 1",
 						user_slug: "activity-user-1",
 						display_name: "Activity User One",
-						tags: "general",
+						topics: "general",
 						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,

@@ -21,7 +21,7 @@ const tests = {
 						body: "Body for test post 1",
 						user_slug: "test-user", // Author of the post
 						display_name: "Test User Name",
-						tags: "general",
+						topics: "general",
 						profile_picture_uuid: null,
 						display_name_index: 0,
 						user_verified: false,

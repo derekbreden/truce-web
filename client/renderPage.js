@@ -15,7 +15,7 @@ const renderPage = (data) => {
 	renderUsers(data.users)
 
 	// Render Posts
-	renderPosts(data.posts, data.tag, data.user)
+	renderPosts(data.posts, data.topic, data.user)
 
 	// Render Replies
 	renderReplies(data.replies)
@@ -29,8 +29,8 @@ const renderPage = (data) => {
 	// Render Images
 	renderImages()
 
-	// Render Tags
-	renderTags(data.tags)
+	// Render Topics
+	renderTopics(data.topics)
 
 	// Render Forward Button on reply thread
 	renderForward(data.parent_post)

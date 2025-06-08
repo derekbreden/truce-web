@@ -25,7 +25,7 @@ const tests = {
 			body: "This is the body of the test post.",
 			user_slug: "another-user",
 			display_name: "Post Author Name",
-			tags: "general",
+			topics: "general",
 			reply_count: 0,
 			favorite_count: 0,
 			favorited: false,
@@ -55,7 +55,7 @@ const tests = {
 				subscribed_to_users: 0,
 				display_name_index: 0,
 				has_more: false,
-				tag: null,
+				topic: null,
 			},
 			[`/post/${mockPost.slug}`]: {
 				path: `/post/${mockPost.slug}`,
@@ -71,7 +71,7 @@ const tests = {
 				subscribed_to_users: 0,
 				display_name_index: 0,
 				has_more: false,
-				tag: null,
+				topic: null,
 			},
 		})
 

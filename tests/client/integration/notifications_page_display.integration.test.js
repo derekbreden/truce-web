@@ -95,7 +95,7 @@ const tests = {
 		// The actual notification rendering (unread/read lists) happens later and depends on state.email.
 		// Let's verify that no <notification> custom elements are rendered.
 		const $renderedNotificationElements =
-			$mainContent.querySelectorAll("notification") // Actual element tag is 'notification'
+			$mainContent.querySelectorAll("notification") // Actual element topic is 'notification'
 		assertEquals(
 			0,
 			$renderedNotificationElements.length,

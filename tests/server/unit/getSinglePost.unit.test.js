@@ -50,7 +50,7 @@ const tests = {
 						favorited: true,
 						replyed: false,
 						voted: false,
-						tags: 'technology,science'
+						topics: 'technology,science'
 					}
 				]
 			}
@@ -132,8 +132,8 @@ const tests = {
 		)
 		assertEquals(
 			'technology,science',
-			req.results.posts[0].tags,
-			"Should include post tags."
+			req.results.posts[0].topics,
+			"Should include post topics."
 		)
 		
 		// Verify replies were loaded
@@ -607,7 +607,7 @@ const tests = {
 						favorited: true,
 						replyed: true,
 						voted: false,
-						tags: 'technology,science,innovation'
+						topics: 'technology,science,innovation'
 					}
 				]
 			}
@@ -652,7 +652,7 @@ const tests = {
 		assertEquals(true, post.favorited, "Should have favorited status.")
 		assertEquals(true, post.replyed, "Should have replyed status.")
 		assertEquals(false, post.voted, "Should have voted status.")
-		assertEquals('technology,science,innovation', post.tags, "Should have tags.")
+		assertEquals('technology,science,innovation', post.topics, "Should have topics.")
 	},
 
 	testEmptyPostSlug: async () => {

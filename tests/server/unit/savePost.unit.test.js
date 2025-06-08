@@ -34,8 +34,8 @@ const mockAI = {
 		aiAskCalls.push({ messages, type, format })
 		
 		// Default responses based on type
-		if (type === 'tags') {
-			return JSON.stringify({ tags: ['general', 'technology'] })
+		if (type === 'topics') {
+			return JSON.stringify({ topics: ['general', 'technology'] })
 		} else if (type === 'poll_estimate') {
 			return JSON.stringify({ 
 				response_rate: 0.5, 
@@ -150,21 +150,21 @@ const tests = {
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT tag_id, tag_name FROM tags',
+			'SELECT topic_id, topic_name FROM topics',
 			{ 
 				rows: [
-					{ tag_id: 'tag-1', tag_name: 'general' },
-					{ tag_id: 'tag-2', tag_name: 'technology' },
-					{ tag_id: 'tag-3', tag_name: 'science' }
+					{ topic_id: 'topic-1', topic_name: 'general' },
+					{ topic_id: 'topic-2', topic_name: 'technology' },
+					{ topic_id: 'topic-3', topic_name: 'science' }
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'DELETE FROM post_tags',
+			'DELETE FROM post_topics',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'INSERT INTO post_tags',
+			'INSERT INTO post_topics',
 			{ rows: [] }
 		)
 		
@@ -177,7 +177,7 @@ const tests = {
 		assertEquals(
 			2,
 			aiAskCalls.length,
-			"Should call AI twice: content moderation and tags."
+			"Should call AI twice: content moderation and topics."
 		)
 		
 		// Verify content moderation call
@@ -213,17 +213,17 @@ const tests = {
 			"Should include images in moderation."
 		)
 		
-		// Verify tags call
-		const tagsCall = aiAskCalls[1]
+		// Verify topics call
+		const topicsCall = aiAskCalls[1]
 		assertEquals(
-			'tags',
-			tagsCall.type,
-			"Second AI call should be for tags."
+			'topics',
+			topicsCall.type,
+			"Second AI call should be for topics."
 		)
 		assertEquals(
-			prompts.tags_response_format,
-			tagsCall.format,
-			"Should use tags response format."
+			prompts.topics_response_format,
+			topicsCall.format,
+			"Should use topics response format."
 		)
 		
 		// Verify S3 operations
@@ -322,8 +322,8 @@ const tests = {
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
 		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-post-123' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -334,7 +334,7 @@ const tests = {
 		assertEquals(
 			3,
 			aiAskCalls.length,
-			"Should call AI three times: content moderation, tags, and poll estimation."
+			"Should call AI three times: content moderation, topics, and poll estimation."
 		)
 		
 		// Verify poll moderation includes poll options
@@ -425,8 +425,8 @@ const tests = {
 				]
 			}
 		)
-		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -488,7 +488,7 @@ const tests = {
 					note: "This appears to be spam content"
 				})
 			}
-			return JSON.stringify({ tags: [] })
+			return JSON.stringify({ topics: [] })
 		}
 		
 		// Setup mock request
@@ -547,8 +547,8 @@ const tests = {
 		// Reset AI mock for other tests
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
-			if (type === 'tags') {
-				return JSON.stringify({ tags: ['general'] })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: ['general'] })
 			} else if (type === 'poll_estimate') {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -583,8 +583,8 @@ const tests = {
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
 		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'slug-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -633,8 +633,8 @@ const tests = {
 		)
 		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'collision-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -655,16 +655,16 @@ const tests = {
 		)
 	},
 
-	testTagProcessing: async () => {
+	testTopicProcessing: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Mock AI to return specific tags
+		// Mock AI to return specific topics
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
-			if (type === 'tags') {
-				return JSON.stringify({ tags: ['technology', 'science', 'unknown-tag'] })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: ['technology', 'science', 'unknown-topic'] })
 			}
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -678,9 +678,9 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-tags',
-				user_id: 'user-tags',
-				display_name: 'Tag User'
+				session_id: 'session-topics',
+				user_id: 'user-topics',
+				display_name: 'Topic User'
 			}
 		)
 		
@@ -688,48 +688,48 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'tag-post' }] })
+		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'topic-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
-			'SELECT tag_id, tag_name FROM tags',
+			'SELECT topic_id, topic_name FROM topics',
 			{ 
 				rows: [
-					{ tag_id: 'tag-tech', tag_name: 'technology' },
-					{ tag_id: 'tag-sci', tag_name: 'science' },
-					{ tag_id: 'tag-gen', tag_name: 'general' }
-					// Note: 'unknown-tag' is not in the database
+					{ topic_id: 'topic-tech', topic_name: 'technology' },
+					{ topic_id: 'topic-sci', topic_name: 'science' },
+					{ topic_id: 'topic-gen', topic_name: 'general' }
+					// Note: 'unknown-topic' is not in the database
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
-		req.client.addQueryMock('INSERT INTO post_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock('INSERT INTO post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
 		await savePost(req, res)
 		
-		// Verify tags AI call
-		const tagsCall = aiAskCalls.find(call => call.type === 'tags')
+		// Verify topics AI call
+		const topicsCall = aiAskCalls.find(call => call.type === 'topics')
 		assertEquals(
 			true,
-			tagsCall !== undefined,
-			"Should call AI for tags."
+			topicsCall !== undefined,
+			"Should call AI for topics."
 		)
 		
-		// Verify successful response (unknown tags are skipped)
+		// Verify successful response (unknown topics are skipped)
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
 			responseData.success,
-			"Should succeed even with unknown tags."
+			"Should succeed even with unknown topics."
 		)
 		
 		// Reset AI mock
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
-			if (type === 'tags') {
-				return JSON.stringify({ tags: ['general'] })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: ['general'] })
 			} else if (type === 'poll_estimate') {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -738,16 +738,16 @@ const tests = {
 		}
 	},
 
-	testPollsTagsFiltering: async () => {
+	testPollsTopicsFiltering: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
 		
-		// Mock AI to return polls and asks tags
+		// Mock AI to return polls and asks topics
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
-			if (type === 'tags') {
-				return JSON.stringify({ tags: ['polls', 'asks', 'technology'] })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: ['polls', 'asks', 'technology'] })
 			}
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -763,8 +763,8 @@ const tests = {
 				poll_2: 'No'
 			},
 			{ 
-				session_id: 'session-poll-tags',
-				user_id: 'user-poll-tags',
+				session_id: 'session-poll-topics',
+				user_id: 'user-poll-topics',
 				display_name: 'Poll User'
 			}
 		)
@@ -776,36 +776,36 @@ const tests = {
 		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-filter-post' }] })
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock(
-			'SELECT tag_id, tag_name FROM tags',
+			'SELECT topic_id, topic_name FROM topics',
 			{ 
 				rows: [
-					{ tag_id: 'tag-polls', tag_name: 'polls' },
-					{ tag_id: 'tag-asks', tag_name: 'asks' },
-					{ tag_id: 'tag-tech', tag_name: 'technology' }
+					{ topic_id: 'topic-polls', topic_name: 'polls' },
+					{ topic_id: 'topic-asks', topic_name: 'asks' },
+					{ topic_id: 'topic-tech', topic_name: 'technology' }
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
-		req.client.addQueryMock('INSERT INTO post_tags', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock('INSERT INTO post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
 		await savePost(req, res)
 		
-		// Verify successful response (asks tag should be filtered out when polls tag exists)
+		// Verify successful response (asks topic should be filtered out when polls topic exists)
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
 			responseData.success,
-			"Should succeed with polls tag filtering."
+			"Should succeed with polls topic filtering."
 		)
 		
 		// Reset AI mock
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
-			if (type === 'tags') {
-				return JSON.stringify({ tags: ['general'] })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: ['general'] })
 			} else if (type === 'poll_estimate') {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -961,8 +961,8 @@ const tests = {
 		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT image_uuids', { rows: [{ image_uuids: '' }] })
 		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('SELECT tag_id, tag_name FROM tags', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_tags', { rows: [] })
+		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
+		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -973,7 +973,7 @@ const tests = {
 		assertEquals(
 			3,
 			aiAskCalls.length,
-			"Should call AI for moderation, tags, and poll estimation."
+			"Should call AI for moderation, topics, and poll estimation."
 		)
 		
 		const pollEstimateCall = aiAskCalls.find(call => call.type === 'poll_estimate')

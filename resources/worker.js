@@ -8,7 +8,7 @@ self.addEventListener("push", (event) => {
 		} catch (e) {}
 		const title = parsed_payload.title || "Truce"
 		const body = parsed_payload.body || "You have a new reply"
-		const tag = parsed_payload.tag || "no-tag-in-payload"
+		const topic = parsed_payload.topic || "no-topic-in-payload"
 		const unread_count = parsed_payload.unread_count || 0
 
 		// Asynchronous events
@@ -18,7 +18,7 @@ self.addEventListener("push", (event) => {
 		promises.push(
 			self.registration.showNotification(title, {
 				body,
-				tag,
+				topic,
 			}),
 		)
 

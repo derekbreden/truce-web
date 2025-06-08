@@ -117,7 +117,7 @@ const getMoreRecent = () => {
 		state.path === "/" ||
 		state.path === "/privacy" ||
 		state.path === "/settings" ||
-		state.path === "/tags"
+		state.path === "/topics"
 	) {
 		return
 	}
@@ -308,7 +308,7 @@ const getMoreRecent = () => {
 				current_cache.posts.unshift(...data.posts)
 				renderPosts(
 					current_cache.posts,
-					current_cache.tag,
+					current_cache.topic,
 					current_cache.user,
 				)
 

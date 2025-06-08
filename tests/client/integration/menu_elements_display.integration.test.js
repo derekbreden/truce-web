@@ -53,7 +53,7 @@ const tests = {
 
 		// Sign In / Sign Up form (visible when not logged in)
 		// menu.js adds a form with a submit button, not separate links
-		const $signInForm = $menu.$("menu sign-in") // Check within $menu, then 'menu' tag, then 'sign-in' tag
+		const $signInForm = $menu.$("menu sign-in") // Check within $menu, then 'menu' topic, then 'sign-in' topic
 		const $submitButton = $signInForm.$("button[submit]")
 		assertEquals(
 			"Sign up / Sign in",

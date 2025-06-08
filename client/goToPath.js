@@ -31,10 +31,10 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			).scrollTop
 		}
 
-		// New path for /tag/ is same as /tags
+		// New path for /topic/ is same as /topics
 		let new_path_parsed = new_path
-		if (new_path.substr(0, 5) === "/tag/") {
-			new_path_parsed = "/tags"
+		if (new_path.substr(0, 7) === "/topic/") {
+			new_path_parsed = "/topics"
 		}
 
 		// Slide from left to right as if clicking back in several more scenarios
@@ -116,7 +116,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			state.path === "/" ||
 			state.path === "/posts" ||
 			state.path === "/posts/all" ||
-			state.path.substr(0, 5) === "/tag/"
+			state.path.substr(0, 7) === "/topic/"
 		) {
 			localStorage.setItem(
 				`${window.local_storage_key}:last_root_path`,

@@ -19,7 +19,7 @@ const tests = {
 						body: "A post to test reply display.",
 						user_slug: "post-author",
 						display_name: "Post Author",
-						tags: "general", // Changed from "testing" to "general"
+						topics: "general", // Changed from "testing" to "general"
 						reply_count: 2,
 						favorite_count: 0,
 						favorited: false,
@@ -38,7 +38,7 @@ const tests = {
 				activities: [],
 				notifications: [],
 				user: {},
-				tag: {},
+				topic: {},
 				subscribed_to_users: 0,
 			},
 			"/post/test-replies-post": {
@@ -50,7 +50,7 @@ const tests = {
 						body: "Full body of the test post for replies.",
 						user_slug: "post-author",
 						display_name: "Post Author",
-						tags: "general", // Changed from "testing" to "general"
+						topics: "general", // Changed from "testing" to "general"
 						reply_count: 2,
 						favorite_count: 0,
 						favorited: false,
@@ -93,7 +93,7 @@ const tests = {
 				activities: [],
 				notifications: [],
 				user: {},
-				tag: {},
+				topic: {},
 				subscribed_to_users: 0,
 			},
 		})

@@ -43,11 +43,11 @@ module.exports = async (req, res) => {
           ) THEN TRUE ELSE FALSE END as replyed,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           (
-            SELECT STRING_AGG(ts.tag_name, ',')
-            FROM post_tags pt
-            INNER JOIN tags ts ON ts.tag_id = pt.tag_id
+            SELECT STRING_AGG(ts.topic_name, ',')
+            FROM post_topics pt
+            INNER JOIN topics ts ON ts.topic_id = pt.topic_id
             WHERE pt.post_id = p.post_id
-          ) as tags
+          ) as topics
         FROM posts p
         LEFT JOIN users u ON u.user_id = p.user_id
         LEFT JOIN favorite_posts f ON f.post_id = p.post_id AND f.user_id = $1

@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
 		await require("./session/getSinglePost")(req, res)
 		await require("./session/getSingleThread")(req, res)
 		await require("./session/getActivities")(req, res)
-		await require("./session/getTags")(req, res)
+		await require("./session/getTopics")(req, res)
 		await require("./session/getUser")(req, res)
 		await require("./session/getSettings")(req, res)
 		await require("./session/getPagePosts")(req, res)

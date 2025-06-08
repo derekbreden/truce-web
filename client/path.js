@@ -4,7 +4,7 @@ const path_sequence = [
 	"/privacy",
 	"/posts",
 	"/posts/all",
-	"/tags",
+	"/topics",
 	"/favorites",
 	"/notifications",
 	"/settings",
@@ -20,7 +20,7 @@ const parsePath = () => {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if ((new_paths[0] === "reply" || new_paths[0] === "reply") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "tag" && new_paths[1]) {
+	} else if (new_paths[0] === "topic" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "user" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
@@ -61,10 +61,10 @@ if (state.path === "/") {
 	}
 }
 
-// New path for /tag/ is same as /tags
+// New path for /topic/ is same as /topics
 let new_path_parsed = state.path
-if (state.path.substr(0, 5) === "/tag/") {
-	new_path_parsed = "/tags"
+if (state.path.substr(0, 7) === "/topic/") {
+	new_path_parsed = "/topics"
 }
 
 const dot_index = Math.max(path_sequence.indexOf(new_path_parsed) - 1, 0)

@@ -18,7 +18,7 @@ async function testReplyCountUpdate() {
 		display_name: "User One",
 		reply_count: 5,
 		create_date: "2023-01-01T00:00:00.000Z", // ISO format for dates
-		tags: "general", // Comma-separated string, removed "test" tag
+		topics: "general", // Comma-separated string, removed "test" topic
 		favorite_count: 2,
 		favorited: false,
 		replyed: false,

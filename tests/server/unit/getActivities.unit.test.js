@@ -32,7 +32,7 @@ const tests = {
 						favorite_create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-456',
 						display_name: 'Post Author',
-						tags: 'technology,science'
+						topics: 'technology,science'
 					},
 					{
 						id: 'reply-1',
@@ -339,7 +339,7 @@ const tests = {
 						user_slug: 'post-author',
 						profile_picture_uuid: 'profile-uuid',
 						user_verified: true,
-						tags: 'tag1,tag2'
+						topics: 'topic1,topic2'
 					}
 				]
 			}
@@ -362,7 +362,7 @@ const tests = {
 		assertEquals(false, activity.edit, "Should have edit permission.")
 		assertEquals('author-123', activity.user_id, "Should have user_id.")
 		assertEquals('Post Author', activity.display_name, "Should have display_name.")
-		assertEquals('tag1,tag2', activity.tags, "Should have tags.")
+		assertEquals('topic1,topic2', activity.topics, "Should have topics.")
 	},
 
 	testEmptyResults: async () => {

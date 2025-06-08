@@ -1,4 +1,4 @@
-const renderPosts = (posts, tag, user) => {
+const renderPosts = (posts, topic, user) => {
 	let skip_posts = false
 	if (
 		state.path === "/settings" ||
@@ -29,7 +29,7 @@ const renderPosts = (posts, tag, user) => {
 		.map(renderPost)
 
 	if (!skip_posts) {
-		if (window.innerWidth > 1000 && state.path.substr(0, 5) === "/tag/") {
+		if (window.innerWidth > 1000 && state.path.substr(0, 7) === "/topic/") {
 			const $posts_1 = $posts.filter((x, i) => i % 2 === 0)
 			const $posts_2 = $posts.filter((x, i) => i % 2 === 1)
 			$("main-content-wrapper[active] main-content posts")?.replaceChildren(
@@ -184,28 +184,28 @@ const renderPosts = (posts, tag, user) => {
 		)
 	}
 
-	// Tag
-	if (state.path.substr(0, 5) === "/tag/") {
-		$("post[tag]")?.remove()
+	// Topic
+	if (state.path.substr(0, 7) === "/topic/") {
+		$("post[topic]")?.remove()
 		if (posts.length === 0) {
 			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
-					tags[tags-list][big]
-						tag[tag=$1]
+					topics[topics-list][big]
+						topic[topic=$1]
 							icon
 								$2
-							tagname-subtitle
-								tagname
+							topicname-subtitle
+								topicname
 									name $3
 								subtitle $4
-						p There are no posts in this tag yet, head on over to the posts page to add one!
+						p There are no posts in this topic yet, head on over to the posts page to add one!
 					`,
 					[
-						tag.tag_name,
-						$(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
-						tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
-						tag.subtitle,
+						topic.topic_name,
+						$(`icons icon[${topic.topic_name}] svg`).cloneNode(true),
+						topic.topic_name[0].toUpperCase() + topic.topic_name.slice(1),
+						topic.subtitle,
 					],
 				),
 			)
@@ -213,20 +213,20 @@ const renderPosts = (posts, tag, user) => {
 			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
-					tags[tags-list][big]
-						tag[tag=$1]
+					topics[topics-list][big]
+						topic[topic=$1]
 							icon
 								$2
-							tagname-subtitle
-								tagname
+							topicname-subtitle
+								topicname
 									name $3
 								subtitle $4
 					`,
 					[
-						tag.tag_name,
-						$(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
-						tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
-						tag.subtitle,
+						topic.topic_name,
+						$(`icons icon[${topic.topic_name}] svg`).cloneNode(true),
+						topic.topic_name[0].toUpperCase() + topic.topic_name.slice(1),
+						topic.subtitle,
 					],
 				),
 			)

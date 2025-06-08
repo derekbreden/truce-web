@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testTagsPageDisplaysCorrectlyAfterNavigation: async () => {
+	testTopicsPageDisplaysCorrectlyAfterNavigation: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
@@ -27,13 +27,13 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/tags": {
-				// For the actual tags page
-				path: "/tags",
-				tags: [
+			"/topics": {
+				// For the actual topics page
+				path: "/topics",
+				topics: [
 					// Updated mock data structure
-					{ tag_name: "science", posts: 10, subtitle: "All about science" },
-					{ tag_name: "history", posts: 5, subtitle: "History discussions" },
+					{ topic_name: "science", posts: 10, subtitle: "All about science" },
+					{ topic_name: "history", posts: 5, subtitle: "History discussions" },
 				],
 				// Other data that might be part of a standard page response (minimal for this test)
 				posts: [],
@@ -61,83 +61,83 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		// 3. Navigate to Tags Page
-		const $tagsFooterIcon = $("footer icon[tag]")
-		$tagsFooterIcon.click()
+		// 3. Navigate to Topics Page
+		const $topicsFooterIcon = $("footer icon[topic]")
+		$topicsFooterIcon.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/tags",
+			"/topics",
 			state.path,
-			"Path should be /tags after clicking the tags footer icon.",
+			"Path should be /topics after clicking the topics footer icon.",
 		)
 
-		// 4. Verify Tags Page Content
-		// Selectors updated to match client/renderTags.js
+		// 4. Verify Topics Page Content
+		// Selectors updated to match client/renderTopics.js
 		const $mainContent = $("main-content-wrapper[active] main-content")
 
-		const $tagsListContainer = $mainContent.$("tags[tags-list]")
+		const $topicsListContainer = $mainContent.$("topics[topics-list]")
 
-		const $renderedTagElements = $tagsListContainer.querySelectorAll("tag[tag]") // Selects all elements like <tag tag="...">
+		const $renderedTopicElements = $topicsListContainer.querySelectorAll("topic[topic]") // Selects all elements like <topic topic="...">
 		assertEquals(
 			2,
-			$renderedTagElements.length,
-			"Should render 2 tag elements based on mock data.",
+			$renderedTopicElements.length,
+			"Should render 2 topic elements based on mock data.",
 		)
 
-		// Assert content of the first tag ("science")
-		const $firstTag = $tagsListContainer.$("tag[tag='science']")
+		// Assert content of the first topic ("science")
+		const $firstTopic = $topicsListContainer.$("topic[topic='science']")
 
-		const $firstNameElement = $firstTag.$("tagname name")
+		const $firstNameElement = $firstTopic.$("topicname name")
 		assertEquals(
 			"Science",
 			$firstNameElement.innerText.trim(),
-			"First tag name mismatch. Expected 'Science'.",
+			"First topic name mismatch. Expected 'Science'.",
 		)
 
-		const $firstCountElement = $firstTag.$("tagname count")
+		const $firstCountElement = $firstTopic.$("topicname count")
 		assertEquals(
 			"10",
 			$firstCountElement.innerText.trim(),
-			"First tag count mismatch. Expected '10'.",
+			"First topic count mismatch. Expected '10'.",
 		)
 
-		const $firstSubtitleElement = $firstTag.$("subtitle")
+		const $firstSubtitleElement = $firstTopic.$("subtitle")
 		assertEquals(
 			"All about science",
 			$firstSubtitleElement.innerText.trim(),
-			"First tag subtitle mismatch.",
+			"First topic subtitle mismatch.",
 		)
 
-		// Assert content of the second tag ("history")
-		const $secondTag = $tagsListContainer.$("tag[tag='history']")
+		// Assert content of the second topic ("history")
+		const $secondTopic = $topicsListContainer.$("topic[topic='history']")
 
-		const $secondNameElement = $secondTag.$("tagname name")
+		const $secondNameElement = $secondTopic.$("topicname name")
 		assertEquals(
 			"History",
 			$secondNameElement.innerText.trim(),
-			"Second tag name mismatch. Expected 'History'.",
+			"Second topic name mismatch. Expected 'History'.",
 		)
 
-		const $secondCountElement = $secondTag.$("tagname count")
+		const $secondCountElement = $secondTopic.$("topicname count")
 		assertEquals(
 			"5",
 			$secondCountElement.innerText.trim(),
-			"Second tag count mismatch. Expected '5'.",
+			"Second topic count mismatch. Expected '5'.",
 		)
 
-		const $secondSubtitleElement = $secondTag.$("subtitle")
+		const $secondSubtitleElement = $secondTopic.$("subtitle")
 		assertEquals(
 			"History discussions",
 			$secondSubtitleElement.innerText.trim(),
-			"Second tag subtitle mismatch.",
+			"Second topic subtitle mismatch.",
 		)
 
-		// Check for the overall page structure (header for tags page)
-		const $tagsPageHeader = $mainContent.$("posts post h2[tags] span") // As per renderTags.js structure
+		// Check for the overall page structure (header for topics page)
+		const $topicsPageHeader = $mainContent.$("posts post h2[topics] span") // As per renderTopics.js structure
 		assertEquals(
-			"Tags",
-			$tagsPageHeader.innerText.trim(),
-			"Tags page header text mismatch.",
+			"Topics",
+			$topicsPageHeader.innerText.trim(),
+			"Topics page header text mismatch.",
 		)
 	},
 }

@@ -41,7 +41,7 @@ const tests = {
 			"Path should be /posts after agreeing to terms.",
 		)
 
-		const footerIconsToTest = ["posts", "tag", "favorites", "notifications"]
+		const footerIconsToTest = ["posts", "topic", "favorites", "notifications"]
 
 		footerIconsToTest.forEach((iconName) => {
 			const selector = `footer icon[${iconName}] svg`
@@ -49,7 +49,7 @@ const tests = {
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),
-				`Footer icon <${iconName}> element should be an SVG tag.`,
+				`Footer icon <${iconName}> element should be an SVG topic.`,
 			)
 		})
 	},
@@ -63,7 +63,7 @@ const tests = {
 		assertEquals(
 			"img",
 			$hamburgerImg.tagName?.toLowerCase(),
-			"Hamburger element should be an <img> tag.",
+			"Hamburger element should be an <img> topic.",
 		)
 		assertEquals(
 			"/hamburger.svg",
@@ -92,7 +92,7 @@ const tests = {
 			assertEquals(
 				"svg",
 				$iconSvg.tagName?.toLowerCase(),
-				`Global icon <${iconInfo.name}> element should be an SVG tag.`,
+				`Global icon <${iconInfo.name}> element should be an SVG topic.`,
 			)
 		})
 	},

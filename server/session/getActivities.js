@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
           FALSE as replyed,
           FALSE as voted,
           'reply' AS type,
-          '' AS tags
+          '' AS topics
         FROM replies c
         LEFT JOIN favorite_replies fc ON c.reply_id = fc.reply_id AND fc.user_id = $1
         LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
@@ -76,11 +76,11 @@ module.exports = async (req, res) => {
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           'post' AS type,
           (
-            SELECT STRING_AGG(ts.tag_name, ',')
-            FROM post_tags tt
-            INNER JOIN tags ts ON ts.tag_id = tt.tag_id
+            SELECT STRING_AGG(ts.topic_name, ',')
+            FROM post_topics tt
+            INNER JOIN topics ts ON ts.topic_id = tt.topic_id
             WHERE tt.post_id = t.post_id
-          ) as tags
+          ) as topics
         FROM posts t
         LEFT JOIN favorite_posts ft ON t.post_id = ft.post_id AND ft.user_id = $1
         LEFT JOIN post_poll_votes v ON v.post_id = t.post_id AND v.user_id = $1
@@ -129,7 +129,7 @@ module.exports = async (req, res) => {
         CASE WHEN pcu.slug = '' THEN pcu.user_id::VARCHAR ELSE pcu.slug END as parent_reply_user_slug,
         pcu.profile_picture_uuid AS parent_reply_profile_picture_uuid,
         CASE WHEN pcf.user_id IS NOT NULL THEN TRUE ELSE FALSE END as parent_reply_favorited,
-        combined.tags,
+        combined.topics,
         combined.favorited
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id

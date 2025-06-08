@@ -10,7 +10,7 @@ const markdownToElements = (text) => {
 	// Double line breaks seperate paragraphs
 	const p_contents = text.split("\n\n")
 
-	// Process one <p> tag at a time
+	// Process one <p> topic at a time
 	return p_contents.map((p_content) => {
 		p_content = p_content.trim()
 		const p_element = document.createElement("p")
@@ -239,7 +239,7 @@ const markdownToElements = (text) => {
 
 		// If after all processing, p_element has no children AND original_p_content_for_spans was not empty
 		// (e.g. it was just "---" which results in empty p_content, or just an image/link which is directly returned by some paths)
-		// then append an empty span to ensure the <p> tag is not entirely empty, if original content wasn't empty.
+		// then append an empty span to ensure the <p> topic is not entirely empty, if original content wasn't empty.
 		// This handles cases like "---" which results in p_content = "" and no inserts.
 		// Or if original_p_content_for_spans was just an image/link that got processed into an insert, and no surrounding text.
 		if (

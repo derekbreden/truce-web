@@ -7,13 +7,13 @@ const bindScrollEvent = () => {
 
 		// Posts load older
 		// Favorites load older
-		// Tags load older
+		// Topics load older
 		// User load older
 		if (
 			(state.path === "/posts" ||
 				state.path === "/posts/all" ||
 				state.path === "/favorites" ||
-				state.path.substr(0, 5) === "/tag/" ||
+				state.path.substr(0, 7) === "/topic/" ||
 				state.path.substr(0, 6) === "/user/") &&
 			state.cache[state.path] &&
 			!state.cache[state.path].finished
@@ -84,7 +84,7 @@ const bindScrollEvent = () => {
 						if (data.posts.length) {
 							renderPosts(
 								state.cache[state.path].posts,
-								state.cache[state.path].tag,
+								state.cache[state.path].topic,
 								state.cache[state.path].user,
 							)
 						}

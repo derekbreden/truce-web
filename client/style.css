@@ -660,7 +660,7 @@ menu links a icon svg {
   fill: light-dark(#000, #fff);
 }
 
-menu links a icon[tag] svg {
+menu links a icon[topic] svg {
   width: 28px;
 }
 
@@ -1559,7 +1559,7 @@ activities activity {
   flex-direction: column;
 }
 
-post author-tags {
+post author-topics {
   display: flex;
   justify-content: space-between;
   font-size: .786rem;
@@ -1568,50 +1568,50 @@ post author-tags {
   align-items: flex-start;
 }
 
-post author-tags author profile-picture image {
+post author-topics author profile-picture image {
   width: 20px;
   height: 20px;
 }
 
-post author-tags author profile-picture svg {
+post author-topics author profile-picture svg {
   height: 25px;
   width: 25px;
   margin: -3px;
   opacity: .5;
 }
 
-post author-tags author {
+post author-topics author {
   display: flex;
   gap: 3px;
   align-items: center;
 }
 
-post author-tags author by {
+post author-topics author by {
   margin-left: 2px;
   opacity: .5;
 }
 
-post author-tags author name {
+post author-topics author name {
   display: flex;
   gap: 3px;
   align-items: center;
 }
-post author-tags author name span {
+post author-topics author name span {
   font-weight: 700;
   opacity: .5;
 }
-post author-tags author name icon {
+post author-topics author name icon {
   font-size: 0;
   opacity: .5;
 }
-post author-tags author name icon svg {
+post author-topics author name icon svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 18px;
   width: 18px;
 }
 
-post author-tags tags {
+post author-topics topics {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1620,24 +1620,24 @@ post author-tags tags {
   opacity: .5;
 }
 
-post author-tags tags tag {
+post author-topics topics topic {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
-post author-tags tags tag icon {
+post author-topics topics topic icon {
   font-size: 0;
 }
 
-post author-tags tags tag svg {
+post author-topics topics topic svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 20px;
   width: 20px;
 }
 
-tags[tags-list] {
+topics[topics-list] {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -1645,73 +1645,73 @@ tags[tags-list] {
   padding-top: 20px;
 }
 
-tags[tags-list] tag {
+topics[topics-list] topic {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   width: calc(50% - 10px);
   cursor: pointer;
 }
-tags[tags-list][big] tag {
+topics[topics-list][big] topic {
   width: unset;
   cursor: unset;
   margin-left: -3px;
 }
-tags[tags-list][big] tag[tag=politics],
-tags[tags-list][big] tag[tag=sports],
-tags[tags-list][big] tag[tag=science] {
+topics[topics-list][big] topic[topic=politics],
+topics[topics-list][big] topic[topic=sports],
+topics[topics-list][big] topic[topic=science] {
   margin-left: -5px;
 }
-tags[tags-list][big] tag[tag=media],
-tags[tags-list][big] tag[tag=religion],
-tags[tags-list][big] tag[tag=health],
-tags[tags-list][big] tag[tag=work] {
+topics[topics-list][big] topic[topic=media],
+topics[topics-list][big] topic[topic=religion],
+topics[topics-list][big] topic[topic=health],
+topics[topics-list][big] topic[topic=work] {
   margin-left: -4px;
 }
-tags[tags-list] tag[tag=religion] icon {
+topics[topics-list] topic[topic=religion] icon {
   margin-top: 1px;
 }
-tags[tags-list] tag[tag=parenting] icon,
-tags[tags-list] tag[tag=media] icon,
-tags[tags-list] tag[tag=asks] icon {
+topics[topics-list] topic[topic=parenting] icon,
+topics[topics-list] topic[topic=media] icon,
+topics[topics-list] topic[topic=asks] icon {
   margin-top: 2px;
 }
-tags[tags-list] tag[tag=weather] icon {
+topics[topics-list] topic[topic=weather] icon {
   margin-top: 3px;
 }
-tags[tags-list] tag[tag=food] icon,
-tags[tags-list] tag[tag=health] icon {
+topics[topics-list] topic[topic=food] icon,
+topics[topics-list] topic[topic=health] icon {
   margin-top: -1px;
 }
-tags[tags-list] tag[tag=history] icon {
+topics[topics-list] topic[topic=history] icon {
   margin-top: -3px;
 }
-tags[tags-list] tag[tag=polls] icon {
+topics[topics-list] topic[topic=polls] icon {
   margin-top: -5px;
 }
 
-tags[tags-list] tag tagname-subtitle {
+topics[topics-list] topic topicname-subtitle {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-tags[tags-list] tag tagname {
+topics[topics-list] topic topicname {
   display: flex;
   align-items: center;
   gap: 7px;
 }
 
-tags[tags-list] tag tagname name {
+topics[topics-list] topic topicname name {
   font-size: 1.143rem;
   font-weight: 600;
 }
-tags[tags-list][big] tag tagname name {
+topics[topics-list][big] topic topicname name {
   margin-top: -1px;
   font-size: 1.286rem;
 }
 
-tags[tags-list] tag tagname count {
+topics[topics-list] topic topicname count {
   background: #000;
   color: #f5f5f5;
   border: 1px solid #000;
@@ -1726,23 +1726,23 @@ tags[tags-list] tag tagname count {
 }
 
 @media (prefers-color-scheme: dark) {
-  tags[tags-list] tag tagname count {
+  topics[topics-list] topic topicname count {
     font-weight: 400;
   }
 }
 
-tags[tags-list] tag subtitle {
+topics[topics-list] topic subtitle {
   font-size: .786rem;
 }
-tags[tags-list][big] tag subtitle {
+topics[topics-list][big] topic subtitle {
   font-size: 1rem;
 }
 
-tags[tags-list] tag icon {
+topics[topics-list] topic icon {
   font-size: 0;
 }
 
-tags[tags-list] tag svg {
+topics[topics-list] topic svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 40px;
@@ -1778,7 +1778,7 @@ users author-name icon svg {
   width: 22px;
   margin-left: -5px;
 }
-tags[tags-list][big] {
+topics[topics-list][big] {
   position: relative;
   padding-bottom: 20px;
 }
@@ -1787,7 +1787,7 @@ back-forward-wrapper::after,
 activities[favorites] activity::after,
 notifications notification::after,
 users user:after,
-tags[tags-list][big]:after,
+topics[topics-list][big]:after,
 posts post::before {
   content: "";
   display: flex;
@@ -2087,7 +2087,7 @@ p[favorites-empty] icon {
   justify-content: center;
 }
 
-h2[tags] svg,
+h2[topics] svg,
 h2[welcome] svg,
 h2[moderation] svg,
 h2[favorites] svg,
@@ -2098,7 +2098,7 @@ p[favorites-empty] svg {
   margin-bottom: -16px;
 }
 
-h2[tags] svg {
+h2[topics] svg {
   width: 30px;
   height: 30px;
 }
