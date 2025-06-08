@@ -36,8 +36,8 @@ module.exports = async (req, res) => {
 		req.body.pngs
 	) {
 		let topic_id = 0
-		if (req.body.path.substr(0, 7) === "/topic/") {
-			const slug = req.body.path.substr(7)
+		if (req.body.path.substr(0, 7) === "/topic/" || req.body.path.substr(0, 6) === "/post/") {
+			const slug = req.body.path.substr(0, 7) === "/topic/" ? req.body.path.substr(7) : req.body.path.substr(6)
 			const topic_results = await req.client.query(
 				`
         SELECT post_id as topic_id
@@ -57,8 +57,8 @@ module.exports = async (req, res) => {
 				return
 			}
 		}
-		if (req.body.path.substr(0, 8) === "/comment") {
-			const ancestor_comment_id = req.body.path.substr(9)
+		if (req.body.path.substr(0, 8) === "/comment" || req.body.path.substr(0, 6) === "/reply") {
+			const ancestor_comment_id = req.body.path.substr(0, 8) === "/comment" ? req.body.path.substr(9) : req.body.path.substr(7)
 			const ancestor_topic_results = await req.client.query(
 				`
         SELECT parent_post_id

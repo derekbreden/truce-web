@@ -2,9 +2,9 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		req.body.path.substr(0, 7) === "/topic/"
+		(req.body.path.substr(0, 7) === "/topic/" || req.body.path.substr(0, 6) === "/post/")
 	) {
-		const slug = req.body.path.substr(7)
+		const slug = req.body.path.substr(0, 7) === "/topic/" ? req.body.path.substr(7) : req.body.path.substr(6)
 		let topic_id = ""
 
 		if (!req.body.max_comment_create_date) {
@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
 			req.results.topics.push(...topic_results.rows)
 			// We set path here to ensure the path goes to a default if there are no results
 			if (topic_results.rows.length) {
-				req.results.path = `/topic/${slug}`
+				req.results.path = `/post/${slug}`
 				topic_id = topic_results.rows[0].topic_id
 			}
 		}
@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
 				[req.session.user_id || 0, slug],
 			)
 			if (topic_id_result.rows.length) {
-				req.results.path = `/topic/${slug}`
+				req.results.path = `/post/${slug}`
 				topic_id = topic_id_result.rows[0].topic_id
 			}
 		}

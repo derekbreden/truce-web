@@ -54,7 +54,7 @@ const renderNotification = (notification) => {
 		],
 	)
 	$notification.on("click", () => {
-		goToPath("/comment/" + notification.comment_id)
+		goToPath("/reply/" + notification.comment_id)
 
 		// Mark as read
 		if (!notification.read) {
@@ -478,7 +478,7 @@ const getUnreadCountUnseenCount = () => {
 						data.comment_id &&
 						data.notification_id
 					) {
-						goToPath("/comment/" + data.comment_id)
+						goToPath("/reply/" + data.comment_id)
 						markAsRead(data.notification_id)
 
 						// Otherwise load the list of notifications

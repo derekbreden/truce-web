@@ -40,8 +40,8 @@ const tests = {
 				tag: {},
 				subscribed_to_users: 0,
 			},
-			"/topic/test-topic-1": {
-				path: "/topic/test-topic-1",
+			"/post/test-topic-1": {
+				path: "/post/test-topic-1",
 				topics: [
 					// Server returns topic detail in a "topics" array
 					{
@@ -93,7 +93,7 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// 4. Assert navigation to the topic detail path
-		const expectedTopicPath = "/topic/test-topic-1"
+		const expectedTopicPath = "/post/test-topic-1"
 		assertEquals(
 			expectedTopicPath,
 			state.path,

@@ -96,9 +96,9 @@ const tests = {
 
 		const $submitButton = $formContainer.$("button[submit]")
 		assertEquals(
-			"Add topic",
+			"Add post",
 			$submitButton.innerText.trim(),
-			"Submit button text should be 'Add topic'.",
+			"Submit button text should be 'Add post'.",
 		)
 
 		const $cancelButton = $formContainer.$("button[alt][cancel]")

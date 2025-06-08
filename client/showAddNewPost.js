@@ -1,7 +1,7 @@
-const showAddNewTopic = (topic) => {
-	// If this is the main prompt, show a topic prompt
+const showAddNewPost = (post) => {
+	// If this is the main prompt, show a post prompt
 	let content_placeholder = `Content`
-	if (!topic) {
+	if (!post) {
 		let topic_prompts_index =
 			localStorage.getItem(`${window.local_storage_key}:topic_prompts_index`) ||
 			-1
@@ -40,16 +40,16 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 			$("icons icon[poll] svg").cloneNode(true),
 			$("icons icon[image] svg").cloneNode(true),
 			content_placeholder,
-			...(topic
-				? [topic.title, topic.body, "Save changes"]
-				: ["", "", "Add topic"]),
+			...(post
+				? [post.title, post.body, "Save changes"]
+				: ["", "", "Add post"]),
 		],
 	)
 
-	let mode = "topic"
+	let mode = "post"
 	if (state.version > 1) {
 		$add_new.$("[poll]").on("click", () => {
-			if (mode === "topic") {
+			if (mode === "post") {
 				mode = "poll"
 				$add_new.$("[body]").setAttribute("placeholder", "Question")
 				$add_new.$("[body]").setAttribute("rows", "3")
@@ -105,30 +105,30 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 					}
 				})
 			} else {
-				mode = "topic"
+				mode = "post"
 				$add_new.$("[body]").setAttribute("placeholder", "Content")
 				$add_new.$("[body]").setAttribute("rows", "10")
 				$add_new.$("poll-input-wrapper").remove()
 			}
 		})
-		if (topic && topic.poll_1) {
+		if (post && post.poll_1) {
 			$add_new.$("[poll]").click()
-			$add_new.$("input[poll-1]").value = topic.poll_1
-			$add_new.$("input[poll-2]").value = topic.poll_2
-			if (topic.poll_3) {
+			$add_new.$("input[poll-1]").value = post.poll_1
+			$add_new.$("input[poll-2]").value = post.poll_2
+			if (post.poll_3) {
 				$add_new.$("poll-text[add]").click()
-				$add_new.$("input[poll-3]").value = topic.poll_3
+				$add_new.$("input[poll-3]").value = post.poll_3
 			}
-			if (topic.poll_4) {
+			if (post.poll_4) {
 				$add_new.$("poll-text[add]").click()
-				$add_new.$("input[poll-4]").value = topic.poll_4
+				$add_new.$("input[poll-4]").value = post.poll_4
 			}
 		}
 	} else {
 		$add_new.$("[poll]").remove()
 	}
 
-	const addTopicError = (error) => {
+	const addPostError = (error) => {
 		$add_new.appendChild(
 			$(
 				`
@@ -142,8 +142,8 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 
 	const pngs = []
 
-	if (topic?.image_uuids) {
-		const image_uuids = topic.image_uuids.split(",")
+	if (post?.image_uuids) {
+		const image_uuids = post.image_uuids.split(",")
 		for (const image_uuid of image_uuids) {
 			imageToPng("/image/" + image_uuid, (png) => {
 				pngs.push(png)
@@ -161,7 +161,7 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 					if (pngs.length > 4) {
 						pngs.splice(4, pngs.length - 4)
 						if (!$("modal[error]")) {
-							modalError("Each topic is limited to 4 images")
+							modalError("Each post is limited to 4 images")
 						}
 					}
 					previewPngs()
@@ -201,9 +201,9 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 	$add_new.$("[body]").on("focus", () => {
 		$add_new.$("error")?.remove()
 	})
-	if (topic) {
+	if (post) {
 		$add_new.$("[cancel]").on("click", () => {
-			$add_new.replaceWith(topic.$topic)
+			$add_new.replaceWith(post.$topic)
 			delete state.active_add_new_topic
 		})
 	} else {
@@ -218,22 +218,22 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 		const poll_3 = $add_new.$("[poll-3]")?.value || ""
 		const poll_4 = $add_new.$("[poll-4]")?.value || ""
 		if (!title) {
-			addTopicError("Please enter a title")
+			addPostError("Please enter a title")
 			return
 		}
 		if (!body && !pngs.length) {
-			addTopicError("Please enter some content")
+			addPostError("Please enter some content")
 			return
 		}
 		if (title.length >= body.length && !pngs.length) {
-			addTopicError("The content must be longer than the title")
+			addPostError("The content must be longer than the title")
 			return
 		}
 		if (
 			(poll_1.length && !poll_2.length) ||
 			(poll_2.length && !poll_1.length)
 		) {
-			addTopicError("Please fill in 2 choices for a poll")
+			addPostError("Please fill in 2 choices for a poll")
 			return
 		}
 		$add_new.appendChild(
@@ -262,7 +262,7 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 				poll_3,
 				poll_4,
 				pngs,
-				topic_id: topic ? topic.topic_id : undefined,
+				topic_id: post ? post.topic_id : undefined,
 			}),
 		})
 			.then((response) => response.json())
@@ -277,10 +277,10 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 					$add_new.$("[poll-4]")?.removeAttribute("disabled")
 					$add_new.$("[submit]").removeAttribute("disabled")
 					$add_new.$("[cancel]")?.removeAttribute("disabled")
-					addTopicError(data.error || "Server error")
+					addPostError(data.error || "Server error")
 					return
 				}
-				if (!topic) {
+				if (!post) {
 					$add_new.$("[body]").value = ""
 					$add_new.$("[title]").value = ""
 					if (mode === "poll") {
@@ -298,9 +298,9 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 					$add_new.$("[submit]").removeAttribute("disabled")
 					$add_new.$("[cancel]")?.removeAttribute("disabled")
 				}
-				// Handle case where title changes slug when updating an topic
+				// Handle case where title changes slug when updating a post
 				delete state.active_add_new_topic
-				if (topic && data.slug) {
+				if (post && data.slug) {
 					state.path = `/topic/${data.slug}`
 					startSession()
 				} else {
@@ -317,17 +317,17 @@ e.g. ${topic_prompts[topic_prompts_index]}`
 				$add_new.$("[poll-4]")?.removeAttribute("disabled")
 				$add_new.$("[submit]").removeAttribute("disabled")
 				$add_new.$("[cancel]")?.removeAttribute("disabled")
-				addTopicError("Network error")
+				addPostError("Network error")
 			})
 	})
 	state.active_add_new_topic = $add_new
-	if (topic) {
-		state.active_add_new_topic.is_edit = topic.topic_id
+	if (post) {
+		state.active_add_new_topic.is_edit = post.topic_id
 	} else {
 		state.active_add_new_topic.is_root = true
 	}
 	return $add_new
 }
-const focusAddNewTopic = () => {
+const focusAddNewPost = () => {
 	state.active_add_new_topic.$("[title]").focus()
 }

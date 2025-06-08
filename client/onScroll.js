@@ -82,7 +82,7 @@ const bindScrollEvent = () => {
 
 						// And re-render if any topics added
 						if (data.topics.length) {
-							renderTopics(
+							renderPosts(
 								state.cache[state.path].topics,
 								state.cache[state.path].tag,
 								state.cache[state.path].user,
@@ -106,7 +106,7 @@ const bindScrollEvent = () => {
 
 		// Comments load older
 		if (
-			state.path.substr(0, 7) === "/topic/" &&
+			state.path.substr(0, 6) === "/post/" &&
 			state.cache[state.path] &&
 			!state.cache[state.path].comments_finished
 		) {
@@ -146,7 +146,7 @@ const bindScrollEvent = () => {
 
 						// And re-render if any comments added
 						if (data.comments.length) {
-							renderComments(state.cache[state.path].comments)
+							renderReplies(state.cache[state.path].comments)
 						}
 						state.loading_path = false
 					})

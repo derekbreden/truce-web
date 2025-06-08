@@ -289,11 +289,13 @@ const getMoreRecent = () => {
 					(c) => new_ids.indexOf(c.comment_id) === -1,
 				)
 				current_cache.comments.push(...data.comments)
-				renderComments(current_cache.comments)
+				renderReplies(current_cache.comments)
 
 				// Flash any newly added items
 				data.comments.forEach((comment) => {
-					comment.$comment.setAttribute("flash-long-focus", "")
+					if (comment.$reply) {
+						comment.$reply.setAttribute("flash-long-focus", "")
+					}
 				})
 			}
 
@@ -304,7 +306,7 @@ const getMoreRecent = () => {
 					(a) => new_ids.indexOf(a.topic_id) === -1,
 				)
 				current_cache.topics.unshift(...data.topics)
-				renderTopics(
+				renderPosts(
 					current_cache.topics,
 					current_cache.tag,
 					current_cache.user,
@@ -312,7 +314,9 @@ const getMoreRecent = () => {
 
 				// Flash any newly added items
 				data.topics.forEach((topic) => {
-					topic.$topic.setAttribute("flash-long-focus", "")
+					if (topic.$post) {
+						topic.$post.setAttribute("flash-long-focus", "")
+					}
 				})
 			}
 
@@ -351,7 +355,7 @@ const getMoreRecent = () => {
 					)
 					const found_activity = current_cache.activities.find(
 						(activity) =>
-							activity.id === topic_count.topic_id && activity.type === "topic",
+							activity.id === topic_count.topic_id && activity.type === "post",
 					)
 
 					// Prepare the text for the markup
@@ -367,10 +371,10 @@ const getMoreRecent = () => {
 							topic_count.favorite_count
 
 						// Update the markup
-						;(found_topic || found_activity).$topic.$(
+						;(found_topic || found_activity).$post.$(
 							"[comments] p"
 						).innerText = comment_text
-						;(found_topic || found_activity).$topic.$(
+						;(found_topic || found_activity).$post.$(
 							"[favorites] p",
 						).innerText = favorite_text
 
@@ -382,8 +386,8 @@ const getMoreRecent = () => {
 							console.warn("FAVORITES WHY?")
 							;(found_topic || found_activity).poll_counts =
 								topic_count.poll_counts
-							;(found_topic || found_activity).$topic.replaceWith(
-								renderTopic(found_topic || found_activity),
+							;(found_topic || found_activity).$post.replaceWith(
+								renderPost(found_topic || found_activity),
 							)
 						}
 					}

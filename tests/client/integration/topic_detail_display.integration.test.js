@@ -47,8 +47,8 @@ const tests = {
 				display_name_index: 0,
 				has_more: false, // Important for renderTopics to know if "load more" should be shown
 			},
-			"/topic/test-topic-for-details": {
-				path: "/topic/test-topic-for-details",
+			"/post/test-topic-for-details": {
+				path: "/post/test-topic-for-details",
 				topics: [
 					{
 						// getSingleTopic returns data in "topics" array
@@ -125,7 +125,7 @@ const tests = {
 		// Wait for navigation and rendering to the detail page
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		const expectedTopicPath = "/topic/test-topic-for-details"
+		const expectedTopicPath = "/post/test-topic-for-details"
 		assertEquals(
 			expectedTopicPath,
 			state.path,

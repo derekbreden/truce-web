@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
 			const topic_counts = await req.client.query(
 				`
         SELECT
-          t.post_id,
+          t.post_id as topic_id,
           t.favorite_count,
           t.poll_counts,
           t.comment_count

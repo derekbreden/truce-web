@@ -1,23 +1,23 @@
-const showAddNewCommentButton = (root_index) => {
+const showAddNewReplyButton = (root_index) => {
 	const $add_new_button = $(
 		`
     p[add-new-comment]
-      button[alt] Reply to topic
+      button[alt] Reply to post
     `,
 	)
 	$add_new_button.on("click", ($event) => {
 		$event.preventDefault()
-		$add_new_button.replaceWith(showAddNewComment(null, null, root_index))
-		focusAddNewComment()
+		$add_new_button.replaceWith(showAddNewReply(null, null, root_index))
+		focusAddNewReply()
 	})
 	return $add_new_button
 }
-const showAddNewComment = (comment, parent_comment, root_index) => {
+const showAddNewReply = (reply, parent_reply, root_index) => {
 	const $add_new = $(
 		`
     add-new[comment]
       input[display-name][placeholder=Your name][maxlength=50][value=$2]
-      textarea[body][placeholder=Comment][rows=8][maxlength=8000] $3
+      textarea[body][placeholder=Reply][rows=8][maxlength=8000] $3
       title-wrapper
         label[image]
           icon
@@ -28,31 +28,31 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
     `,
 		[
 			$("icons icon[image] svg").cloneNode(true),
-			...(comment
-				? [state.display_name, comment.body, "Save changes"]
-				: parent_comment
+			...(reply
+				? [state.display_name, reply.body, "Save changes"]
+				: parent_reply
 					? [state.display_name, "", "Reply"]
-					: [state.display_name, "", "Add comment"]),
+					: [state.display_name, "", "Add reply"]),
 		],
 	)
-	if (comment) {
+	if (reply) {
 		$add_new.$("[cancel]").on("click", () => {
-			$add_new.replaceWith(comment.$comment)
+			$add_new.replaceWith(reply.$comment)
 			delete state.active_add_new_comment
 		})
-	} else if (parent_comment) {
+	} else if (parent_reply) {
 		$add_new.$("[cancel]").on("click", () => {
-			parent_comment.$comment.$(":scope > reply-wrapper").style.display = "flex"
+			parent_reply.$comment.$(":scope > reply-wrapper").style.display = "flex"
 			$add_new.remove()
 			delete state.active_add_new_comment
 		})
 	} else {
 		$add_new.$("[cancel]").on("click", () => {
-			$add_new.replaceWith(showAddNewCommentButton(root_index))
+			$add_new.replaceWith(showAddNewReplyButton(root_index))
 			delete state.active_add_new_comment
 		})
 	}
-	const addCommentError = (error) => {
+	const addReplyError = (error) => {
 		$add_new.appendChild(
 			$(
 				`
@@ -65,8 +65,8 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 
 	const pngs = []
 
-	if (comment?.image_uuids) {
-		const image_uuids = comment.image_uuids.split(",")
+	if (reply?.image_uuids) {
+		const image_uuids = reply.image_uuids.split(",")
 		for (const image_uuid of image_uuids) {
 			imageToPng("/image/" + image_uuid, (png) => {
 				pngs.push(png)
@@ -161,7 +161,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 		state.display_name = $add_new.$("[display-name]").value
 		$add_new.$("[display-name]").setAttribute("disabled", "")
 		if (!state.display_name) {
-			addCommentError("Please enter your name")
+			addReplyError("Please enter your name")
 			return
 		}
 		$add_new.appendChild(
@@ -182,7 +182,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 				$add_new.$("[display-name]")?.removeAttribute("disabled")
 				$add_new.$("info")?.remove()
 				if (data.error || !data.success) {
-					addCommentError(data.error || "Server error")
+					addReplyError(data.error || "Server error")
 					state.display_name = ""
 				} else {
 					updateDisplayName(data)
@@ -193,7 +193,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 			.catch(function (error) {
 				$add_new.$("[display-name]")?.removeAttribute("disabled")
 				$add_new.$("info")?.remove()
-				addCommentError("Network error")
+				addReplyError("Network error")
 			})
 	}
 	$add_new.$("[display-name]").on("blur", () => {
@@ -206,11 +206,11 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 			$add_new.$("[display-name]")?.value || state.display_name
 		const body = $add_new.$("[body]").value
 		if (!state.display_name) {
-			addCommentError("Please enter your name")
+			addReplyError("Please enter your name")
 			return
 		}
 		if (!body && !pngs.length) {
-			addCommentError("Please enter a comment")
+			addReplyError("Please enter a reply")
 			return
 		}
 		$add_new.appendChild(
@@ -231,11 +231,11 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 				display_name: state.display_name,
 				body,
 				pngs,
-				comment_id: comment ? comment.comment_id : undefined,
-				parent_comment_id: parent_comment
-					? parent_comment.comment_id
-					: comment && comment.parent_comment_id
-						? comment.parent_comment_id
+				comment_id: reply ? reply.comment_id : undefined,
+				parent_comment_id: parent_reply
+					? parent_reply.comment_id
+					: reply && reply.parent_comment_id
+						? reply.parent_comment_id
 						: undefined,
 			}),
 		})
@@ -247,7 +247,7 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 					$add_new.$("[display-name]")?.removeAttribute("disabled")
 					$add_new.$("[submit]").removeAttribute("disabled")
 					$add_new.$("[cancel]").removeAttribute("disabled")
-					addCommentError(data.error || "Server error")
+					addReplyError(data.error || "Server error")
 					return
 				}
 				delete state.active_add_new_comment
@@ -260,23 +260,23 @@ const showAddNewComment = (comment, parent_comment, root_index) => {
 				$add_new.$("[display-name]")?.removeAttribute("disabled")
 				$add_new.$("[submit]").removeAttribute("disabled")
 				$add_new.$("[cancel]").removeAttribute("disabled")
-				addCommentError("Network error")
+				addReplyError("Network error")
 			})
 	})
 	if (state.active_add_new_comment) {
 		state.active_add_new_comment.$("[cancel]").click()
 	}
 	state.active_add_new_comment = $add_new
-	if (comment) {
-		state.active_add_new_comment.is_edit = comment.comment_id
-	} else if (parent_comment) {
-		state.active_add_new_comment.is_reply = parent_comment.comment_id
+	if (reply) {
+		state.active_add_new_comment.is_edit = reply.comment_id
+	} else if (parent_reply) {
+		state.active_add_new_comment.is_reply = parent_reply.comment_id
 	} else {
 		state.active_add_new_comment[`is_root_${root_index}`] = true
 	}
 	return $add_new
 }
-const focusAddNewComment = () => {
+const focusAddNewReply = () => {
 	if (!state.display_name) {
 		state.active_add_new_comment.$("[display-name]").focus()
 	} else {

@@ -1,13 +1,13 @@
-const renderTopics = (topics, tag, user) => {
-	let skip_topics = false
+const renderPosts = (posts, tag, user) => {
+	let skip_posts = false
 	if (
 		state.path === "/settings" ||
 		(state.path.substr(0, 6) === "/user/" && state.path.split("/")[3]) ||
 		state.path === "/favorites" ||
 		state.path === "/notifications" ||
-		state.path.substr(0, 9) === "/comment/"
+		state.path.substr(0, 7) === "/reply/"
 	) {
-		skip_topics = true
+		skip_posts = true
 	}
 
 	beforeDomUpdate()
@@ -24,16 +24,16 @@ const renderTopics = (topics, tag, user) => {
 			),
 		)
 	}
-	const $topics = topics
+	const $posts = posts
 		.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-		.map(renderTopic)
+		.map(renderPost)
 
-	if (!skip_topics) {
+	if (!skip_posts) {
 		if (window.innerWidth > 1000 && state.path.substr(0, 5) === "/tag/") {
-			const $topics_1 = $topics.filter((x, i) => i % 2 === 0)
-			const $topics_2 = $topics.filter((x, i) => i % 2 === 1)
+			const $posts_1 = $posts.filter((x, i) => i % 2 === 0)
+			const $posts_2 = $posts.filter((x, i) => i % 2 === 1)
 			$("main-content-wrapper[active] main-content topics")?.replaceChildren(
-				...$topics_1,
+				...$posts_1,
 			)
 			$("main-content-wrapper[active] main-content-2").replaceChildren(
 				$(
@@ -43,9 +43,9 @@ const renderTopics = (topics, tag, user) => {
 				),
 			)
 			$("main-content-wrapper[active] main-content-2 topics").replaceChildren(
-				...$topics_2,
+				...$posts_2,
 			)
-			if ($topics.length === 0) {
+			if ($posts.length === 0) {
 				$("main-content-wrapper[active] main-content topics").appendChild(
 					$(
 						`
@@ -64,9 +64,9 @@ const renderTopics = (topics, tag, user) => {
 				),
 			)
 			$("main-content-wrapper[active] main-content-2 topics").replaceChildren(
-				...$topics,
+				...$posts,
 			)
-			if ($topics.length === 0) {
+			if ($posts.length === 0) {
 				$("main-content-wrapper[active] main-content-2 topics").appendChild(
 					$(
 						`
@@ -77,8 +77,8 @@ const renderTopics = (topics, tag, user) => {
 				)
 			}
 		} else {
-			$("main-content-wrapper[active] topics").replaceChildren(...$topics)
-			if ($topics.length === 0) {
+			$("main-content-wrapper[active] topics").replaceChildren(...$posts)
+			if ($posts.length === 0) {
 				$("main-content-wrapper[active] topics").appendChild(
 					$(
 						`
@@ -92,10 +92,10 @@ const renderTopics = (topics, tag, user) => {
 	}
 
 	if (state.active_add_new_topic?.is_edit) {
-		const topic = topics.find(
+		const post = posts.find(
 			(a) => a.topic_id === state.active_add_new_topic.is_edit,
 		)
-		topic.$topic.replaceWith(state.active_add_new_topic)
+		post.$topic.replaceWith(state.active_add_new_topic)
 	}
 
 	// User
@@ -187,7 +187,7 @@ const renderTopics = (topics, tag, user) => {
 	// Tag
 	if (state.path.substr(0, 5) === "/tag/") {
 		$("topic[tag]")?.remove()
-		if (topics.length === 0) {
+		if (posts.length === 0) {
 			$("main-content-wrapper[active] main-content topics").prepend(
 				$(
 					`
@@ -199,7 +199,7 @@ const renderTopics = (topics, tag, user) => {
 								tagname
 									name $3
 								subtitle $4
-						p There are no topics in this tag yet, head on over to the topics page to add one!
+						p There are no posts in this tag yet, head on over to the posts page to add one!
 					`,
 					[
 						tag.tag_name,
@@ -242,7 +242,7 @@ const renderTopics = (topics, tag, user) => {
 					`
 					back-forward-wrapper
 						back-wrapper[topics]
-							p Topics
+							p Posts
 						back-wrapper[comments]
 							p Replies
 						center-wrapper
@@ -259,7 +259,7 @@ const renderTopics = (topics, tag, user) => {
 					`
 					back-forward-wrapper
 						back-wrapper[topics]
-							p Topics
+							p Posts
 						back-wrapper[comments]
 							p Replies
 						back-wrapper[subscribers]
@@ -276,7 +276,7 @@ const renderTopics = (topics, tag, user) => {
 					`
 					back-forward-wrapper
 						back-wrapper[topics]
-							p Topics
+							p Posts
 						center-wrapper
 							span Replies
 						forward-wrapper[subscribers]
@@ -293,7 +293,7 @@ const renderTopics = (topics, tag, user) => {
 					`
 					back-forward-wrapper
 						center-wrapper
-							span Topics
+							span Posts
 						forward-wrapper[comments]
 							p Replies
 						forward-wrapper[subscribers]
@@ -332,16 +332,16 @@ const renderTopics = (topics, tag, user) => {
 		})
 	}
 
-	// Subscribed or all topics
+	// Subscribed or all posts
 	if (state.path === "/topics" && state.subscribed_to_users) {
 		$("main-content-wrapper[active] main-content-2 topics").prepend(
 			$(
 				`
 				back-forward-wrapper
 					center-wrapper
-						span Topics from subscriptions
+						span Posts from subscriptions
 					forward-wrapper
-						p All topics
+						p All posts
 						button[expand-right]
 				`,
 				[],
@@ -365,9 +365,9 @@ const renderTopics = (topics, tag, user) => {
 				back-forward-wrapper
 					back-wrapper
 						button[expand-left]
-						p Topics from subscriptions
+						p Posts from subscriptions
 					center-wrapper
-						span All topics
+						span All posts
 				`,
 				[],
 			),

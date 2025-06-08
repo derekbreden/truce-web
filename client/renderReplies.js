@@ -1,12 +1,12 @@
-const renderComments = (comments) => {
-	// Creates a $comment element on each comment in the array
-	comments.forEach(renderComment)
+const renderReplies = (replies) => {
+	// Creates a $reply element on each reply in the array
+	replies.forEach(renderReply)
 
-	// Attach the comment elements to each other in a hierarchy
-	comments.forEach((comment) => {
-		if (comment.parent_comment_id) {
-			const parent = comments.find(
-				(c) => c.comment_id === comment.parent_comment_id,
+	// Attach the reply elements to each other in a hierarchy
+	replies.forEach((reply) => {
+		if (reply.parent_comment_id) {
+			const parent = replies.find(
+				(c) => c.comment_id === reply.parent_comment_id,
 			)
 
 			// When all ancestors are an only child we act like a sibling instead of a child
@@ -16,46 +16,50 @@ const renderComments = (comments) => {
 			}
 			let found_siblings = false
 			while (!found_siblings && ancestor.parent_comment_id) {
-				const siblings = comments.filter(
+				const siblings = replies.filter(
 					(c) =>
 						c.parent_comment_id === ancestor.parent_comment_id &&
 						c.comment_id !== ancestor.comment_id,
 				)
 				if (siblings.length === 0) {
-					ancestor = comments.find(
+					ancestor = replies.find(
 						(c) => c.comment_id === ancestor.parent_comment_id,
 					)
 				} else {
 					siblings.forEach((sibling) => {
-						const $reply = sibling.$comment.$(":scope > reply-wrapper [reply]")
-						$reply.setAttribute("alt", "")
-						$reply.setAttribute("faint", "")
+						const $reply = sibling.$reply.$(":scope > reply-wrapper [reply]")
+						if ($reply) {
+							$reply.setAttribute("alt", "")
+							$reply.setAttribute("faint", "")
+						}
 					})
 					found_siblings = true
 				}
 			}
-			ancestor.$comment.appendChild(comment.$comment)
-			const $reply = parent.$comment.$(":scope > reply-wrapper [reply]")
-			$reply.setAttribute("alt", "")
-			$reply.setAttribute("faint", "")
+			ancestor.$reply.appendChild(reply.$reply)
+			const $reply = parent.$reply.$(":scope > reply-wrapper [reply]")
+			if ($reply) {
+				$reply.setAttribute("alt", "")
+				$reply.setAttribute("faint", "")
+			}
 		}
 	})
 
-	// Identify the root comments (threads) to be displayed
-	const $root_comments = comments
+	// Identify the root replies (threads) to be displayed
+	const $root_replies = replies
 		.filter((c) => !c.parent_comment_id)
 		.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 		.map((c) => {
-			c.$comment.comment_id = c.comment_id
-			return c.$comment
+			c.$reply.comment_id = c.comment_id
+			return c.$reply
 		})
 
 	// Collapse all the intermediates in each thread, if present
-	$root_comments.forEach(($root_comment) => {
-		const $child_comments = Array.from($root_comment.$("comment") || [])
-		if ($child_comments.length > 1) {
-			const $last_comment = $child_comments.pop()
-			const $original_parent = $last_comment.parentElement
+	$root_replies.forEach(($root_reply) => {
+		const $child_replies = Array.from($root_reply.$("comment") || [])
+		if ($child_replies.length > 1) {
+			const $last_reply = $child_replies.pop()
+			const $original_parent = $last_reply.parentElement
 
 			// Collapse button
 			const $collapse_button = $(
@@ -65,12 +69,12 @@ const renderComments = (comments) => {
 					p $1
 					button[expand-right]
 				`,
-				[`Hide ${$child_comments.length} comments`],
+				[`Hide ${$child_replies.length} replies`],
 			)
 			$collapse_button.on("click", () => {
 				// Track what is collapsed
 				const index = state.expanded_comment_ids.indexOf(
-					$root_comment.comment_id,
+					$root_reply.comment_id,
 				)
 				if (index !== -1) {
 					state.expanded_comment_ids.splice(index, 1)
@@ -81,16 +85,16 @@ const renderComments = (comments) => {
 				}
 
 				// Add and remove the buttons
-				$root_comment.$(":scope > reply-wrapper").after($expand_button)
+				$root_reply.$(":scope > reply-wrapper").after($expand_button)
 				$collapse_button.remove()
 
 				// Move last child to bottom of root
-				$root_comment.appendChild($last_comment)
+				$root_reply.appendChild($last_reply)
 
 				// Show intermediates
-				$child_comments.forEach(($child_comment) => {
-					$child_comment.style.display = "none"
-					$child_comment.$expand_button = $expand_button
+				$child_replies.forEach(($child_reply) => {
+					$child_reply.style.display = "none"
+					$child_reply.$expand_button = $expand_button
 				})
 			})
 
@@ -102,15 +106,15 @@ const renderComments = (comments) => {
 					p $1
 					button[expand-down]
 				`,
-				[`Show ${$child_comments.length} hidden comments`],
+				[`Show ${$child_replies.length} hidden replies`],
 			)
 			$expand_button.on("click", ($event) => {
 				// Track what is expanded
 				const index = state.expanded_comment_ids.indexOf(
-					$root_comment.comment_id,
+					$root_reply.comment_id,
 				)
 				if (index === -1) {
-					state.expanded_comment_ids.push($root_comment.comment_id)
+					state.expanded_comment_ids.push($root_reply.comment_id)
 					localStorage.setItem(
 						`${window.local_storage_key}:expanded_comment_ids`,
 						JSON.stringify(state.expanded_comment_ids),
@@ -118,34 +122,34 @@ const renderComments = (comments) => {
 				}
 
 				// Track for scroll position
-				const original_rect = $last_comment.getBoundingClientRect()
+				const original_rect = $last_reply.getBoundingClientRect()
 
 				// Add and remove the buttons
 				$expand_button.remove()
-				$root_comment.$(":scope > reply-wrapper").after($collapse_button)
+				$root_reply.$(":scope > reply-wrapper").after($collapse_button)
 
 				// Bring all the collapsed nodes back and flash them
-				$child_comments.forEach(($child_comment) => {
-					$child_comment.style.display = "flex"
+				$child_replies.forEach(($child_reply) => {
+					$child_reply.style.display = "flex"
 					if (!$event.detail?.skip_flash) {
-						$child_comment.setAttribute("flash-focus", "")
+						$child_reply.setAttribute("flash-focus", "")
 					}
 				})
 
 				// Slightly shift the last element horizontally after that flash finishes
 				// setTimeout(() => {
-				$original_parent.appendChild($last_comment)
+				$original_parent.appendChild($last_reply)
 				// }, 500)
 
-				// When they click down, keep scroll on the last comment
+				// When they click down, keep scroll on the last reply
 				if ($event.target?.hasAttribute("expand-down")) {
-					const final_rect = $last_comment.getBoundingClientRect()
+					const final_rect = $last_reply.getBoundingClientRect()
 					$("main-content-wrapper[active]").scrollTop =
 						$("main-content-wrapper[active]").scrollTop +
 						(final_rect.y - original_rect.y)
 				}
 			})
-			if (state.expanded_comment_ids.includes($root_comment.comment_id)) {
+			if (state.expanded_comment_ids.includes($root_reply.comment_id)) {
 				$expand_button.dispatchEvent(
 					new CustomEvent("click", { detail: { skip_flash: true } }),
 				)
@@ -157,10 +161,10 @@ const renderComments = (comments) => {
 
 	// Add each thread to the DOM
 	beforeDomUpdate()
-	const showCommentList = state.path.substr(0, 7) === "/topic/"
+	const showReplyList = state.path.substr(0, 6) === "/post/"
 	if (!$("main-content-wrapper[active] comments")) {
 		const target =
-			state.path.substr(0, 9) === "/comment/"
+			state.path.substr(0, 7) === "/reply/"
 				? "main-content-wrapper[active] main-content"
 				: "main-content-wrapper[active] main-content-2"
 		$(target).appendChild(
@@ -173,45 +177,45 @@ const renderComments = (comments) => {
 	}
 	$("main-content-wrapper[active] comments").replaceChildren(
 		...[
-			...(showCommentList
+			...(showReplyList
 				? [
 						state.active_add_new_comment?.is_root_1
 							? state.active_add_new_comment
-							: showAddNewCommentButton("1"),
+							: showAddNewReplyButton("1"),
 						$(
 							`
 							expand-wrapper[above-comments]
 								p $1
 							`,
 							[
-								comments.length +
-									(comments.length === 1 ? " comment" : " comments"),
+								replies.length +
+									(replies.length === 1 ? " reply" : " replies"),
 							],
 						),
 					]
 				: []),
-			...$root_comments,
-			...(showCommentList && $root_comments.length
+			...$root_replies,
+			...(showReplyList && $root_replies.length
 				? [
 						state.active_add_new_comment?.is_root_2
 							? state.active_add_new_comment
-							: showAddNewCommentButton("2"),
+							: showAddNewReplyButton("2"),
 					]
 				: []),
 		],
 	)
 	if (state.active_add_new_comment?.is_edit) {
-		const comment = comments.find(
+		const reply = replies.find(
 			(c) => c.comment_id === state.active_add_new_comment.is_edit,
 		)
-		comment.$comment.replaceWith(state.active_add_new_comment)
+		reply.$reply.replaceWith(state.active_add_new_comment)
 	}
 	if (state.active_add_new_comment?.is_reply) {
-		const comment = comments.find(
+		const reply = replies.find(
 			(c) => c.comment_id === state.active_add_new_comment.is_reply,
 		)
-		comment.$comment.$(":scope > reply-wrapper").style.display = "none"
-		comment.$comment
+		reply.$reply.$(":scope > reply-wrapper").style.display = "none"
+		reply.$reply
 			.$(":scope > reply-wrapper")
 			.after(state.active_add_new_comment)
 	}
@@ -224,27 +228,27 @@ const renderComments = (comments) => {
 	}
 	afterDomUpdate()
 
-	// Highlight a comment in a thread we've navigated to specifically
-	if (state.path.substr(0, 8) === "/comment") {
+	// Highlight a reply in a thread we've navigated to specifically
+	if (state.path.substr(0, 6) === "/reply") {
 		const comment_id = state.path.substr(9)
-		const comment = comments.find((c) => c.comment_id === comment_id)
-		if (comment.$comment.style.display === "none") {
-			comment.$comment.$expand_button.dispatchEvent(
+		const reply = replies.find((c) => c.comment_id === comment_id)
+		if (reply.$reply.style.display === "none") {
+			reply.$reply.$expand_button.dispatchEvent(
 				new CustomEvent("click", { detail: { skip_flash: true } }),
 			)
 		}
-		comment.$comment.setAttribute("flash-long-focus", "")
+		reply.$reply.setAttribute("flash-long-focus", "")
 		// Wait for slide in animation before scrolling
 		setTimeout(() => {
-			comment.$comment.scrollIntoView({ behavior: "smooth", block: "nearest" })
+			reply.$reply.scrollIntoView({ behavior: "smooth", block: "nearest" })
 		}, 250)
 		setTimeout(() => {
-			comment.$comment.removeAttribute("flash-long-focus")
+			reply.$reply.removeAttribute("flash-long-focus")
 		}, 2500)
 	}
 
-	// Only render a single comment thread as a thread
-	if (state.path.substr(0, 8) === "/comment") {
+	// Only render a single reply thread as a thread
+	if (state.path.substr(0, 6) === "/reply") {
 		$("main-content-wrapper[active] comments").setAttribute("thread", "")
 	} else {
 		$("main-content-wrapper[active] comments").removeAttribute("thread")

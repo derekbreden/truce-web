@@ -121,8 +121,8 @@ const tests = {
 				comments: [],
 				activities: [
 					{
-						// Topic activity fields
-						type: "topic",
+						// Post activity fields
+						type: "post",
 						slug: "test-activity-topic-1",
 						title: "Activity Topic Title 1",
 						body: "Body of activity topic 1",
@@ -142,12 +142,12 @@ const tests = {
 						image_uuids: null,
 					},
 					{
-						// Comment activity fields
-						type: "comment",
+						// Reply activity fields
+						type: "reply",
 						id: "activity-comment-1",
-						parent_topic_title: "Parent Topic for Comment Activity",
+						parent_topic_title: "Parent Topic for Reply Activity",
 						parent_topic_slug: "parent-topic-comment-activity",
-						body: "This is an activity for a new comment.",
+						body: "This is an activity for a new reply.",
 						user_slug: "activity-user-2",
 						display_name: "Activity User Two",
 						create_date: "2023-10-26T11:00:00Z", // Newer, so should appear first
@@ -201,37 +201,37 @@ const tests = {
 			"main-content-wrapper[active] main-content activities",
 		)
 
-		// Assertions for the comment activity (should appear first due to create_date)
-		const $commentActivity =
-			$activitiesContainer1WithData.$("activity[comment]")
+		// Assertions for the reply activity (should appear first due to create_date)
+		const $replyActivity =
+			$activitiesContainer1WithData.$("activity[reply]")
 		assertEquals(
 			true,
-			Boolean($commentActivity),
-			"Comment activity element should be present.",
+			Boolean($replyActivity),
+			"Reply activity element should be present.",
 		)
 
-		// renderActivities > renderCommentActivity > h2 for parent topic title
-		const $topicTitle = $commentActivity.$("h2")
+		// renderActivities > renderReplyActivity > h2 for parent topic title
+		const $topicTitle = $replyActivity.$("h2")
 		assertEquals(
-			"Parent Topic for Comment Activity",
+			"Parent Topic for Reply Activity",
 			$topicTitle?.innerText.trim(),
-			"Comment activity's parent topic title mismatch.",
+			"Reply activity's parent topic title mismatch.",
 		)
 
-		// renderActivities > renderCommentActivity > renderComment > p > span for body
-		const $commentBody = $commentActivity.$("comment p > span")
+		// renderActivities > renderReplyActivity > renderReply > p > span for body  
+		const $replyBody = $replyActivity.$("comment p > span")
 		assertEquals(
-			"This is an activity for a new comment.",
-			$commentBody?.innerText.trim(),
-			"Comment activity body text mismatch.",
+			"This is an activity for a new reply.",
+			$replyBody?.innerText.trim(),
+			"Reply activity body text mismatch.",
 		)
 
 		// Author
-		const $commentAuthor = $commentActivity.$("comment author span")
+		const $replyAuthor = $replyActivity.$("comment author span")
 		assertEquals(
 			"Activity User Two",
-			$commentAuthor?.innerText.trim(),
-			"Comment activity author name mismatch.",
+			$replyAuthor?.innerText.trim(),
+			"Reply activity author name mismatch.",
 		)
 
 		// Find the second activities container
@@ -239,24 +239,24 @@ const tests = {
 			"main-content-wrapper[active] main-content-2 activities",
 		)
 
-		// Assertions for the topic activity (should appear second)
-		const $topicActivity = $activitiesContainer2WithData.$("activity[topic]")
+		// Assertions for the post activity (should appear second)
+		const $postActivity = $activitiesContainer2WithData.$("activity[post]")
 
 		// Title
-		const $titleElement = $topicActivity.$("topic h2")
+		const $titleElement = $postActivity.$("topic h2")
 		const titleText = $titleElement.firstChild?.textContent?.trim()
 		assertEquals(
 			"Activity Topic Title 1",
 			titleText,
-			"Topic activity title text mismatch.",
+			"Post activity title text mismatch.",
 		)
 
 		// Author
-		const $author = $topicActivity.$("topic author span")
+		const $author = $postActivity.$("topic author span")
 		assertEquals(
 			"Activity User One",
 			$author?.innerText.trim(),
-			"Topic activity author name mismatch.",
+			"Post activity author name mismatch.",
 		)
 	},
 }

@@ -13,7 +13,7 @@ const tests = {
 	testGetSingleThreadWithComments: async () => {
 		// Setup mock request for comment thread path
 		const req = createMockRequest(
-			{ path: "/comment/comment-123" },
+			{ path: "/reply/comment-123" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { comments: [] }
@@ -79,7 +79,7 @@ const tests = {
 		
 		// Verify thread was loaded
 		assertEquals(
-			"/comment/comment-123",
+			"/reply/comment-123",
 			req.results.path,
 			"Path should be set in results."
 		)
@@ -163,7 +163,7 @@ const tests = {
 		// Setup mock request with date filtering
 		const req = createMockRequest(
 			{ 
-				path: "/comment/comment-123",
+				path: "/reply/comment-123",
 				min_comment_create_date: '2024-01-15T09:00:00Z'
 			},
 			{ user_id: 'user-456' }
@@ -203,7 +203,7 @@ const tests = {
 		
 		// Should handle date filtering
 		assertEquals(
-			"/comment/comment-123",
+			"/reply/comment-123",
 			req.results.path,
 			"Should set path with date filtering."
 		)
@@ -218,7 +218,7 @@ const tests = {
 		// Test that path is set when min_comment_create_date is provided, even if no comments
 		const req = createMockRequest(
 			{ 
-				path: "/comment/comment-123",
+				path: "/reply/comment-123",
 				min_comment_create_date: '2024-01-15T09:00:00Z'
 			},
 			{ user_id: 'user-456' }
@@ -237,7 +237,7 @@ const tests = {
 		
 		// Path should be set even when no comments due to min_comment_create_date
 		assertEquals(
-			"/comment/comment-123",
+			"/reply/comment-123",
 			req.results.path,
 			"Path should be set when min_comment_create_date provided."
 		)
@@ -298,7 +298,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest(
-			{ path: "/comment/comment-123" },
+			{ path: "/reply/comment-123" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { comments: [] }
@@ -369,7 +369,7 @@ const tests = {
 	testUserPermissions: async () => {
 		// Test edit permissions and favorited status
 		const req = createMockRequest(
-			{ path: "/comment/comment-123" },
+			{ path: "/reply/comment-123" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { comments: [] }
@@ -432,7 +432,7 @@ const tests = {
 	testGuestUserAccess: async () => {
 		// Test access without logged in user
 		const req = createMockRequest(
-			{ path: "/comment/comment-123" },
+			{ path: "/reply/comment-123" },
 			{ user_id: undefined }
 		)
 		req.results = { comments: [] }
@@ -482,7 +482,7 @@ const tests = {
 	testCommentFields: async () => {
 		// Test that all expected comment fields are present
 		const req = createMockRequest(
-			{ path: "/comment/comment-123" },
+			{ path: "/reply/comment-123" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { comments: [] }

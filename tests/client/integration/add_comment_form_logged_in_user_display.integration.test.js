@@ -57,8 +57,8 @@ const tests = {
 				has_more: false,
 				tag: null,
 			},
-			[`/topic/${mockTopic.slug}`]: {
-				path: `/topic/${mockTopic.slug}`,
+			[`/post/${mockTopic.slug}`]: {
+				path: `/post/${mockTopic.slug}`,
 				user_id: mockUser.user_id,
 				email: mockUser.email,
 				user_slug: mockUser.user_slug,
@@ -94,14 +94,14 @@ const tests = {
 		$topicLinkElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			`/topic/${mockTopic.slug}`,
+			`/post/${mockTopic.slug}`,
 			state.path,
-			`After clicking topic, path should be /topic/${mockTopic.slug}.`,
+			`After clicking topic, path should be /post/${mockTopic.slug}.`,
 		)
 		assertEquals(
 			mockUser.user_id,
 			state.user_id,
-			`state.user_id should be set from /topic/${mockTopic.slug} mock. Actual: ${state.user_id}`,
+			`state.user_id should be set from /post/${mockTopic.slug} mock. Actual: ${state.user_id}`,
 		)
 
 		// 4. Locate and click the "Reply to topic" button
@@ -132,16 +132,16 @@ const tests = {
 
 		const $bodyTextarea = $addNewCommentForm.$(`textarea[body]`)
 		assertEquals(
-			"Comment",
+			"Reply",
 			$bodyTextarea.getAttribute("placeholder"),
-			"Body textarea placeholder should be 'Comment'.",
+			"Body textarea placeholder should be 'Reply'.",
 		)
 
 		const $submitButton = $addNewCommentForm.$(`button[submit]`)
 		assertEquals(
-			"Add comment",
+			"Add reply",
 			$submitButton.innerText.trim(),
-			"Submit button text should be 'Add comment'.",
+			"Submit button text should be 'Add reply'.",
 		)
 
 		const $cancelButton = $addNewCommentForm.$(`button[alt][cancel]`)

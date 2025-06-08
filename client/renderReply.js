@@ -1,14 +1,14 @@
-const renderComment = (comment) => {
-	const note = comment.note || ""
+const renderReply = (reply) => {
+	const note = reply.note || ""
 	const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/gi, "")
 	const note_body = note.slice(note.indexOf(" ") + 1)
 
-	let $comment_body = markdownToElements(comment.body)
+	let $reply_body = markdownToElements(reply.body)
 	let characters_used = 0
 	let trimmed = false
 	if (state.path === "/favorites") {
 		let added = 0
-		$comment_body = $comment_body.reduce((acc, child) => {
+		$reply_body = $reply_body.reduce((acc, child) => {
 			characters_used += child.textContent.length
 			if (characters_used < 500 || !added) {
 				acc.push(child)
@@ -19,7 +19,7 @@ const renderComment = (comment) => {
 			return acc
 		}, [])
 		if (trimmed) {
-			$comment_body.push(
+			$reply_body.push(
 				$(
 					`
 					p ...
@@ -29,7 +29,7 @@ const renderComment = (comment) => {
 		}
 	}
 
-	let $comment = $(
+	let $reply = $(
 		`
 		comment
 			h3
@@ -45,17 +45,17 @@ const renderComment = (comment) => {
 			$8
 		`,
 		[
-			comment.user_slug,
-			comment.profile_picture_uuid
+			reply.user_slug,
+			reply.profile_picture_uuid
 				? $(
 						`
 						img[src=$1]
 						`,
-						["/image/" + comment.profile_picture_uuid],
+						["/image/" + reply.profile_picture_uuid],
 					)
 				: $("icons icon[profile-picture] svg").cloneNode(true),
-			renderName(comment.display_name, comment.display_name_index),
-			comment.user_verified
+			renderName(reply.display_name, reply.display_name_index),
+			reply.user_verified
 				? $(
 						`
 						icon
@@ -71,8 +71,8 @@ const renderComment = (comment) => {
 				`,
 				[$("icons icon[more] svg").cloneNode(true)],
 			),
-			$comment_body,
-			comment.note
+			$reply_body,
+			reply.note
 				? $(
 						`
 						info-wrapper
@@ -96,39 +96,39 @@ const renderComment = (comment) => {
 					button[small][reply] Reply
 				`,
 				[
-					comment.favorited,
-					comment.favorited
+					reply.favorited,
+					reply.favorited
 						? $("icons icon[favorited] svg").cloneNode(true)
 						: $("footer icon[favorites] svg").cloneNode(true),
-					comment.favorite_count,
+					reply.favorite_count,
 					$("icons icon[forward] svg").cloneNode(true),
 				],
 			),
 		],
 	)
 	if (!trimmed) {
-		$comment.$("detail[more]")?.remove()
+		$reply.$("detail[more]")?.remove()
 	}
 	if (state.path === "/favorites") {
-		$comment.setAttribute("trimmed", "")
+		$reply.setAttribute("trimmed", "")
 	}
-	$comment.$("author").forEach(($author) => {
+	$reply.$("author").forEach(($author) => {
 		$author.on("click", ($event) => {
 			$event.stopPropagation()
 			const slug = $author.getAttribute("slug")
 			goToPath(`/user/${slug}`)
 		})
 	})
-	$comment.$("detail[favorites]").on("click", ($event) => {
+	$reply.$("detail[favorites]").on("click", ($event) => {
 		$event.stopPropagation()
-		toggleFavorite(comment)
+		toggleFavorite(reply)
 	})
-	$comment.$("[reply]").on("click", () => {
-		$comment.$(":scope > reply-wrapper").style.display = "none"
-		$comment.$(":scope > reply-wrapper").after(showAddNewComment(null, comment))
-		focusAddNewComment()
+	$reply.$("[reply]").on("click", () => {
+		$reply.$(":scope > reply-wrapper").style.display = "none"
+		$reply.$(":scope > reply-wrapper").after(showAddNewReply(null, reply))
+		focusAddNewReply()
 	})
-	$comment.$("icon[more]").on("click", ($event) => {
+	$reply.$("icon[more]").on("click", ($event) => {
 		$event.preventDefault()
 		$event.stopPropagation()
 		const $more_modal = $(
@@ -142,7 +142,7 @@ const renderComment = (comment) => {
 					action[flag]
 						icon[flag]
 							$2
-						p Flag comment
+						p Flag reply
 					action[block]
 						icon[block]
 							$3
@@ -166,12 +166,12 @@ const renderComment = (comment) => {
 		}
 		$more_modal.$("[cancel]").on("click", moreModalCancel)
 		$more_modal.$("modal-bg").on("click", moreModalCancel)
-		if (comment.edit) {
+		if (reply.edit) {
 			$more_modal.$("action[edit]").on("click", ($event) => {
 				$event.preventDefault()
 				moreModalCancel()
-				$comment.replaceWith(showAddNewComment(comment))
-				focusAddNewComment()
+				$reply.replaceWith(showAddNewReply(reply))
+				focusAddNewReply()
 			})
 			$more_modal.$("action[block]").remove()
 			if (state.path === "/favorites") {
@@ -195,7 +195,7 @@ const renderComment = (comment) => {
 						[$("icons icon[block] svg").cloneNode(true)],
 					),
 					() => {
-						markBlocked(comment)
+						markBlocked(reply)
 					},
 				)
 			})
@@ -209,22 +209,22 @@ const renderComment = (comment) => {
 					h2
 						icon
 							$1
-						span Flag comment - are you sure?
-					p This will hide this comment for everyone.
+						span Flag reply - are you sure?
+					p This will hide this reply for everyone.
 					p This action cannot be undone.
 					`,
 					[$("icons icon[flag] svg").cloneNode(true)],
 				),
 				() => {
-					markFlagged(comment)
+					markFlagged(reply)
 				},
 			)
 		})
 		$("modal-wrapper")?.remove()
 		$("body").appendChild($more_modal)
 	})
-	if (comment.image_uuids) {
-		const image_uuids = comment.image_uuids.split(",").reverse()
+	if (reply.image_uuids) {
+		const image_uuids = reply.image_uuids.split(",").reverse()
 		for (const image_uuid of image_uuids) {
 			const $image = $(
 				`
@@ -234,9 +234,9 @@ const renderComment = (comment) => {
 				["/image/" + image_uuid],
 			)
 			bindImageClick($image, image_uuid)
-			$comment.$("h3").after($image)
+			$reply.$("h3").after($image)
 		}
 	}
-	comment.$comment = $comment
-	return $comment
+	reply.$reply = $reply
+	return $reply
 }

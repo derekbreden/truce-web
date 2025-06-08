@@ -56,8 +56,8 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/topic/test-topic-for-comment": {
-				path: "/topic/test-topic-for-comment",
+			"/post/test-topic-for-comment": {
+				path: "/post/test-topic-for-comment",
 				topics: [
 					{
 						slug: "test-topic-for-comment",
@@ -131,7 +131,7 @@ const tests = {
 			match: (url, options) => {
 				if (url === "/session" && options?.method === "POST") {
 					const body = JSON.parse(options.body)
-					if (body.path === "/topic/test-topic-for-comment" && 
+					if (body.path === "/post/test-topic-for-comment" && 
 						(body.min_create_date !== undefined || body.min_comment_create_date !== undefined)) {
 						// This is getMoreRecent fetching updates
 						getMoreRecentCalled = true
@@ -141,7 +141,7 @@ const tests = {
 				return false
 			},
 			response: {
-				path: "/topic/test-topic-for-comment",
+				path: "/post/test-topic-for-comment",
 				topics: [], // No new topics
 				comments: [
 					{
@@ -191,9 +191,9 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topic/test-topic-for-comment",
+			"/post/test-topic-for-comment",
 			state.path,
-			"Path should be /topic/test-topic-for-comment after clicking the topic.",
+			"Path should be /post/test-topic-for-comment after clicking the topic.",
 		)
 
 		// 3. Verify initial state - no comments
@@ -204,12 +204,12 @@ const tests = {
 			"Initially, there should be no comments.",
 		)
 
-		// 4. Click the "Reply to topic" button to open comment form
+		// 4. Click the "Reply to post" button to open comment form
 		const $replyButton = $("p[add-new-comment] button")
 		assertEquals(
-			"Reply to topic",
+			"Reply to post",
 			$replyButton.innerText.trim(),
-			"Button should say 'Reply to topic'.",
+			"Button should say 'Reply to post'.",
 		)
 
 		$replyButton.click()
@@ -286,7 +286,7 @@ const tests = {
 			"Submitted display name should match user's name.",
 		)
 		assertEquals(
-			"/topic/test-topic-for-comment",
+			"/post/test-topic-for-comment",
 			submittedCommentData.path,
 			"Submitted path should match current topic path.",
 		)

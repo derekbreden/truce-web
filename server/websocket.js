@@ -23,26 +23,26 @@ module.exports = {
 						try {
 							client = await pool.pool.connect()
 
-							if (message.path.substr(0, 7) === "/topic/") {
+							if (message.path.substr(0, 7) === "/topic/" || message.path.substr(0, 6) === "/post/") {
 								const topic = await client.query(
 									`
                     SELECT post_id
                     FROM posts
                     WHERE slug = $1
                   `,
-									[message.path.substr(7)],
+									[message.path.substr(0, 7) === "/topic/" ? message.path.substr(7) : message.path.substr(6)],
 								)
 								this.ws_active[ws_uuid].active_post_id = topic.rows.length
 									? topic.rows[0].post_id
 									: false
-							} else if (message.path.substr(0, 9) === "/comment/") {
+							} else if (message.path.substr(0, 9) === "/comment/" || message.path.substr(0, 7) === "/reply/") {
 								const comment = await client.query(
 									`
                     SELECT parent_post_id
                     FROM replies
-                    WHERE comment_id = $1
+                    WHERE reply_id = $1
                   `,
-									[message.path.substr(9)],
+									[message.path.substr(0, 9) === "/comment/" ? message.path.substr(9) : message.path.substr(7)],
 								)
 								this.ws_active[ws_uuid].active_post_id = comment.rows.length
 									? comment.rows[0].parent_post_id

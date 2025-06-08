@@ -14,11 +14,11 @@ const renderPage = (data) => {
 	// Render Users
 	renderUsers(data.users)
 
-	// Render Topics
-	renderTopics(data.topics, data.tag, data.user)
+	// Render Posts
+	renderPosts(data.topics, data.tag, data.user)
 
-	// Render Comments
-	renderComments(data.comments)
+	// Render Replies
+	renderReplies(data.comments)
 
 	// Render Activities
 	renderActivities(data.activities)
@@ -32,7 +32,7 @@ const renderPage = (data) => {
 	// Render Tags
 	renderTags(data.tags)
 
-	// Render Forward Button on comment thread
+	// Render Forward Button on reply thread
 	renderForward(data.parent_topic)
 
 	// Render Mark all as read on notifications

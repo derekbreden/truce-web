@@ -13,7 +13,7 @@ const tests = {
 	testGetSingleTopicWithComments: async () => {
 		// Setup mock request for topic path
 		const req = createMockRequest(
-			{ path: "/topic/sample-topic-slug" },
+			{ path: "/post/sample-topic-slug" },
 			{ user_id: 'user-456' }
 		)
 		req.results = { topics: [], comments: [] }
@@ -111,7 +111,7 @@ const tests = {
 		
 		// Verify topic was loaded
 		assertEquals(
-			"/topic/sample-topic-slug",
+			"/post/sample-topic-slug",
 			req.results.path,
 			"Path should be set in results."
 		)
@@ -168,7 +168,7 @@ const tests = {
 		// Test when max_comment_create_date is provided (skips topic loading)
 		const req = createMockRequest(
 			{ 
-				path: "/topic/sample-topic-slug",
+				path: "/post/sample-topic-slug",
 				max_comment_create_date: '2024-01-15T12:00:00Z'
 			},
 			{ user_id: 'user-456' }
@@ -197,7 +197,7 @@ const tests = {
 		
 		// Should set path but not load topic details
 		assertEquals(
-			"/topic/sample-topic-slug",
+			"/post/sample-topic-slug",
 			req.results.path,
 			"Path should be set."
 		)

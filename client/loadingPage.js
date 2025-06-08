@@ -38,7 +38,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				"main-content-wrapper[active] main-content > add-new:first-child",
 			)?.remove()
-			$("main-content-wrapper[active] main-content").prepend(showAddNewTopic())
+			$("main-content-wrapper[active] main-content").prepend(showAddNewPost())
 		}
 	}
 

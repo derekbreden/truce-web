@@ -3,7 +3,7 @@ module.exports = async (req, res) => {
 		!res.writableEnded &&
 		((req.body.path === "/favorites" && req.session.user_id) ||
 			(req.body.path?.substr(0, 6) === "/user/" &&
-				req.body.path?.split("/")[3] === "comments"))
+				(req.body.path?.split("/")[3] === "comments" || req.body.path?.split("/")[3] === "replies")))
 	) {
 		req.results.path = req.body.path
 		const activity_results = await req.client.query(
@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
           c.image_uuids,
           FALSE as commented,
           FALSE as voted,
-          'comment' AS type,
+          'reply' AS type,
           '' AS tags
         FROM replies c
         LEFT JOIN favorite_replies fc ON c.reply_id = fc.reply_id AND fc.user_id = $1
@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
               AND c.user_id = $1
           ) THEN TRUE ELSE FALSE END as commented,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
-          'topic' AS type,
+          'post' AS type,
           (
             SELECT STRING_AGG(ts.tag_name, ',')
             FROM post_tags tt

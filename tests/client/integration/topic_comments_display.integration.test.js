@@ -41,8 +41,8 @@ const tests = {
 				tag: {},
 				subscribed_to_users: 0,
 			},
-			"/topic/test-comments-topic": {
-				path: "/topic/test-comments-topic",
+			"/post/test-comments-topic": {
+				path: "/post/test-comments-topic",
 				topics: [
 					{
 						slug: "test-comments-topic",
@@ -120,7 +120,7 @@ const tests = {
 		$topicLink.click()
 		await new Promise((resolve) => setTimeout(resolve, 0)) // Wait for DOM update
 		assertEquals(
-			"/topic/test-comments-topic",
+			"/post/test-comments-topic",
 			state.path,
 			"Clicking topic link should navigate to topic detail page.",
 		)

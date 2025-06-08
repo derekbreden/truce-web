@@ -2,9 +2,9 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		req.body.path.substr(0, 9) === "/comment/"
+		(req.body.path.substr(0, 9) === "/comment/" || req.body.path.substr(0, 7) === "/reply/")
 	) {
-		const comment_id = req.body.path.substr(9)
+		const comment_id = req.body.path.substr(0, 9) === "/comment/" ? req.body.path.substr(9) : req.body.path.substr(7)
 		const comment_results = await req.client.query(
 			`
       WITH root_comment AS (
@@ -86,14 +86,14 @@ module.exports = async (req, res) => {
 				title: topic_result.rows[0].title,
 				slug: topic_result.rows[0].slug,
 			}
-			req.results.path = `/comment/${comment_id}`
+			req.results.path = `/reply/${comment_id}`
 			req.results.comments.push(...comment_results.rows)
 		}
 
 		// We set path there to ensure the path goes to a default if there are no results
 		// But, now that we are checking for most recent, the path is also good if a min_comment_create_date was passed
 		if (req.body.min_comment_create_date) {
-			req.results.path = `/comment/${comment_id}`
+			req.results.path = `/reply/${comment_id}`
 		}
 	}
 }

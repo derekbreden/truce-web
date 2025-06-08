@@ -47,8 +47,8 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/topic/test-topic-with-images": {
-				path: "/topic/test-topic-with-images",
+			"/post/test-topic-with-images": {
+				path: "/post/test-topic-with-images",
 				topics: [
 					{
 						slug: "test-topic-with-images",
@@ -110,9 +110,9 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/topic/test-topic-with-images",
+			"/post/test-topic-with-images",
 			state.path,
-			"Path should be /topic/test-topic-with-images after clicking the topic.",
+			"Path should be /post/test-topic-with-images after clicking the topic.",
 		)
 
 		// 3. Verify images are rendered in the topic detail page

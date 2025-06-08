@@ -14,7 +14,7 @@ const renderActivities = (activities) => {
 						p[favorites-empty]
 							span When you tap the favorite icon
 							$2
-							span on a topic or comment, it will display here.
+							span on a post or reply, it will display here.
 					`,
 					[
 						$("footer icon[favorites] svg").cloneNode(true),
@@ -35,7 +35,7 @@ const renderActivities = (activities) => {
 						p[favorites-empty]
 							span When you tap the favorite icon
 							$2
-							span on a topic or comment, it will display here.
+							span on a post or reply, it will display here.
 					`,
 					[
 						$("footer icon[favorites] svg").cloneNode(true),
@@ -67,7 +67,7 @@ const renderActivities = (activities) => {
 			),
 		)
 	}
-	const comment_ids_rendered = []
+	const reply_ids_rendered = []
 	const $activities = activities
 		.sort(
 			(a, b) =>
@@ -75,31 +75,31 @@ const renderActivities = (activities) => {
 				new Date(a.favorite_create_date || a.create_date),
 		)
 		.filter((activity) => {
-			if (activity.type === "comment") {
+			if (activity.type === "reply") {
 				if (
-					comment_ids_rendered.includes(activity.id) &&
+					reply_ids_rendered.includes(activity.id) &&
 					state.path !== "/favorites"
 				) {
 					return false
 				}
-				comment_ids_rendered.push(activity.id)
-				comment_ids_rendered.push(activity.parent_comment_id)
+				reply_ids_rendered.push(activity.id)
+				reply_ids_rendered.push(activity.parent_comment_id)
 			}
 			if (state.version > 1) {
 			} else {
-				if (activity.type === "topic" && activity.poll_1) {
+				if (activity.type === "post" && activity.poll_1) {
 					return false
 				}
 			}
 			return true
 		})
 		.map((activity) => {
-			if (activity.type === "comment") {
-				const $comment = renderComment(activity)
-				$comment.$("reply-wrapper button")?.remove()
-				let $comment_wrapper = $comment
+			if (activity.type === "reply") {
+				const $reply = renderReply(activity)
+				$reply.$("reply-wrapper button")?.remove()
+				let $reply_wrapper = $reply
 				if (activity.parent_comment_body) {
-					const parent_comment = {
+					const parent_reply = {
 						display_name: activity.parent_comment_display_name,
 						display_name_index: activity.parent_comment_display_name_index,
 						user_slug: activity.parent_comment_user_slug,
@@ -107,36 +107,36 @@ const renderActivities = (activities) => {
 						body: activity.parent_comment_body,
 						note: activity.parent_comment_note,
 					}
-					const $parent_comment = renderComment(parent_comment)
-					$parent_comment.setAttribute("parent-comment", "")
-					$parent_comment.$("reply-wrapper")?.remove()
-					$parent_comment.appendChild($comment)
-					$comment_wrapper = $parent_comment
+					const $parent_reply = renderReply(parent_reply)
+					$parent_reply.setAttribute("parent-comment", "")
+					$parent_reply.$("reply-wrapper")?.remove()
+					$parent_reply.appendChild($reply)
+					$reply_wrapper = $parent_reply
 				}
 				const $activity = $(
 					`
-						activity[comment]
+						activity[reply]
 							h2 $1
 							$2
 					`,
-					[activity.parent_topic_title, $comment_wrapper],
+					[activity.parent_topic_title, $reply_wrapper],
 				)
 				$activity.on("click", ($event) => {
 					if ($event.target.tagName !== "A") {
 						$event.preventDefault()
-						goToPath("/comment/" + activity.id)
+						goToPath("/reply/" + activity.id)
 					}
 				})
 				activity.$activity = $activity
 				return $activity
 			} else {
-				const $topic = renderTopic(activity)
+				const $post = renderPost(activity)
 				const $activity = $(
 					`
-						activity[topic]
+						activity[post]
 							$1
 					`,
-					[$topic],
+					[$post],
 				)
 				activity.$activity = $activity
 				return $activity
@@ -153,7 +153,7 @@ const renderActivities = (activities) => {
 		)?.replaceChildren(...$activities_2)
 	} else if (
 		state.path.substr(0, 5) === "/user" &&
-		state.path.split("/")[3] === "comments"
+		state.path.split("/")[3] === "replies"
 	) {
 		$("main-content-wrapper[active] main-content-2 activities").replaceChildren(
 			$(

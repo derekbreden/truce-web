@@ -55,46 +55,51 @@ const toggleFavorite = async (topic_or_comment) => {
 	})
 
 	// Update the current DOM
-	if (topic_or_comment.favorited) {
-		;(topic_or_comment.$topic || topic_or_comment.$comment)
-			.$(":scope > [detail-wrapper] detail[favorites]")
-			.setAttribute("favorited", "")
-	} else {
-		;(topic_or_comment.$topic || topic_or_comment.$comment)
-			.$(":scope > [detail-wrapper] detail[favorites]")
-			.removeAttribute("favorited")
+	const $element = topic_or_comment.$post || topic_or_comment.$reply
+	if ($element) {
+		const $favoritesDetail = $element.$(":scope > [detail-wrapper] detail[favorites]")
+		if ($favoritesDetail) {
+			if (topic_or_comment.favorited) {
+				$favoritesDetail.setAttribute("favorited", "")
+			} else {
+				$favoritesDetail.removeAttribute("favorited")
+			}
+		}
+		const $favoritesSvg = $element.$(":scope > [detail-wrapper] detail[favorites] svg")
+		if ($favoritesSvg) {
+			$favoritesSvg.replaceWith(
+				topic_or_comment.favorited
+					? $("icons icon[favorited] svg").cloneNode(true)
+					: $("footer icon[favorites] svg").cloneNode(true),
+			)
+		}
+		const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
+		if ($favoritesP) {
+			$favoritesP.replaceWith(
+				$(
+					`
+				p $1
+				`,
+					[topic_or_comment.favorite_count],
+				),
+			)
+		}
 	}
-	;(topic_or_comment.$topic || topic_or_comment.$comment)
-		.$(":scope > [detail-wrapper] detail[favorites] svg")
-		.replaceWith(
-			topic_or_comment.favorited
-				? $("icons icon[favorited] svg").cloneNode(true)
-				: $("footer icon[favorites] svg").cloneNode(true),
-		)(topic_or_comment.$topic || topic_or_comment.$comment)
-		.$(":scope > [detail-wrapper] detail[favorites] p")
-		.replaceWith(
-			$(
-				`
-			p $1
-			`,
-				[topic_or_comment.favorite_count],
-			),
-		)
 
 	// Alert the user to the change
 	if (was_favorited) {
-		if (topic_or_comment.$topic) {
-			alertInfo("Topic removed from your favorites")
+		if (topic_or_comment.$post) {
+			alertInfo("Post removed from your favorites")
 		}
-		if (topic_or_comment.$comment) {
-			alertInfo("Comment removed from your favorites")
+		if (topic_or_comment.$reply) {
+			alertInfo("Reply removed from your favorites")
 		}
 	} else {
-		if (topic_or_comment.$topic) {
-			alertInfo("Topic added to your favorites")
+		if (topic_or_comment.$post) {
+			alertInfo("Post added to your favorites")
 		}
-		if (topic_or_comment.$comment) {
-			alertInfo("Comment added to your favorites")
+		if (topic_or_comment.$reply) {
+			alertInfo("Reply added to your favorites")
 		}
 	}
 
