@@ -105,6 +105,7 @@ module.exports = async (req, res) => {
 				posts: [],
 				replies: [],
 				activities: [],
+				notifications: [],
 				path: `/messages/${conversation_id}`,
 			}),
 		)

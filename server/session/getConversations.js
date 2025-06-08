@@ -91,6 +91,10 @@ module.exports = async (req, res) => {
 				success: true,
 				conversations: conversations_result.rows,
 				total_unread: parseInt(total_unread_result.rows[0].total_unread),
+				posts: [],
+				replies: [],
+				activities: [],
+				notifications: [],
 				path: "/conversations",
 			}),
 		)
