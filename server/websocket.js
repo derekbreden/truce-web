@@ -50,13 +50,11 @@ module.exports = {
                   `,
 									[message.path.split("/")[2]],
 								)
+								this.clearConnectionProperties(ws_uuid)
 								if (this.ws_active[ws_uuid]) {
 									this.ws_active[ws_uuid].active_post_id = post.rows.length
 										? post.rows[0].post_id
 										: false
-								}
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_conversation_id
 								}
 							} else if (message.path.startsWith("/reply/")) {
 								const reply = await client.query(
@@ -67,13 +65,11 @@ module.exports = {
                   `,
 									[message.path.split("/")[2]],
 								)
+								this.clearConnectionProperties(ws_uuid)
 								if (this.ws_active[ws_uuid]) {
 									this.ws_active[ws_uuid].active_post_id = reply.rows.length
 										? reply.rows[0].parent_post_id
 										: false
-								}
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_conversation_id
 								}
 							} else if (message.path.startsWith("/messages/")) {
 								// Handle conversation tracking for messaging
@@ -95,37 +91,17 @@ module.exports = {
 									}
 								}
 								if (this.ws_active[ws_uuid]) {
-									if (this.ws_active[ws_uuid]) {
-										if (this.ws_active[ws_uuid]) {
 									delete this.ws_active[ws_uuid].active_post_id
-								}
-									}
 								}
 							} else if (message.path === "/conversations") {
-								// User is viewing conversations list
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_post_id
-								}
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_conversation_id
-								}
+								this.clearConnectionProperties(ws_uuid)
 							} else {
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_post_id
-								}
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_conversation_id
-								}
+								this.clearConnectionProperties(ws_uuid)
 							}
 						} catch (err) {
 							console.error("Websocket error", err)
 							try {
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_post_id
-								}
-								if (this.ws_active[ws_uuid]) {
-									delete this.ws_active[ws_uuid].active_conversation_id
-								}
+								this.clearConnectionProperties(ws_uuid)
 							} catch (err) {
 								console.error("Websocket error deleting", err)
 							}
