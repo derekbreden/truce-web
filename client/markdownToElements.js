@@ -237,30 +237,6 @@ const markdownToElements = (text) => {
 			)
 		}
 
-		// If after all processing, p_element has no children AND original_p_content_for_spans was not empty
-		// (e.g. it was just "---" which results in empty p_content, or just an image/link which is directly returned by some paths)
-		// then append an empty span to ensure the <p> topic is not entirely empty, if original content wasn't empty.
-		// This handles cases like "---" which results in p_content = "" and no inserts.
-		// Or if original_p_content_for_spans was just an image/link that got processed into an insert, and no surrounding text.
-		if (
-			p_element.children.length === 0 &&
-			original_p_content_for_spans.length > 0 &&
-			!p_element.getAttributeNames().includes("hr")
-		) {
-			//This condition might be too broad. Let's re-evaluate.
-			//The original code only added spans if there was text. If all content is consumed by inserts and results in no text part, it should be fine.
-			//The HR case (p_content="") is handled.
-			//If the p_content becomes empty due to attribute processing (e.g. bold, italic), it should still append span of that empty content.
-		}
-
-		// Final check: if p_element is still empty and original_p_content_for_spans was non-empty
-		// (and not a special case like list that returns ul/ol directly, or mp3)
-		// this implies the content was entirely consumed by formatting attributes (e.g. "**bold**" -> p_content="bold")
-		// and no inserts happened. In this case, the original_p_content_for_spans (after attribute stripping) should be the content.
-		// This is implicitly handled by the logic: if inserts is empty, current_offset_in_original remains 0.
-		// remaining_text_after_all_inserts becomes original_p_content_for_spans.
-		// So if original_p_content_for_spans is "bold text" (after "**" stripped), it will be appended in a span.
-		// If original_p_content_for_spans was "" (like for "---"), it won't append. This is correct.
 
 		return p_element
 	})
