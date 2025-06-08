@@ -27,16 +27,8 @@ const tests = {
 		await createSessionIfNotExists(req, res)
 		
 		// Verify session was created
-		assertEquals(
-			'string',
-			typeof req.session.session_uuid,
-			"Session UUID should be generated."
-		)
-		assertEquals(
-			true,
-			req.session.session_uuid.length > 0,
-			"Session UUID should not be empty."
-		)
+		assertEquals('string', typeof req.session.session_uuid, "Session UUID should be generated")
+		assertEquals(true, req.session.session_uuid.length > 0, "Session UUID should not be empty")
 		assertEquals(
 			'new-session-123',
 			req.session.session_id,
@@ -69,16 +61,8 @@ const tests = {
 		await createSessionIfNotExists(req, res)
 		
 		// Verify new session was created despite existing one
-		assertEquals(
-			'string',
-			typeof req.session.session_uuid,
-			"New session UUID should be generated."
-		)
-		assertEquals(
-			false,
-			req.session.session_uuid === originalUuid,
-			"Session UUID should be different from original."
-		)
+		assertEquals('string', typeof req.session.session_uuid, "New session UUID should be generated")
+		assertEquals(false, req.session.session_uuid === originalUuid, "Session UUID should be different from original")
 		assertEquals(
 			'logout-session-456',
 			req.session.session_id,
@@ -158,33 +142,11 @@ const tests = {
 		// Execute the handler
 		await createSessionIfNotExists(req, res)
 		
-		// Verify Set-Cookie header
-		const headers = res.getHeaders()
-		assertEquals(
-			true,
-			headers['Set-Cookie'] !== undefined,
-			"Set-Cookie header should be set."
-		)
-		assertEquals(
-			true,
-			headers['Set-Cookie'].includes(req.session.session_uuid),
-			"Set-Cookie should contain the session UUID."
-		)
-		assertEquals(
-			true,
-			headers['Set-Cookie'].includes('HttpOnly'),
-			"Set-Cookie should include HttpOnly flag."
-		)
-		assertEquals(
-			true,
-			headers['Set-Cookie'].includes('Secure'),
-			"Set-Cookie should include Secure flag."
-		)
-		assertEquals(
-			true,
-			headers['Set-Cookie'].includes('Path=/session'),
-			"Set-Cookie should include correct path."
-		)
+		const cookie = res.getHeaders()['Set-Cookie']
+		assertEquals(true, cookie.includes(req.session.session_uuid), "Should contain session UUID")
+		assertEquals(true, cookie.includes('HttpOnly'), "Should be HttpOnly")
+		assertEquals(true, cookie.includes('Secure'), "Should be Secure")
+		assertEquals(true, cookie.includes('Path=/session'), "Should have correct path")
 	},
 
 	testUuidFormat: async () => {
@@ -202,13 +164,8 @@ const tests = {
 		// Execute the handler
 		await createSessionIfNotExists(req, res)
 		
-		// Verify UUID format (should be standard UUID v4 format)
 		const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-		assertEquals(
-			true,
-			uuidRegex.test(req.session.session_uuid),
-			"Generated UUID should follow standard UUID v4 format."
-		)
+		assertEquals(true, uuidRegex.test(req.session.session_uuid), "Should follow UUID v4 format")
 	},
 
 	testMultipleSessionCreations: async () => {
@@ -264,12 +221,7 @@ const tests = {
 			// Execute the handler
 			await createSessionIfNotExists(req, res)
 			
-			// Should create new session for any truthy logout value
-			assertEquals(
-				false,
-				req.session.session_uuid === 'existing-uuid-for-logout',
-				`Should create new session when logout=${logoutValue}.`
-			)
+			assertEquals(false, req.session.session_uuid === 'existing-uuid-for-logout', `Should create new session when logout=${logoutValue}`)
 		}
 	},
 
@@ -289,22 +241,9 @@ const tests = {
 		// Execute the handler
 		await createSessionIfNotExists(req, res)
 		
-		// Verify database result is properly handled
-		assertEquals(
-			testSessionId,
-			req.session.session_id,
-			"Session ID should be extracted from database result."
-		)
-		assertEquals(
-			'string',
-			typeof req.session.session_uuid,
-			"Session UUID should be a string."
-		)
-		assertEquals(
-			36,
-			req.session.session_uuid.length,
-			"Session UUID should be 36 characters (standard UUID length)."
-		)
+		assertEquals(testSessionId, req.session.session_id, "Session ID should be extracted from database result")
+		assertEquals('string', typeof req.session.session_uuid, "Session UUID should be a string")
+		assertEquals(36, req.session.session_uuid.length, "Should be 36 characters")
 	}
 }
 
