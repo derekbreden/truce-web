@@ -5,7 +5,9 @@ const renderPosts = (posts, topic, user) => {
 		(state.path.substr(0, 6) === "/user/" && state.path.split("/")[3]) ||
 		state.path === "/favorites" ||
 		state.path === "/notifications" ||
-		state.path.substr(0, 7) === "/reply/"
+		state.path.substr(0, 7) === "/reply/" ||
+		state.path.substr(0, 10) === "/messages/" ||
+		state.path === "/conversations"
 	) {
 		skip_posts = true
 	}
@@ -136,7 +138,39 @@ const renderPosts = (posts, topic, user) => {
 								`,
 								[$("icons icon[settings] svg").cloneNode(true)],
 							)
-						: user.subscribed
+						: state.user_id ? $(
+								`
+								user-actions
+									button[message][small][userid=$1]
+										icon[mail]
+											$2
+										span Message
+									$3
+								`,
+								[
+									user.user_id,
+									$("icons icon[mail] svg").cloneNode(true),
+									user.subscribed
+										? $(
+												`
+												button[subscribe][small]
+													icon[subscribe]
+														$1
+													span Unsubscribe
+												`,
+												[$("icons icon[subscribe] svg").cloneNode(true)],
+											)
+										: $(
+												`
+												button[subscribe][small][alt]
+													icon[subscribe]
+														$1
+													span Subscribe
+												`,
+												[$("icons icon[subscribe] svg").cloneNode(true)],
+											),
+								]
+							) : user.subscribed
 							? $(
 									`
 									button[subscribe][small]
@@ -174,6 +208,11 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		bindSubscribeUser($("post[user] button[subscribe]"), user)
+		$("post[user] button[message]")?.on("click", ($event) => {
+			$event.preventDefault()
+			const user_id = parseInt($("post[user] button[message]").getAttribute("userid"))
+			startConversationWithUser(user_id)
+		})
 		$("button[edit][small]")?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath("/settings")

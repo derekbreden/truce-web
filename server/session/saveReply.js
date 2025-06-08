@@ -15,16 +15,8 @@ webpush.setVapidDetails(
 	process.env.VAPID_PUBLIC_KEY,
 	process.env.VAPID_PRIVATE_KEY,
 )
-const fcm_admin = require("firebase-admin")
-const { initializeApp } = require("firebase-admin/app")
-const { getMessaging } = require("firebase-admin/messaging")
+const firebase = require("../firebase")
 const prompts = require("../prompts")
-const fcm_app = initializeApp({
-	credential: fcm_admin.credential.cert(
-		JSON.parse(process.env.FIREBASE_CREDENTIAL),
-	),
-})
-const fcm_messaging = getMessaging(fcm_app)
 
 module.exports = async (req, res) => {
 	if (
@@ -557,7 +549,7 @@ module.exports = async (req, res) => {
 					token: JSON.parse(subscription.fcm_token),
 				}
 				try {
-					const result = await fcm_messaging.send(message)
+					const result = await firebase.getMessaging().send(message)
 					console.log(result)
 				} catch (e) {
 					console.log(e.message)

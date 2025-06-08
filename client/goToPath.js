@@ -98,11 +98,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		loadingPage(false, skip_state, clicked_back)
 
 		// Tell the websocket we are on a new path
-		try {
-			state.ws.send(JSON.stringify({ path: new_path }))
-		} catch (e) {
-			console.error(e)
-		}
+		updateWebSocketPath(new_path)
 
 		if (state.path === "/posts") {
 			localStorage.setItem(

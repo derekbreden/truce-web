@@ -6,8 +6,11 @@ module.exports = {
 		// Path is always useful
 		req.path = req.url.split("/").join("").split("?")[0]
 
-		// Helper for sending a websocket message
+		// Helper for sending websocket messages
 		req.sendWsMessage = this.sendWsMessage.bind(this)
+		req.sendWsMessageToConversation = this.sendWsMessageToConversation.bind(this)
+		req.sendWsMessageToUser = this.sendWsMessageToUser.bind(this)
+		req.sendWsMessageToUsers = this.sendWsMessageToUsers.bind(this)
 
 		// Always get the body sent
 		req.body = ""
@@ -132,5 +135,14 @@ module.exports = {
 	},
 	sendWsMessage(message, post_id) {
 		require("./websocket").sendMessage(message, post_id)
+	},
+	sendWsMessageToConversation(message, conversation_id) {
+		require("./websocket").sendMessageToConversation(message, conversation_id)
+	},
+	sendWsMessageToUser(message, user_id) {
+		require("./websocket").sendMessageToUser(message, user_id)
+	},
+	sendWsMessageToUsers(message, user_ids) {
+		require("./websocket").sendMessageToUsers(message, user_ids)
 	},
 }

@@ -41,31 +41,33 @@ const renderUsers = (users) => {
 											[$("icons icon[verified] svg").cloneNode(true)],
 										)
 									: [],
-								user.subscribed
-									? $(
-											`
-											button[subscribe][small][userid=$1]
-												icon[subscribe]
-													$2
-												span Unsubscribe
-											`,
-											[
-												user.user_id,
-												$("icons icon[subscribe] svg").cloneNode(true),
-											],
-										)
-									: $(
-											`
-											button[subscribe][small][alt][userid=$1]
-												icon[subscribe]
-													$2
-												span Subscribe
-											`,
-											[
-												user.user_id,
-												$("icons icon[subscribe] svg").cloneNode(true),
-											],
-										),
+								state.user_id && state.user_id != user.user_id ? (
+									user.subscribed
+										? $(
+												`
+												button[subscribe][small][userid=$1]
+													icon[subscribe]
+														$2
+													span Unsubscribe
+												`,
+												[
+													user.user_id,
+													$("icons icon[subscribe] svg").cloneNode(true),
+												],
+											)
+										: $(
+												`
+												button[subscribe][small][alt][userid=$1]
+													icon[subscribe]
+														$2
+													span Subscribe
+												`,
+												[
+													user.user_id,
+													$("icons icon[subscribe] svg").cloneNode(true),
+												],
+											)
+								) : [],
 							],
 						),
 					),

@@ -5,6 +5,7 @@ const path_sequence = [
 	"/posts",
 	"/posts/all",
 	"/topics",
+	"/conversations",
 	"/favorites",
 	"/notifications",
 	"/settings",
@@ -23,6 +24,8 @@ const parsePath = () => {
 	} else if (new_paths[0] === "topic" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "user" && new_paths[1]) {
+		new_path = "/" + new_paths[0] + "/" + new_paths[1]
+	} else if (new_paths[0] === "messages" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if ((new_paths[0] === "posts" || new_paths[0] === "posts") && new_paths[1] === "all") {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]

@@ -18,14 +18,17 @@ const showMenu = () => {
 					a[href=/topics]
 						icon[topic]
 						p Topics
+					a[href=/conversations][unread=$1]
+						icon[mail]
+						p Messages
 					a[href=/favorites]
 						icon[favorites]
 						p Favorites
-					a[href=/notifications][unread=$1]
+					a[href=/notifications][unread=$2]
 						icon[notifications]
 						p Alerts
 		`,
-		[Boolean(state.unread_count)],
+		[Boolean(state.unread_messages_count), Boolean(state.unread_count)],
 	)
 	$menu
 		.$("icon[welcome]")
@@ -34,6 +37,9 @@ const showMenu = () => {
 		.$("icon[posts]")
 		.appendChild($("footer icon[posts] svg").cloneNode(true))
 	$menu.$("icon[topic]").appendChild($("footer icon[topic] svg").cloneNode(true))
+	$menu
+		.$("icon[mail]")
+		.appendChild($("footer icon[mail] svg").cloneNode(true))
 	$menu
 		.$("icon[favorites]")
 		.appendChild($("footer icon[favorites] svg").cloneNode(true))
