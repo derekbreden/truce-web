@@ -1,7 +1,6 @@
 const crypto = require("node:crypto")
 const { WebSocketServer } = require("ws")
 const pool = require("./pool")
-const { sendWsMessage } = require("./server")
 
 module.exports = {
 	clearConnectionProperties(ws_uuid) {
