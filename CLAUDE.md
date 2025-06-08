@@ -144,7 +144,7 @@ async function testFeature() {
     match: (url, options) => {
       if (url === "/session" && options?.method === "POST") {
         const body = JSON.parse(options.body)
-        return body.display_name && body.body // Match comment submissions
+        return body.display_name && body.body // Match reply submissions
       }
       return false
     },
@@ -179,7 +179,7 @@ async function testHandler() {
   
   // Mock database responses
   req.client.addQueryMock(
-    'INSERT INTO favorite_topics',  // SQL to match
+    'INSERT INTO favorite_posts',  // SQL to match
     { rows: [] }                   // Mock response
   )
   
@@ -213,7 +213,7 @@ window.addMockFetchMatcher({
   match: (url, options) => {
     if (url === "/session" && options?.method === "POST") {
       const body = JSON.parse(options.body)
-      return body.body && body.display_name // Comment submission
+      return body.body && body.display_name // Reply submission
     }
     return false
   },

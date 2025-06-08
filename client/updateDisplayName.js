@@ -25,18 +25,18 @@ const updateDisplayName = (data) => {
 		const cache = state.cache[cache_key]
 
 		// Update the relevant user display name data for each category of data
-		cache.topics?.forEach((topic) => {
+		cache.posts?.forEach((topic) => {
 			if (topic.user_id === state.user_id) {
 				topic.display_name = state.display_name
 				topic.display_name_index = state.display_name_index
 				topic.user_slug = state.user_slug
 			}
 		})
-		cache.comments?.forEach((comment) => {
-			if (comment.user_id === state.user_id) {
-				comment.display_name = state.display_name
-				comment.display_name_index = state.display_name_index
-				comment.user_slug = state.user_slug
+		cache.replies?.forEach((reply) => {
+			if (reply.user_id === state.user_id) {
+				reply.display_name = state.display_name
+				reply.display_name_index = state.display_name_index
+				reply.user_slug = state.user_slug
 			}
 		})
 		cache.users?.forEach((user) => {

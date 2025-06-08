@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
 			}
 		}
 
-		// Delete comment ancestors
+		// Delete reply ancestors
 		await req.client.query(
 			`
       DELETE FROM reply_ancestors
@@ -133,7 +133,7 @@ module.exports = async (req, res) => {
 			[req.session.user_id],
 		)
 
-		// Comments / Topics / User
+		// Replies / Posts / User
 		await req.client.query(
 			`
       DELETE FROM replies WHERE user_id = $1
@@ -153,7 +153,7 @@ module.exports = async (req, res) => {
 			[req.session.user_id],
 		)
 
-		// Update favorite and comment count columns on comments and topics
+		// Update favorite and reply count columns on replies and posts
 		await req.client.query(
 			`
       UPDATE replies
@@ -192,7 +192,7 @@ module.exports = async (req, res) => {
 			`
       UPDATE posts
       SET
-        comment_count = COALESCE(comment_counts.comment_count, 0),
+        reply_count = COALESCE(reply_counts.reply_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
@@ -203,13 +203,13 @@ module.exports = async (req, res) => {
                 THEN 1
               ELSE 0
             END
-          ) AS comment_count
+          ) AS reply_count
         FROM posts t
         LEFT JOIN replies c ON t.post_id = c.parent_post_id
         LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         GROUP BY t.post_id
-      ) AS comment_counts
-      WHERE posts.post_id = comment_counts.post_id
+      ) AS reply_counts
+      WHERE posts.post_id = reply_counts.post_id
       `,
 		)
 

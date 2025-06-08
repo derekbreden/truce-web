@@ -14,8 +14,8 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -32,12 +32,12 @@ const tests = {
 				path: "/tags",
 				tags: [
 					// Updated mock data structure
-					{ tag_name: "science", topics: 10, subtitle: "All about science" },
-					{ tag_name: "history", topics: 5, subtitle: "History discussions" },
+					{ tag_name: "science", posts: 10, subtitle: "All about science" },
+					{ tag_name: "history", posts: 5, subtitle: "History discussions" },
 				],
 				// Other data that might be part of a standard page response (minimal for this test)
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -51,7 +51,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -133,7 +133,7 @@ const tests = {
 		)
 
 		// Check for the overall page structure (header for tags page)
-		const $tagsPageHeader = $mainContent.$("topics topic h2[tags] span") // As per renderTags.js structure
+		const $tagsPageHeader = $mainContent.$("posts topic h2[tags] span") // As per renderTags.js structure
 		assertEquals(
 			"Tags",
 			$tagsPageHeader.innerText.trim(),

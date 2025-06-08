@@ -287,16 +287,16 @@ h3 {
 }
 
 display-name-wrapper b,
-comment h3 author {
+reply h3 author {
   display: flex;
   gap: 10px;
   align-items: center;
   font-weight: 700;
 }
-comment h3 author icon {
+reply h3 author icon {
   font-size: 0;
 }
-comment h3 author icon svg {
+reply h3 author icon svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   height: 22px;
@@ -304,35 +304,35 @@ comment h3 author icon svg {
   margin-left: -5px;
 }
 
-comment h3+p {
+reply h3+p {
   margin-top: 0;
 }
 
-comment>reply-wrapper {
+reply>reply-wrapper {
   margin-left: 40px;
 }
 
-add-new[comment] input[display-name],
-add-new[comment] title-wrapper,
-add-new[comment] image-previews,
-add-new[comment] textarea,
-add-new[comment] button,
-comment>info-wrapper,
-comment>p {
+add-new[reply] input[display-name],
+add-new[reply] title-wrapper,
+add-new[reply] image-previews,
+add-new[reply] textarea,
+add-new[reply] button,
+reply>info-wrapper,
+reply>p {
   margin-left: 50px;
   width: calc(100% - 50px);
 }
-comment>ol,
-comment>ul {
+reply>ol,
+reply>ul {
   margin: 10px 0 0 67px;
 }
 
-comment h3 icon[more] {
+reply h3 icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;
 }
 
-comment h3 icon[more] svg {
+reply h3 icon[more] svg {
   height: 30px;
   width: 30px;
   fill: #000;
@@ -354,7 +354,7 @@ p img {
   border-radius: 10px;
 }
 
-comment[trimmed] p img,
+reply[trimmed] p img,
 topic[trimmed] p img {
   cursor: pointer;
   height: 100px;
@@ -368,12 +368,12 @@ topic[trimmed] p[img][total-images="1"] img {
   max-height: 300px;
 }
 
-comment[trimmed] p[img],
+reply[trimmed] p[img],
 topic[trimmed] p[img] {
   display: inline-flex;
 }
 
-comment[trimmed] p[img]+p[img],
+reply[trimmed] p[img]+p[img],
 topic[trimmed] p[img]+p[img] {
   margin-left: 10px;
 }
@@ -1140,12 +1140,12 @@ image-previews preview {
   height: 100px;
 }
 
-add-new[comment] image-previews {
+add-new[reply] image-previews {
   margin-top: -33px;
   width: calc(100% - 95px);
 }
 
-add-new[comment] image-previews preview {
+add-new[reply] image-previews preview {
   width: unset;
   max-width: 100%;
 }
@@ -1189,24 +1189,24 @@ image-previews preview img {
   max-width: 100%;
 }
 
-[add-new-comment] {
+[add-new-reply] {
   padding: 10px 0;
 }
 
-[add-new-comment] button {
+[add-new-reply] button {
   width: 100%;
 }
 
-comments {
+replies {
   display: flex;
   flex-direction: column;
 }
 
-comments[thread] {
+replies[thread] {
   margin-top: 20px;
 }
 
-comment {
+reply {
   display: flex;
   flex-direction: column;
   border: 1px solid #ddd;
@@ -1215,24 +1215,24 @@ comment {
   padding: 10px;
 }
 
-comments>comment {
+replies>reply {
   margin-bottom: 20px;
 }
 
-comments comment:last-child {
+replies reply:last-child {
   margin-bottom: 0;
 }
 
-comment comment {
+reply reply {
   margin-top: 10px;
 }
 
-comment p {
+reply p {
   margin-top: 5px;
 }
 
-comment pass,
-comment info {
+reply pass,
+reply info {
   margin-top: 10px;
 }
 
@@ -1241,14 +1241,14 @@ info b {
   margin-bottom: 5px;
 }
 
-comments>add-new:first-child {
+replies>add-new:first-child {
   padding: 10px;
   border: 1px solid #ddd;
   border: 1px solid light-dark(#ddd, #333);
   margin: 20px 0 10px 0;
 }
 
-comments>add-new:not(:first-child) {
+replies>add-new:not(:first-child) {
   margin: 0 0 20px 0;
   border: 1px solid #ddd;
   border: 1px solid light-dark(#ddd, #333);
@@ -1257,12 +1257,12 @@ comments>add-new:not(:first-child) {
   padding: 10px;
 }
 
-topics>add-new:first-child {
+posts>add-new:first-child {
   padding: 20px 0;
   margin-bottom: -20px;
 }
 
-comment add-new {
+reply add-new {
   margin-top: 10px;
 }
 
@@ -1293,12 +1293,12 @@ expand-wrapper {
   position: relative;
 }
 
-expand-wrapper[above-comments] {
+expand-wrapper[above-replies] {
   cursor: default;
   margin: 0 0 10px 0;
 }
 
-expand-wrapper[above-comments]:first-child {
+expand-wrapper[above-replies]:first-child {
   margin: 10px 0 10px 0;
 }
 
@@ -1455,7 +1455,7 @@ read-more-wrapper p {
   margin: 0;
 }
 
-expand-wrapper[above-comments] p {
+expand-wrapper[above-replies] p {
   text-align: left;
   margin: 0;
 }
@@ -1537,18 +1537,18 @@ notifications notification+h3 {
   margin-top: 30px;
 }
 
-topics {
+posts {
   display: flex;
   flex-direction: column;
 }
 
 activities activity,
-topics topic {
+posts topic {
   padding-bottom: 21px;
   position: relative;
 }
 
-topics topic info-wrapper,
+posts topic info-wrapper,
 activities activity[topic] info-wrapper {
   display: flex;
   margin-top: 10px;
@@ -1788,7 +1788,7 @@ activities[favorites] activity::after,
 notifications notification::after,
 users user:after,
 tags[tags-list][big]:after,
-topics topic::before {
+posts topic::before {
   content: "";
   display: flex;
   position: absolute;
@@ -1808,28 +1808,28 @@ notifications notification:has(+ h3)::after {
   display: none;
 }
 
-topics-loading {
+posts-loading {
   display: flex;
   flex-direction: column;
   opacity: 0;
   animation: loading 1.5s ease-in-out infinite 1s;
 }
 
-topics-loading h2 {
+posts-loading h2 {
   background: #ddd;
   background: light-dark(#ddd, #333);
   width: 80%;
   height: 32px;
 }
 
-topics-loading p {
+posts-loading p {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-topics-loading p::before,
-topics-loading p::after {
+posts-loading p::before,
+posts-loading p::after {
   content: "";
   display: block;
   width: 100%;
@@ -1840,7 +1840,7 @@ topics-loading p::after {
   height: 10px;
 }
 
-topics-loading p::after {
+posts-loading p::after {
   margin-top: 10px;
   width: 33%;
   border-bottom: none;
@@ -1875,12 +1875,12 @@ topic>h2>icon[more] svg {
   fill: light-dark(#000, #fff);
 }
 
-activity>[parent-comment] {
+activity>[parent-reply] {
   background: #f5f5f5;
   background: light-dark(#f5f5f5, #0c0c0c)
 }
 
-activity>[parent-comment] comment {
+activity>[parent-reply] reply {
   background: #fff;
   background: light-dark(#fff, #000);
 }
@@ -1965,7 +1965,7 @@ topic-details detail[more] {
   cursor: pointer;
 }
 
-topic-details detail[comments] {
+topic-details detail[replies] {
   flex: 1;
 }
 
@@ -1999,11 +1999,11 @@ detail[favorites][favorited] svg {
   fill: light-dark(#e48, #f48);
 }
 
-detail[comments] icon {
+detail[replies] icon {
   margin: -3px 3px -4px -3px;
 }
 
-detail[comments] svg {
+detail[replies] svg {
   height: 28px;
   width: 28px;
 }

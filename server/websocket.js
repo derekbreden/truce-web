@@ -35,17 +35,17 @@ module.exports = {
 								this.ws_active[ws_uuid].active_post_id = topic.rows.length
 									? topic.rows[0].post_id
 									: false
-							} else if (message.path.substr(0, 9) === "/comment/" || message.path.substr(0, 7) === "/reply/") {
-								const comment = await client.query(
+							} else if (message.path.substr(0, 9) === "/reply/" || message.path.substr(0, 7) === "/reply/") {
+								const reply = await client.query(
 									`
                     SELECT parent_post_id
                     FROM replies
                     WHERE reply_id = $1
                   `,
-									[message.path.substr(0, 9) === "/comment/" ? message.path.substr(9) : message.path.substr(7)],
+									[message.path.substr(0, 9) === "/reply/" ? message.path.substr(9) : message.path.substr(7)],
 								)
-								this.ws_active[ws_uuid].active_post_id = comment.rows.length
-									? comment.rows[0].parent_post_id
+								this.ws_active[ws_uuid].active_post_id = reply.rows.length
+									? reply.rows[0].parent_post_id
 									: false
 							} else {
 								delete this.ws_active[ws_uuid].active_post_id

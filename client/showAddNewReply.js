@@ -1,7 +1,7 @@
 const showAddNewReplyButton = (root_index) => {
 	const $add_new_button = $(
 		`
-    p[add-new-comment]
+    p[add-new-reply]
       button[alt] Reply to post
     `,
 	)
@@ -15,7 +15,7 @@ const showAddNewReplyButton = (root_index) => {
 const showAddNewReply = (reply, parent_reply, root_index) => {
 	const $add_new = $(
 		`
-    add-new[comment]
+    add-new[reply]
       input[display-name][placeholder=Your name][maxlength=50][value=$2]
       textarea[body][placeholder=Reply][rows=8][maxlength=8000] $3
       title-wrapper
@@ -38,18 +38,18 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 	if (reply) {
 		$add_new.$("[cancel]").on("click", () => {
 			$add_new.replaceWith(reply.$reply)
-			delete state.active_add_new_comment
+			delete state.active_add_new_reply
 		})
 	} else if (parent_reply) {
 		$add_new.$("[cancel]").on("click", () => {
 			parent_reply.$reply.$(":scope > reply-wrapper").style.display = "flex"
 			$add_new.remove()
-			delete state.active_add_new_comment
+			delete state.active_add_new_reply
 		})
 	} else {
 		$add_new.$("[cancel]").on("click", () => {
 			$add_new.replaceWith(showAddNewReplyButton(root_index))
-			delete state.active_add_new_comment
+			delete state.active_add_new_reply
 		})
 	}
 	const addReplyError = (error) => {
@@ -231,11 +231,11 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				display_name: state.display_name,
 				body,
 				pngs,
-				comment_id: reply ? reply.comment_id : undefined,
-				parent_comment_id: parent_reply
-					? parent_reply.comment_id
-					: reply && reply.parent_comment_id
-						? reply.parent_comment_id
+				reply_id: reply ? reply.reply_id : undefined,
+				parent_reply_id: parent_reply
+					? parent_reply.reply_id
+					: reply && reply.parent_reply_id
+						? reply.parent_reply_id
 						: undefined,
 			}),
 		})
@@ -250,7 +250,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 					addReplyError(data.error || "Server error")
 					return
 				}
-				delete state.active_add_new_comment
+				delete state.active_add_new_reply
 				updateDisplayName(data)
 				getMoreRecent()
 			})
@@ -263,26 +263,26 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				addReplyError("Network error")
 			})
 	})
-	if (state.active_add_new_comment) {
-		state.active_add_new_comment.$("[cancel]").click()
+	if (state.active_add_new_reply) {
+		state.active_add_new_reply.$("[cancel]").click()
 	}
-	state.active_add_new_comment = $add_new
+	state.active_add_new_reply = $add_new
 	if (reply) {
-		state.active_add_new_comment.is_edit = reply.comment_id
+		state.active_add_new_reply.is_edit = reply.reply_id
 	} else if (parent_reply) {
-		state.active_add_new_comment.is_reply = parent_reply.comment_id
+		state.active_add_new_reply.is_reply = parent_reply.reply_id
 	} else {
-		state.active_add_new_comment[`is_root_${root_index}`] = true
+		state.active_add_new_reply[`is_root_${root_index}`] = true
 	}
 	return $add_new
 }
 const focusAddNewReply = () => {
 	if (!state.display_name) {
-		state.active_add_new_comment.$("[display-name]").focus()
+		state.active_add_new_reply.$("[display-name]").focus()
 	} else {
-		state.active_add_new_comment.$("[body]").focus()
+		state.active_add_new_reply.$("[body]").focus()
 	}
 	setTimeout(() => {
-		state.active_add_new_comment.scrollIntoView()
+		state.active_add_new_reply.scrollIntoView()
 	}, 50)
 }

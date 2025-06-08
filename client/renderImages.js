@@ -34,8 +34,8 @@ const renderImages = () => {
 					$image_prompt.$("info")?.remove()
 					$image_prompt.$("textarea").removeAttribute("disabled")
 					if (data.image) {
-						$("topics img")?.remove()
-						$("topics").appendChild(
+						$("posts img")?.remove()
+						$("posts").appendChild(
 							$(
 								`
 								img[src=$1]
@@ -44,8 +44,8 @@ const renderImages = () => {
 							),
 						)
 					} else if (data.mp3) {
-						$("topics audio")?.remove()
-						$("topics").appendChild(
+						$("posts audio")?.remove()
+						$("posts").appendChild(
 							$(
 								`
 								audio[controls][src=$1][autoplay]
@@ -62,6 +62,6 @@ const renderImages = () => {
 					debug(error)
 				})
 		})
-		$("topics").appendChild($image_prompt)
+		$("posts").appendChild($image_prompt)
 	}
 }

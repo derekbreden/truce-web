@@ -33,7 +33,7 @@ async function migrate() {
         const topicsResult = await client.query(`
             INSERT INTO posts (
                 post_id, title, body, note, slug, image_uuids,
-                comment_count, favorite_count, poll_counts, poll_counts_estimated,
+                reply_count, favorite_count, poll_counts, poll_counts_estimated,
                 poll_1, poll_2, poll_3, poll_4, poll_expire_date,
                 counts_max_create_date, user_id, admin, create_date
             )

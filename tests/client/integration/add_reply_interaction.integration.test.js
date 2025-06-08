@@ -5,15 +5,15 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testAddCommentInteraction: async () => {
+	testAddReplyInteraction: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
 		// Mock user data for logged in state
 		const mockUser = {
-			user_slug: "test-commenter",
-			display_name: "Test Commenter",
-			email: "testcommenter@example.com",
+			user_slug: "test-replyer",
+			display_name: "Test Replyer",
+			email: "testreplyer@example.com",
 			user_id: "user-123",
 			profile_picture_uuid: null,
 		}
@@ -22,13 +22,13 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [
+				posts: [
 					{
-						slug: "test-topic-for-comment",
-						title: "Test Topic for Adding Comment",
-						body: "This topic will receive a new comment.",
+						slug: "test-topic-for-reply",
+						title: "Test Post for Adding Reply",
+						body: "This topic will receive a new reply.",
 						user_slug: "topic-author",
-						display_name: "Topic Author",
+						display_name: "Post Author",
 						tags: "general",
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -37,14 +37,14 @@ const tests = {
 						poll_1: null,
 						favorited: false,
 						favorite_count: 1,
-						commented: false,
-						comment_count: 0,
+						replyed: false,
+						reply_count: 0,
 						image_uuids: null,
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: mockUser.user_slug,
@@ -56,15 +56,15 @@ const tests = {
 				display_name_index: 0,
 				has_more: false,
 			},
-			"/post/test-topic-for-comment": {
-				path: "/post/test-topic-for-comment",
-				topics: [
+			"/post/test-topic-for-reply": {
+				path: "/post/test-topic-for-reply",
+				posts: [
 					{
-						slug: "test-topic-for-comment",
-						title: "Test Topic for Adding Comment",
-						body: "This topic will receive a new comment.",
+						slug: "test-topic-for-reply",
+						title: "Test Post for Adding Reply",
+						body: "This topic will receive a new reply.",
 						user_slug: "topic-author",
-						display_name: "Topic Author",
+						display_name: "Post Author",
 						tags: "general",
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -79,14 +79,14 @@ const tests = {
 						user_poll_choice: null,
 						favorited: false,
 						favorite_count: 1,
-						commented: false,
-						comment_count: 0,
+						replyed: false,
+						reply_count: 0,
 						image_uuids: null,
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: mockUser.user_slug,
@@ -101,19 +101,19 @@ const tests = {
 
 		// Clear any previous matchers and track API calls
 		window.clearMockFetchMatchers()
-		let commentSubmissionCalled = false
-		let submittedCommentData = null
+		let replySubmissionCalled = false
+		let submittedReplyData = null
 		let getMoreRecentCalled = false
 		
-		// Mock comment submission
+		// Mock reply submission
 		window.addMockFetchMatcher({
 			match: (url, options) => {
 				if (url === "/session" && options?.method === "POST") {
 					const body = JSON.parse(options.body)
 					if (body.body && body.display_name && body.path) {
-						// This is a comment submission
-						commentSubmissionCalled = true
-						submittedCommentData = body
+						// This is a reply submission
+						replySubmissionCalled = true
+						submittedReplyData = body
 						return true
 					}
 				}
@@ -126,13 +126,13 @@ const tests = {
 			}
 		})
 		
-		// Mock the getMoreRecent fetch call (refresh with new comment)
+		// Mock the getMoreRecent fetch call (refresh with new reply)
 		window.addMockFetchMatcher({
 			match: (url, options) => {
 				if (url === "/session" && options?.method === "POST") {
 					const body = JSON.parse(options.body)
-					if (body.path === "/post/test-topic-for-comment" && 
-						(body.min_create_date !== undefined || body.min_comment_create_date !== undefined)) {
+					if (body.path === "/post/test-topic-for-reply" && 
+						(body.min_create_date !== undefined || body.min_reply_create_date !== undefined)) {
 						// This is getMoreRecent fetching updates
 						getMoreRecentCalled = true
 						return true
@@ -141,14 +141,14 @@ const tests = {
 				return false
 			},
 			response: {
-				path: "/post/test-topic-for-comment",
-				topics: [], // No new topics
-				comments: [
+				path: "/post/test-topic-for-reply",
+				posts: [], // No new posts
+				replies: [
 					{
-						comment_id: "new-comment-123",
+						reply_id: "new-reply-123",
 						user_slug: mockUser.user_slug,
 						display_name: mockUser.display_name,
-						body: "This is my test comment.",
+						body: "This is my test reply.",
 						created_at: new Date().toISOString(),
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -185,27 +185,27 @@ const tests = {
 		)
 
 		// 2. Click on the topic to navigate to detail page
-		const $firstTopicElement = $("topics > topic[trimmed]")
-		$firstTopicElement.click()
+		const $firstPostElement = $("posts > topic[trimmed]")
+		$firstPostElement.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/post/test-topic-for-comment",
+			"/post/test-topic-for-reply",
 			state.path,
-			"Path should be /post/test-topic-for-comment after clicking the topic.",
+			"Path should be /post/test-topic-for-reply after clicking the topic.",
 		)
 
-		// 3. Verify initial state - no comments
-		const $initialComments = $("main-content-wrapper[active] comments comment")
+		// 3. Verify initial state - no replies
+		const $initialReplies = $("main-content-wrapper[active] replies reply")
 		assertEquals(
 			null,
-			$initialComments,
-			"Initially, there should be no comments.",
+			$initialReplies,
+			"Initially, there should be no replies.",
 		)
 
-		// 4. Click the "Reply to post" button to open comment form
-		const $replyButton = $("p[add-new-comment] button")
+		// 4. Click the "Reply to post" button to open reply form
+		const $replyButton = $("p[add-new-reply] button")
 		assertEquals(
 			"Reply to post",
 			$replyButton.innerText.trim(),
@@ -216,14 +216,14 @@ const tests = {
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 5. Access comment form elements directly
+		// 5. Access reply form elements directly
 
 		// 6. Access form elements directly
 		// For logged-in users, display name is shown as wrapper, not input
-		const $commentForm = $("add-new[comment]")
-		const $displayNameWrapper = $commentForm[0]?.$("display-name-wrapper") || $("display-name-wrapper")
-		const $bodyTextarea = $commentForm[0]?.$("textarea[body]") || $("textarea[body]") 
-		const $submitButton = $commentForm[0]?.$("button[submit]") || $("button[submit]")
+		const $replyForm = $("add-new[reply]")
+		const $displayNameWrapper = $replyForm[0]?.$("display-name-wrapper") || $("display-name-wrapper")
+		const $bodyTextarea = $replyForm[0]?.$("textarea[body]") || $("textarea[body]") 
+		const $submitButton = $replyForm[0]?.$("button[submit]") || $("button[submit]")
 
 		// Verify display name is shown in the wrapper
 		const $displayNameSpan = $displayNameWrapper[0]?.$("span") || $displayNameWrapper.$("span")
@@ -233,19 +233,19 @@ const tests = {
 			"Display name should be shown in wrapper for logged-in user.",
 		)
 
-		// 7. Enter comment text
-		const testCommentText = "This is my test comment."
-		$bodyTextarea.value = testCommentText
+		// 7. Enter reply text
+		const testReplyText = "This is my test reply."
+		$bodyTextarea.value = testReplyText
 		
 		// Simulate input event to update the form
 		const inputEvent = new window.Event('input', { bubbles: true })
 		$bodyTextarea.dispatchEvent(inputEvent)
 
-		// 8. Submit the comment by clicking the submit button
+		// 8. Submit the reply by clicking the submit button
 		$submitButton.click()
 		
 		// 9. Immediately verify form shows "Validating..." message after submission
-		const $validatingMessage = $("add-new[comment] info")
+		const $validatingMessage = $("add-new[reply] info")
 		assertEquals(
 			"Validating...",
 			$validatingMessage?.innerText?.trim() || "NOT_FOUND",
@@ -253,8 +253,8 @@ const tests = {
 		)
 
 		// 10. Immediately verify form controls have disabled attribute during submission
-		const $disabledTextarea = $("add-new[comment] textarea[body]")
-		const $disabledSubmitButton = $("add-new[comment] button[submit]")
+		const $disabledTextarea = $("add-new[reply] textarea[body]")
+		const $disabledSubmitButton = $("add-new[reply] button[submit]")
 		
 		assertEquals(
 			true,
@@ -272,22 +272,22 @@ const tests = {
 		// 11. Verify the fetch was called with correct data
 		assertEquals(
 			true,
-			commentSubmissionCalled,
-			"Comment submission should have been called.",
+			replySubmissionCalled,
+			"Reply submission should have been called.",
 		)
 		assertEquals(
-			testCommentText,
-			submittedCommentData.body,
-			"Submitted comment body should match input.",
+			testReplyText,
+			submittedReplyData.body,
+			"Submitted reply body should match input.",
 		)
 		assertEquals(
 			mockUser.display_name,
-			submittedCommentData.display_name,
+			submittedReplyData.display_name,
 			"Submitted display name should match user's name.",
 		)
 		assertEquals(
-			"/post/test-topic-for-comment",
-			submittedCommentData.path,
+			"/post/test-topic-for-reply",
+			submittedReplyData.path,
 			"Submitted path should match current topic path.",
 		)
 
@@ -302,42 +302,42 @@ const tests = {
 		)
 		
 		// 14. Verify "Validating..." message disappears after successful submission
-		const $validatingMessageAfterSuccess = $("add-new[comment] info")
+		const $validatingMessageAfterSuccess = $("add-new[reply] info")
 		assertEquals(
 			null,
 			$validatingMessageAfterSuccess,
 			"Validating message should disappear after successful submission.",
 		)
 
-		// 15. Verify comment form is removed/hidden after successful submission  
-		const $commentFormAfterSuccess = $("add-new[comment]")
+		// 15. Verify reply form is removed/hidden after successful submission  
+		const $replyFormAfterSuccess = $("add-new[reply]")
 		assertEquals(
 			null,
-			$commentFormAfterSuccess,
-			"Comment form should be removed after successful submission.",
+			$replyFormAfterSuccess,
+			"Reply form should be removed after successful submission.",
 		)
 
-		// 16. Verify comment form is completely removed (no active comment form state)
+		// 16. Verify reply form is completely removed (no active reply form state)
 		assertEquals(
 			undefined,
-			window.state.active_add_new_comment,
-			"Active comment form state should be cleared after successful submission.",
+			window.state.active_add_new_reply,
+			"Active reply form state should be cleared after successful submission.",
 		)
 
-		// 17. Verify the new comment appears and has correct content after getMoreRecent
-		const $newComment = $("main-content-wrapper[active] comments comment")
-		const $commentAuthor = $newComment?.[0]?.$("author span") || $newComment?.$("author span")
-		const $commentBody = $newComment?.[0]?.$(":scope > p > span") || $newComment?.$(":scope > p > span")
+		// 17. Verify the new reply appears and has correct content after getMoreRecent
+		const $newReply = $("main-content-wrapper[active] replies reply")
+		const $replyAuthor = $newReply?.[0]?.$("author span") || $newReply?.$("author span")
+		const $replyBody = $newReply?.[0]?.$(":scope > p > span") || $newReply?.$(":scope > p > span")
 		
 		assertEquals(
 			mockUser.display_name,
-			$commentAuthor?.innerText?.trim() || "NOT_FOUND",
-			"Comment author should match submitted name.",
+			$replyAuthor?.innerText?.trim() || "NOT_FOUND",
+			"Reply author should match submitted name.",
 		)
 		assertEquals(
-			testCommentText,
-			$commentBody?.innerText?.trim() || "NOT_FOUND",
-			"Comment body should match submitted text.",
+			testReplyText,
+			$replyBody?.innerText?.trim() || "NOT_FOUND",
+			"Reply body should match submitted text.",
 		)
 
 	},

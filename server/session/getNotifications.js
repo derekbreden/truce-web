@@ -56,11 +56,11 @@ module.exports = async (req, res) => {
 				[req.session.user_id],
 			)
 
-			// Special case for exactly 1 unseen, we want to load that comment_id and notification_id
-			let comment_id = null
+			// Special case for exactly 1 unseen, we want to load that reply_id and notification_id
+			let reply_id = null
 			let notification_id = null
 			if (counts.rows[0].unseen_count === "1") {
-				const comment = await req.client.query(
+				const reply = await req.client.query(
 					`
           SELECT reply_id, notification_id
           FROM reply_notifications
@@ -70,16 +70,16 @@ module.exports = async (req, res) => {
           `,
 					[req.session.user_id],
 				)
-				comment_id = comment.rows[0].reply_id
-				notification_id = comment.rows[0].notification_id
+				reply_id = reply.rows[0].reply_id
+				notification_id = reply.rows[0].notification_id
 			}
 
-			// Return the counts (and maybe a comment_id/notification_id)
+			// Return the counts (and maybe a reply_id/notification_id)
 			res.end(
 				JSON.stringify({
 					unread_count: counts.rows[0].unread_count,
 					unseen_count: counts.rows[0].unseen_count,
-					comment_id,
+					reply_id,
 					notification_id,
 				}),
 			)
@@ -102,8 +102,8 @@ module.exports = async (req, res) => {
           LEFT(a.title, 21) as title,
           CASE
             WHEN c.parent_reply_id is NULL THEN 'topic'
-            WHEN p.user_id = $1 THEN 'comment'
-            ELSE 'topic_comment'
+            WHEN p.user_id = $1 THEN 'reply'
+            ELSE 'topic_reply'
           END AS reply_type
         FROM reply_notifications n
         INNER JOIN replies c ON c.reply_id = n.reply_id
@@ -151,8 +151,8 @@ module.exports = async (req, res) => {
           LEFT(a.title, 21) as title,
           CASE
             WHEN c.parent_reply_id is NULL THEN 'topic'
-            WHEN p.user_id = $1 THEN 'comment'
-            ELSE 'topic_comment'
+            WHEN p.user_id = $1 THEN 'reply'
+            ELSE 'topic_reply'
           END AS reply_type
         FROM reply_notifications n
         INNER JOIN replies c ON c.reply_id = n.reply_id

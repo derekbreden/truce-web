@@ -145,8 +145,8 @@ const tests = {
 		)
 		assertEquals(
 			null,
-			responseData.comment_id,
-			"Should not return comment_id when multiple unseen."
+			responseData.reply_id,
+			"Should not return reply_id when multiple unseen."
 		)
 	},
 
@@ -172,7 +172,7 @@ const tests = {
 			'SELECT reply_id, notification_id',
 			{ 
 				rows: [{ 
-					reply_id: 'comment-456',
+					reply_id: 'reply-456',
 					notification_id: 'notification-789'
 				}]
 			}
@@ -182,7 +182,7 @@ const tests = {
 		
 		await getNotifications(req, res)
 		
-		// Verify response includes comment details
+		// Verify response includes reply details
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			'3',
@@ -195,9 +195,9 @@ const tests = {
 			"Should return unseen count."
 		)
 		assertEquals(
-			'comment-456',
-			responseData.comment_id,
-			"Should return comment_id for single unseen."
+			'reply-456',
+			responseData.reply_id,
+			"Should return reply_id for single unseen."
 		)
 		assertEquals(
 			'notification-789',
@@ -226,10 +226,10 @@ const tests = {
 						create_date: '2024-01-15T10:00:00Z',
 						display_name: 'John Doe',
 						display_name_index: 0,
-						comment_id: 'comment-1',
-						body: 'This is an unread notification comment...',
+						reply_id: 'reply-1',
+						body: 'This is an unread notification reply...',
 						note: 'Note text',
-						title: 'Topic Title',
+						title: 'Post Title',
 						reply_type: 'topic'
 					}
 				]
@@ -246,11 +246,11 @@ const tests = {
 						create_date: '2024-01-14T09:00:00Z',
 						display_name: 'Jane Smith',
 						display_name_index: 1,
-						comment_id: 'comment-2',
-						body: 'This is a read notification comment...',
+						reply_id: 'reply-2',
+						body: 'This is a read notification reply...',
 						note: '',
-						title: 'Another Topic',
-						reply_type: 'comment'
+						title: 'Another Post',
+						reply_type: 'reply'
 					}
 				]
 			}
@@ -352,20 +352,20 @@ const tests = {
 					{
 						notification_id: 'notif-topic',
 						reply_type: 'topic',
-						comment_id: 'comment-topic',
+						reply_id: 'reply-topic',
 						body: 'Reply to topic'
 					},
 					{
-						notification_id: 'notif-comment',
-						reply_type: 'comment',
-						comment_id: 'comment-comment',
-						body: 'Reply to comment'
+						notification_id: 'notif-reply',
+						reply_type: 'reply',
+						reply_id: 'reply-reply',
+						body: 'Reply to reply'
 					},
 					{
-						notification_id: 'notif-topic-comment',
-						reply_type: 'topic_comment',
-						comment_id: 'comment-topic-comment',
-						body: 'Comment on topic thread'
+						notification_id: 'notif-topic-reply',
+						reply_type: 'topic_reply',
+						reply_id: 'reply-topic-reply',
+						body: 'Reply on topic thread'
 					}
 				]
 			}
@@ -391,14 +391,14 @@ const tests = {
 			"Should have topic reply type."
 		)
 		assertEquals(
-			'comment',
+			'reply',
 			req.results.notifications[1].reply_type,
-			"Should have comment reply type."
+			"Should have reply reply type."
 		)
 		assertEquals(
-			'topic_comment',
+			'topic_reply',
 			req.results.notifications[2].reply_type,
-			"Should have topic_comment reply type."
+			"Should have topic_reply reply type."
 		)
 	},
 
@@ -521,8 +521,8 @@ const tests = {
 		)
 		assertEquals(
 			null,
-			responseData.comment_id,
-			"Should not return comment_id when zero unseen."
+			responseData.reply_id,
+			"Should not return reply_id when zero unseen."
 		)
 	},
 
@@ -574,7 +574,7 @@ const tests = {
 				rows: [
 					{
 						notification_id: 'truncate-test',
-						body: 'This is a very long comment body that should be truncated at 51 characters max according to the LEFT function in SQL',
+						body: 'This is a very long reply body that should be truncated at 51 characters max according to the LEFT function in SQL',
 						note: 'This is a long note that should be truncated at 21 chars',
 						title: 'This is a long topic title that should be truncated at 21 chars'
 					}

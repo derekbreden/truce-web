@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
 
 			let user_id = req.session.user_id
 
-			// If they posted a comment first, they may have a user_id already
+			// If they posted a reply first, they may have a user_id already
 			if (req.session.user_id) {
 				await req.client.query(
 					`

@@ -10,18 +10,18 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 	let was_same_path = true
 
 	if (
-		new_path === "/topics" &&
-		localStorage.getItem(`${window.local_storage_key}:topics_preference`)
+		new_path === "/posts" &&
+		localStorage.getItem(`${window.local_storage_key}:posts_preference`)
 	) {
 		new_path = localStorage.getItem(
-			`${window.local_storage_key}:topics_preference`,
+			`${window.local_storage_key}:posts_preference`,
 		)
 	}
 
 	if (state.path !== new_path) {
 		was_same_path = false
-		// Cancel any open active comment or topic
-		delete state.active_add_new_comment
+		// Cancel any open active reply or topic
+		delete state.active_add_new_reply
 		delete state.active_add_new_topic
 
 		// Always track scroll position on cached paths
@@ -50,7 +50,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			const this_user_slug = state.path.split("/")[2]
 			const user_path_sequence = [
 				`/user/${this_user_slug}`,
-				`/user/${this_user_slug}/comments`,
+				`/user/${this_user_slug}/replies`,
 				`/user/${this_user_slug}/subscribers`,
 				`/user/${this_user_slug}/subscribed_to_users`,
 			]
@@ -67,7 +67,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		) {
 			clicked_back = true
 
-			// From a sub page (topic / comment) to a main page
+			// From a sub page (topic / reply) to a main page
 		} else if (next_sequence !== -1 && previous_sequence === -1) {
 			// Find the main page they were at most recently
 			const most_recent_sequence_page = state.path_history

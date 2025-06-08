@@ -5,12 +5,12 @@ const renderTags = (tags) => {
 	$("main-content-wrapper[active] main-content").replaceChildren(
 		$(
 			`
-			topics
+			posts
 				topic
 					h2[tags]
 						span Tags
 						$1
-					p Tap on a tag to see topics related to the tag.
+					p Tap on a tag to see posts related to the tag.
 				tags[tags-list]
 			`,
 			[$("footer icon[tag] svg").cloneNode(true)],
@@ -33,7 +33,7 @@ const renderTags = (tags) => {
 					tag.tag_name,
 					$(`icons icon[${tag.tag_name}] svg`).cloneNode(true),
 					tag.tag_name[0].toUpperCase() + tag.tag_name.slice(1),
-					tag.topics,
+					tag.posts,
 					tag.subtitle,
 				],
 			),

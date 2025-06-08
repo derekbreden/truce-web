@@ -10,13 +10,13 @@ const {
 const getUpdatedCounts = require("../../../server/session/getUpdatedCounts.js")
 
 const tests = {
-	testGetTopicCounts: async () => {
+	testGetPostCounts: async () => {
 		// Setup mock request to get topic counts
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -31,13 +31,13 @@ const tests = {
 						post_id: 'topic-1',
 						favorite_count: 15,
 						poll_counts: '8,5,2',
-						comment_count: 12
+						reply_count: 12
 					},
 					{
 						post_id: 'topic-2',
 						favorite_count: 7,
 						poll_counts: null,
-						comment_count: 3
+						reply_count: 3
 					}
 				]
 			}
@@ -71,8 +71,8 @@ const tests = {
 		)
 		assertEquals(
 			12,
-			req.results.topic_counts[0].comment_count,
-			"First topic should have comment count."
+			req.results.topic_counts[0].reply_count,
+			"First topic should have reply count."
 		)
 		assertEquals(
 			'topic-2',
@@ -86,33 +86,33 @@ const tests = {
 		)
 	},
 
-	testGetCommentCounts: async () => {
-		// Setup mock request to get comment counts
+	testGetReplyCounts: async () => {
+		// Setup mock request to get reply counts
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_comments: true
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
 		req.results = {}
 		
-		// Setup mock database response for comment counts
+		// Setup mock database response for reply counts
 		req.client.addQueryMock(
 			'FROM replies c',
 			{ 
 				rows: [
 					{
-						reply_id: 'comment-1',
+						reply_id: 'reply-1',
 						favorite_count: 5
 					},
 					{
-						reply_id: 'comment-2',
+						reply_id: 'reply-2',
 						favorite_count: 0
 					},
 					{
-						reply_id: 'comment-3',
+						reply_id: 'reply-3',
 						favorite_count: 23
 					}
 				]
@@ -124,47 +124,47 @@ const tests = {
 		// Execute the handler
 		await getUpdatedCounts(req, res)
 		
-		// Verify comment counts were loaded
+		// Verify reply counts were loaded
 		assertEquals(
 			3,
-			req.results.comment_counts.length,
-			"Should return array of comment counts."
+			req.results.reply_counts.length,
+			"Should return array of reply counts."
 		)
 		assertEquals(
-			'comment-1',
-			req.results.comment_counts[0].reply_id,
-			"First comment should have correct ID."
+			'reply-1',
+			req.results.reply_counts[0].reply_id,
+			"First reply should have correct ID."
 		)
 		assertEquals(
 			5,
-			req.results.comment_counts[0].favorite_count,
-			"First comment should have correct favorite count."
+			req.results.reply_counts[0].favorite_count,
+			"First reply should have correct favorite count."
 		)
 		assertEquals(
-			'comment-2',
-			req.results.comment_counts[1].reply_id,
-			"Second comment should have correct ID."
+			'reply-2',
+			req.results.reply_counts[1].reply_id,
+			"Second reply should have correct ID."
 		)
 		assertEquals(
 			0,
-			req.results.comment_counts[1].favorite_count,
-			"Second comment should handle zero favorite count."
+			req.results.reply_counts[1].favorite_count,
+			"Second reply should handle zero favorite count."
 		)
 		assertEquals(
 			23,
-			req.results.comment_counts[2].favorite_count,
-			"Third comment should have correct favorite count."
+			req.results.reply_counts[2].favorite_count,
+			"Third reply should have correct favorite count."
 		)
 	},
 
-	testGetBothTopicAndCommentCounts: async () => {
-		// Setup mock request to get both topic and comment counts
+	testGetBothPostAndReplyCounts: async () => {
+		// Setup mock request to get both topic and reply counts
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true,
-				has_comments: true
+				has_posts: true,
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -179,7 +179,7 @@ const tests = {
 						post_id: 'topic-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
-						comment_count: 8
+						reply_count: 8
 					}
 				]
 			}
@@ -189,7 +189,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						reply_id: 'comment-1',
+						reply_id: 'reply-1',
 						favorite_count: 2
 					}
 				]
@@ -209,18 +209,18 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.comment_counts.length,
-			"Should return comment counts."
+			req.results.reply_counts.length,
+			"Should return reply counts."
 		)
 		assertEquals(
 			'topic-1',
 			req.results.topic_counts[0].post_id,
-			"Topic count should be correct."
+			"Post count should be correct."
 		)
 		assertEquals(
-			'comment-1',
-			req.results.comment_counts[0].reply_id,
-			"Comment count should be correct."
+			'reply-1',
+			req.results.reply_counts[0].reply_id,
+			"Reply count should be correct."
 		)
 	},
 
@@ -230,16 +230,16 @@ const tests = {
 			{ 
 				// Missing min_counts_create_date
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ 
 				// Missing min_create_date_for_counts
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ 
 				// Missing both
-				has_topics: true
+				has_posts: true
 			}
 		]
 		
@@ -259,8 +259,8 @@ const tests = {
 			)
 			assertEquals(
 				undefined,
-				req.results.comment_counts,
-				`Should not set comment_counts when required fields missing: ${JSON.stringify(testData)}.`
+				req.results.reply_counts,
+				`Should not set reply_counts when required fields missing: ${JSON.stringify(testData)}.`
 			)
 		}
 	},
@@ -271,7 +271,7 @@ const tests = {
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -292,26 +292,26 @@ const tests = {
 		)
 	},
 
-	testNoTopicsWhenHasTopicsFalse: async () => {
-		// Setup mock request without has_topics flag
+	testNoPostsWhenHasPostsFalse: async () => {
+		// Setup mock request without has_posts flag
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: false,
-				has_comments: true
+				has_posts: false,
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
 		req.results = {}
 		
-		// Setup mock database response only for comments
+		// Setup mock database response only for replies
 		req.client.addQueryMock(
 			'FROM replies c',
 			{ 
 				rows: [
 					{
-						reply_id: 'comment-1',
+						reply_id: 'reply-1',
 						favorite_count: 5
 					}
 				]
@@ -323,33 +323,33 @@ const tests = {
 		// Execute the handler
 		await getUpdatedCounts(req, res)
 		
-		// Should only load comments, not topics
+		// Should only load replies, not posts
 		assertEquals(
 			undefined,
 			req.results.topic_counts,
-			"Should not load topic counts when has_topics is false."
+			"Should not load topic counts when has_posts is false."
 		)
 		assertEquals(
 			1,
-			req.results.comment_counts.length,
-			"Should load comment counts when has_comments is true."
+			req.results.reply_counts.length,
+			"Should load reply counts when has_replies is true."
 		)
 	},
 
-	testNoCommentsWhenHasCommentsFalse: async () => {
-		// Setup mock request without has_comments flag
+	testNoRepliesWhenHasRepliesFalse: async () => {
+		// Setup mock request without has_replies flag
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true,
-				has_comments: false
+				has_posts: true,
+				has_replies: false
 			},
 			{ user_id: 'user-456' }
 		)
 		req.results = {}
 		
-		// Setup mock database response only for topics
+		// Setup mock database response only for posts
 		req.client.addQueryMock(
 			'FROM posts t',
 			{ 
@@ -358,7 +358,7 @@ const tests = {
 						post_id: 'topic-1',
 						favorite_count: 10,
 						poll_counts: '5,3',
-						comment_count: 8
+						reply_count: 8
 					}
 				]
 			}
@@ -369,16 +369,16 @@ const tests = {
 		// Execute the handler
 		await getUpdatedCounts(req, res)
 		
-		// Should only load topics, not comments
+		// Should only load posts, not replies
 		assertEquals(
 			1,
 			req.results.topic_counts.length,
-			"Should load topic counts when has_topics is true."
+			"Should load topic counts when has_posts is true."
 		)
 		assertEquals(
 			undefined,
-			req.results.comment_counts,
-			"Should not load comment counts when has_comments is false."
+			req.results.reply_counts,
+			"Should not load reply counts when has_replies is false."
 		)
 	},
 
@@ -388,7 +388,7 @@ const tests = {
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ user_id: undefined }
 		)
@@ -402,7 +402,7 @@ const tests = {
 						post_id: 'public-topic-1',
 						favorite_count: 5,
 						poll_counts: null,
-						comment_count: 2
+						reply_count: 2
 					}
 				]
 			}
@@ -431,8 +431,8 @@ const tests = {
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true,
-				has_comments: true
+				has_posts: true,
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -460,8 +460,8 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.comment_counts.length,
-			"Should handle empty comment counts gracefully."
+			req.results.reply_counts.length,
+			"Should handle empty reply counts gracefully."
 		)
 	},
 
@@ -471,8 +471,8 @@ const tests = {
 			{ 
 				min_create_date_for_counts: '2024-01-15T00:00:00Z',
 				min_counts_create_date: '2024-01-16T00:00:00Z',
-				has_topics: true,
-				has_comments: true
+				has_posts: true,
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -487,7 +487,7 @@ const tests = {
 						post_id: 'recent-topic',
 						favorite_count: 3,
 						poll_counts: '2,1',
-						comment_count: 1
+						reply_count: 1
 					}
 				]
 			}
@@ -497,7 +497,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						reply_id: 'recent-comment',
+						reply_id: 'recent-reply',
 						favorite_count: 1
 					}
 				]
@@ -516,8 +516,8 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.comment_counts.length,
-			"Should return date-filtered comment counts."
+			req.results.reply_counts.length,
+			"Should return date-filtered reply counts."
 		)
 		assertEquals(
 			'recent-topic',
@@ -525,19 +525,19 @@ const tests = {
 			"Should return recent topic."
 		)
 		assertEquals(
-			'recent-comment',
-			req.results.comment_counts[0].reply_id,
-			"Should return recent comment."
+			'recent-reply',
+			req.results.reply_counts[0].reply_id,
+			"Should return recent reply."
 		)
 	},
 
-	testTopicCountFields: async () => {
+	testPostCountFields: async () => {
 		// Test that all expected topic count fields are present
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_topics: true
+				has_posts: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -551,7 +551,7 @@ const tests = {
 						post_id: 'complete-topic',
 						favorite_count: 25,
 						poll_counts: '15,8,2',
-						comment_count: 42
+						reply_count: 42
 					}
 				]
 			}
@@ -567,16 +567,16 @@ const tests = {
 		assertEquals('complete-topic', topicCount.post_id, "Should have post_id.")
 		assertEquals(25, topicCount.favorite_count, "Should have favorite_count.")
 		assertEquals('15,8,2', topicCount.poll_counts, "Should have poll_counts.")
-		assertEquals(42, topicCount.comment_count, "Should have comment_count.")
+		assertEquals(42, topicCount.reply_count, "Should have reply_count.")
 	},
 
-	testCommentCountFields: async () => {
-		// Test that all expected comment count fields are present
+	testReplyCountFields: async () => {
+		// Test that all expected reply count fields are present
 		const req = createMockRequest(
 			{ 
 				min_create_date_for_counts: '2024-01-10T00:00:00Z',
 				min_counts_create_date: '2024-01-12T00:00:00Z',
-				has_comments: true
+				has_replies: true
 			},
 			{ user_id: 'user-456' }
 		)
@@ -587,7 +587,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						reply_id: 'complete-comment',
+						reply_id: 'complete-reply',
 						favorite_count: 18
 					}
 				]
@@ -598,11 +598,11 @@ const tests = {
 		
 		await getUpdatedCounts(req, res)
 		
-		const commentCount = req.results.comment_counts[0]
+		const replyCount = req.results.reply_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-comment', commentCount.reply_id, "Should have reply_id.")
-		assertEquals(18, commentCount.favorite_count, "Should have favorite_count.")
+		assertEquals('complete-reply', replyCount.reply_id, "Should have reply_id.")
+		assertEquals(18, replyCount.favorite_count, "Should have favorite_count.")
 	}
 }
 

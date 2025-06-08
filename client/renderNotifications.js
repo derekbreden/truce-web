@@ -9,10 +9,10 @@ const renderNotification = (notification) => {
 			: notification.title
 
 	const reply_text =
-		notification.reply_type === "comment"
-			? "to your comment on"
-			: notification.reply_type === "topic_comment"
-				? "to a comment on your topic"
+		notification.reply_type === "reply"
+			? "to your reply on"
+			: notification.reply_type === "topic_reply"
+				? "to a reply on your topic"
 				: "to your topic"
 
 	const note = notification.note || ""
@@ -54,7 +54,7 @@ const renderNotification = (notification) => {
 		],
 	)
 	$notification.on("click", () => {
-		goToPath("/reply/" + notification.comment_id)
+		goToPath("/reply/" + notification.reply_id)
 
 		// Mark as read
 		if (!notification.read) {
@@ -73,7 +73,7 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-        topics[notifications-header]
+        posts[notifications-header]
           topic
             h2 Alerts
             p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.
@@ -84,10 +84,10 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-        topics[notifications-header]
+        posts[notifications-header]
           topic
             h2 Alerts
-            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a topic or comment you have posted.
+            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a topic or reply you have posted.
         `,
 			),
 		)
@@ -95,7 +95,7 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-        topics[notifications-header]
+        posts[notifications-header]
           topic
             h2 Alerts
             p You must enable notifications for this app in settings
@@ -106,7 +106,7 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-        topics[notifications-header]
+        posts[notifications-header]
           topic
             h2 Alerts
             p[add-to-home]
@@ -421,7 +421,7 @@ const renderMarkAllAsRead = () => {
 			})
 		}
 		if (state.push_available || state.fcm_push_available) {
-			$("topics[notifications-header] topic").appendChild($toggle_wrapper)
+			$("posts[notifications-header] topic").appendChild($toggle_wrapper)
 			if (!state.email) {
 				$toggle_wrapper.setAttribute("disabled", "")
 			}
@@ -472,13 +472,13 @@ const getUnreadCountUnseenCount = () => {
 					(state.window_recently_focused || state.window_recently_loaded) &&
 					(state.push_active || state.fcm_push_active)
 				) {
-					// When exactly one, just go to the comment
+					// When exactly one, just go to the reply
 					if (
 						state.unseen_count === 1 &&
-						data.comment_id &&
+						data.reply_id &&
 						data.notification_id
 					) {
-						goToPath("/reply/" + data.comment_id)
+						goToPath("/reply/" + data.reply_id)
 						markAsRead(data.notification_id)
 
 						// Otherwise load the list of notifications

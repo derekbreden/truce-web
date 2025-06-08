@@ -113,7 +113,7 @@ const tests = {
 		)
 		
 		// Initialize results object (normally done by server)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -190,7 +190,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -297,7 +297,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -343,7 +343,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -389,7 +389,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -440,7 +440,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -479,7 +479,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -523,7 +523,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -572,7 +572,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		// Simulate response already ended
@@ -613,7 +613,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		

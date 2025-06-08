@@ -11,7 +11,7 @@ const renderPosts = (posts, tag, user) => {
 	}
 
 	beforeDomUpdate()
-	if (!$("main-content-wrapper[active] topics")) {
+	if (!$("main-content-wrapper[active] posts")) {
 		const target =
 			state.path === "/posts" || state.path === "/posts/all"
 				? "main-content-wrapper[active] main-content-2"
@@ -19,7 +19,7 @@ const renderPosts = (posts, tag, user) => {
 		$(target).appendChild(
 			$(
 				`
-				topics
+				posts
 				`,
 			),
 		)
@@ -32,21 +32,21 @@ const renderPosts = (posts, tag, user) => {
 		if (window.innerWidth > 1000 && state.path.substr(0, 5) === "/tag/") {
 			const $posts_1 = $posts.filter((x, i) => i % 2 === 0)
 			const $posts_2 = $posts.filter((x, i) => i % 2 === 1)
-			$("main-content-wrapper[active] main-content topics")?.replaceChildren(
+			$("main-content-wrapper[active] main-content posts")?.replaceChildren(
 				...$posts_1,
 			)
 			$("main-content-wrapper[active] main-content-2").replaceChildren(
 				$(
 					`
-					topics
+					posts
 					`,
 				),
 			)
-			$("main-content-wrapper[active] main-content-2 topics").replaceChildren(
+			$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 				...$posts_2,
 			)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] main-content topics").appendChild(
+				$("main-content-wrapper[active] main-content posts").appendChild(
 					$(
 						`
 						all-clear-wrapper
@@ -59,15 +59,15 @@ const renderPosts = (posts, tag, user) => {
 			$("main-content-wrapper[active] main-content-2").replaceChildren(
 				$(
 					`
-					topics
+					posts
 					`,
 				),
 			)
-			$("main-content-wrapper[active] main-content-2 topics").replaceChildren(
+			$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 				...$posts,
 			)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] main-content-2 topics").appendChild(
+				$("main-content-wrapper[active] main-content-2 posts").appendChild(
 					$(
 						`
 						all-clear-wrapper
@@ -77,9 +77,9 @@ const renderPosts = (posts, tag, user) => {
 				)
 			}
 		} else {
-			$("main-content-wrapper[active] topics").replaceChildren(...$posts)
+			$("main-content-wrapper[active] posts").replaceChildren(...$posts)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] topics").appendChild(
+				$("main-content-wrapper[active] posts").appendChild(
 					$(
 						`
 						all-clear-wrapper
@@ -101,7 +101,7 @@ const renderPosts = (posts, tag, user) => {
 	// User
 	if (state.path.substr(0, 6) === "/user/") {
 		$("topic[user]")?.remove()
-		$("main-content-wrapper[active] main-content topics").prepend(
+		$("main-content-wrapper[active] main-content posts").prepend(
 			$(
 				`
 					topic[user]
@@ -188,7 +188,7 @@ const renderPosts = (posts, tag, user) => {
 	if (state.path.substr(0, 5) === "/tag/") {
 		$("topic[tag]")?.remove()
 		if (posts.length === 0) {
-			$("main-content-wrapper[active] main-content topics").prepend(
+			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
 					tags[tags-list][big]
@@ -210,7 +210,7 @@ const renderPosts = (posts, tag, user) => {
 				),
 			)
 		} else {
-			$("main-content-wrapper[active] main-content topics").prepend(
+			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
 					tags[tags-list][big]
@@ -241,9 +241,9 @@ const renderPosts = (posts, tag, user) => {
 				$(
 					`
 					back-forward-wrapper
-						back-wrapper[topics]
+						back-wrapper[posts]
 							p Posts
-						back-wrapper[comments]
+						back-wrapper[replies]
 							p Replies
 						center-wrapper
 							span Subscribers
@@ -258,9 +258,9 @@ const renderPosts = (posts, tag, user) => {
 				$(
 					`
 					back-forward-wrapper
-						back-wrapper[topics]
+						back-wrapper[posts]
 							p Posts
-						back-wrapper[comments]
+						back-wrapper[replies]
 							p Replies
 						back-wrapper[subscribers]
 							p Subscribers
@@ -270,12 +270,12 @@ const renderPosts = (posts, tag, user) => {
 					[],
 				),
 			)
-		} else if (state.path.split("/")[3] === "comments") {
+		} else if (state.path.split("/")[3] === "replies") {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
 					back-forward-wrapper
-						back-wrapper[topics]
+						back-wrapper[posts]
 							p Posts
 						center-wrapper
 							span Replies
@@ -294,7 +294,7 @@ const renderPosts = (posts, tag, user) => {
 					back-forward-wrapper
 						center-wrapper
 							span Posts
-						forward-wrapper[comments]
+						forward-wrapper[replies]
 							p Replies
 						forward-wrapper[subscribers]
 							p Subscribers
@@ -307,16 +307,16 @@ const renderPosts = (posts, tag, user) => {
 		}
 		const this_user_slug = state.path.split("/")[2]
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [topics]",
+			"main-content-wrapper[active] main-content-2 back-forward-wrapper [posts]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}`)
 		})
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [comments]",
+			"main-content-wrapper[active] main-content-2 back-forward-wrapper [replies]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
-			goToPath(`/user/${this_user_slug}/comments`)
+			goToPath(`/user/${this_user_slug}/replies`)
 		})
 		$(
 			"main-content-wrapper[active] main-content-2 back-forward-wrapper [subscribers]",
@@ -334,7 +334,7 @@ const renderPosts = (posts, tag, user) => {
 
 	// Subscribed or all posts
 	if (state.path === "/posts" && state.subscribed_to_users) {
-		$("main-content-wrapper[active] main-content-2 topics").prepend(
+		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
 				back-forward-wrapper
@@ -348,7 +348,7 @@ const renderPosts = (posts, tag, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 topics back-forward-wrapper forward-wrapper",
+			"main-content-wrapper[active] main-content-2 posts back-forward-wrapper forward-wrapper",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
@@ -359,7 +359,7 @@ const renderPosts = (posts, tag, user) => {
 		})
 	}
 	if (state.path === "/posts/all" && state.subscribed_to_users) {
-		$("main-content-wrapper[active] main-content-2 topics").prepend(
+		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
 				back-forward-wrapper
@@ -373,7 +373,7 @@ const renderPosts = (posts, tag, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 topics back-forward-wrapper back-wrapper",
+			"main-content-wrapper[active] main-content-2 posts back-forward-wrapper back-wrapper",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
@@ -385,7 +385,7 @@ const renderPosts = (posts, tag, user) => {
 	}
 
 	afterDomUpdate()
-	$("topics [href]")?.forEach(($a) => {
+	$("posts [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
 		if (new_path.substr(0, 1) === "/") {
 			$a.on("click", ($event) => {

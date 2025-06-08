@@ -126,7 +126,7 @@ const bindSubscribeUser = ($button, user) => {
 							"Unsubscribed from " +
 								renderName(user.display_name, user.display_name_index),
 						)
-						delete state.cache["/topics"]
+						delete state.cache["/posts"]
 						delete state.cache["/settings"]
 						for (const key of Object.keys(state.cache)) {
 							if (state.cache[key].users) {
@@ -163,7 +163,7 @@ const bindSubscribeUser = ($button, user) => {
 							"Subscribed to " +
 								renderName(user.display_name, user.display_name_index),
 						)
-						delete state.cache["/topics"]
+						delete state.cache["/posts"]
 						delete state.cache["/settings"]
 						for (const key of Object.keys(state.cache)) {
 							if (state.cache[key].users) {

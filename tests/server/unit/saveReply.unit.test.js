@@ -156,17 +156,17 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Clear the handler cache and import it after setting up mocks
-const saveCommentPath = require.resolve("../../../server/session/saveComment.js")
-delete require.cache[saveCommentPath]
+const saveReplyPath = require.resolve("../../../server/session/saveReply.js")
+delete require.cache[saveReplyPath]
 
 // Import the handler we're testing (after mocking everything)
-const saveComment = require("../../../server/session/saveComment.js")
+const saveReply = require("../../../server/session/saveReply.js")
 
 // Import prompts for verification
 const prompts = require("../../../server/prompts.js")
 
 const tests = {
-	testSuccessfulTopicComment: async () => {
+	testSuccessfulPostReply: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -174,11 +174,11 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request for new comment on topic
+		// Setup mock request for new reply on topic
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'This is a test comment on a topic.',
+				body: 'This is a test reply on a topic.',
 				path: '/topic/test-topic-slug',
 				pngs: [
 					{ url: 'data:image/png;base64,image1data' }
@@ -211,10 +211,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						title: 'Test Topic Title',
+						title: 'Test Post Title',
 						body: 'Test topic body content',
 						note: null,
-						display_name: 'Topic Author',
+						display_name: 'Post Author',
 						image_uuids: 'topic-image-uuid'
 					}
 				]
@@ -224,13 +224,13 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ comment_id: 'new-comment-123' }
+					{ reply_id: 'new-reply-123' }
 				]
 			}
 		)
 		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] }) // subscriptions
 		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] }) // notifications
 		
@@ -247,7 +247,7 @@ const tests = {
 		}
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Allow async operations to complete (updateDisplayName happens after response)
 		await new Promise(resolve => setTimeout(resolve, 10))
@@ -275,24 +275,24 @@ const tests = {
 		assertEquals(
 			true,
 			moderationCall.messages.length >= 3,
-			"Should include topic, system response, and comment in messages."
+			"Should include topic, system response, and reply in messages."
 		)
 		assertEquals(
-			'Test Topic Title\n\nTest topic body content',
+			'Test Post Title\n\nTest topic body content',
 			moderationCall.messages[0].content[0].text,
 			"Should include topic title and body."
 		)
 		assertEquals(
-			'Test User:\nThis is a test comment on a topic.',
+			'Test User:\nThis is a test reply on a topic.',
 			moderationCall.messages[2].content[0].text,
-			"Should include comment with display name (original in content)."
+			"Should include reply with display name (original in content)."
 		)
 		
 		// Verify S3 operations
 		assertEquals(
 			2,
 			s3SendCalls.length,
-			"Should perform 2 S3 operations: get topic image + upload comment image."
+			"Should perform 2 S3 operations: get topic image + upload reply image."
 		)
 		assertEquals(
 			'GetObject',
@@ -302,7 +302,7 @@ const tests = {
 		assertEquals(
 			'PutObject',
 			s3SendCalls[1].commandType,
-			"Second S3 operation should upload comment image."
+			"Second S3 operation should upload reply image."
 		)
 		
 		// Verify updateDisplayName was called
@@ -349,7 +349,7 @@ const tests = {
 		)
 	},
 
-	testSuccessfulCommentReply: async () => {
+	testSuccessfulReplyReply: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -357,14 +357,14 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request for reply to comment
+		// Setup mock request for reply to reply
 		const req = createMockRequest(
 			{ 
 				display_name: 'Reply User',
-				body: 'This is a reply to another comment.',
-				path: '/comment/parent-comment-456',
+				body: 'This is a reply to another reply.',
+				path: '/reply/parent-reply-456',
 				pngs: [],
-				parent_comment_id: 'parent-comment-456'
+				parent_reply_id: 'parent-reply-456'
 			},
 			{ 
 				session_id: 'session-reply',
@@ -380,7 +380,7 @@ const tests = {
 			'SELECT parent_post_id',
 			{ 
 				rows: [
-					{ parent_post_id: 'topic-for-comment' }
+					{ parent_post_id: 'topic-for-reply' }
 				]
 			}
 		)
@@ -389,10 +389,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						title: 'Parent Topic',
+						title: 'Parent Post',
 						body: 'Parent topic content',
 						note: null,
-						display_name: 'Topic Creator',
+						display_name: 'Post Creator',
 						image_uuids: null
 					}
 				]
@@ -403,10 +403,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						display_name: 'Parent Comment Author',
-						body: 'Parent comment content',
+						display_name: 'Parent Reply Author',
+						body: 'Parent reply content',
 						note: null,
-						reply_id: 'parent-comment-456',
+						reply_id: 'parent-reply-456',
 						image_uuids: null
 					}
 				]
@@ -416,20 +416,20 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ comment_id: 'reply-comment-789' }
+					{ reply_id: 'reply-reply-789' }
 				]
 			}
 		)
 		req.client.addQueryMock('INSERT INTO reply_ancestors', { rows: [] })
 		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
 		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify AI moderation includes ancestor context
 		assertEquals(
@@ -442,17 +442,17 @@ const tests = {
 		assertEquals(
 			true,
 			moderationCall.messages.length >= 5,
-			"Should include topic, system, comments header, parent comment, system, and reply."
+			"Should include topic, system, replies header, parent reply, system, and reply."
 		)
 		assertEquals(
-			'Comments:',
+			'Replies:',
 			moderationCall.messages[2].content,
-			"Should include comments header."
+			"Should include replies header."
 		)
 		assertEquals(
-			'Parent Comment Author:\nParent comment content',
+			'Parent Reply Author:\nParent reply content',
 			moderationCall.messages[3].content[0].text,
-			"Should include parent comment context."
+			"Should include parent reply context."
 		)
 		
 		// Verify successful response
@@ -460,11 +460,11 @@ const tests = {
 		assertEquals(
 			true,
 			responseData.success,
-			"Should succeed with comment reply."
+			"Should succeed with reply reply."
 		)
 	},
 
-	testCommentUpdate: async () => {
+	testReplyUpdate: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -472,16 +472,16 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request for comment update
+		// Setup mock request for reply update
 		const req = createMockRequest(
 			{ 
 				display_name: 'Update User',
-				body: 'Updated comment content.',
+				body: 'Updated reply content.',
 				path: '/topic/test-slug',
 				pngs: [
 					{ url: 'data:image/png;base64,newimage' }
 				],
-				comment_id: 'existing-comment-123'
+				reply_id: 'existing-reply-123'
 			},
 			{ 
 				session_id: 'session-update',
@@ -496,10 +496,10 @@ const tests = {
 		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-update' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
-				title: 'Topic Title',
-				body: 'Topic body',
+				title: 'Post Title',
+				body: 'Post body',
 				note: null,
-				display_name: 'Topic Author',
+				display_name: 'Post Author',
 				image_uuids: null // No topic images
 			}]
 		})
@@ -512,14 +512,14 @@ const tests = {
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
 		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Allow async operations to complete
 		await new Promise(resolve => setTimeout(resolve, 10))
@@ -561,11 +561,11 @@ const tests = {
 		assertEquals(
 			true,
 			responseData.success,
-			"Should succeed with comment update."
+			"Should succeed with reply update."
 		)
 	},
 
-	testSpamCommentRejected: async () => {
+	testSpamReplyRejected: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -586,7 +586,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: 'Spam User',
-				body: 'Spam comment content',
+				body: 'Spam reply content',
 				path: '/topic/test-slug',
 				pngs: []
 			},
@@ -601,10 +601,10 @@ const tests = {
 		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-spam' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
-				title: 'Topic Title',
-				body: 'Topic body',
+				title: 'Post Title',
+				body: 'Post body',
 				note: null,
-				display_name: 'Topic Author',
+				display_name: 'Post Author',
 				image_uuids: null // No topic images
 			}]
 		})
@@ -612,7 +612,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify AI was called for moderation
 		assertEquals(
@@ -659,7 +659,7 @@ const tests = {
 		}
 	},
 
-	testFlaggedCommentCreated: async () => {
+	testFlaggedReplyCreated: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -680,7 +680,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: 'Flag User',
-				body: 'Inappropriate comment content',
+				body: 'Inappropriate reply content',
 				path: '/topic/test-slug',
 				pngs: []
 			},
@@ -697,10 +697,10 @@ const tests = {
 		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-flag' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
-				title: 'Topic Title',
-				body: 'Topic body',
+				title: 'Post Title',
+				body: 'Post body',
 				note: null,
-				display_name: 'Topic Author',
+				display_name: 'Post Author',
 				image_uuids: null // No topic images
 			}]
 		})
@@ -708,13 +708,13 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ comment_id: 'flagged-comment-456' }
+					{ reply_id: 'flagged-reply-456' }
 				]
 			}
 		)
 		req.client.addQueryMock('UPDATE replies', { rows: [] })
 		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
 		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
 		
@@ -731,7 +731,7 @@ const tests = {
 		}
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Allow async operations to complete
 		await new Promise(resolve => setTimeout(resolve, 10))
@@ -743,7 +743,7 @@ const tests = {
 			"Should call AI for moderation."
 		)
 		
-		// Verify comment was still created but flagged (no topic images, no comment images)
+		// Verify reply was still created but flagged (no topic images, no reply images)
 		assertEquals(
 			0,
 			s3SendCalls.length,
@@ -755,7 +755,7 @@ const tests = {
 			"Should call updateDisplayName even for flagged content."
 		)
 		
-		// Verify successful response (flagged content still creates comment)
+		// Verify successful response (flagged content still creates reply)
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
@@ -782,7 +782,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: 'Notification User',
-				body: 'This comment should trigger notifications',
+				body: 'This reply should trigger notifications',
 				path: '/topic/notify-topic',
 				pngs: []
 			},
@@ -799,10 +799,10 @@ const tests = {
 		req.client.addQueryMock('SELECT post_id as topic_id', { rows: [{ topic_id: 'topic-notify' }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
-				title: 'Notify Topic',
-				body: 'Topic body',
+				title: 'Notify Post',
+				body: 'Post body',
 				note: null,
-				display_name: 'Topic Author',
+				display_name: 'Post Author',
 				image_uuids: null
 			}]
 		})
@@ -810,12 +810,12 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ comment_id: 'notify-comment-789' }
+					{ reply_id: 'notify-reply-789' }
 				]
 			}
 		)
 		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE topics', { rows: [] })
+		req.client.addQueryMock('UPDATE posts', { rows: [] })
 		
 		// Mock subscriptions for notifications
 		req.client.addQueryMock(
@@ -828,7 +828,7 @@ const tests = {
 						fcm_token: null
 					},
 					{
-						user_id: 'other-commenter',
+						user_id: 'other-replyer',
 						subscription_json: null,
 						fcm_token: '"fcm-token-123"'
 					}
@@ -842,7 +842,7 @@ const tests = {
 			{ 
 				rows: [
 					{ user_id: 'topic-author-user' },
-					{ user_id: 'other-commenter' }
+					{ user_id: 'other-replyer' }
 				]
 			}
 		)
@@ -863,7 +863,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Allow async notifications to process
 		await new Promise(resolve => setTimeout(resolve, 50))
@@ -888,9 +888,9 @@ const tests = {
 			"Web push should have correct title."
 		)
 		assertEquals(
-			'This comment should trigger notifications',
+			'This reply should trigger notifications',
 			webPushPayload.body,
-			"Web push should have comment body."
+			"Web push should have reply body."
 		)
 		assertEquals(
 			3,
@@ -906,9 +906,9 @@ const tests = {
 			"FCM should have correct title."
 		)
 		assertEquals(
-			'This comment should trigger notifications',
+			'This reply should trigger notifications',
 			fcmMessage.notification.body,
-			"FCM should have comment body."
+			"FCM should have reply body."
 		)
 		assertEquals(
 			3,
@@ -925,7 +925,7 @@ const tests = {
 		)
 	},
 
-	testTopicNotFound: async () => {
+	testPostNotFound: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -937,7 +937,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'Comment on non-existent topic',
+				body: 'Reply on non-existent topic',
 				path: '/topic/non-existent-slug',
 				pngs: []
 			},
@@ -957,7 +957,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify no AI or S3 operations
 		assertEquals(
@@ -986,7 +986,7 @@ const tests = {
 		)
 	},
 
-	testCommentNotFound: async () => {
+	testReplyNotFound: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -994,12 +994,12 @@ const tests = {
 		fcmSendCalls = []
 		updateDisplayNameCalls = []
 		
-		// Setup mock request with non-existent parent comment
+		// Setup mock request with non-existent parent reply
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'Reply to non-existent comment',
-				path: '/comment/non-existent-comment',
+				body: 'Reply to non-existent reply',
+				path: '/reply/non-existent-reply',
 				pngs: []
 			},
 			{ 
@@ -1009,23 +1009,23 @@ const tests = {
 			}
 		)
 		
-		// Setup database response for non-existent comment
+		// Setup database response for non-existent reply
 		req.client.addQueryMock(
 			'SELECT parent_post_id',
-			{ rows: [] } // No comment found
+			{ rows: [] } // No reply found
 		)
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify error response
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Path not found",
 			responseData.error,
-			"Should return path not found error for non-existent comment."
+			"Should return path not found error for non-existent reply."
 		)
 	},
 
@@ -1053,7 +1053,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -1085,7 +1085,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: 'Test User',
-				body: 'Test comment',
+				body: 'Test reply',
 				path: '/topic/test-slug',
 				pngs: []
 			},
@@ -1100,7 +1100,7 @@ const tests = {
 		res.writableEnded = true
 		
 		// Execute the handler
-		await saveComment(req, res)
+		await saveReply(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -1128,7 +1128,7 @@ const cleanup = () => {
 	delete require.cache[firebaseAppPath]
 	delete require.cache[firebaseMessagingPath]
 	// updateDisplayNamePath was removed
-	delete require.cache[saveCommentPath]
+	delete require.cache[saveReplyPath]
 }
 
 runTests(path.basename(__filename), Object.values(tests))

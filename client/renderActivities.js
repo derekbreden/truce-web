@@ -3,7 +3,7 @@ const renderActivities = (activities) => {
 	if (state.path === "/favorites") {
 		if (activities.length === 0) {
 			$("topic[favorites]")?.remove()
-			$("main-content-wrapper[active] topics").prepend(
+			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
 					topic[favorites]
@@ -24,7 +24,7 @@ const renderActivities = (activities) => {
 			)
 		} else {
 			$("topic[favorites]")?.remove()
-			$("main-content-wrapper[active] topics").prepend(
+			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
 					topic[favorites]
@@ -83,7 +83,7 @@ const renderActivities = (activities) => {
 					return false
 				}
 				reply_ids_rendered.push(activity.id)
-				reply_ids_rendered.push(activity.parent_comment_id)
+				reply_ids_rendered.push(activity.parent_reply_id)
 			}
 			if (state.version > 1) {
 			} else {
@@ -98,17 +98,17 @@ const renderActivities = (activities) => {
 				const $reply = renderReply(activity)
 				$reply.$("reply-wrapper button")?.remove()
 				let $reply_wrapper = $reply
-				if (activity.parent_comment_body) {
+				if (activity.parent_reply_body) {
 					const parent_reply = {
-						display_name: activity.parent_comment_display_name,
-						display_name_index: activity.parent_comment_display_name_index,
-						user_slug: activity.parent_comment_user_slug,
-						profile_picture_uuid: activity.parent_comment_profile_picture_uuid,
-						body: activity.parent_comment_body,
-						note: activity.parent_comment_note,
+						display_name: activity.parent_reply_display_name,
+						display_name_index: activity.parent_reply_display_name_index,
+						user_slug: activity.parent_reply_user_slug,
+						profile_picture_uuid: activity.parent_reply_profile_picture_uuid,
+						body: activity.parent_reply_body,
+						note: activity.parent_reply_note,
 					}
 					const $parent_reply = renderReply(parent_reply)
-					$parent_reply.setAttribute("parent-comment", "")
+					$parent_reply.setAttribute("parent-reply", "")
 					$parent_reply.$("reply-wrapper")?.remove()
 					$parent_reply.appendChild($reply)
 					$reply_wrapper = $parent_reply
@@ -158,15 +158,15 @@ const renderActivities = (activities) => {
 		$("main-content-wrapper[active] main-content-2 activities").replaceChildren(
 			$(
 				`
-				topics
+				posts
 				`,
 			),
 		)
-		$("main-content-wrapper[active] main-content-2 topics").replaceChildren(
+		$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 			...$activities,
 		)
 		if ($activities.length === 0) {
-			$("main-content-wrapper[active] main-content-2 topics").appendChild(
+			$("main-content-wrapper[active] main-content-2 posts").appendChild(
 				$(
 					`
 					all-clear-wrapper

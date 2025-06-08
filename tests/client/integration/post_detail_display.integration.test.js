@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testTopicDetailsDisplayOnDetailPage: async () => {
+	testPostDetailsDisplayOnDetailPage: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
@@ -13,10 +13,10 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [
+				posts: [
 					{
 						slug: "test-topic-for-details",
-						title: "Test Topic for Details",
+						title: "Test Post for Details",
 						body: "Short body for testing details display.",
 						user_slug: "user-details",
 						display_name: "User Details",
@@ -28,14 +28,14 @@ const tests = {
 						poll_1: null,
 						favorited: false,
 						favorite_count: 3,
-						commented: false,
-						comment_count: 5,
+						replyed: false,
+						reply_count: 5,
 						image_uuids: null,
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null, // Default values, can be customized if test needs specific user context
@@ -45,15 +45,15 @@ const tests = {
 				display_name: null,
 				profile_picture_uuid: null,
 				display_name_index: 0,
-				has_more: false, // Important for renderTopics to know if "load more" should be shown
+				has_more: false, // Important for renderPosts to know if "load more" should be shown
 			},
 			"/post/test-topic-for-details": {
 				path: "/post/test-topic-for-details",
-				topics: [
+				posts: [
 					{
-						// getSingleTopic returns data in "topics" array
+						// getSinglePost returns data in "posts" array
 						slug: "test-topic-for-details",
-						title: "Test Topic for Details",
+						title: "Test Post for Details",
 						body: "Full body for the test topic, ensuring details are shown.",
 						user_slug: "user-details",
 						display_name: "User Details",
@@ -71,14 +71,14 @@ const tests = {
 						user_poll_choice: null,
 						favorited: false,
 						favorite_count: 3,
-						commented: false,
-						comment_count: 5,
+						replyed: false,
+						reply_count: 5,
 						image_uuids: null,
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [], // Start with no comments for this specific test
+				replies: [], // Start with no replies for this specific test
 				activities: [],
 				notifications: [],
 				user_slug: null, // Default values
@@ -105,11 +105,11 @@ const tests = {
 			state.path,
 			"Path should be /posts after agreeing to terms.",
 		)
-		const $topicsWrapper = $("topics")
+		const $postsWrapper = $("posts")
 		assertEquals(
 			true,
-			Boolean($topicsWrapper),
-			"Topics wrapper element should be present on /posts page.",
+			Boolean($postsWrapper),
+			"Posts wrapper element should be present on /posts page.",
 		)
 
 		// 2. Simulate at least one topic appearing on the /posts page
@@ -117,23 +117,23 @@ const tests = {
 		// The navigation.integration.test.js uses a similar approach.
 		// The manual topic injection is no longer needed as fetch mock will provide the topic.
 
-		const $firstTopicElement = $("topics > topic[trimmed]")
+		const $firstPostElement = $("posts > topic[trimmed]")
 
 		// 3. Click the topic to navigate to its detail page
-		$firstTopicElement.click()
+		$firstPostElement.click()
 
 		// Wait for navigation and rendering to the detail page
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		const expectedTopicPath = "/post/test-topic-for-details"
+		const expectedPostPath = "/post/test-topic-for-details"
 		assertEquals(
-			expectedTopicPath,
+			expectedPostPath,
 			state.path,
-			`Path should be "${expectedTopicPath}" after clicking the topic.`,
+			`Path should be "${expectedPostPath}" after clicking the topic.`,
 		)
 
 		// 4. Assert that topic detail specific elements are rendered
-		// As per renderTopic.js, these details are within a "topic-details[detail-wrapper]"
+		// As per renderPost.js, these details are within a "topic-details[detail-wrapper]"
 		const $topicDetailsWrapper = $(
 			"main-content-wrapper[active] topic topic-details[detail-wrapper]",
 		)
@@ -149,15 +149,15 @@ const tests = {
 			`Favorite count should be "3".`,
 		)
 
-		const $commentsDetail =
-			$topicDetailsWrapper.querySelector("detail[comments]")
+		const $repliesDetail =
+			$topicDetailsWrapper.querySelector("detail[replies]")
 
-		const $commentCountElement = $commentsDetail.querySelector("p")
+		const $replyCountElement = $repliesDetail.querySelector("p")
 		// Assert the actual count from the mocked API response
 		assertEquals(
 			"5",
-			$commentCountElement.innerText.trim(),
-			`Comment count should be "5".`,
+			$replyCountElement.innerText.trim(),
+			`Reply count should be "5".`,
 		)
 	},
 }

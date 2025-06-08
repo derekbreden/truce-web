@@ -1,9 +1,9 @@
 const pending_block_saves = []
 let active_block_save = null
-const markBlocked = async (topic_or_comment) => {
+const markBlocked = async (topic_or_reply) => {
 	// Set some variables
-	const topic_id = topic_or_comment.topic_id || topic_or_comment.id
-	const comment_id = topic_or_comment.comment_id || topic_or_comment.id
+	const topic_id = topic_or_reply.topic_id || topic_or_reply.id
+	const reply_id = topic_or_reply.reply_id || topic_or_reply.id
 
 	// Alert the user to the change
 	alertInfo("User was blocked")
@@ -14,8 +14,8 @@ const markBlocked = async (topic_or_comment) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				topic_id_to_block: topic_or_comment.$post ? topic_id : 0,
-				comment_id_to_block: topic_or_comment.$reply ? comment_id : 0,
+				topic_id_to_block: topic_or_reply.$post ? topic_id : 0,
+				reply_id_to_block: topic_or_reply.$reply ? reply_id : 0,
 			}),
 		})
 			.then((response) => response.json())
@@ -47,7 +47,7 @@ const markBlocked = async (topic_or_comment) => {
 		} else {
 			active_block_save = false
 			state.cache = {}
-			goToPath("/topics")
+			goToPath("/posts")
 		}
 	}
 

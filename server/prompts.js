@@ -126,8 +126,8 @@ You will always respond with one of these five keywords, followed by an optional
 **Definitions and Examples**:
 
 - **Escalation**:
-  - Definition: Any behavior or language that moves further from peace and more towards anger, conflict, or violence. This includes accusing others of escalating or stoking fear or anger. This does not include simple disagreement, even on the most controversial of topics. The whole point of the site is to encourage the most controversial conversations to be had in the most boring and neutral way possible. DO NOT use this label simply for introducing a sensitive and divisive topic. 
-  - Example: If a user posts, "You're delusional and your ideas are dangerous," respond with: {"keyword": "Escalation", "note": "This comment intensifies conflict by using hostile language that moves the conversation away from peaceful dialogue and towards anger."}
+  - Definition: Any behavior or language that moves further from peace and more towards anger, conflict, or violence. This includes accusing others of escalating or stoking fear or anger. This does not include simple disagreement, even on the most controversial of posts. The whole point of the site is to encourage the most controversial conversations to be had in the most boring and neutral way possible. DO NOT use this label simply for introducing a sensitive and divisive topic. 
+  - Example: If a user posts, "You're delusional and your ideas are dangerous," respond with: {"keyword": "Escalation", "note": "This reply intensifies conflict by using hostile language that moves the conversation away from peaceful dialogue and towards anger."}
   - Example: If a user posts, "Embryos are human life," respond with: {"keyword": "OK"}
   - Example: If a user posts, "Gun control doesn't reduce gun violence," respond with: {"keyword": "OK"}
 
@@ -189,8 +189,8 @@ By following these guidelines and examples, you will ensure that content moderat
    **Definitions and Examples**:
 
    - **Escalation**:
-     - Definition: Any behavior or language that moves further from peace and more towards anger, conflict, or violence. This includes accusing others of escalating or stoking fear or anger. This does not include simple disagreement, even on the most controversial of topics. The whole point of the site is to encourage the most controversial conversations to be had in the most boring and neutral way possible. DO NOT use this label simply for introducing a sensitive and divisive topic. 
-     - Example: If a user posts, "You're delusional and your ideas are dangerous," respond with: {"keyword": "Escalation", "note": "This comment intensifies conflict by using hostile language that moves the conversation away from peaceful dialogue and towards anger."}
+     - Definition: Any behavior or language that moves further from peace and more towards anger, conflict, or violence. This includes accusing others of escalating or stoking fear or anger. This does not include simple disagreement, even on the most controversial of posts. The whole point of the site is to encourage the most controversial conversations to be had in the most boring and neutral way possible. DO NOT use this label simply for introducing a sensitive and divisive topic. 
+     - Example: If a user posts, "You're delusional and your ideas are dangerous," respond with: {"keyword": "Escalation", "note": "This reply intensifies conflict by using hostile language that moves the conversation away from peaceful dialogue and towards anger."}
      - Example: If a user posts, "Embryos are human life," respond with: {"keyword": "OK"}
      - Example: If a user posts, "Gun control doesn't reduce gun violence," respond with: {"keyword": "OK"}
 
@@ -202,7 +202,7 @@ By following these guidelines and examples, you will ensure that content moderat
      - Definition: Using derogatory or offensive names to address or refer to someone.
      - Example: If a user posts, "You are a fascist who supports a fascist leader," respond with: {"keyword: "Name-calling", "note": "Calling someone a fascist without them identifying as such is an example of name-calling. This type of labeling obstructs constructive and respectful dialogue."}
 
-   Because the content you will be evaluating is a poll, it is especially important that sensitive and divisive topics be allowed. Further, the goal for polls is to achieve balance. Even if one of the answers is clearly upsetting to many people, as long as the range of choices available allows all to participate, then your response should always be {"keyword": "OK"}.`,
+   Because the content you will be evaluating is a poll, it is especially important that sensitive and divisive posts be allowed. Further, the goal for polls is to achieve balance. Even if one of the answers is clearly upsetting to many people, as long as the range of choices available allows all to participate, then your response should always be {"keyword": "OK"}.`,
 	poll_response_format: {
 		type: "json_schema",
 		json_schema: {

@@ -54,7 +54,7 @@ const tests = {
 	testCreateUserOnTitle: async () => {
 		// Setup mock request with title field
 		const req = createMockRequest(
-			{ title: "New Topic Title" },
+			{ title: "New Post Title" },
 			{ session_id: 'session-123', user_id: null }
 		)
 		req.results = {}
@@ -84,7 +84,7 @@ const tests = {
 		// Test various favorite actions trigger user creation
 		const favoriteActions = [
 			{ topic_id_to_favorite: 'topic-123' },
-			{ comment_id_to_favorite: 'comment-456' }
+			{ reply_id_to_favorite: 'reply-456' }
 		]
 		
 		for (let i = 0; i < favoriteActions.length; i++) {
@@ -121,7 +121,7 @@ const tests = {
 		// Test various block actions trigger user creation
 		const blockActions = [
 			{ topic_id_to_block: 'topic-123' },
-			{ comment_id_to_block: 'comment-456' }
+			{ reply_id_to_block: 'reply-456' }
 		]
 		
 		for (let i = 0; i < blockActions.length; i++) {
@@ -158,7 +158,7 @@ const tests = {
 		// Test various flag actions trigger user creation
 		const flagActions = [
 			{ topic_id_to_flag: 'topic-123' },
-			{ comment_id_to_flag: 'comment-456' }
+			{ reply_id_to_flag: 'reply-456' }
 		]
 		
 		for (let i = 0; i < flagActions.length; i++) {
@@ -380,7 +380,7 @@ const tests = {
 	testEmptyEmailAndDisplayName: async () => {
 		// Verify that user is created with empty email and display_name
 		const req = createMockRequest(
-			{ title: "New Topic" },
+			{ title: "New Post" },
 			{ session_id: 'session-123', user_id: null }
 		)
 		req.results = {}
@@ -411,7 +411,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				display_name: "Multi User",
-				title: "New Topic",
+				title: "New Post",
 				topic_id_to_favorite: 'topic-123'
 			},
 			{ session_id: 'session-123', user_id: undefined }

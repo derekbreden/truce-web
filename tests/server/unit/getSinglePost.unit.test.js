@@ -7,16 +7,16 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Import the handler we're testing
-const getSingleTopic = require("../../../server/session/getSingleTopic.js")
+const getSinglePost = require("../../../server/session/getSinglePost.js")
 
 const tests = {
-	testGetSingleTopicWithComments: async () => {
+	testGetSinglePostWithReplies: async () => {
 		// Setup mock request for topic path
 		const req = createMockRequest(
 			{ path: "/post/sample-topic-slug" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database responses for complete topic load
 		req.client.addQueryMock(
@@ -26,9 +26,9 @@ const tests = {
 					{
 						create_date: '2024-01-15T10:00:00Z',
 						topic_id: 'topic-123',
-						title: 'Sample Topic Title',
+						title: 'Sample Post Title',
 						user_id: 'user-789',
-						display_name: 'Topic Author',
+						display_name: 'Post Author',
 						display_name_index: 0,
 						user_slug: 'topic-author',
 						profile_picture_uuid: 'pic-uuid-1',
@@ -41,37 +41,37 @@ const tests = {
 						poll_4: null,
 						poll_counts: '5,3',
 						poll_counts_estimated: false,
-						note: 'Topic note',
+						note: 'Post note',
 						favorite_count: 10,
-						comment_count: 5,
+						reply_count: 5,
 						counts_max_create_date: '2024-01-15T11:00:00Z',
 						edit: false,
 						image_uuids: 'img1,img2',
 						favorited: true,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'technology,science'
 					}
 				]
 			}
 		)
-		// Mock for root comments
+		// Mock for root replies
 		req.client.addQueryMock(
 			'r.parent_reply_id IS NULL',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:30:00Z',
-						comment_id: 'comment-1',
-						body: 'First root comment',
-						note: 'Comment note',
-						parent_comment_id: null,
+						reply_id: 'reply-1',
+						body: 'First root reply',
+						note: 'Reply note',
+						parent_reply_id: null,
 						favorite_count: 2,
 						counts_max_create_date: '2024-01-15T10:35:00Z',
 						user_id: 'user-456',
-						display_name: 'Commenter 1',
+						display_name: 'Replyer 1',
 						display_name_index: 0,
-						user_slug: 'commenter1',
+						user_slug: 'replyer1',
 						profile_picture_uuid: null,
 						user_verified: false,
 						edit: true,
@@ -81,17 +81,17 @@ const tests = {
 				]
 			}
 		)
-		// Mock for reply comments
+		// Mock for reply replies
 		req.client.addQueryMock(
 			'r.parent_reply_id IS NOT NULL',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:45:00Z',
-						comment_id: 'comment-2',
-						body: 'Reply to first comment',
+						reply_id: 'reply-2',
+						body: 'Reply to first reply',
 						note: '',
-						parent_comment_id: 'comment-1',
+						parent_reply_id: 'reply-1',
 						favorite_count: 1,
 						user_id: 'user-999',
 						display_name: 'Replier',
@@ -107,7 +107,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Verify topic was loaded
 		assertEquals(
@@ -117,63 +117,63 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
+			req.results.posts.length,
 			"Should return single topic."
 		)
 		assertEquals(
-			'Sample Topic Title',
-			req.results.topics[0].title,
+			'Sample Post Title',
+			req.results.posts[0].title,
 			"Should include topic title."
 		)
 		assertEquals(
 			'This is the topic body content',
-			req.results.topics[0].body,
+			req.results.posts[0].body,
 			"Should include topic body."
 		)
 		assertEquals(
 			'technology,science',
-			req.results.topics[0].tags,
+			req.results.posts[0].tags,
 			"Should include topic tags."
 		)
 		
-		// Verify comments were loaded
+		// Verify replies were loaded
 		assertEquals(
 			2,
-			req.results.comments.length,
-			"Should load root and reply comments."
+			req.results.replies.length,
+			"Should load root and reply replies."
 		)
 		assertEquals(
-			'comment-1',
-			req.results.comments[0].comment_id,
-			"First comment should be root comment."
+			'reply-1',
+			req.results.replies[0].reply_id,
+			"First reply should be root reply."
 		)
 		assertEquals(
 			null,
-			req.results.comments[0].parent_comment_id,
-			"Root comment should have null parent."
+			req.results.replies[0].parent_reply_id,
+			"Root reply should have null parent."
 		)
 		assertEquals(
-			'comment-2',
-			req.results.comments[1].comment_id,
-			"Second comment should be reply."
+			'reply-2',
+			req.results.replies[1].reply_id,
+			"Second reply should be reply."
 		)
 		assertEquals(
-			'comment-1',
-			req.results.comments[1].parent_comment_id,
-			"Reply should reference parent comment."
+			'reply-1',
+			req.results.replies[1].parent_reply_id,
+			"Reply should reference parent reply."
 		)
 	},
 
-	testGetTopicOnlyWithMaxCommentDate: async () => {
-		// Test when max_comment_create_date is provided (skips topic loading)
+	testGetPostOnlyWithMaxReplyDate: async () => {
+		// Test when max_reply_create_date is provided (skips topic loading)
 		const req = createMockRequest(
 			{ 
 				path: "/post/sample-topic-slug",
-				max_comment_create_date: '2024-01-15T12:00:00Z'
+				max_reply_create_date: '2024-01-15T12:00:00Z'
 			},
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mocks for topic_id lookup only
 		req.client.addQueryMock(
@@ -193,7 +193,7 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Should set path but not load topic details
 		assertEquals(
@@ -203,23 +203,23 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.topics.length,
-			"Should not load topic when max_comment_create_date provided."
+			req.results.posts.length,
+			"Should not load topic when max_reply_create_date provided."
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should load comments (empty in this test)."
+			req.results.replies.length,
+			"Should load replies (empty in this test)."
 		)
 	},
 
-	testTopicNotFound: async () => {
+	testPostNotFound: async () => {
 		// Test when topic doesn't exist or is blocked/flagged
 		const req = createMockRequest(
 			{ path: "/topic/nonexistent-topic" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock responses for no results
 		req.client.addQueryMock(
@@ -233,7 +233,7 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Verify no results
 		assertEquals(
@@ -243,28 +243,28 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.topics.length,
-			"Should return empty topics array."
+			req.results.posts.length,
+			"Should return empty posts array."
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should return empty comments array."
+			req.results.replies.length,
+			"Should return empty replies array."
 		)
 	},
 
 	testNoActionWhenWrongPath: async () => {
 		// Setup mock request with wrong path format
 		const req = createMockRequest(
-			{ path: "/comment/123" },
+			{ path: "/reply/123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -274,7 +274,7 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.topics.length,
+			req.results.posts.length,
 			"Should not load topic for wrong path."
 		)
 	},
@@ -285,14 +285,14 @@ const tests = {
 			{ path: "/topic/sample-topic" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		// Simulate response already ended
 		res.writableEnded = true
 		
 		// Execute the handler
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -315,7 +315,7 @@ const tests = {
 				{ path: testCase.path },
 				{ user_id: 'user-456' }
 			)
-			req.results = { topics: [], comments: [] }
+			req.results = { posts: [], replies: [] }
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
@@ -324,7 +324,7 @@ const tests = {
 					rows: [
 						{
 							topic_id: 'topic-test',
-							title: 'Test Topic',
+							title: 'Test Post',
 							slug: testCase.expectedSlug,
 							user_id: 'user-789',
 							display_name: 'Author'
@@ -343,11 +343,11 @@ const tests = {
 			
 			const res = createMockResponse()
 			
-			await getSingleTopic(req, res)
+			await getSinglePost(req, res)
 			
 			assertEquals(
 				testCase.expectedSlug,
-				req.results.topics[0].slug,
+				req.results.posts[0].slug,
 				`Should extract slug correctly from path: ${testCase.path}.`
 			)
 		}
@@ -359,7 +359,7 @@ const tests = {
 			{ path: "/topic/poll-topic" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -367,7 +367,7 @@ const tests = {
 				rows: [
 					{
 						topic_id: 'poll-topic-123',
-						title: 'Poll Topic',
+						title: 'Poll Post',
 						slug: 'poll-topic',
 						poll_1: 'Yes',
 						poll_2: 'No',
@@ -393,9 +393,9 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
-		const topic = req.results.topics[0]
+		const topic = req.results.posts[0]
 		
 		// Verify poll data
 		assertEquals('Yes', topic.poll_1, "Should include poll option 1.")
@@ -413,7 +413,7 @@ const tests = {
 			{ path: "/topic/user-topic" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -421,12 +421,12 @@ const tests = {
 				rows: [
 					{
 						topic_id: 'user-topic-123',
-						title: 'User Topic',
+						title: 'User Post',
 						user_id: 'user-456', // Same as requesting user
 						display_name: 'Current User',
 						edit: true,
 						favorited: false,
-						commented: true,
+						replyed: true,
 						voted: false
 					}
 				]
@@ -443,14 +443,14 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
-		const topic = req.results.topics[0]
+		const topic = req.results.posts[0]
 		
 		// Verify user permissions and status
 		assertEquals(true, topic.edit, "User should be able to edit their own topic.")
 		assertEquals(false, topic.favorited, "Should show favorited status.")
-		assertEquals(true, topic.commented, "Should show if user commented.")
+		assertEquals(true, topic.replyed, "Should show if user replyed.")
 		assertEquals(false, topic.voted, "Should show if user voted.")
 	},
 
@@ -460,7 +460,7 @@ const tests = {
 			{ path: "/topic/public-topic" },
 			{ user_id: undefined }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -468,12 +468,12 @@ const tests = {
 				rows: [
 					{
 						topic_id: 'public-topic-123',
-						title: 'Public Topic',
+						title: 'Public Post',
 						user_id: 'user-789',
 						display_name: 'Author',
 						edit: false,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						voted: false
 					}
 				]
@@ -490,33 +490,33 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Guest user should be able to view topic
 		assertEquals(
 			1,
-			req.results.topics.length,
+			req.results.posts.length,
 			"Guest user should be able to view topic."
 		)
 		assertEquals(
 			false,
-			req.results.topics[0].edit,
+			req.results.posts[0].edit,
 			"Guest user should not have edit permissions."
 		)
 	},
 
 	testWithDateFilters: async () => {
-		// Test with date filtering for topic and comments
+		// Test with date filtering for topic and replies
 		const req = createMockRequest(
 			{ 
 				path: "/topic/filtered-topic",
 				min_topic_create_date: '2024-01-10T00:00:00Z',
-				min_comment_create_date: '2024-01-12T00:00:00Z'
-				// max_comment_create_date removed so topic will be loaded
+				min_reply_create_date: '2024-01-12T00:00:00Z'
+				// max_reply_create_date removed so topic will be loaded
 			},
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -524,7 +524,7 @@ const tests = {
 				rows: [
 					{
 						topic_id: 'filtered-topic-123',
-						title: 'Filtered Topic',
+						title: 'Filtered Post',
 						create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-789',
 						display_name: 'Author'
@@ -537,11 +537,11 @@ const tests = {
 			{ 
 				rows: [
 					{
-						comment_id: 'filtered-comment-1',
-						body: 'Filtered comment',
+						reply_id: 'filtered-reply-1',
+						body: 'Filtered reply',
 						create_date: '2024-01-14T10:00:00Z',
 						user_id: 'user-456',
-						display_name: 'Commenter'
+						display_name: 'Replyer'
 					}
 				]
 			}
@@ -553,28 +553,28 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Should handle date filtering (topic date 2024-01-15 > min date 2024-01-10)
 		assertEquals(
 			1,
-			req.results.topics.length,
+			req.results.posts.length,
 			"Should return filtered topic."
 		)
 		assertEquals(
 			1,
-			req.results.comments.length,
-			"Should return filtered comments."
+			req.results.replies.length,
+			"Should return filtered replies."
 		)
 	},
 
-	testTopicFields: async () => {
+	testPostFields: async () => {
 		// Test that all expected topic fields are present
 		const req = createMockRequest(
 			{ path: "/topic/complete-topic" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -583,7 +583,7 @@ const tests = {
 					{
 						create_date: '2024-01-15T10:00:00Z',
 						topic_id: 'complete-topic-123',
-						title: 'Complete Topic Title',
+						title: 'Complete Post Title',
 						user_id: 'user-789',
 						display_name: 'Complete Author',
 						display_name_index: 2,
@@ -598,14 +598,14 @@ const tests = {
 						poll_4: null,
 						poll_counts: '8,3',
 						poll_counts_estimated: true,
-						note: 'Topic note',
+						note: 'Post note',
 						favorite_count: 15,
-						comment_count: 8,
+						reply_count: 8,
 						counts_max_create_date: '2024-01-15T11:00:00Z',
 						edit: false,
 						image_uuids: 'img1,img2,img3',
 						favorited: true,
-						commented: true,
+						replyed: true,
 						voted: false,
 						tags: 'technology,science,innovation'
 					}
@@ -623,14 +623,14 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
-		const topic = req.results.topics[0]
+		const topic = req.results.posts[0]
 		
 		// Verify all fields are present
 		assertEquals('2024-01-15T10:00:00Z', topic.create_date, "Should have create_date.")
 		assertEquals('complete-topic-123', topic.topic_id, "Should have topic_id.")
-		assertEquals('Complete Topic Title', topic.title, "Should have title.")
+		assertEquals('Complete Post Title', topic.title, "Should have title.")
 		assertEquals('user-789', topic.user_id, "Should have user_id.")
 		assertEquals('Complete Author', topic.display_name, "Should have display_name.")
 		assertEquals(2, topic.display_name_index, "Should have display_name_index.")
@@ -643,25 +643,25 @@ const tests = {
 		assertEquals('Poll Option 2', topic.poll_2, "Should have poll_2.")
 		assertEquals('8,3', topic.poll_counts, "Should have poll_counts.")
 		assertEquals(true, topic.poll_counts_estimated, "Should have poll_counts_estimated.")
-		assertEquals('Topic note', topic.note, "Should have note.")
+		assertEquals('Post note', topic.note, "Should have note.")
 		assertEquals(15, topic.favorite_count, "Should have favorite_count.")
-		assertEquals(8, topic.comment_count, "Should have comment_count.")
+		assertEquals(8, topic.reply_count, "Should have reply_count.")
 		assertEquals('2024-01-15T11:00:00Z', topic.counts_max_create_date, "Should have counts_max_create_date.")
 		assertEquals(false, topic.edit, "Should have edit permission.")
 		assertEquals('img1,img2,img3', topic.image_uuids, "Should have image_uuids.")
 		assertEquals(true, topic.favorited, "Should have favorited status.")
-		assertEquals(true, topic.commented, "Should have commented status.")
+		assertEquals(true, topic.replyed, "Should have replyed status.")
 		assertEquals(false, topic.voted, "Should have voted status.")
 		assertEquals('technology,science,innovation', topic.tags, "Should have tags.")
 	},
 
-	testEmptyTopicSlug: async () => {
+	testEmptyPostSlug: async () => {
 		// Test edge case with empty topic slug
 		const req = createMockRequest(
 			{ path: "/topic/" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
 			'FROM posts p',
@@ -674,7 +674,7 @@ const tests = {
 		
 		const res = createMockResponse()
 		
-		await getSingleTopic(req, res)
+		await getSinglePost(req, res)
 		
 		// Should handle empty slug gracefully
 		assertEquals(
@@ -684,7 +684,7 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.topics.length,
+			req.results.posts.length,
 			"Should return empty results for empty slug."
 		)
 	}

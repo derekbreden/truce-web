@@ -1,7 +1,7 @@
-const forEachCachedTopic = (callback) => {
+const forEachCachedPost = (callback) => {
 	const cache_keys = Object.keys(state.cache)
 	for (const cache_key of cache_keys) {
-		state.cache[cache_key].topics.forEach(callback)
+		state.cache[cache_key].posts.forEach(callback)
 		state.cache[cache_key].activities.forEach((activity) => {
 			if (activity.type === "topic") {
 				activity.topic_id = activity.id
@@ -10,13 +10,13 @@ const forEachCachedTopic = (callback) => {
 		})
 	}
 }
-const forEachCachedComment = (callback) => {
+const forEachCachedReply = (callback) => {
 	const cache_keys = Object.keys(state.cache)
 	for (const cache_key of cache_keys) {
-		state.cache[cache_key].comments.forEach(callback)
+		state.cache[cache_key].replies.forEach(callback)
 		state.cache[cache_key].activities.forEach((activity) => {
-			if (activity.type === "comment") {
-				activity.comment_id = activity.id
+			if (activity.type === "reply") {
+				activity.reply_id = activity.id
 				callback(activity)
 			}
 		})

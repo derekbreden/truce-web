@@ -18,13 +18,13 @@ const parsePath = () => {
 		state.reset_token_uuid = new_paths[1] || ""
 	} else if ((new_paths[0] === "topic" || new_paths[0] === "post") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if ((new_paths[0] === "comment" || new_paths[0] === "reply") && new_paths[1]) {
+	} else if ((new_paths[0] === "reply" || new_paths[0] === "reply") && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "tag" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0] === "user" && new_paths[1]) {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if ((new_paths[0] === "posts" || new_paths[0] === "topics") && new_paths[1] === "all") {
+	} else if ((new_paths[0] === "posts" || new_paths[0] === "posts") && new_paths[1] === "all") {
 		new_path = "/" + new_paths[0] + "/" + new_paths[1]
 	} else if (new_paths[0]) {
 		new_path = "/" + new_paths[0]

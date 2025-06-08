@@ -34,7 +34,7 @@ const tests = {
 		)
 		// Third query: Update topic with counts
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -92,7 +92,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -128,7 +128,7 @@ const tests = {
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -171,7 +171,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -231,7 +231,7 @@ const tests = {
 		)
 	},
 
-	testNoActionWhenMissingTopicId: async () => {
+	testNoActionWhenMissingPostId: async () => {
 		// Setup mock request without topic_id
 		const req = createMockRequest({
 			poll_choice: '1'
@@ -292,7 +292,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -335,7 +335,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		

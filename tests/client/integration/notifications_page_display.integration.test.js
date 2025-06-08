@@ -14,8 +14,8 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -31,8 +31,8 @@ const tests = {
 				// For the actual notifications page
 				path: "/notifications",
 				notifications: [], // Start with an empty list of notifications
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [], // Other data that might be part of a standard page response
 				user_slug: null,
 				subscribed_to_users: 0,
@@ -45,7 +45,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -70,9 +70,9 @@ const tests = {
 		const $mainContent = $mainContentWrapper.$("main-content")
 
 		// Based on renderNotifications.js, when state.email is null (as in mock),
-		// the header is <topics[notifications-header]><topic><h2>Alerts</h2>...</topic></posts>
+		// the header is <posts[notifications-header]><topic><h2>Alerts</h2>...</topic></posts>
 		const $notificationsPageHeader = $mainContent.$(
-			"topics[notifications-header] topic h2",
+			"posts[notifications-header] topic h2",
 		)
 		assertEquals(
 			"Alerts",

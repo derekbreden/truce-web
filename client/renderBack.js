@@ -24,12 +24,12 @@ const renderBack = () => {
 					p $1
 			`,
 			[
-				previous_path === "/topics" || previous_path === "/topics/all"
-					? "Topics"
+				previous_path === "/posts" || previous_path === "/posts/all"
+					? "Posts"
 					: previous_path?.substr(0, 6) === "/reply"
-						? "Comment thread"
+						? "Reply thread"
 						: previous_path?.substr(0, 6) === "/post/"
-							? state.cache[previous_path].topics[0].title
+							? state.cache[previous_path].posts[0].title
 							: previous_path === "/"
 								? "Terms and conditions"
 								: previous_path === "/notifications"

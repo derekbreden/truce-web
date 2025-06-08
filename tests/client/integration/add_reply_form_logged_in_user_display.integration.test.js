@@ -5,11 +5,11 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testLoggedInUserSeesDisplayNamePrefilledInAddCommentForm: async () => {
+	testLoggedInUserSeesDisplayNamePrefilledInAddReplyForm: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
-		// 1. Define Mock User and Topic Data
+		// 1. Define Mock User and Post Data
 		const mockUser = {
 			user_slug: "test-user",
 			display_name: "Test User Name",
@@ -18,18 +18,18 @@ const tests = {
 			profile_picture_uuid: "test-pic-uuid",
 		}
 
-		const mockTopic = {
+		const mockPost = {
 			topic_id: "topic-id-789",
 			slug: "test-topic-slug",
-			title: "Test Topic Title",
+			title: "Test Post Title",
 			body: "This is the body of the test topic.",
 			user_slug: "another-user",
-			display_name: "Topic Author Name",
+			display_name: "Post Author Name",
 			tags: "general",
-			comment_count: 0,
+			reply_count: 0,
 			favorite_count: 0,
 			favorited: false,
-			commented: false,
+			replyed: false,
 			image_uuids: null,
 			profile_picture_uuid: null,
 			display_name_index: 0,
@@ -48,8 +48,8 @@ const tests = {
 				user_slug: mockUser.user_slug,
 				display_name: mockUser.display_name,
 				profile_picture_uuid: mockUser.profile_picture_uuid,
-				topics: [mockTopic],
-				comments: [],
+				posts: [mockPost],
+				replies: [],
 				activities: [],
 				notifications: [],
 				subscribed_to_users: 0,
@@ -57,15 +57,15 @@ const tests = {
 				has_more: false,
 				tag: null,
 			},
-			[`/post/${mockTopic.slug}`]: {
-				path: `/post/${mockTopic.slug}`,
+			[`/post/${mockPost.slug}`]: {
+				path: `/post/${mockPost.slug}`,
 				user_id: mockUser.user_id,
 				email: mockUser.email,
 				user_slug: mockUser.user_slug,
 				display_name: mockUser.display_name,
 				profile_picture_uuid: mockUser.profile_picture_uuid,
-				topics: [mockTopic],
-				comments: [],
+				posts: [mockPost],
+				replies: [],
 				activities: [],
 				notifications: [],
 				subscribed_to_users: 0,
@@ -94,31 +94,31 @@ const tests = {
 		$topicLinkElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			`/post/${mockTopic.slug}`,
+			`/post/${mockPost.slug}`,
 			state.path,
-			`After clicking topic, path should be /post/${mockTopic.slug}.`,
+			`After clicking topic, path should be /post/${mockPost.slug}.`,
 		)
 		assertEquals(
 			mockUser.user_id,
 			state.user_id,
-			`state.user_id should be set from /post/${mockTopic.slug} mock. Actual: ${state.user_id}`,
+			`state.user_id should be set from /post/${mockPost.slug} mock. Actual: ${state.user_id}`,
 		)
 
 		// 4. Locate and click the "Reply to topic" button
-		const $replyButton = $(`p[add-new-comment] button[alt]`)
+		const $replyButton = $(`p[add-new-reply] button[alt]`)
 		$replyButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 5. Assertions for the "add new comment" form
-		const $addNewCommentForm = $(`add-new[comment]`)
+		// 5. Assertions for the "add new reply" form
+		const $addNewReplyForm = $(`add-new[reply]`)
 
-		const $displayNameWrapper = $addNewCommentForm.$(`display-name-wrapper`)
+		const $displayNameWrapper = $addNewReplyForm.$(`display-name-wrapper`)
 
 		const $displayNameText = $displayNameWrapper.$(`b span`)
 		assertEquals(
 			mockUser.display_name + ":",
 			$displayNameText.innerText.trim(),
-			`Add comment form: Display name should be '${mockUser.display_name}:'. Actual: '${$displayNameText.innerText.trim()}'`,
+			`Add reply form: Display name should be '${mockUser.display_name}:'. Actual: '${$displayNameText.innerText.trim()}'`,
 		)
 
 		const $profilePictureImg = $displayNameWrapper.$(
@@ -130,21 +130,21 @@ const tests = {
 			"Profile picture src should match mock user.",
 		)
 
-		const $bodyTextarea = $addNewCommentForm.$(`textarea[body]`)
+		const $bodyTextarea = $addNewReplyForm.$(`textarea[body]`)
 		assertEquals(
 			"Reply",
 			$bodyTextarea.getAttribute("placeholder"),
 			"Body textarea placeholder should be 'Reply'.",
 		)
 
-		const $submitButton = $addNewCommentForm.$(`button[submit]`)
+		const $submitButton = $addNewReplyForm.$(`button[submit]`)
 		assertEquals(
 			"Add reply",
 			$submitButton.innerText.trim(),
 			"Submit button text should be 'Add reply'.",
 		)
 
-		const $cancelButton = $addNewCommentForm.$(`button[alt][cancel]`)
+		const $cancelButton = $addNewReplyForm.$(`button[alt][cancel]`)
 		assertEquals(
 			"Cancel",
 			$cancelButton.innerText.trim(),

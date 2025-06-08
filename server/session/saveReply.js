@@ -57,15 +57,15 @@ module.exports = async (req, res) => {
 				return
 			}
 		}
-		if (req.body.path.substr(0, 8) === "/comment" || req.body.path.substr(0, 6) === "/reply") {
-			const ancestor_comment_id = req.body.path.substr(0, 8) === "/comment" ? req.body.path.substr(9) : req.body.path.substr(7)
+		if (req.body.path.substr(0, 8) === "/reply" || req.body.path.substr(0, 6) === "/reply") {
+			const ancestor_reply_id = req.body.path.substr(0, 8) === "/reply" ? req.body.path.substr(9) : req.body.path.substr(7)
 			const ancestor_topic_results = await req.client.query(
 				`
         SELECT parent_post_id
         FROM replies
         WHERE reply_id = $1
         `,
-				[ancestor_comment_id],
+				[ancestor_reply_id],
 			)
 			if (ancestor_topic_results.rows.length) {
 				topic_id = ancestor_topic_results.rows[0].parent_post_id
@@ -118,7 +118,7 @@ module.exports = async (req, res) => {
 					).filter((x) => x)
 				: []
 
-			// Add a message for the topic(s) being commented on
+			// Add a message for the topic(s) being replyed on
 			messages.push({
 				role: "user",
 				name: (topic.display_name || "Anonymous").replace(/[^a-z0-9_\-]/gi, ""),
@@ -149,11 +149,11 @@ module.exports = async (req, res) => {
 			}
 		}
 		const ancestor_ids = []
-		if (req.body.parent_comment_id) {
+		if (req.body.parent_reply_id) {
 			messages.push({
 				role: "user",
 				name: "Admin",
-				content: "Comments:",
+				content: "Replies:",
 			})
 			const reply_ancestors = await req.client.query(
 				`
@@ -174,14 +174,14 @@ module.exports = async (req, res) => {
           )
         ORDER BY c.create_date ASC
         `,
-				[req.body.parent_comment_id],
+				[req.body.parent_reply_id],
 			)
-			for (const comment_ancestor of reply_ancestors.rows) {
+			for (const reply_ancestor of reply_ancestors.rows) {
 				// Get base64 image urls from object store
-				const pngs = comment_ancestor.image_uuids
+				const pngs = reply_ancestor.image_uuids
 					? (
 							await Promise.all(
-								comment_ancestor.image_uuids
+								reply_ancestor.image_uuids
 									.split(",")
 									.map(async (image_uuid) => {
 										try {
@@ -201,15 +201,15 @@ module.exports = async (req, res) => {
 						).filter((x) => x)
 					: []
 
-				// Add a message for each ancestor in the comment chain
+				// Add a message for each ancestor in the reply chain
 				messages.push({
 					role: "user",
-					name: comment_ancestor.display_name.replace(/[^a-z0-9_\-]/gi, ""),
+					name: reply_ancestor.display_name.replace(/[^a-z0-9_\-]/gi, ""),
 					content: [
 						{
 							type: "text",
 							text:
-								comment_ancestor.display_name + ":\n" + comment_ancestor.body,
+								reply_ancestor.display_name + ":\n" + reply_ancestor.body,
 						},
 						...pngs.map((png) => {
 							return {
@@ -223,10 +223,10 @@ module.exports = async (req, res) => {
 				})
 
 				// Add a message for the system response of a note or OK
-				if (comment_ancestor.note) {
+				if (reply_ancestor.note) {
 					messages.push({
 						role: "system",
-						content: comment_ancestor.note,
+						content: reply_ancestor.note,
 					})
 				} else {
 					messages.push({
@@ -273,9 +273,9 @@ module.exports = async (req, res) => {
 			)
 			return
 		}
-		let comment_id = req.body.comment_id
+		let reply_id = req.body.reply_id
 		if (ai_response_parsed.keyword === "OK") {
-			if (req.body.comment_id) {
+			if (req.body.reply_id) {
 				await req.client.query(
 					`
           UPDATE replies
@@ -284,28 +284,28 @@ module.exports = async (req, res) => {
             reply_id = $2
             AND user_id = $3
           `,
-					[req.body.body, req.body.comment_id, req.session.user_id],
+					[req.body.body, req.body.reply_id, req.session.user_id],
 				)
 			} else {
-				const comment_inserted = await req.client.query(
+				const reply_inserted = await req.client.query(
 					`
           INSERT INTO replies
             (body, parent_post_id, user_id, parent_reply_id)
           VALUES
             ($1, $2, $3, $4)
-          RETURNING reply_id as comment_id
+          RETURNING reply_id as reply_id
           `,
 					[
 						req.body.body,
 						topic_id,
 						req.session.user_id,
-						req.body.parent_comment_id,
+						req.body.parent_reply_id,
 					],
 				)
-				comment_id = comment_inserted.rows[0].comment_id
+				reply_id = reply_inserted.rows[0].reply_id
 			}
 		} else {
-			if (req.body.comment_id) {
+			if (req.body.reply_id) {
 				await req.client.query(
 					`
           UPDATE replies
@@ -317,28 +317,28 @@ module.exports = async (req, res) => {
 					[
 						req.body.body,
 						`${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
-						req.body.comment_id,
+						req.body.reply_id,
 						req.session.user_id,
 					],
 				)
 			} else {
-				const comment_inserted = await req.client.query(
+				const reply_inserted = await req.client.query(
 					`
           INSERT INTO replies
             (body, note, parent_post_id, user_id, parent_reply_id)
           VALUES
             ($1, $2, $3, $4, $5)
-          RETURNING reply_id as comment_id
+          RETURNING reply_id as reply_id
           `,
 					[
 						req.body.body,
 						`${ai_response_parsed.keyword} ${ai_response_parsed.note}`,
 						topic_id,
 						req.session.user_id,
-						req.body.parent_comment_id,
+						req.body.parent_reply_id,
 					],
 				)
-				comment_id = comment_inserted.rows[0].comment_id
+				reply_id = reply_inserted.rows[0].reply_id
 			}
 		}
 
@@ -346,7 +346,7 @@ module.exports = async (req, res) => {
 		await require("./updateDisplayName")(req, res)
 
 		// Insert all of the ancestors
-		if (ancestor_ids.length > 0 && !req.body.comment_id) {
+		if (ancestor_ids.length > 0 && !req.body.reply_id) {
 			// Create a values string for the bulk insert
 			const values = ancestor_ids
 				.map((ancestor_id, index) => `($1, $${index + 2})`)
@@ -358,19 +358,19 @@ module.exports = async (req, res) => {
         INSERT INTO reply_ancestors (reply_id, ancestor_reply_id)
         VALUES ${values}
         `,
-				[comment_id, ...ancestor_ids],
+				[reply_id, ...ancestor_ids],
 			)
 		}
 
 		// Remove existing images
-		if (req.body.comment_id) {
+		if (req.body.reply_id) {
 			const existing_images = await req.client.query(
 				`
         SELECT image_uuids
         FROM replies
         WHERE reply_id = $1
         `,
-				[comment_id],
+				[reply_id],
 			)
 			for (const existing_image of existing_images.rows) {
 				for (const image_uuid of existing_image.image_uuids.split(",")) {
@@ -411,26 +411,26 @@ module.exports = async (req, res) => {
       SET image_uuids = $1
       WHERE reply_id = $2
       `,
-			[image_uuids.join(","), comment_id],
+			[image_uuids.join(","), reply_id],
 		)
 
-		// Update the topic comment_count and counts_max_create_date
+		// Update the topic reply_count and counts_max_create_date
 		await req.client.query(
 			`
-      UPDATE topics
+      UPDATE posts
       SET
-        comment_count = COALESCE(subquery.comment_count, 0),
+        reply_count = COALESCE(subquery.reply_count, 0),
         counts_max_create_date = NOW()
       FROM (
         SELECT
-          COUNT(c.*) AS comment_count
+          COUNT(c.*) AS reply_count
         FROM replies c
         LEFT JOIN flagged_replies l ON l.reply_id = c.reply_id
         WHERE
           c.parent_post_id = $1
           AND l.reply_id IS NULL
       ) AS subquery
-      WHERE topics.topic_id = $1
+      WHERE posts.topic_id = $1
       `,
 			[topic_id],
 		)
@@ -467,7 +467,7 @@ module.exports = async (req, res) => {
       ) AND user_id <> $3
       AND active = TRUE
       `,
-			[topic_id, comment_id, req.session.user_id],
+			[topic_id, reply_id, req.session.user_id],
 		)
 
 		// Get user_id(s) to notify
@@ -489,7 +489,7 @@ module.exports = async (req, res) => {
         )
         AND user_id <> $3
       `,
-			[topic_id, comment_id, req.session.user_id],
+			[topic_id, reply_id, req.session.user_id],
 		)
 
 		// Wait for all notifications to be inserted
@@ -502,7 +502,7 @@ module.exports = async (req, res) => {
         VALUES
           ($1, $2)
         `,
-				[user_id_record.user_id, comment_id],
+				[user_id_record.user_id, reply_id],
 			)
 		}
 
@@ -521,7 +521,7 @@ module.exports = async (req, res) => {
 
 			// Chrome wants unique tags ¯\_(ツ)_/¯
 			if (String(subscription.subscription_json || "").match(/google/i)) {
-				tag = `comment:${comment_id}`
+				tag = `reply:${reply_id}`
 			}
 
 			// Get the unread count for this user id

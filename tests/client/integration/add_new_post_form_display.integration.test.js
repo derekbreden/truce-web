@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testAddNewTopicFormDisplaysCorrectlyWhenLoggedInOnTopicsPage: async () => {
+	testAddNewPostFormDisplaysCorrectlyWhenLoggedInOnPostsPage: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
@@ -20,8 +20,8 @@ const tests = {
 				user_slug: "test-user",
 				display_name: "Test User",
 				// Other necessary data for /posts page
-				topics: [], // No actual topics needed for this test
-				comments: [],
+				posts: [], // No actual posts needed for this test
+				replies: [],
 				activities: [],
 				notifications: [],
 				profile_picture_uuid: null,

@@ -14,8 +14,8 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				// Crucially, mock a user_id to ensure "Account settings" link appears
@@ -39,8 +39,8 @@ const tests = {
 					profile_picture_uuid: null,
 					display_name_index: 0,
 				},
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [], // Other standard page data
 				user_id: "test-user-123", // Logged-in user context
@@ -48,7 +48,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -78,9 +78,9 @@ const tests = {
 
 		// Verify the header of the settings page
 		// The settings page title is rendered by client/loadingPage.js
-		// Structure: topics > topic > h2[settings] > span:first-child
+		// Structure: posts > topic > h2[settings] > span:first-child
 		const $settingsPageHeaderSpan = $mainContent.$(
-			"topics topic h2[settings] > span:first-child",
+			"posts topic h2[settings] > span:first-child",
 		)
 		assertEquals(
 			"Account settings",

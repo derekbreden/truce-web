@@ -88,7 +88,7 @@ body VARCHAR(8000),
 note VARCHAR(500),
 slug VARCHAR(140),
 image_uuids VARCHAR(147),
-comment_count INT DEFAULT 0,
+reply_count INT DEFAULT 0,
 favorite_count INT DEFAULT 0,
 poll_counts VARCHAR(50),
 poll_counts_estimated VARCHAR(50),
@@ -105,8 +105,8 @@ create_date TIMESTAMP(3) NOT NULL DEFAULT NOW()
 CREATE INDEX IF NOT EXISTS idx_posts_create_date ON posts(create_date);
 CREATE INDEX IF NOT EXISTS idx_posts_create_date_counts_max_create_date 
 ON posts(create_date, counts_max_create_date)
-STORING (comment_count, favorite_count);
-CREATE INDEX IF NOT EXISTS idx_posts_counts_max_create_date ON posts(counts_max_create_date) STORING (comment_count, create_date, favorite_count);
+STORING (reply_count, favorite_count);
+CREATE INDEX IF NOT EXISTS idx_posts_counts_max_create_date ON posts(counts_max_create_date) STORING (reply_count, create_date, favorite_count);
 
 -- replies (formerly comments)
 CREATE TABLE IF NOT EXISTS replies (

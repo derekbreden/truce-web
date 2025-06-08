@@ -26,7 +26,7 @@ const bindScrollEvent = () => {
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
-				const max_topic_create_date = state.cache[state.path].topics.reduce(
+				const max_topic_create_date = state.cache[state.path].posts.reduce(
 					(min, topic) => {
 						return min < topic.create_date ? min : topic.create_date
 					},
@@ -65,25 +65,25 @@ const bindScrollEvent = () => {
 						if (
 							state.path === "/favorites" ||
 							(state.path.substr(0, 5) === "/user" &&
-								state.path.split("/")[3] === "comments")
+								state.path.split("/")[3] === "replies")
 						) {
 							if (data.activities && !data.activities.length) {
 								state.cache[state.path].finished = true
 							}
 						} else {
-							if (data.topics && !data.topics.length) {
+							if (data.posts && !data.posts.length) {
 								state.cache[state.path].finished = true
 							}
 						}
 
 						// Append what we found to the existing cache
-						state.cache[state.path].topics.push(...data.topics)
+						state.cache[state.path].posts.push(...data.posts)
 						state.cache[state.path].activities.push(...data.activities)
 
-						// And re-render if any topics added
-						if (data.topics.length) {
+						// And re-render if any posts added
+						if (data.posts.length) {
 							renderPosts(
-								state.cache[state.path].topics,
+								state.cache[state.path].posts,
 								state.cache[state.path].tag,
 								state.cache[state.path].user,
 							)
@@ -104,11 +104,11 @@ const bindScrollEvent = () => {
 			}
 		}
 
-		// Comments load older
+		// Replies load older
 		if (
 			state.path.substr(0, 6) === "/post/" &&
 			state.cache[state.path] &&
-			!state.cache[state.path].comments_finished
+			!state.cache[state.path].replies_finished
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
@@ -118,9 +118,9 @@ const bindScrollEvent = () => {
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
-				const max_comment_create_date = state.cache[state.path].comments.reduce(
-					(min, comment) => {
-						return min < comment.create_date ? min : comment.create_date
+				const max_reply_create_date = state.cache[state.path].replies.reduce(
+					(min, reply) => {
+						return min < reply.create_date ? min : reply.create_date
 					},
 					new Date().toISOString(),
 				)
@@ -131,22 +131,22 @@ const bindScrollEvent = () => {
 					method: "POST",
 					body: JSON.stringify({
 						path: state.path,
-						max_comment_create_date,
+						max_reply_create_date,
 					}),
 				})
 					.then((response) => response.json())
 					.then(function (data) {
 						// Stop when we reach the end (no more results returned)
-						if (data.comments && !data.comments.length) {
-							state.cache[state.path].comments_finished = true
+						if (data.replies && !data.replies.length) {
+							state.cache[state.path].replies_finished = true
 						}
 
 						// Append what we found to the existing cache
-						state.cache[state.path].comments.push(...data.comments)
+						state.cache[state.path].replies.push(...data.replies)
 
-						// And re-render if any comments added
-						if (data.comments.length) {
-							renderReplies(state.cache[state.path].comments)
+						// And re-render if any replies added
+						if (data.replies.length) {
+							renderReplies(state.cache[state.path].replies)
 						}
 						state.loading_path = false
 					})

@@ -26,23 +26,23 @@ const tests = {
 					{
 						id: 'topic-1',
 						type: 'topic',
-						title: 'Favorite Topic',
+						title: 'Favorite Post',
 						body: 'This is a favorite topic',
 						favorited: true,
 						favorite_create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-456',
-						display_name: 'Topic Author',
+						display_name: 'Post Author',
 						tags: 'technology,science'
 					},
 					{
-						id: 'comment-1',
-						type: 'comment',
-						body: 'This is a favorite comment',
+						id: 'reply-1',
+						type: 'reply',
+						body: 'This is a favorite reply',
 						favorited: true,
 						favorite_create_date: '2024-01-14T09:00:00Z',
 						user_id: 'user-789',
-						display_name: 'Comment Author',
-						parent_topic_title: 'Parent Topic'
+						display_name: 'Reply Author',
+						parent_topic_title: 'Parent Post'
 					}
 				]
 			}
@@ -70,7 +70,7 @@ const tests = {
 			"First activity should be a topic."
 		)
 		assertEquals(
-			'Favorite Topic',
+			'Favorite Post',
 			req.results.activities[0].title,
 			"Should include topic title."
 		)
@@ -81,10 +81,10 @@ const tests = {
 		)
 	},
 
-	testGetUserComments: async () => {
-		// Setup mock request for user comments path
+	testGetUserReplies: async () => {
+		// Setup mock request for user replies path
 		const req = createMockRequest(
-			{ path: "/user/user-456/comments" },
+			{ path: "/user/user-456/replies" },
 			{ user_id: 'user-123' }
 		)
 		req.results = { activities: [] }
@@ -95,20 +95,20 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'comment-1',
-						type: 'comment',
-						body: 'User comment 1',
+						id: 'reply-1',
+						type: 'reply',
+						body: 'User reply 1',
 						create_date: '2024-01-15T10:00:00Z',
 						user_id: 'user-456',
 						display_name: 'The User',
 						favorited: false,
-						parent_topic_title: 'Discussion Topic',
+						parent_topic_title: 'Discussion Post',
 						parent_topic_slug: 'discussion-topic'
 					},
 					{
-						id: 'comment-2',
-						type: 'comment',
-						body: 'User comment 2',
+						id: 'reply-2',
+						type: 'reply',
+						body: 'User reply 2',
 						create_date: '2024-01-14T09:00:00Z',
 						user_id: 'user-456',
 						display_name: 'The User',
@@ -123,33 +123,33 @@ const tests = {
 		// Execute the handler
 		await getActivities(req, res)
 		
-		// Verify user comments were loaded
+		// Verify user replies were loaded
 		assertEquals(
-			"/user/user-456/comments",
+			"/user/user-456/replies",
 			req.results.path,
 			"Path should be set in results."
 		)
 		assertEquals(
 			2,
 			req.results.activities.length,
-			"Should return user comments."
+			"Should return user replies."
 		)
 		assertEquals(
-			'comment',
+			'reply',
 			req.results.activities[0].type,
-			"All activities should be comments."
+			"All activities should be replies."
 		)
 		assertEquals(
 			'user-456',
 			req.results.activities[0].user_id,
-			"Should return comments from specified user."
+			"Should return replies from specified user."
 		)
 	},
 
-	testGetUserCommentsBySlug: async () => {
-		// Setup mock request for user comments by slug
+	testGetUserRepliesBySlug: async () => {
+		// Setup mock request for user replies by slug
 		const req = createMockRequest(
-			{ path: "/user/johndoe/comments" },
+			{ path: "/user/johndoe/replies" },
 			{ user_id: 'user-123' }
 		)
 		req.results = { activities: [] }
@@ -159,9 +159,9 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'comment-slug-1',
-						type: 'comment',
-						body: 'Comment by slug user',
+						id: 'reply-slug-1',
+						type: 'reply',
+						body: 'Reply by slug user',
 						user_id: 'user-slug-789',
 						display_name: 'John Doe'
 					}
@@ -175,7 +175,7 @@ const tests = {
 		
 		// Should handle slug-based user lookup
 		assertEquals(
-			"/user/johndoe/comments",
+			"/user/johndoe/replies",
 			req.results.path,
 			"Should handle slug-based user paths."
 		)
@@ -215,7 +215,7 @@ const tests = {
 	testNoActionWhenWrongPath: async () => {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
-			{ path: "/topics" },
+			{ path: "/posts" },
 			{ user_id: 'user-123' }
 		)
 		req.results = { activities: [] }
@@ -280,7 +280,7 @@ const tests = {
 					{
 						id: 'filtered-topic-1',
 						type: 'topic',
-						title: 'Filtered Topic',
+						title: 'Filtered Post',
 						favorited: true,
 						favorite_create_date: '2024-01-12T10:00:00Z'
 					}
@@ -299,7 +299,7 @@ const tests = {
 			"Should return filtered activities."
 		)
 		assertEquals(
-			'Filtered Topic',
+			'Filtered Post',
 			req.results.activities[0].title,
 			"Should return activities within date range."
 		)
@@ -320,21 +320,21 @@ const tests = {
 					{
 						id: 'field-test-topic',
 						type: 'topic',
-						title: 'Field Test Topic',
-						body: 'Topic body content',
+						title: 'Field Test Post',
+						body: 'Post body content',
 						poll_1: 'Option A',
 						poll_2: 'Option B',
 						poll_counts: '10,5',
 						slug: 'field-test-topic',
 						favorite_count: 25,
-						comment_count: 12,
+						reply_count: 12,
 						favorited: true,
 						edit: false,
-						commented: true,
+						replyed: true,
 						voted: false,
 						image_uuids: 'uuid1,uuid2',
 						user_id: 'author-123',
-						display_name: 'Topic Author',
+						display_name: 'Post Author',
 						display_name_index: 0,
 						user_slug: 'topic-author',
 						profile_picture_uuid: 'profile-uuid',
@@ -353,15 +353,15 @@ const tests = {
 		
 		// Verify key fields are present
 		assertEquals('topic', activity.type, "Should have type field.")
-		assertEquals('Field Test Topic', activity.title, "Should have title field.")
-		assertEquals('Topic body content', activity.body, "Should have body field.")
+		assertEquals('Field Test Post', activity.title, "Should have title field.")
+		assertEquals('Post body content', activity.body, "Should have body field.")
 		assertEquals('Option A', activity.poll_1, "Should have poll fields.")
 		assertEquals(25, activity.favorite_count, "Should have favorite_count.")
-		assertEquals(12, activity.comment_count, "Should have comment_count.")
+		assertEquals(12, activity.reply_count, "Should have reply_count.")
 		assertEquals(true, activity.favorited, "Should have favorited status.")
 		assertEquals(false, activity.edit, "Should have edit permission.")
 		assertEquals('author-123', activity.user_id, "Should have user_id.")
-		assertEquals('Topic Author', activity.display_name, "Should have display_name.")
+		assertEquals('Post Author', activity.display_name, "Should have display_name.")
 		assertEquals('tag1,tag2', activity.tags, "Should have tags.")
 	},
 
@@ -395,12 +395,12 @@ const tests = {
 		)
 	},
 
-	testUserCommentsPathValidation: async () => {
-		// Test various user comments path formats
+	testUserRepliesPathValidation: async () => {
+		// Test various user replies path formats
 		const validPaths = [
-			"/user/123/comments",
-			"/user/johndoe/comments",
-			"/user/user-with-dashes/comments"
+			"/user/123/replies",
+			"/user/johndoe/replies",
+			"/user/user-with-dashes/replies"
 		]
 		
 		for (const testPath of validPaths) {
@@ -413,7 +413,7 @@ const tests = {
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
 				'WITH combined',
-				{ rows: [{ id: 'test-comment', type: 'comment', body: 'Test' }] }
+				{ rows: [{ id: 'test-reply', type: 'reply', body: 'Test' }] }
 			)
 			
 			const res = createMockResponse()
@@ -423,17 +423,17 @@ const tests = {
 			assertEquals(
 				testPath,
 				req.results.path,
-				`Should handle valid user comments path: ${testPath}.`
+				`Should handle valid user replies path: ${testPath}.`
 			)
 		}
 	},
 
-	testInvalidUserCommentsPath: async () => {
+	testInvalidUserRepliesPath: async () => {
 		// Test invalid user path formats
 		const invalidPaths = [
-			"/user/123/topics", // not comments
-			"/user/123", // missing comments
-			"/users/123/comments" // wrong prefix
+			"/user/123/posts", // not replies
+			"/user/123", // missing replies
+			"/users/123/replies" // wrong prefix
 		]
 		
 		for (const testPath of invalidPaths) {
@@ -458,7 +458,7 @@ const tests = {
 	testEmptyUserInPath: async () => {
 		// Test that empty user in path is handled (current implementation allows it)
 		const req = createMockRequest(
-			{ path: "/user//comments" },
+			{ path: "/user//replies" },
 			{ user_id: 'user-123' }
 		)
 		req.results = { activities: [] }
@@ -474,7 +474,7 @@ const tests = {
 		
 		// Current implementation allows empty user path
 		assertEquals(
-			"/user//comments",
+			"/user//replies",
 			req.results.path,
 			"Current implementation handles empty user in path."
 		)

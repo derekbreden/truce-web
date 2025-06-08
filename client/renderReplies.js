@@ -4,9 +4,9 @@ const renderReplies = (replies) => {
 
 	// Attach the reply elements to each other in a hierarchy
 	replies.forEach((reply) => {
-		if (reply.parent_comment_id) {
+		if (reply.parent_reply_id) {
 			const parent = replies.find(
-				(c) => c.comment_id === reply.parent_comment_id,
+				(c) => c.reply_id === reply.parent_reply_id,
 			)
 
 			// When all ancestors are an only child we act like a sibling instead of a child
@@ -15,15 +15,15 @@ const renderReplies = (replies) => {
 				return
 			}
 			let found_siblings = false
-			while (!found_siblings && ancestor.parent_comment_id) {
+			while (!found_siblings && ancestor.parent_reply_id) {
 				const siblings = replies.filter(
 					(c) =>
-						c.parent_comment_id === ancestor.parent_comment_id &&
-						c.comment_id !== ancestor.comment_id,
+						c.parent_reply_id === ancestor.parent_reply_id &&
+						c.reply_id !== ancestor.reply_id,
 				)
 				if (siblings.length === 0) {
 					ancestor = replies.find(
-						(c) => c.comment_id === ancestor.parent_comment_id,
+						(c) => c.reply_id === ancestor.parent_reply_id,
 					)
 				} else {
 					siblings.forEach((sibling) => {
@@ -47,16 +47,16 @@ const renderReplies = (replies) => {
 
 	// Identify the root replies (threads) to be displayed
 	const $root_replies = replies
-		.filter((c) => !c.parent_comment_id)
+		.filter((c) => !c.parent_reply_id)
 		.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 		.map((c) => {
-			c.$reply.comment_id = c.comment_id
+			c.$reply.reply_id = c.reply_id
 			return c.$reply
 		})
 
 	// Collapse all the intermediates in each thread, if present
 	$root_replies.forEach(($root_reply) => {
-		const $child_replies = Array.from($root_reply.$("comment") || [])
+		const $child_replies = Array.from($root_reply.$("reply") || [])
 		if ($child_replies.length > 1) {
 			const $last_reply = $child_replies.pop()
 			const $original_parent = $last_reply.parentElement
@@ -73,14 +73,14 @@ const renderReplies = (replies) => {
 			)
 			$collapse_button.on("click", () => {
 				// Track what is collapsed
-				const index = state.expanded_comment_ids.indexOf(
-					$root_reply.comment_id,
+				const index = state.expanded_reply_ids.indexOf(
+					$root_reply.reply_id,
 				)
 				if (index !== -1) {
-					state.expanded_comment_ids.splice(index, 1)
+					state.expanded_reply_ids.splice(index, 1)
 					localStorage.setItem(
-						`${window.local_storage_key}:expanded_comment_ids`,
-						JSON.stringify(state.expanded_comment_ids),
+						`${window.local_storage_key}:expanded_reply_ids`,
+						JSON.stringify(state.expanded_reply_ids),
 					)
 				}
 
@@ -110,14 +110,14 @@ const renderReplies = (replies) => {
 			)
 			$expand_button.on("click", ($event) => {
 				// Track what is expanded
-				const index = state.expanded_comment_ids.indexOf(
-					$root_reply.comment_id,
+				const index = state.expanded_reply_ids.indexOf(
+					$root_reply.reply_id,
 				)
 				if (index === -1) {
-					state.expanded_comment_ids.push($root_reply.comment_id)
+					state.expanded_reply_ids.push($root_reply.reply_id)
 					localStorage.setItem(
-						`${window.local_storage_key}:expanded_comment_ids`,
-						JSON.stringify(state.expanded_comment_ids),
+						`${window.local_storage_key}:expanded_reply_ids`,
+						JSON.stringify(state.expanded_reply_ids),
 					)
 				}
 
@@ -149,7 +149,7 @@ const renderReplies = (replies) => {
 						(final_rect.y - original_rect.y)
 				}
 			})
-			if (state.expanded_comment_ids.includes($root_reply.comment_id)) {
+			if (state.expanded_reply_ids.includes($root_reply.reply_id)) {
 				$expand_button.dispatchEvent(
 					new CustomEvent("click", { detail: { skip_flash: true } }),
 				)
@@ -162,7 +162,7 @@ const renderReplies = (replies) => {
 	// Add each thread to the DOM
 	beforeDomUpdate()
 	const showReplyList = state.path.substr(0, 6) === "/post/"
-	if (!$("main-content-wrapper[active] comments")) {
+	if (!$("main-content-wrapper[active] replies")) {
 		const target =
 			state.path.substr(0, 7) === "/reply/"
 				? "main-content-wrapper[active] main-content"
@@ -170,21 +170,21 @@ const renderReplies = (replies) => {
 		$(target).appendChild(
 			$(
 				`
-				comments
+				replies
 				`,
 			),
 		)
 	}
-	$("main-content-wrapper[active] comments").replaceChildren(
+	$("main-content-wrapper[active] replies").replaceChildren(
 		...[
 			...(showReplyList
 				? [
-						state.active_add_new_comment?.is_root_1
-							? state.active_add_new_comment
+						state.active_add_new_reply?.is_root_1
+							? state.active_add_new_reply
 							: showAddNewReplyButton("1"),
 						$(
 							`
-							expand-wrapper[above-comments]
+							expand-wrapper[above-replies]
 								p $1
 							`,
 							[
@@ -197,41 +197,41 @@ const renderReplies = (replies) => {
 			...$root_replies,
 			...(showReplyList && $root_replies.length
 				? [
-						state.active_add_new_comment?.is_root_2
-							? state.active_add_new_comment
+						state.active_add_new_reply?.is_root_2
+							? state.active_add_new_reply
 							: showAddNewReplyButton("2"),
 					]
 				: []),
 		],
 	)
-	if (state.active_add_new_comment?.is_edit) {
+	if (state.active_add_new_reply?.is_edit) {
 		const reply = replies.find(
-			(c) => c.comment_id === state.active_add_new_comment.is_edit,
+			(c) => c.reply_id === state.active_add_new_reply.is_edit,
 		)
-		reply.$reply.replaceWith(state.active_add_new_comment)
+		reply.$reply.replaceWith(state.active_add_new_reply)
 	}
-	if (state.active_add_new_comment?.is_reply) {
+	if (state.active_add_new_reply?.is_reply) {
 		const reply = replies.find(
-			(c) => c.comment_id === state.active_add_new_comment.is_reply,
+			(c) => c.reply_id === state.active_add_new_reply.is_reply,
 		)
 		reply.$reply.$(":scope > reply-wrapper").style.display = "none"
 		reply.$reply
 			.$(":scope > reply-wrapper")
-			.after(state.active_add_new_comment)
+			.after(state.active_add_new_reply)
 	}
 	if (state.path === "/" || state.path === "/privacy") {
 		$("reply-wrapper")?.forEach(
 			($reply_wrapper) => ($reply_wrapper.style.display = "none"),
 		)
-		$("p[add-new-comment]")?.remove()
-		$("expand-wrapper[above-comments]")?.remove()
+		$("p[add-new-reply]")?.remove()
+		$("expand-wrapper[above-replies]")?.remove()
 	}
 	afterDomUpdate()
 
 	// Highlight a reply in a thread we've navigated to specifically
 	if (state.path.substr(0, 6) === "/reply") {
-		const comment_id = state.path.substr(9)
-		const reply = replies.find((c) => c.comment_id === comment_id)
+		const reply_id = state.path.substr(9)
+		const reply = replies.find((c) => c.reply_id === reply_id)
 		if (reply.$reply.style.display === "none") {
 			reply.$reply.$expand_button.dispatchEvent(
 				new CustomEvent("click", { detail: { skip_flash: true } }),
@@ -249,8 +249,8 @@ const renderReplies = (replies) => {
 
 	// Only render a single reply thread as a thread
 	if (state.path.substr(0, 6) === "/reply") {
-		$("main-content-wrapper[active] comments").setAttribute("thread", "")
+		$("main-content-wrapper[active] replies").setAttribute("thread", "")
 	} else {
-		$("main-content-wrapper[active] comments").removeAttribute("thread")
+		$("main-content-wrapper[active] replies").removeAttribute("thread")
 	}
 }

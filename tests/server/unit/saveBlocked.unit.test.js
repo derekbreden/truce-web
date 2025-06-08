@@ -10,7 +10,7 @@ const {
 const saveBlocked = require("../../../server/session/saveBlocked.js")
 
 const tests = {
-	testBlockUserFromTopic: async () => {
+	testBlockUserFromPost: async () => {
 		// Setup mock request with topic blocking data
 		const req = createMockRequest({
 			topic_id_to_block: 'topic-456'
@@ -19,7 +19,7 @@ const tests = {
 		// Setup mock database responses
 		// First query: Get user_id from topic
 		req.client.addQueryMock(
-			'SELECT user_id FROM topics WHERE topic_id = $1',
+			'SELECT user_id FROM posts WHERE topic_id = $1',
 			{ rows: [{ user_id: 'author-user-789' }] }
 		)
 		// Second query: Insert blocked user relationship
@@ -58,17 +58,17 @@ const tests = {
 		)
 	},
 
-	testBlockUserFromComment: async () => {
-		// Setup mock request with comment blocking data
+	testBlockUserFromReply: async () => {
+		// Setup mock request with reply blocking data
 		const req = createMockRequest({
-			comment_id_to_block: 'comment-789'
+			reply_id_to_block: 'reply-789'
 		})
 		
 		// Setup mock database responses
-		// First query: Get user_id from comment
+		// First query: Get user_id from reply
 		req.client.addQueryMock(
-			'SELECT user_id FROM comments WHERE comment_id = $1',
-			{ rows: [{ user_id: 'commenter-user-456' }] }
+			'SELECT user_id FROM replies WHERE reply_id = $1',
+			{ rows: [{ user_id: 'replyer-user-456' }] }
 		)
 		// Second query: Insert blocked user relationship
 		req.client.addQueryMock(
@@ -96,16 +96,16 @@ const tests = {
 		)
 	},
 
-	testBlockTopicWithNoResults: async () => {
+	testBlockPostWithNoResults: async () => {
 		// Setup mock request with topic blocking data
 		const req = createMockRequest({
 			topic_id_to_block: 'nonexistent-topic'
 		})
 		
 		// Setup mock database responses
-		// Topic query returns no results
+		// Post query returns no results
 		req.client.addQueryMock(
-			'SELECT user_id FROM topics WHERE topic_id = $1',
+			'SELECT user_id FROM posts WHERE topic_id = $1',
 			{ rows: [] }
 		)
 		// Insert should still happen but with user_id 0
@@ -128,16 +128,16 @@ const tests = {
 		)
 	},
 
-	testBlockCommentWithNoResults: async () => {
-		// Setup mock request with comment blocking data
+	testBlockReplyWithNoResults: async () => {
+		// Setup mock request with reply blocking data
 		const req = createMockRequest({
-			comment_id_to_block: 'nonexistent-comment'
+			reply_id_to_block: 'nonexistent-reply'
 		})
 		
 		// Setup mock database responses
-		// Comment query returns no results
+		// Reply query returns no results
 		req.client.addQueryMock(
-			'SELECT user_id FROM comments WHERE comment_id = $1',
+			'SELECT user_id FROM replies WHERE reply_id = $1',
 			{ rows: [] }
 		)
 		// Insert should still happen but with user_id 0
@@ -156,7 +156,7 @@ const tests = {
 		assertEquals(
 			true,
 			responseData.success,
-			"Response should indicate success even when comment not found."
+			"Response should indicate success even when reply not found."
 		)
 	},
 
@@ -201,9 +201,9 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or comment_id
+		// Setup mock request without topic_id or reply_id
 		const req = createMockRequest({
-			// No topic_id_to_block or comment_id_to_block
+			// No topic_id_to_block or reply_id_to_block
 		})
 		
 		const res = createMockResponse()
@@ -219,22 +219,22 @@ const tests = {
 		)
 	},
 
-	testBothTopicAndCommentIds: async () => {
-		// Edge case: both topic_id and comment_id provided
-		// Handler should process comment_id since it comes after topic_id
+	testBothPostAndReplyIds: async () => {
+		// Edge case: both topic_id and reply_id provided
+		// Handler should process reply_id since it comes after topic_id
 		const req = createMockRequest({
 			topic_id_to_block: 'topic-123',
-			comment_id_to_block: 'comment-456'
+			reply_id_to_block: 'reply-456'
 		})
 		
 		// Setup mock database responses for both queries
 		req.client.addQueryMock(
-			'SELECT user_id FROM topics WHERE topic_id = $1',
+			'SELECT user_id FROM posts WHERE topic_id = $1',
 			{ rows: [{ user_id: 'topic-author-123' }] }
 		)
 		req.client.addQueryMock(
-			'SELECT user_id FROM comments WHERE comment_id = $1',
-			{ rows: [{ user_id: 'comment-author-456' }] }
+			'SELECT user_id FROM replies WHERE reply_id = $1',
+			{ rows: [{ user_id: 'reply-author-456' }] }
 		)
 		req.client.addQueryMock(
 			'INSERT INTO blocked_users',
@@ -246,7 +246,7 @@ const tests = {
 		// Execute the handler
 		await saveBlocked(req, res)
 		
-		// Should succeed - comment_id takes precedence (overwrites user_id_blocked)
+		// Should succeed - reply_id takes precedence (overwrites user_id_blocked)
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,

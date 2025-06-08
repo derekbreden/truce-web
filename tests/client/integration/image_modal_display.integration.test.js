@@ -13,10 +13,10 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [
+				posts: [
 					{
 						slug: "test-topic-with-images",
-						title: "Test Topic with Images",
+						title: "Test Post with Images",
 						body: "This topic contains images for testing modal functionality.",
 						user_slug: "user-images",
 						display_name: "User Images",
@@ -28,14 +28,14 @@ const tests = {
 						poll_1: null,
 						favorited: false,
 						favorite_count: 2,
-						commented: false,
-						comment_count: 3,
+						replyed: false,
+						reply_count: 3,
 						image_uuids: "test-image-uuid-1,test-image-uuid-2",
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -49,10 +49,10 @@ const tests = {
 			},
 			"/post/test-topic-with-images": {
 				path: "/post/test-topic-with-images",
-				topics: [
+				posts: [
 					{
 						slug: "test-topic-with-images",
-						title: "Test Topic with Images",
+						title: "Test Post with Images",
 						body: "This topic contains images for testing modal functionality.",
 						user_slug: "user-images",
 						display_name: "User Images",
@@ -70,14 +70,14 @@ const tests = {
 						user_poll_choice: null,
 						favorited: false,
 						favorite_count: 2,
-						commented: false,
-						comment_count: 3,
+						replyed: false,
+						reply_count: 3,
 						image_uuids: "test-image-uuid-1,test-image-uuid-2",
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -104,8 +104,8 @@ const tests = {
 		)
 
 		// 2. Click on the topic to navigate to detail page
-		const $firstTopicElement = $("topics > topic[trimmed]")
-		$firstTopicElement.click()
+		const $firstPostElement = $("posts > topic[trimmed]")
+		$firstPostElement.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -120,7 +120,7 @@ const tests = {
 		assertEquals(
 			true,
 			Boolean($topic),
-			"Topic element should exist on detail page.",
+			"Post element should exist on detail page.",
 		)
 
 		// 4. Get the first image element

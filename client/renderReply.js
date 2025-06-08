@@ -31,7 +31,7 @@ const renderReply = (reply) => {
 
 	let $reply = $(
 		`
-		comment
+		reply
 			h3
 				author[slug=$1]
 					profile-picture

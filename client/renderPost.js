@@ -186,7 +186,7 @@ const renderPost = (post) => {
 						icon
 							$2
 						p $3
-					detail[comments]
+					detail[replies]
 						icon
 							$4
 						p $5
@@ -200,10 +200,10 @@ const renderPost = (post) => {
 						? $("icons icon[favorited] svg").cloneNode(true)
 						: $("footer icon[favorites] svg").cloneNode(true),
 					post.favorite_count,
-					post.commented
-						? $("icons icon[commented] svg").cloneNode(true)
-						: $("icons icon[comment] svg").cloneNode(true),
-					post.comment_count,
+					post.replyed
+						? $("icons icon[replyed] svg").cloneNode(true)
+						: $("icons icon[reply] svg").cloneNode(true),
+					post.reply_count,
 					$("icons icon[forward] svg").cloneNode(true),
 				],
 			),
@@ -428,7 +428,7 @@ const renderPost = (post) => {
 				window.webkit.messageHandlers["share-link"].postMessage(
 					JSON.stringify({
 						url: window.location.href,
-						text: state.cache[state.path].topics[0].title,
+						text: state.cache[state.path].posts[0].title,
 					}),
 				)
 			} else {

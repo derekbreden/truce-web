@@ -4,14 +4,14 @@ module.exports = async (req, res) => {
 		req.body.min_create_date_for_counts &&
 		req.body.min_counts_create_date
 	) {
-		if (req.body.has_topics) {
+		if (req.body.has_posts) {
 			const topic_counts = await req.client.query(
 				`
         SELECT
           t.post_id as topic_id,
           t.favorite_count,
           t.poll_counts,
-          t.comment_count
+          t.reply_count
         FROM posts t
         LEFT JOIN flagged_posts l ON l.post_id = t.post_id
         LEFT JOIN blocked_users b ON b.user_id_blocked = t.user_id AND b.user_id_blocking = $1
@@ -29,8 +29,8 @@ module.exports = async (req, res) => {
 			)
 			req.results.topic_counts = topic_counts.rows
 		}
-		if (req.body.has_comments) {
-			const comment_counts = await req.client.query(
+		if (req.body.has_replies) {
+			const reply_counts = await req.client.query(
 				`
         SELECT
           c.reply_id,
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
 					req.body.min_counts_create_date,
 				],
 			)
-			req.results.comment_counts = comment_counts.rows
+			req.results.reply_counts = reply_counts.rows
 		}
 	}
 }

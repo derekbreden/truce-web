@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		(req.body.topic_id_to_block || req.body.comment_id_to_block)
+		(req.body.topic_id_to_block || req.body.reply_id_to_block)
 	) {
 		let user_id_blocked = 0
 		// For topic_id
@@ -17,16 +17,16 @@ module.exports = async (req, res) => {
 				user_id_blocked = topic_result.rows[0].user_id
 			}
 		}
-		// For comment_id
-		if (req.body.comment_id_to_block) {
-			const comment_result = await req.client.query(
+		// For reply_id
+		if (req.body.reply_id_to_block) {
+			const reply_result = await req.client.query(
 				`
         SELECT user_id FROM replies WHERE reply_id = $1
         `,
-				[req.body.comment_id_to_block],
+				[req.body.reply_id_to_block],
 			)
-			if (comment_result.rows.length > 0) {
-				user_id_blocked = comment_result.rows[0].user_id
+			if (reply_result.rows.length > 0) {
+				user_id_blocked = reply_result.rows[0].user_id
 			}
 		}
 		await req.client.query(

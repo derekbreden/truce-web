@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
       SELECT
         ts.tag_name,
         ts.subtitle,
-        COUNT(tt.tag_id) AS topics
+        COUNT(tt.tag_id) AS posts
       FROM
         tags ts
         LEFT JOIN post_tags tt ON ts.tag_id = tt.tag_id

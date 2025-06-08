@@ -3,7 +3,7 @@ module.exports = async (req, res) => {
 		!res.writableEnded &&
 		((req.body.path === "/favorites" && req.session.user_id) ||
 			(req.body.path?.substr(0, 6) === "/user/" &&
-				(req.body.path?.split("/")[3] === "comments" || req.body.path?.split("/")[3] === "replies")))
+				(req.body.path?.split("/")[3] === "replies" || req.body.path?.split("/")[3] === "replies")))
 	) {
 		req.results.path = req.body.path
 		const activity_results = await req.client.query(
@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
           c.note,
           NULL as slug,
           c.favorite_count,
-          NULL as comment_count,
+          NULL as reply_count,
           c.counts_max_create_date,
           c.user_id,
           c.parent_reply_id,
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
           fc.create_date as favorite_create_date,
           CASE WHEN c.user_id = $1 THEN true ELSE false END AS edit,
           c.image_uuids,
-          FALSE as commented,
+          FALSE as replyed,
           FALSE as voted,
           'reply' AS type,
           '' AS tags
@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
           t.note,
           t.slug,
           t.favorite_count,
-          t.comment_count,
+          t.reply_count,
           t.counts_max_create_date,
           t.user_id,
           NULL as parent_reply_id,
@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
             FROM replies c
             WHERE c.parent_post_id = t.post_id
               AND c.user_id = $1
-          ) THEN TRUE ELSE FALSE END as commented,
+          ) THEN TRUE ELSE FALSE END as replyed,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           'post' AS type,
           (
@@ -104,13 +104,13 @@ module.exports = async (req, res) => {
         combined.note,
         combined.slug,
         combined.favorite_count,
-        combined.comment_count,
+        combined.reply_count,
         combined.counts_max_create_date,
         combined.type,
         combined.edit,
         combined.image_uuids,
         TRUE as favorited,
-        combined.commented,
+        combined.replyed,
         combined.voted,
         combined.favorite_create_date,
         u.user_id,
@@ -122,20 +122,20 @@ module.exports = async (req, res) => {
         pt.title AS parent_topic_title,
         pt.slug AS parent_topic_slug,
         pc.reply_id AS parent_reply_id,
-        pc.body AS parent_comment_body,
-        pc.note AS parent_comment_note,
-        pcu.display_name AS parent_comment_display_name,
-        pcu.display_name_index AS parent_comment_display_name_index,
-        CASE WHEN pcu.slug = '' THEN pcu.user_id::VARCHAR ELSE pcu.slug END as parent_comment_user_slug,
-        pcu.profile_picture_uuid AS parent_comment_profile_picture_uuid,
-        CASE WHEN pcf.user_id IS NOT NULL THEN TRUE ELSE FALSE END as parent_comment_favorited,
+        pc.body AS parent_reply_body,
+        pc.note AS parent_reply_note,
+        pcu.display_name AS parent_reply_display_name,
+        pcu.display_name_index AS parent_reply_display_name_index,
+        CASE WHEN pcu.slug = '' THEN pcu.user_id::VARCHAR ELSE pcu.slug END as parent_reply_user_slug,
+        pcu.profile_picture_uuid AS parent_reply_profile_picture_uuid,
+        CASE WHEN pcf.user_id IS NOT NULL THEN TRUE ELSE FALSE END as parent_reply_favorited,
         combined.tags,
         combined.favorited
       FROM combined
       LEFT JOIN users u ON combined.user_id = u.user_id
-      LEFT JOIN topics pt ON combined.parent_post_id = pt.post_id
+      LEFT JOIN posts pt ON combined.parent_post_id = pt.post_id
       LEFT JOIN users pu ON pt.user_id = pu.user_id
-      LEFT JOIN comments pc ON combined.parent_reply_id = pc.reply_id
+      LEFT JOIN replies pc ON combined.parent_reply_id = pc.reply_id
       LEFT JOIN users pcu ON pc.user_id = pcu.user_id
       LEFT JOIN favorite_replies pcf ON combined.id = pcf.reply_id AND pcf.user_id = $1
       LEFT JOIN flagged_replies l ON l.reply_id = pc.reply_id
@@ -155,9 +155,9 @@ module.exports = async (req, res) => {
 				}
         ${
 					req.body.path.substr(0, 6) === "/user/" &&
-					req.body.path.split("/")[3] === "comments"
+					req.body.path.split("/")[3] === "replies"
 						? `
-              AND combined.type = 'comment'
+              AND combined.type = 'reply'
               AND (combined.create_date < $2 OR $2 IS NULL)
               AND (combined.create_date > $3 OR $3 IS NULL)
 

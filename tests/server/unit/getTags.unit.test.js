@@ -25,17 +25,17 @@ const tests = {
 					{
 						tag_name: 'technology',
 						subtitle: 'Technology discussions',
-						topics: '5'
+						posts: '5'
 					},
 					{
 						tag_name: 'general',
-						subtitle: 'General topics',
-						topics: '12'
+						subtitle: 'General posts',
+						posts: '12'
 					},
 					{
 						tag_name: 'science',
 						subtitle: 'Science and research',
-						topics: '3'
+						posts: '3'
 					}
 				]
 			}
@@ -64,7 +64,7 @@ const tests = {
 		)
 		assertEquals(
 			'5',
-			req.results.tags[0].topics,
+			req.results.tags[0].posts,
 			"First tag should have topic count."
 		)
 	},
@@ -147,7 +147,7 @@ const tests = {
 			'SELECT',
 			{ 
 				rows: [
-					{ tag_name: 'general', subtitle: 'General', topics: '10' }
+					{ tag_name: 'general', subtitle: 'General', posts: '10' }
 				]
 			}
 		)
@@ -163,7 +163,7 @@ const tests = {
 			'SELECT',
 			{ 
 				rows: [
-					{ tag_name: 'general', subtitle: 'General topics' }
+					{ tag_name: 'general', subtitle: 'General posts' }
 				]
 			}
 		)
@@ -209,7 +209,7 @@ const tests = {
 	testNoActionWhenWrongPath: async () => {
 		// Setup mock request with wrong path
 		const req = createMockRequest({
-			path: "/topics"
+			path: "/posts"
 		})
 		req.results = {}
 		
@@ -321,8 +321,8 @@ const tests = {
 		)
 	},
 
-	testTagsWithZeroTopics: async () => {
-		// Test tags that have no associated topics
+	testTagsWithZeroPosts: async () => {
+		// Test tags that have no associated posts
 		const req = createMockRequest({
 			path: "/tags"
 		})
@@ -335,7 +335,7 @@ const tests = {
 					{
 						tag_name: 'unused-tag',
 						subtitle: 'Unused tag',
-						topics: '0'
+						posts: '0'
 					}
 				]
 			}
@@ -346,15 +346,15 @@ const tests = {
 		// Execute the handler
 		await getTags(req, res)
 		
-		// Should include tags with zero topics
+		// Should include tags with zero posts
 		assertEquals(
 			1,
 			req.results.tags.length,
-			"Should include tags with zero topics."
+			"Should include tags with zero posts."
 		)
 		assertEquals(
 			'0',
-			req.results.tags[0].topics,
+			req.results.tags[0].posts,
 			"Should show correct topic count of zero."
 		)
 	}

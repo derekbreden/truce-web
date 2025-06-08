@@ -13,8 +13,8 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [], // Empty topics list is fine for this test's assertions
-				comments: [],
+				posts: [], // Empty posts list is fine for this test's assertions
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -82,7 +82,7 @@ const tests = {
 		const { $ } = window
 
 		const globalIconsToTest = [
-			{ name: "comment", selector: "icons icon[comment] svg" },
+			{ name: "reply", selector: "icons icon[reply] svg" },
 			{ name: "settings", selector: "icons icon[settings] svg" },
 			{ name: "more", selector: "icons icon[more] svg" },
 		]

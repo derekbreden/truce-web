@@ -10,7 +10,7 @@ const {
 const saveFlagged = require("../../../server/session/saveFlagged.js")
 
 const tests = {
-	testFlagTopic: async () => {
+	testFlagPost: async () => {
 		// Setup mock request with topic flagging data
 		const req = createMockRequest({
 			topic_id_to_flag: 'topic-456'
@@ -18,7 +18,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO flagged_topics',
+			'INSERT INTO flagged_posts',
 			{ rows: [] }
 		)
 		
@@ -52,10 +52,10 @@ const tests = {
 		)
 	},
 
-	testFlagComment: async () => {
-		// Setup mock request with comment flagging data
+	testFlagReply: async () => {
+		// Setup mock request with reply flagging data
 		const req = createMockRequest({
-			comment_id_to_flag: 'comment-789'
+			reply_id_to_flag: 'reply-789'
 		})
 		
 		// Mock response tracker to handle sequential queries
@@ -65,12 +65,12 @@ const tests = {
 		req.client.addQueryMock(
 			() => {
 				queryCount++
-				return queryCount === 1 // INSERT INTO flagged_comments
+				return queryCount === 1 // INSERT INTO flagged_replies
 			},
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			() => queryCount === 2, // UPDATE topics (comment count recalculation)
+			() => queryCount === 2, // UPDATE posts (reply count recalculation)
 			{ rows: [] }
 		)
 		
@@ -94,11 +94,11 @@ const tests = {
 		)
 	},
 
-	testFlagBothTopicAndComment: async () => {
-		// Edge case: both topic_id and comment_id provided
+	testFlagBothPostAndReply: async () => {
+		// Edge case: both topic_id and reply_id provided
 		const req = createMockRequest({
 			topic_id_to_flag: 'topic-123',
-			comment_id_to_flag: 'comment-456'
+			reply_id_to_flag: 'reply-456'
 		})
 		
 		let queryCount = 0
@@ -107,16 +107,16 @@ const tests = {
 		req.client.addQueryMock(
 			() => {
 				queryCount++
-				return queryCount === 1 // INSERT INTO flagged_topics
+				return queryCount === 1 // INSERT INTO flagged_posts
 			},
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			() => queryCount === 2, // INSERT INTO flagged_comments
+			() => queryCount === 2, // INSERT INTO flagged_replies
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			() => queryCount === 3, // UPDATE topics (comment count)
+			() => queryCount === 3, // UPDATE posts (reply count)
 			{ rows: [] }
 		)
 		
@@ -175,9 +175,9 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or comment_id
+		// Setup mock request without topic_id or reply_id
 		const req = createMockRequest({
-			// No topic_id_to_flag or comment_id_to_flag
+			// No topic_id_to_flag or reply_id_to_flag
 		})
 		
 		const res = createMockResponse()
@@ -193,8 +193,8 @@ const tests = {
 		)
 	},
 
-	testFlagMultipleTopics: async () => {
-		// Test flagging multiple topics (sequential calls)
+	testFlagMultiplePosts: async () => {
+		// Test flagging multiple posts (sequential calls)
 		const topicIds = ['topic-1', 'topic-2', 'topic-3']
 		
 		for (const topicId of topicIds) {
@@ -204,7 +204,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'INSERT INTO flagged_topics',
+				'INSERT INTO flagged_posts',
 				{ rows: [] }
 			)
 			
@@ -223,13 +223,13 @@ const tests = {
 		}
 	},
 
-	testFlagMultipleComments: async () => {
-		// Test flagging multiple comments (each triggers comment count update)
-		const commentIds = ['comment-1', 'comment-2']
+	testFlagMultipleReplies: async () => {
+		// Test flagging multiple replies (each triggers reply count update)
+		const replyIds = ['reply-1', 'reply-2']
 		
-		for (const commentId of commentIds) {
+		for (const replyId of replyIds) {
 			const req = createMockRequest({
-				comment_id_to_flag: commentId
+				reply_id_to_flag: replyId
 			})
 			
 			let queryCount = 0
@@ -257,7 +257,7 @@ const tests = {
 			assertEquals(
 				true,
 				responseData.success,
-				`Should succeed flagging comment ${commentId}.`
+				`Should succeed flagging reply ${replyId}.`
 			)
 			
 			// Reset for next iteration
@@ -272,7 +272,7 @@ const tests = {
 		})
 		
 		req.client.addQueryMock(
-			'INSERT INTO flagged_topics',
+			'INSERT INTO flagged_posts',
 			{ rows: [] }
 		)
 		

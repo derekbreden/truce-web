@@ -113,7 +113,7 @@ const tests = {
 	testNoActionWhenWrongPath: async () => {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
-			{ path: "/topics" },
+			{ path: "/posts" },
 			{ user_id: 'user-123' }
 		)
 		req.results = {}

@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
 		const slug = req.body.path.substr(0, 7) === "/topic/" ? req.body.path.substr(7) : req.body.path.substr(6)
 		let topic_id = ""
 
-		if (!req.body.max_comment_create_date) {
+		if (!req.body.max_reply_create_date) {
 			const topic_results = await req.client.query(
 				`
         SELECT
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
           p.poll_counts_estimated,
           p.note,
           p.favorite_count,
-          p.comment_count,
+          p.reply_count,
           p.counts_max_create_date,
           CASE WHEN p.user_id = $1 THEN true ELSE false END AS edit,
           p.image_uuids,
@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
             FROM replies r
             WHERE r.parent_post_id = p.post_id
               AND r.user_id = $1
-          ) THEN TRUE ELSE FALSE END as commented,
+          ) THEN TRUE ELSE FALSE END as replyed,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           (
             SELECT STRING_AGG(ts.tag_name, ',')
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
 					req.body.min_topic_create_date || null,
 				],
 			)
-			req.results.topics.push(...topic_results.rows)
+			req.results.posts.push(...topic_results.rows)
 			// We set path here to ensure the path goes to a default if there are no results
 			if (topic_results.rows.length) {
 				req.results.path = `/post/${slug}`
@@ -92,16 +92,16 @@ module.exports = async (req, res) => {
 			}
 		}
 
-		// Get the comments
+		// Get the replies
 		if (topic_id) {
-			const root_comments = await req.client.query(
+			const root_replies = await req.client.query(
 				`
         SELECT
           r.create_date,
-          r.reply_id as comment_id,
+          r.reply_id as reply_id,
           r.body,
           r.note,
-          r.parent_reply_id as parent_comment_id,
+          r.parent_reply_id as parent_reply_id,
           r.favorite_count,
           r.counts_max_create_date,
           u.user_id,
@@ -131,18 +131,18 @@ module.exports = async (req, res) => {
 				[
 					req.session.user_id || 0,
 					topic_id,
-					req.body.min_comment_create_date || null,
-					req.body.max_comment_create_date || null,
+					req.body.min_reply_create_date || null,
+					req.body.max_reply_create_date || null,
 				],
 			)
-			const reply_comments = await req.client.query(
+			const reply_replies = await req.client.query(
 				`
         SELECT
           r.create_date,
-          r.reply_id as comment_id,
+          r.reply_id as reply_id,
           r.body,
           r.note,
-          r.parent_reply_id as parent_comment_id,
+          r.parent_reply_id as parent_reply_id,
           r.favorite_count,
           r.counts_max_create_date,
           u.user_id,
@@ -180,12 +180,12 @@ module.exports = async (req, res) => {
 				[
 					req.session.user_id || 0,
 					topic_id,
-					root_comments.rows.map((c) => c.comment_id),
-					req.body.min_comment_create_date || null,
+					root_replies.rows.map((c) => c.reply_id),
+					req.body.min_reply_create_date || null,
 				],
 			)
-			req.results.comments.push(...root_comments.rows)
-			req.results.comments.push(...reply_comments.rows)
+			req.results.replies.push(...root_replies.rows)
+			req.results.replies.push(...reply_replies.rows)
 		}
 	}
 }

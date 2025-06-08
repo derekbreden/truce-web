@@ -25,12 +25,12 @@ These files are processed by `server/server.js` and concatenated into a single `
 Use arrow functions consistently:
 ```javascript
 // ✅ Correct
-const renderTopic = (topic) => {
+const renderPost = (topic) => {
 	// function body
 }
 
 // ❌ Avoid
-function renderTopic(topic) {
+function renderPost(topic) {
 	// function body
 }
 ```
@@ -82,22 +82,22 @@ async function testMyFeature() {
 
 	// Mock API responses
 	window.setMockFetchResponseForPaths({
-		"/topics": { 
-			path: "/topics", 
-			topics: [{slug: "example", title: "Example", body: "Body", user_slug: "user", display_name: "User"}], 
-			comments: [], 
+		"/posts": { 
+			path: "/posts", 
+			posts: [{slug: "example", title: "Example", body: "Body", user_slug: "user", display_name: "User"}], 
+			replies: [], 
 			activities: [], 
 			notifications: [] 
 		}
 	})
 
 	// Navigate from welcome page
-	const $joinButton = $("a[href='/topics'][big]")
+	const $joinButton = $("a[href='/posts'][big]")
 	$joinButton.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Test assertions
-	assertEquals("/topics", state.path, "Should navigate to topics")
+	assertEquals("/posts", state.path, "Should navigate to posts")
 	assertEquals("Example", $("topic h2").innerText.trim(), "Should show topic title")
 }
 
@@ -239,10 +239,10 @@ module.exports = async (req, res) => {
 ### Database Queries
 Use parameterized queries:
 ```javascript
-const topics = await req.client.query(
+const posts = await req.client.query(
 	`
 	SELECT t.title, t.body, u.display_name
-	FROM topics t
+	FROM posts t
 	INNER JOIN users u ON t.user_id = u.user_id	
 	WHERE t.create_date > $1
 	ORDER BY t.create_date DESC
@@ -256,7 +256,7 @@ const topics = await req.client.query(
 
 ### Render Functions
 ```javascript
-const renderTopic = (topic) => {
+const renderPost = (topic) => {
 	const $topic = $(
 		`
 		topic
@@ -281,12 +281,12 @@ const renderTopic = (topic) => {
 ```javascript
 const updateCounts = (data) => {
 	data.topic_counts?.forEach((count) => {
-		const found_topic = state.cache[state.path].topics.find(
+		const found_topic = state.cache[state.path].posts.find(
 			(topic) => topic.topic_id === count.topic_id
 		)
 		if (found_topic) {
-			found_topic.comment_count = count.comment_count
-			found_topic.$topic.$("[comments] p").innerText = count.comment_count
+			found_topic.reply_count = count.reply_count
+			found_topic.$topic.$("[replies] p").innerText = count.reply_count
 		}
 	})
 }

@@ -9,16 +9,16 @@ const renderPage = (data) => {
 	}
 
 	// Remove loading indicator
-	$("main-content-wrapper[active] topics-loading")?.remove()
+	$("main-content-wrapper[active] posts-loading")?.remove()
 
 	// Render Users
 	renderUsers(data.users)
 
 	// Render Posts
-	renderPosts(data.topics, data.tag, data.user)
+	renderPosts(data.posts, data.tag, data.user)
 
 	// Render Replies
-	renderReplies(data.comments)
+	renderReplies(data.replies)
 
 	// Render Activities
 	renderActivities(data.activities)

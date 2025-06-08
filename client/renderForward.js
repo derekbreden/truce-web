@@ -25,8 +25,8 @@ const renderForward = (parent_topic) => {
 			let new_path = `/topic/${parent_topic.slug}`
 			if (parent_topic.slug === "Home") {
 				new_path = "/"
-			} else if (parent_topic.slug === "Topics") {
-				new_path = "/topics"
+			} else if (parent_topic.slug === "Posts") {
+				new_path = "/posts"
 			}
 			goToPath(new_path)
 		})

@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
 			display_name: "",
 		}
 		req.results = {
-			topics: [],
-			comments: [],
+			posts: [],
+			replies: [],
 			activities: [],
 			notifications: [],
 			path: req.body.path,
@@ -35,18 +35,18 @@ module.exports = async (req, res) => {
 		await require("./session/useResetToken")(req, res)
 		await require("./session/saveSubscription")(req, res)
 		await require("./session/saveSubscribeToUser")(req, res)
-		await require("./session/saveTopic")(req, res)
-		await require("./session/saveComment")(req, res)
+		await require("./session/savePost")(req, res)
+		await require("./session/saveReply")(req, res)
 		await require("./session/saveDisplayName")(req, res)
 		await require("./session/getAdminImage")(req, res)
 		await require("./session/createSessionIfNotExists")(req, res)
-		await require("./session/getSingleTopic")(req, res)
+		await require("./session/getSinglePost")(req, res)
 		await require("./session/getSingleThread")(req, res)
 		await require("./session/getActivities")(req, res)
 		await require("./session/getTags")(req, res)
 		await require("./session/getUser")(req, res)
 		await require("./session/getSettings")(req, res)
-		await require("./session/getPageTopics")(req, res)
+		await require("./session/getPagePosts")(req, res)
 		await require("./session/getUpdatedCounts")(req, res)
 		await require("./session/saveFavorite")(req, res)
 		await require("./session/saveBlocked")(req, res)

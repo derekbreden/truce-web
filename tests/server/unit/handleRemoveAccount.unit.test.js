@@ -524,7 +524,7 @@ const tests = {
 				dbOperations.push('UPDATE_REPLIES')
 			} else if (sql.includes('UPDATE posts') && sql.includes('favorite_count')) {
 				dbOperations.push('UPDATE_POSTS_FAVORITES')
-			} else if (sql.includes('UPDATE posts') && sql.includes('comment_count')) {
+			} else if (sql.includes('UPDATE posts') && sql.includes('reply_count')) {
 				dbOperations.push('UPDATE_POSTS_COMMENTS')
 			} else if (sql.includes('INSERT INTO sessions')) {
 				dbOperations.push('INSERT_SESSION')

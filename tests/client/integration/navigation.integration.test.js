@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
 const tests = {
-	testNavigateToFirstTopicDetail: async () => {
+	testNavigateToFirstPostDetail: async () => {
 		const window = await setupIntegrationTestEnvironment()
 		const { state, $ } = window
 
@@ -13,18 +13,18 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [
+				posts: [
 					{
 						slug: "test-topic-1",
-						title: "Test Topic 1",
+						title: "Test Post 1",
 						body: "Short body for list",
 						user_slug: "user1",
 						display_name: "User One",
 						tags: "politics",
-						comment_count: 0,
+						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						image_uuids: null,
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -33,7 +33,7 @@ const tests = {
 						poll_1: null,
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user: {},
@@ -42,19 +42,19 @@ const tests = {
 			},
 			"/post/test-topic-1": {
 				path: "/post/test-topic-1",
-				topics: [
-					// Server returns topic detail in a "topics" array
+				posts: [
+					// Server returns topic detail in a "posts" array
 					{
 						slug: "test-topic-1",
-						title: "Test Topic 1",
+						title: "Test Post 1",
 						body: "Full detailed body for test-topic-1. This should appear on the detail page.",
 						user_slug: "user1",
 						display_name: "User One",
 						tags: "politics",
-						comment_count: 0,
+						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						image_uuids: null,
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -66,7 +66,7 @@ const tests = {
 						updated_at: "2023-01-01T00:00:00Z",
 					},
 				],
-				comments: [], // Assuming no comments for this test
+				replies: [], // Assuming no replies for this test
 				activities: [],
 				notifications: [],
 				user: {},
@@ -88,16 +88,16 @@ const tests = {
 		)
 
 		// 3. Find and click the first topic link/element
-		const $firstTopicElement = $("topics > topic[trimmed]")
-		$firstTopicElement.click()
+		const $firstPostElement = $("posts > topic[trimmed]")
+		$firstPostElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// 4. Assert navigation to the topic detail path
-		const expectedTopicPath = "/post/test-topic-1"
+		const expectedPostPath = "/post/test-topic-1"
 		assertEquals(
-			expectedTopicPath,
+			expectedPostPath,
 			state.path,
-			`Path should be "${expectedTopicPath}" after clicking the first topic.`,
+			`Path should be "${expectedPostPath}" after clicking the first topic.`,
 		)
 
 		// 5. Assert the topic includes the detail rendered text
@@ -105,7 +105,7 @@ const tests = {
 		assertEquals(
 			true,
 			$topicPSpan.innerText.includes("Full detailed body for test-topic-1"),
-			`Topic p span should include text "Full detailed body for test-topic-1"`,
+			`Post p span should include text "Full detailed body for test-topic-1"`,
 		)
 	},
 }

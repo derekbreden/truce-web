@@ -14,10 +14,10 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [
+				posts: [
 					{
 						slug: "test-topic-1",
-						title: "Test Topic 1",
+						title: "Test Post 1",
 						body: "Body for test topic 1",
 						user_slug: "test-user", // Author of the topic
 						display_name: "Test User Name",
@@ -29,14 +29,14 @@ const tests = {
 						poll_1: null,
 						favorited: false,
 						favorite_count: 0,
-						commented: false,
-						comment_count: 0,
+						replyed: false,
+						reply_count: 0,
 						image_uuids: null,
 						created_at: new Date().toISOString(),
 						last_activity_at: new Date().toISOString(),
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -60,8 +60,8 @@ const tests = {
 					user_verified: false,
 					// other user fields if necessary for rendering the profile page
 				},
-				topics: [], // Topics by this user (empty for simplicity in this test)
-				comments: [],
+				posts: [], // Posts by this user (empty for simplicity in this test)
+				replies: [],
 				activities: [],
 				notifications: [], // Other standard page data
 				// Fields from a typical page response
@@ -77,7 +77,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -88,7 +88,7 @@ const tests = {
 		)
 
 		// 3. Ensure the topic is rendered on /posts
-		const $topicAuthorElement = $(`topics > topic author[slug="test-user"]`)
+		const $topicAuthorElement = $(`posts > topic author[slug="test-user"]`)
 
 		// 4. Navigate to User Profile by clicking the author element
 		$topicAuthorElement.click()
@@ -104,7 +104,7 @@ const tests = {
 		const $mainContent = $mainContentWrapper.$("main-content")
 
 		// Verify the user's name is displayed as a header.
-		// renderTopics.js creates a structure like: topic[user] > h2[user] > author > span
+		// renderPosts.js creates a structure like: topic[user] > h2[user] > author > span
 		const $userProfileHeaderSpan = $mainContent.$(
 			"topic[user] h2[user] author span",
 		)
@@ -114,17 +114,17 @@ const tests = {
 			"User profile header text should be the user's display name.",
 		)
 
-		// Verify that a <topics> element (container for the user's topics) is present.
-		// renderTopics.js will create this, even if the topics array is empty.
-		const $userTopicsContainer = $mainContent.$("topics")
+		// Verify that a <posts> element (container for the user's posts) is present.
+		// renderPosts.js will create this, even if the posts array is empty.
+		const $userPostsContainer = $mainContent.$("posts")
 
-		// Check that no topics are rendered if the mock data has topics: [] for the user page
-		const $renderedUserTopicElements =
-			$userTopicsContainer.querySelectorAll("topic:not([user])") // Exclude the header topic, which is topic[user]
+		// Check that no posts are rendered if the mock data has posts: [] for the user page
+		const $renderedUserPostElements =
+			$userPostsContainer.querySelectorAll("topic:not([user])") // Exclude the header topic, which is topic[user]
 		assertEquals(
 			0,
-			$renderedUserTopicElements.length,
-			"Should render 0 actual topic elements if mock data for /user/test-user has topics: [].",
+			$renderedUserPostElements.length,
+			"Should render 0 actual topic elements if mock data for /user/test-user has posts: [].",
 		)
 	},
 }

@@ -51,7 +51,7 @@ async function setupIntegrationTestEnvironment(options) {
 		return returningHtmlContent
 	}
 
-	// Pre-process HTML to uncomment JS includes
+	// Pre-process HTML to unreply JS includes
 	// Removes leading "// " from lines containing "<!--#include file="client/...js" -->"
 	let processedIndexHtmlContent = indexHtmlContent
 		.split("\n")
@@ -110,9 +110,9 @@ async function setupIntegrationTestEnvironment(options) {
 			let mockFetchResponseForPaths = {
 				// Default fetch responses for a few common paths
 				... {
-					"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
+					"/": { path: "/", posts: [], replies: [], activities: [], notifications: [] },
 					"/unread_count_unseen_count": {
-						path: "/", topics: [], comments: [], activities: [], notifications: []
+						path: "/", posts: [], replies: [], activities: [], notifications: []
 					},
 				},
 				// All defaults to be passed by options as well

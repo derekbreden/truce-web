@@ -7,14 +7,14 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Import the handler we're testing
-const getPageTopics = require("../../../server/session/getPageTopics.js")
+const getPagePosts = require("../../../server/session/getPagePosts.js")
 
 const tests = {
-	testSuccessfulTopicsPageLoad: async () => {
-		// Setup mock request for /topics page
+	testSuccessfulPostsPageLoad: async () => {
+		// Setup mock request for /posts page
 		const req = createMockRequest(
 			{ 
-				path: '/topics'
+				path: '/posts'
 			},
 			{ 
 				session_id: 'session-123',
@@ -24,7 +24,7 @@ const tests = {
 		)
 		
 		// Initialize results object (normally done by server)
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -34,7 +34,7 @@ const tests = {
 					{
 						create_date: '2024-01-15T10:30:00Z',
 						topic_id: 'topic-1',
-						title: 'First Topic',
+						title: 'First Post',
 						user_id: 'author-1',
 						display_name: 'John Doe',
 						display_name_index: 'johndoe',
@@ -51,19 +51,19 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 5,
-						comment_count: 3,
+						reply_count: 3,
 						counts_max_create_date: '2024-01-15T11:00:00Z',
 						edit: false,
 						image_uuids: 'image-uuid-1,image-uuid-2',
 						favorited: true,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'general,technology'
 					},
 					{
 						create_date: '2024-01-14T15:20:00Z',
 						topic_id: 'topic-2',
-						title: 'Poll Topic',
+						title: 'Poll Post',
 						user_id: 'user-456',
 						display_name: 'Test User',
 						display_name_index: 'testuser',
@@ -80,12 +80,12 @@ const tests = {
 						poll_counts_estimated: '100,50,30,0',
 						note: null,
 						favorite_count: 2,
-						comment_count: 8,
+						reply_count: 8,
 						counts_max_create_date: '2024-01-14T16:00:00Z',
 						edit: true,
 						image_uuids: null,
 						favorited: false,
-						commented: true,
+						replyed: true,
 						voted: true,
 						tags: 'polls,asks'
 					}
@@ -96,113 +96,113 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results are populated
 		assertEquals(
-			'/topics',
+			'/posts',
 			req.results.path,
 			"Should set results path."
 		)
 		assertEquals(
 			2,
-			req.results.topics.length,
-			"Should add topics to results."
+			req.results.posts.length,
+			"Should add posts to results."
 		)
 		
 		// Verify first topic data
-		const firstTopic = req.results.topics[0]
+		const firstPost = req.results.posts[0]
 		assertEquals(
 			'topic-1',
-			firstTopic.topic_id,
+			firstPost.topic_id,
 			"Should include topic ID."
 		)
 		assertEquals(
-			'First Topic',
-			firstTopic.title,
+			'First Post',
+			firstPost.title,
 			"Should include topic title."
 		)
 		assertEquals(
 			'author-1',
-			firstTopic.user_id,
+			firstPost.user_id,
 			"Should include author user ID."
 		)
 		assertEquals(
 			'John Doe',
-			firstTopic.display_name,
+			firstPost.display_name,
 			"Should include author display name."
 		)
 		assertEquals(
 			'first-topic',
-			firstTopic.slug,
+			firstPost.slug,
 			"Should include topic slug."
 		)
 		assertEquals(
 			5,
-			firstTopic.favorite_count,
+			firstPost.favorite_count,
 			"Should include favorite count."
 		)
 		assertEquals(
 			3,
-			firstTopic.comment_count,
-			"Should include comment count."
+			firstPost.reply_count,
+			"Should include reply count."
 		)
 		assertEquals(
 			true,
-			firstTopic.favorited,
+			firstPost.favorited,
 			"Should include favorited status."
 		)
 		assertEquals(
 			false,
-			firstTopic.commented,
-			"Should include commented status."
+			firstPost.replyed,
+			"Should include replyed status."
 		)
 		assertEquals(
 			false,
-			firstTopic.edit,
+			firstPost.edit,
 			"Should include edit permission (false for other users)."
 		)
 		assertEquals(
 			'general,technology',
-			firstTopic.tags,
+			firstPost.tags,
 			"Should include topic tags."
 		)
 		
 		// Verify second topic (poll) data
-		const secondTopic = req.results.topics[1]
+		const secondPost = req.results.posts[1]
 		assertEquals(
-			'Poll Topic',
-			secondTopic.title,
+			'Poll Post',
+			secondPost.title,
 			"Should include poll topic title."
 		)
 		assertEquals(
 			'Option A',
-			secondTopic.poll_1,
+			secondPost.poll_1,
 			"Should include poll option A."
 		)
 		assertEquals(
 			'Option B',
-			secondTopic.poll_2,
+			secondPost.poll_2,
 			"Should include poll option B."
 		)
 		assertEquals(
 			'Option C',
-			secondTopic.poll_3,
+			secondPost.poll_3,
 			"Should include poll option C."
 		)
 		assertEquals(
 			'10,5,3,0',
-			secondTopic.poll_counts,
+			secondPost.poll_counts,
 			"Should include poll vote counts."
 		)
 		assertEquals(
 			true,
-			secondTopic.edit,
-			"Should include edit permission (true for own topics)."
+			secondPost.edit,
+			"Should include edit permission (true for own posts)."
 		)
 		assertEquals(
 			true,
-			secondTopic.voted,
+			secondPost.voted,
 			"Should include voted status."
 		)
 		
@@ -214,11 +214,11 @@ const tests = {
 		)
 	},
 
-	testTopicsAllPageLoad: async () => {
-		// Setup mock request for /topics/all page
+	testPostsAllPageLoad: async () => {
+		// Setup mock request for /posts/all page
 		const req = createMockRequest(
 			{ 
-				path: '/topics/all'
+				path: '/posts/all'
 			},
 			{ 
 				session_id: 'session-all',
@@ -226,7 +226,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -236,15 +236,15 @@ const tests = {
 					{
 						create_date: '2024-01-15T10:30:00Z',
 						topic_id: 'topic-all-1',
-						title: 'All Topics Test',
+						title: 'All Posts Test',
 						user_id: 'author-all',
 						display_name: 'All Author',
 						display_name_index: 'allauthor',
 						user_slug: 'all-author',
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'all-topics-test',
-						body: 'This is in all topics...',
+						slug: 'all-posts-test',
+						body: 'This is in all posts...',
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -253,12 +253,12 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 1,
-						comment_count: 0,
+						reply_count: 0,
 						counts_max_create_date: '2024-01-15T10:35:00Z',
 						edit: false,
 						image_uuids: null,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'general'
 					}
@@ -269,23 +269,23 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results
 		assertEquals(
-			'/topics/all',
+			'/posts/all',
 			req.results.path,
-			"Should set correct path for all topics."
+			"Should set correct path for all posts."
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
-			"Should add topics to results."
+			req.results.posts.length,
+			"Should add posts to results."
 		)
 		assertEquals(
-			'All Topics Test',
-			req.results.topics[0].title,
-			"Should include topic from all topics query."
+			'All Posts Test',
+			req.results.posts[0].title,
+			"Should include topic from all posts query."
 		)
 	},
 
@@ -301,7 +301,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -311,7 +311,7 @@ const tests = {
 					{
 						create_date: '2024-01-15T09:00:00Z',
 						topic_id: 'topic-tech-1',
-						title: 'Technology Topic',
+						title: 'Technology Post',
 						user_id: 'tech-author',
 						display_name: 'Tech Expert',
 						display_name_index: 'techexpert',
@@ -328,12 +328,12 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 10,
-						comment_count: 5,
+						reply_count: 5,
 						counts_max_create_date: '2024-01-15T09:30:00Z',
 						edit: false,
 						image_uuids: 'tech-image-1',
 						favorited: false,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'technology,science'
 					}
@@ -344,7 +344,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results
 		assertEquals(
@@ -354,17 +354,17 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
-			"Should add topics to results."
+			req.results.posts.length,
+			"Should add posts to results."
 		)
 		assertEquals(
-			'Technology Topic',
-			req.results.topics[0].title,
+			'Technology Post',
+			req.results.posts[0].title,
 			"Should include topic from tag query."
 		)
 		assertEquals(
 			'technology,science',
-			req.results.topics[0].tags,
+			req.results.posts[0].tags,
 			"Should include technology tag."
 		)
 	},
@@ -381,7 +381,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -391,7 +391,7 @@ const tests = {
 					{
 						create_date: '2024-01-14T14:00:00Z',
 						topic_id: 'user-topic-1',
-						title: 'User Topic',
+						title: 'User Post',
 						user_id: '123',
 						display_name: 'User 123',
 						display_name_index: 'user123',
@@ -408,12 +408,12 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 2,
-						comment_count: 1,
+						reply_count: 1,
 						counts_max_create_date: '2024-01-14T14:15:00Z',
 						edit: false,
 						image_uuids: null,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'general'
 					}
@@ -424,7 +424,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results
 		assertEquals(
@@ -434,17 +434,17 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
-			"Should add topics to results."
+			req.results.posts.length,
+			"Should add posts to results."
 		)
 		assertEquals(
-			'User Topic',
-			req.results.topics[0].title,
+			'User Post',
+			req.results.posts[0].title,
 			"Should include topic from user query."
 		)
 		assertEquals(
 			'123',
-			req.results.topics[0].user_id,
+			req.results.posts[0].user_id,
 			"Should include correct user ID."
 		)
 	},
@@ -461,7 +461,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -471,7 +471,7 @@ const tests = {
 					{
 						create_date: '2024-01-13T12:00:00Z',
 						topic_id: 'slug-topic-1',
-						title: 'Slug User Topic',
+						title: 'Slug User Post',
 						user_id: 'slug-user-456',
 						display_name: 'John Doe',
 						display_name_index: 'johndoe',
@@ -488,12 +488,12 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 7,
-						comment_count: 4,
+						reply_count: 4,
 						counts_max_create_date: '2024-01-13T12:30:00Z',
 						edit: false,
 						image_uuids: 'john-image-1,john-image-2',
 						favorited: true,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'general,personal'
 					}
@@ -504,7 +504,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results
 		assertEquals(
@@ -514,17 +514,17 @@ const tests = {
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
-			"Should add topics to results."
+			req.results.posts.length,
+			"Should add posts to results."
 		)
 		assertEquals(
-			'Slug User Topic',
-			req.results.topics[0].title,
+			'Slug User Post',
+			req.results.posts[0].title,
 			"Should include topic from user slug query."
 		)
 		assertEquals(
 			'john-doe',
-			req.results.topics[0].user_slug,
+			req.results.posts[0].user_slug,
 			"Should include correct user slug."
 		)
 	},
@@ -533,7 +533,7 @@ const tests = {
 		// Setup mock request with date filters
 		const req = createMockRequest(
 			{ 
-				path: '/topics/all',
+				path: '/posts/all',
 				min_topic_create_date: '2024-01-01T00:00:00Z',
 				max_topic_create_date: '2024-01-31T23:59:59Z'
 			},
@@ -543,7 +543,7 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
@@ -553,7 +553,7 @@ const tests = {
 					{
 						create_date: '2024-01-15T10:00:00Z',
 						topic_id: 'date-topic-1',
-						title: 'Date Filtered Topic',
+						title: 'Date Filtered Post',
 						user_id: 'date-author',
 						display_name: 'Date Author',
 						display_name_index: 'dateauthor',
@@ -570,12 +570,12 @@ const tests = {
 						poll_counts_estimated: null,
 						note: null,
 						favorite_count: 3,
-						comment_count: 2,
+						reply_count: 2,
 						counts_max_create_date: '2024-01-15T10:15:00Z',
 						edit: false,
 						image_uuids: null,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						voted: false,
 						tags: 'general'
 					}
@@ -586,56 +586,56 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify results
 		assertEquals(
-			'/topics/all',
+			'/posts/all',
 			req.results.path,
 			"Should set correct path with date filters."
 		)
 		assertEquals(
 			1,
-			req.results.topics.length,
-			"Should add topics to results with date filtering."
+			req.results.posts.length,
+			"Should add posts to results with date filtering."
 		)
 		assertEquals(
-			'Date Filtered Topic',
-			req.results.topics[0].title,
+			'Date Filtered Post',
+			req.results.posts[0].title,
 			"Should include topic within date range."
 		)
 	},
 
-	testNoActionWhenMaxCommentCreateDate: async () => {
-		// Setup mock request with max_comment_create_date (disables topic loading)
+	testNoActionWhenMaxReplyCreateDate: async () => {
+		// Setup mock request with max_reply_create_date (disables topic loading)
 		const req = createMockRequest(
 			{ 
-				path: '/topics',
-				max_comment_create_date: '2024-01-15T10:00:00Z'
+				path: '/posts',
+				max_reply_create_date: '2024-01-15T10:00:00Z'
 			},
 			{ 
-				session_id: 'session-maxcomment',
-				user_id: 'user-maxcomment'
+				session_id: 'session-maxreply',
+				user_id: 'user-maxreply'
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
-		// Verify no topics query was made
+		// Verify no posts query was made
 		assertEquals(
 			0,
-			req.results.topics.length,
-			"Should not load topics when max_comment_create_date is set."
+			req.results.posts.length,
+			"Should not load posts when max_reply_create_date is set."
 		)
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Should not set path when max_comment_create_date is set."
+			"Should not set path when max_reply_create_date is set."
 		)
 	},
 
@@ -651,18 +651,18 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify no action taken
 		assertEquals(
 			0,
-			req.results.topics.length,
-			"Should not load topics with wrong path."
+			req.results.posts.length,
+			"Should not load posts with wrong path."
 		)
 		assertEquals(
 			undefined,
@@ -675,7 +675,7 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				path: '/topics'
+				path: '/posts'
 			},
 			{ 
 				session_id: 'session-ended',
@@ -683,20 +683,20 @@ const tests = {
 			}
 		)
 		
-		req.results = { topics: [], comments: [] }
+		req.results = { posts: [], replies: [] }
 		
 		const res = createMockResponse()
 		// Simulate response already ended
 		res.writableEnded = true
 		
 		// Execute the handler
-		await getPageTopics(req, res)
+		await getPagePosts(req, res)
 		
 		// Verify no action taken
 		assertEquals(
 			0,
-			req.results.topics.length,
-			"Should not load topics when response already ended."
+			req.results.posts.length,
+			"Should not load posts when response already ended."
 		)
 		assertEquals(
 			undefined,

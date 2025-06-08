@@ -4,7 +4,7 @@ const {
 } = require("./../shared/integrationTestSetup.js")
 const { assertEquals, runTests } = require("../shared/testUtils.js")
 
-const testTopicsListDisplaysFetchedTopics = async () => {
+const testPostsListDisplaysFetchedPosts = async () => {
 	const { window } = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
@@ -14,7 +14,7 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			path: "/posts",
-			topics: [
+			posts: [
 				{
 					slug: "tech-trends",
 					title: "Tech Trends 2024",
@@ -22,10 +22,10 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 					user_slug: "jdoe",
 					display_name: "John Doe",
 					tags: "work",
-					comment_count: 5,
+					reply_count: 5,
 					favorite_count: 10,
 					favorited: false,
-					commented: false,
+					replyed: false,
 					image_uuids: null,
 					profile_picture_uuid: null,
 					display_name_index: 0,
@@ -40,10 +40,10 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 					user_slug: "jane",
 					display_name: "Jane Roe",
 					tags: "science",
-					comment_count: 3,
+					reply_count: 3,
 					favorite_count: 7,
 					favorited: true,
-					commented: false,
+					replyed: false,
 					image_uuids: null,
 					profile_picture_uuid: null,
 					display_name_index: 0,
@@ -52,7 +52,7 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 					poll_1: null,
 				},
 			],
-			comments: [],
+			replies: [],
 			activities: [],
 			notifications: [],
 			user: {},
@@ -72,26 +72,26 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 		"State path should be /posts after navigation",
 	)
 
-	const $topicsWrapper = $("topics")
+	const $postsWrapper = $("posts")
 
-	const $renderedTopicElements = $topicsWrapper.querySelectorAll("topic")
+	const $renderedPostElements = $postsWrapper.querySelectorAll("topic")
 	assertEquals(
-		$renderedTopicElements.length,
+		$renderedPostElements.length,
 		2,
 		"Should render 2 topic elements based on mock data",
 	)
 
 	// Assert content of the first topic
-	const $firstTopic = $renderedTopicElements[0]
+	const $firstPost = $renderedPostElements[0]
 
-	const $firstTitle = $firstTopic.querySelector("h2")
+	const $firstTitle = $firstPost.querySelector("h2")
 	assertEquals(
 		$firstTitle.textContent.trim(),
 		"Tech Trends 2024",
 		"First topic title mismatch",
 	)
 
-	const $firstBodySpan = $firstTopic.querySelector("p > span") // Target the span inside the first p
+	const $firstBodySpan = $firstPost.querySelector("p > span") // Target the span inside the first p
 	assertEquals(
 		$firstBodySpan !== null,
 		true,
@@ -99,16 +99,16 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 	)
 
 	// Assert content of the second topic
-	const $secondTopic = $renderedTopicElements[1]
+	const $secondPost = $renderedPostElements[1]
 
-	const $secondTitle = $secondTopic.querySelector("h2")
+	const $secondTitle = $secondPost.querySelector("h2")
 	assertEquals(
 		$secondTitle.textContent.trim(),
 		"Science Discoveries",
 		"Second topic title mismatch",
 	)
 
-	const $secondBodySpan = $secondTopic.querySelector("p > span") // Target the span inside the first p
+	const $secondBodySpan = $secondPost.querySelector("p > span") // Target the span inside the first p
 	assertEquals(
 		$secondBodySpan !== null,
 		true,
@@ -117,7 +117,7 @@ const testTopicsListDisplaysFetchedTopics = async () => {
 }
 
 const tests = {
-	testTopicsListDisplaysFetchedTopics,
+	testPostsListDisplaysFetchedPosts,
 	// Add other tests here if any in the future
 }
 

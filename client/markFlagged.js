@@ -1,15 +1,15 @@
 const pending_flag_saves = []
 let active_flag_save = null
-const markFlagged = async (topic_or_comment) => {
+const markFlagged = async (topic_or_reply) => {
 	// Set some variables
-	const topic_id = topic_or_comment.topic_id || topic_or_comment.id
-	const comment_id = topic_or_comment.comment_id || topic_or_comment.id
+	const topic_id = topic_or_reply.topic_id || topic_or_reply.id
+	const reply_id = topic_or_reply.reply_id || topic_or_reply.id
 
 	// Alert the user to the change
-	if (topic_or_comment.$post) {
+	if (topic_or_reply.$post) {
 		alertInfo("Post was flagged")
 	}
-	if (topic_or_comment.$reply) {
+	if (topic_or_reply.$reply) {
 		alertInfo("Reply was flagged")
 	}
 
@@ -19,8 +19,8 @@ const markFlagged = async (topic_or_comment) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				topic_id_to_flag: topic_or_comment.$post ? topic_id : 0,
-				comment_id_to_flag: topic_or_comment.$reply ? comment_id : 0,
+				topic_id_to_flag: topic_or_reply.$post ? topic_id : 0,
+				reply_id_to_flag: topic_or_reply.$reply ? reply_id : 0,
 			}),
 		})
 			.then((response) => response.json())
@@ -52,7 +52,7 @@ const markFlagged = async (topic_or_comment) => {
 		} else {
 			active_flag_save = false
 			state.cache = {}
-			goToPath("/topics")
+			goToPath("/posts")
 		}
 	}
 

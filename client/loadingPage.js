@@ -20,12 +20,12 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	setTimeout(() => {
 		$("main-content-wrapper[inactive]")?.remove()
 	}, 250)
-	// $("[add-new-comment]")?.remove()
+	// $("[add-new-reply]")?.remove()
 	if (!first_render) {
 		$("main-content-wrapper[active] main-content").appendChild(
 			$(
 				`
-				topics-loading
+				posts-loading
 					h2
 					p
 					p
@@ -50,7 +50,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-				topics
+				posts
 					topic
 						h2[welcome]
 							span Terms and conditions
@@ -97,7 +97,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$("main-content-wrapper[active] main-content-2").replaceChildren(
 			$(
 				`
-				topics
+				posts
 					topic
 						h2[moderation]
 							span Our Approach to Moderation
@@ -111,10 +111,10 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						ul
 							li A label will be applied
 							li The label will be explained
-						comments
-							expand-wrapper[above-comments]
+						replies
+							expand-wrapper[above-replies]
 								p Examples
-							comment
+							reply
 								h3
 									author
 										profile-picture
@@ -126,7 +126,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									info
 										b Name-calling
 										p If someone does not identify themselves as a fascist, calling them one is an example of name-calling. This type of labeling hinders constructive and respectful dialogue.
-							comment
+							reply
 								h3
 									author
 										profile-picture
@@ -137,7 +137,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									info
 										b Escalation
 										p This statement suggests that violence can be a solution, which promotes conflict and hostility rather than peaceful dialogue.
-							comment
+							reply
 								h3
 									author
 										profile-picture
@@ -148,7 +148,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									info
 										b Judgment
 										p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
-				topics
+				posts
 					p[notice]
 						a[href="/privacy"] Privacy Policy
 					p[notice]
@@ -193,7 +193,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					back-wrapper
 						button[expand-left]
 						p Terms and conditions
-				topics
+				posts
 					topic
 						h2 Privacy Policy
 						p[bold] Information Collection
@@ -223,7 +223,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	if (state.path === "/settings") {
 		const $settings = $(
 			`
-			topics
+			posts
 				topic
 					h2[settings]
 						span Account settings
@@ -309,8 +309,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								p This will permanently remove your account. This action cannot be undone.
 							p Everything you posted will be deleted:
 							ul
-								li Comments
-								li Topics
+								li Replies
+								li Posts
 								li Images
 								li Favorites
 							p Tap remove to confirm.

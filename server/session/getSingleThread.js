@@ -2,12 +2,12 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.body.path &&
-		(req.body.path.substr(0, 9) === "/comment/" || req.body.path.substr(0, 7) === "/reply/")
+		(req.body.path.substr(0, 9) === "/reply/" || req.body.path.substr(0, 7) === "/reply/")
 	) {
-		const comment_id = req.body.path.substr(0, 9) === "/comment/" ? req.body.path.substr(9) : req.body.path.substr(7)
-		const comment_results = await req.client.query(
+		const reply_id = req.body.path.substr(0, 9) === "/reply/" ? req.body.path.substr(9) : req.body.path.substr(7)
+		const reply_results = await req.client.query(
 			`
-      WITH root_comment AS (
+      WITH root_reply AS (
         SELECT reply_id
         FROM replies
         WHERE
@@ -44,12 +44,12 @@ module.exports = async (req, res) => {
       WHERE
         (
           c.reply_id IN (
-            SELECT reply_id FROM root_comment
+            SELECT reply_id FROM root_reply
           ) OR c.reply_id IN (
             SELECT reply_id
             FROM reply_ancestors
             WHERE ancestor_id IN (
-              SELECT reply_id FROM root_comment
+              SELECT reply_id FROM root_reply
             )
           )
         ) AND (
@@ -60,12 +60,12 @@ module.exports = async (req, res) => {
       ORDER BY c.create_date ASC
       `,
 			[
-				comment_id,
+				reply_id,
 				req.session.user_id || 0,
-				req.body.min_comment_create_date || null,
+				req.body.min_reply_create_date || null,
 			],
 		)
-		if (comment_results.rows.length) {
+		if (reply_results.rows.length) {
 			const topic_result = await req.client.query(
 				`
         SELECT t.title, t.slug
@@ -80,20 +80,20 @@ module.exports = async (req, res) => {
         AND l.post_id IS NULL
         AND b.user_id_blocked IS NULL
         `,
-				[req.session.user_id || 0, comment_id],
+				[req.session.user_id || 0, reply_id],
 			)
 			req.results.parent_topic = {
 				title: topic_result.rows[0].title,
 				slug: topic_result.rows[0].slug,
 			}
-			req.results.path = `/reply/${comment_id}`
-			req.results.comments.push(...comment_results.rows)
+			req.results.path = `/reply/${reply_id}`
+			req.results.replies.push(...reply_results.rows)
 		}
 
 		// We set path there to ensure the path goes to a default if there are no results
-		// But, now that we are checking for most recent, the path is also good if a min_comment_create_date was passed
-		if (req.body.min_comment_create_date) {
-			req.results.path = `/reply/${comment_id}`
+		// But, now that we are checking for most recent, the path is also good if a min_reply_create_date was passed
+		if (req.body.min_reply_create_date) {
+			req.results.path = `/reply/${reply_id}`
 		}
 	}
 }

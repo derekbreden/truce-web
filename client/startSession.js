@@ -141,13 +141,13 @@ const getMoreRecent = () => {
 			return max > activity.create_date ? max : activity.create_date
 		}
 	}, "")
-	const min_comment_create_date = current_cache.comments.reduce(
-		(max, comment) => {
-			return max > comment.create_date ? max : comment.create_date
+	const min_reply_create_date = current_cache.replies.reduce(
+		(max, reply) => {
+			return max > reply.create_date ? max : reply.create_date
 		},
 		"",
 	)
-	const min_topic_create_date = current_cache.topics.reduce((max, topic) => {
+	const min_topic_create_date = current_cache.posts.reduce((max, topic) => {
 		return max > topic.create_date ? max : topic.create_date
 	}, "")
 	const min_notification_unread_create_date =
@@ -169,16 +169,16 @@ const getMoreRecent = () => {
 		"",
 	)
 
-	// Find oldest topic create_date for comment count, and max of the counts_max_create_date for the topics
-	const min_create_date_for_counts_1 = current_cache.topics.reduce(
+	// Find oldest topic create_date for reply count, and max of the counts_max_create_date for the posts
+	const min_create_date_for_counts_1 = current_cache.posts.reduce(
 		(min, topic) => {
 			return min < topic.create_date ? min : topic.create_date
 		},
 		new Date().toISOString(),
 	)
-	const min_create_date_for_counts_2 = current_cache.comments.reduce(
-		(min, comment) => {
-			return min < comment.create_date ? min : comment.create_date
+	const min_create_date_for_counts_2 = current_cache.replies.reduce(
+		(min, reply) => {
+			return min < reply.create_date ? min : reply.create_date
 		},
 		new Date().toISOString(),
 	)
@@ -195,16 +195,16 @@ const getMoreRecent = () => {
 	if (min_create_date_for_counts_3 < min_create_date_for_counts) {
 		min_create_date_for_counts = min_create_date_for_counts_3
 	}
-	const min_counts_create_date_1 = current_cache.topics.reduce((max, topic) => {
+	const min_counts_create_date_1 = current_cache.posts.reduce((max, topic) => {
 		return max > topic.counts_max_create_date
 			? max
 			: topic.counts_max_create_date
 	}, "")
-	const min_counts_create_date_2 = current_cache.comments.reduce(
-		(max, comment) => {
-			return max > comment.counts_max_create_date
+	const min_counts_create_date_2 = current_cache.replies.reduce(
+		(max, reply) => {
+			return max > reply.counts_max_create_date
 				? max
-				: comment.counts_max_create_date
+				: reply.counts_max_create_date
 		},
 		"",
 	)
@@ -223,13 +223,13 @@ const getMoreRecent = () => {
 	if (min_counts_create_date_3 > min_counts_create_date) {
 		min_counts_create_date = min_counts_create_date_3
 	}
-	// Indicate if there are comments or topics cached on page
-	const has_comments = Boolean(
-		current_cache.comments.length ||
-			current_cache.activities.filter((a) => a.type === "comment").length,
+	// Indicate if there are replies or posts cached on page
+	const has_replies = Boolean(
+		current_cache.replies.length ||
+			current_cache.activities.filter((a) => a.type === "reply").length,
 	)
-	const has_topics = Boolean(
-		current_cache.topics.length ||
+	const has_posts = Boolean(
+		current_cache.posts.length ||
 			current_cache.activities.filter((a) => a.type === "topic").length,
 	)
 
@@ -240,14 +240,14 @@ const getMoreRecent = () => {
 		body: JSON.stringify({
 			path: current_path,
 			min_create_date,
-			min_comment_create_date,
+			min_reply_create_date,
 			min_topic_create_date,
 			min_notification_unread_create_date,
 			min_notification_read_create_date,
 			min_counts_create_date,
 			min_create_date_for_counts,
-			has_topics,
-			has_comments,
+			has_posts,
+			has_replies,
 		}),
 	})
 		.then((response) => response.json())
@@ -282,38 +282,38 @@ const getMoreRecent = () => {
 				renderActivities(current_cache.activities)
 			}
 
-			// Render comments if appropriate
-			if (data.comments?.length) {
-				const new_ids = data.comments.map((comment) => comment.comment_id)
-				current_cache.comments = current_cache.comments.filter(
-					(c) => new_ids.indexOf(c.comment_id) === -1,
+			// Render replies if appropriate
+			if (data.replies?.length) {
+				const new_ids = data.replies.map((reply) => reply.reply_id)
+				current_cache.replies = current_cache.replies.filter(
+					(c) => new_ids.indexOf(c.reply_id) === -1,
 				)
-				current_cache.comments.push(...data.comments)
-				renderReplies(current_cache.comments)
+				current_cache.replies.push(...data.replies)
+				renderReplies(current_cache.replies)
 
 				// Flash any newly added items
-				data.comments.forEach((comment) => {
-					if (comment.$reply) {
-						comment.$reply.setAttribute("flash-long-focus", "")
+				data.replies.forEach((reply) => {
+					if (reply.$reply) {
+						reply.$reply.setAttribute("flash-long-focus", "")
 					}
 				})
 			}
 
-			// Render topics if appropriate
-			if (data.topics?.length) {
-				const new_ids = data.topics.map((topic) => topic.topic_id)
-				current_cache.topics = current_cache.topics.filter(
+			// Render posts if appropriate
+			if (data.posts?.length) {
+				const new_ids = data.posts.map((topic) => topic.topic_id)
+				current_cache.posts = current_cache.posts.filter(
 					(a) => new_ids.indexOf(a.topic_id) === -1,
 				)
-				current_cache.topics.unshift(...data.topics)
+				current_cache.posts.unshift(...data.posts)
 				renderPosts(
-					current_cache.topics,
+					current_cache.posts,
 					current_cache.tag,
 					current_cache.user,
 				)
 
 				// Flash any newly added items
-				data.topics.forEach((topic) => {
+				data.posts.forEach((topic) => {
 					if (topic.$post) {
 						topic.$post.setAttribute("flash-long-focus", "")
 					}
@@ -323,8 +323,8 @@ const getMoreRecent = () => {
 			// Restore scroll position if we re-rendered anything
 			if (
 				data.activities?.length ||
-				data.comments?.length ||
-				data.topics?.length ||
+				data.replies?.length ||
+				data.posts?.length ||
 				data.notifications?.length
 			) {
 				// Set a min threshold of scroll to do anything
@@ -346,11 +346,11 @@ const getMoreRecent = () => {
 				}
 			}
 
-			// Render updated topic comment counts
+			// Render updated topic reply counts
 			if (data.topic_counts?.length) {
 				data.topic_counts.forEach((topic_count) => {
 					// See if we can find a match in the cache
-					const found_topic = current_cache.topics.find(
+					const found_topic = current_cache.posts.find(
 						(topic) => topic.topic_id === topic_count.topic_id,
 					)
 					const found_activity = current_cache.activities.find(
@@ -359,21 +359,21 @@ const getMoreRecent = () => {
 					)
 
 					// Prepare the text for the markup
-					const comment_text = topic_count.comment_count
+					const reply_text = topic_count.reply_count
 					const favorite_text = topic_count.favorite_count
 
 					// If we found a match in the cache
 					if (found_topic || found_activity) {
 						// Update the cached data
-						;(found_topic || found_activity).comment_count =
-							topic_count.comment_count
+						;(found_topic || found_activity).reply_count =
+							topic_count.reply_count
 						;(found_topic || found_activity).favorite_count =
 							topic_count.favorite_count
 
 						// Update the markup
 						;(found_topic || found_activity).$post.$(
-							"[comments] p"
-						).innerText = comment_text
+							"[replies] p"
+						).innerText = reply_text
 						;(found_topic || found_activity).$post.$(
 							"[favorites] p",
 						).innerText = favorite_text
@@ -394,24 +394,24 @@ const getMoreRecent = () => {
 				})
 			}
 
-			// Render updated comment favorite counts
-			if (data.comment_counts?.length) {
-				data.comment_counts.forEach((comment_count) => {
-					const found_comment = current_cache.comments.find(
-						(comment) => comment.comment_id === comment_count.comment_id,
+			// Render updated reply favorite counts
+			if (data.reply_counts?.length) {
+				data.reply_counts.forEach((reply_count) => {
+					const found_reply = current_cache.replies.find(
+						(reply) => reply.reply_id === reply_count.reply_id,
 					)
 					const found_activity = current_cache.activities.find(
 						(activity) =>
-							activity.id === comment_count.comment_id &&
-							activity.type === "comment",
+							activity.id === reply_count.reply_id &&
+							activity.type === "reply",
 					)
-					const favorite_text = comment_count.favorite_count
-					if (found_comment?.$reply?.$("[favorites] p")?.innerText) {
-						found_comment.favorite_count = comment_count.favorite_count
-						found_comment.$reply.$("[favorites] p").innerText = favorite_text
+					const favorite_text = reply_count.favorite_count
+					if (found_reply?.$reply?.$("[favorites] p")?.innerText) {
+						found_reply.favorite_count = reply_count.favorite_count
+						found_reply.$reply.$("[favorites] p").innerText = favorite_text
 					}
 					if (found_activity?.$reply?.$("[favorites] p")?.innerText) {
-						found_activity.favorite_count = comment_count.favorite_count
+						found_activity.favorite_count = reply_count.favorite_count
 						found_activity.$reply.$("[favorites] p").innerText = favorite_text
 					}
 				})

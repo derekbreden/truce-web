@@ -10,7 +10,7 @@ const {
 const saveFavorite = require("../../../server/session/saveFavorite.js")
 
 const tests = {
-	testAddTopicFavorite: async () => {
+	testAddPostFavorite: async () => {
 		// Setup mock request with topic favorite data
 		const req = createMockRequest({
 			topic_id_to_favorite: 'topic-123',
@@ -19,11 +19,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO favorite_topics',
+			'INSERT INTO favorite_posts',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -57,7 +57,7 @@ const tests = {
 		)
 	},
 
-	testRemoveTopicFavorite: async () => {
+	testRemovePostFavorite: async () => {
 		// Setup mock request with topic unfavorite data
 		const req = createMockRequest({
 			topic_id_to_favorite: 'topic-123',
@@ -66,11 +66,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'DELETE FROM favorite_topics',
+			'DELETE FROM favorite_posts',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE topics',
+			'UPDATE posts',
 			{ rows: [] }
 		)
 		
@@ -94,20 +94,20 @@ const tests = {
 		)
 	},
 
-	testAddCommentFavorite: async () => {
-		// Setup mock request with comment favorite data
+	testAddReplyFavorite: async () => {
+		// Setup mock request with reply favorite data
 		const req = createMockRequest({
-			comment_id_to_favorite: 'comment-456',
+			reply_id_to_favorite: 'reply-456',
 			was_favorited: false // Adding a favorite
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO favorite_comments',
+			'INSERT INTO favorite_replies',
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE comments',
+			'UPDATE replies',
 			{ rows: [] }
 		)
 		
@@ -174,10 +174,10 @@ const tests = {
 	},
 
 	testNoActionWhenMissingTargetIds: async () => {
-		// Setup mock request without topic_id or comment_id
+		// Setup mock request without topic_id or reply_id
 		const req = createMockRequest({
 			was_favorited: false
-			// No topic_id_to_favorite or comment_id_to_favorite
+			// No topic_id_to_favorite or reply_id_to_favorite
 		})
 		
 		const res = createMockResponse()

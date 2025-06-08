@@ -10,26 +10,26 @@ const {
 const getSingleThread = require("../../../server/session/getSingleThread.js")
 
 const tests = {
-	testGetSingleThreadWithComments: async () => {
-		// Setup mock request for comment thread path
+	testGetSingleThreadWithReplies: async () => {
+		// Setup mock request for reply thread path
 		const req = createMockRequest(
-			{ path: "/reply/comment-123" },
+			{ path: "/reply/reply-123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						comment_id: 'comment-123',
-						body: 'This is the root comment',
-						note: 'Root comment note',
+						reply_id: 'reply-123',
+						body: 'This is the root reply',
+						note: 'Root reply note',
 						favorite_count: 5,
-						parent_comment_id: null,
+						parent_reply_id: null,
 						user_id: 'user-789',
 						display_name: 'Root Author',
 						display_name_index: 0,
@@ -42,11 +42,11 @@ const tests = {
 					},
 					{
 						create_date: '2024-01-15T10:05:00Z',
-						comment_id: 'comment-124',
-						body: 'This is a reply comment',
+						reply_id: 'reply-124',
+						body: 'This is a reply reply',
 						note: 'Reply note',
 						favorite_count: 2,
-						parent_comment_id: 'comment-123',
+						parent_reply_id: 'reply-123',
 						user_id: 'user-456',
 						display_name: 'Reply Author',
 						display_name_index: 1,
@@ -65,7 +65,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						title: 'Parent Topic Title',
+						title: 'Parent Post Title',
 						slug: 'parent-topic-slug'
 					}
 				]
@@ -79,39 +79,39 @@ const tests = {
 		
 		// Verify thread was loaded
 		assertEquals(
-			"/reply/comment-123",
+			"/reply/reply-123",
 			req.results.path,
 			"Path should be set in results."
 		)
 		assertEquals(
 			2,
-			req.results.comments.length,
-			"Should return comment thread."
+			req.results.replies.length,
+			"Should return reply thread."
 		)
 		assertEquals(
-			'comment-123',
-			req.results.comments[0].comment_id,
-			"First comment should be the root comment."
+			'reply-123',
+			req.results.replies[0].reply_id,
+			"First reply should be the root reply."
 		)
 		assertEquals(
-			'This is the root comment',
-			req.results.comments[0].body,
-			"Should include comment body."
+			'This is the root reply',
+			req.results.replies[0].body,
+			"Should include reply body."
 		)
 		assertEquals(
-			'comment-124',
-			req.results.comments[1].comment_id,
-			"Second comment should be the reply."
+			'reply-124',
+			req.results.replies[1].reply_id,
+			"Second reply should be the reply."
 		)
 		assertEquals(
-			'comment-123',
-			req.results.comments[1].parent_comment_id,
-			"Reply should reference parent comment."
+			'reply-123',
+			req.results.replies[1].parent_reply_id,
+			"Reply should reference parent reply."
 		)
 		
 		// Verify parent topic was loaded
 		assertEquals(
-			'Parent Topic Title',
+			'Parent Post Title',
 			req.results.parent_topic.title,
 			"Should include parent topic title."
 		)
@@ -122,17 +122,17 @@ const tests = {
 		)
 	},
 
-	testGetSingleThreadNoComments: async () => {
-		// Setup mock request for comment that doesn't exist or has no accessible comments
+	testGetSingleThreadNoReplies: async () => {
+		// Setup mock request for reply that doesn't exist or has no accessible replies
 		const req = createMockRequest(
-			{ path: "/comment/nonexistent-comment" },
+			{ path: "/reply/nonexistent-reply" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ rows: [] }
 		)
 		
@@ -141,44 +141,44 @@ const tests = {
 		// Execute the handler
 		await getSingleThread(req, res)
 		
-		// Verify no results but path not set (only set when comments exist)
+		// Verify no results but path not set (only set when replies exist)
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Path should not be set when no comments found."
+			"Path should not be set when no replies found."
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should have empty comments array."
+			req.results.replies.length,
+			"Should have empty replies array."
 		)
 		assertEquals(
 			undefined,
 			req.results.parent_topic,
-			"Should not set parent_topic when no comments."
+			"Should not set parent_topic when no replies."
 		)
 	},
 
-	testWithMinCommentCreateDate: async () => {
+	testWithMinReplyCreateDate: async () => {
 		// Setup mock request with date filtering
 		const req = createMockRequest(
 			{ 
-				path: "/reply/comment-123",
-				min_comment_create_date: '2024-01-15T09:00:00Z'
+				path: "/reply/reply-123",
+				min_reply_create_date: '2024-01-15T09:00:00Z'
 			},
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						comment_id: 'comment-123',
-						body: 'Filtered comment',
+						reply_id: 'reply-123',
+						body: 'Filtered reply',
 						user_id: 'user-789',
 						display_name: 'Author'
 					}
@@ -190,7 +190,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						title: 'Topic Title',
+						title: 'Post Title',
 						slug: 'topic-slug'
 					}
 				]
@@ -203,31 +203,31 @@ const tests = {
 		
 		// Should handle date filtering
 		assertEquals(
-			"/reply/comment-123",
+			"/reply/reply-123",
 			req.results.path,
 			"Should set path with date filtering."
 		)
 		assertEquals(
 			1,
-			req.results.comments.length,
-			"Should return filtered comments."
+			req.results.replies.length,
+			"Should return filtered replies."
 		)
 	},
 
-	testPathSetWithMinDateEvenNoComments: async () => {
-		// Test that path is set when min_comment_create_date is provided, even if no comments
+	testPathSetWithMinDateEvenNoReplies: async () => {
+		// Test that path is set when min_reply_create_date is provided, even if no replies
 		const req = createMockRequest(
 			{ 
-				path: "/reply/comment-123",
-				min_comment_create_date: '2024-01-15T09:00:00Z'
+				path: "/reply/reply-123",
+				min_reply_create_date: '2024-01-15T09:00:00Z'
 			},
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ rows: [] }
 		)
 		
@@ -235,16 +235,16 @@ const tests = {
 		
 		await getSingleThread(req, res)
 		
-		// Path should be set even when no comments due to min_comment_create_date
+		// Path should be set even when no replies due to min_reply_create_date
 		assertEquals(
-			"/reply/comment-123",
+			"/reply/reply-123",
 			req.results.path,
-			"Path should be set when min_comment_create_date provided."
+			"Path should be set when min_reply_create_date provided."
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should have empty comments array."
+			req.results.replies.length,
+			"Should have empty replies array."
 		)
 	},
 
@@ -254,7 +254,7 @@ const tests = {
 			{ path: "/topic/123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -269,8 +269,8 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should not load comments for wrong path."
+			req.results.replies.length,
+			"Should not load replies for wrong path."
 		)
 	},
 
@@ -280,7 +280,7 @@ const tests = {
 			{}, // no path
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		const res = createMockResponse()
 		
@@ -298,10 +298,10 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest(
-			{ path: "/reply/comment-123" },
+			{ path: "/reply/reply-123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		const res = createMockResponse()
 		// Simulate response already ended
@@ -318,12 +318,12 @@ const tests = {
 		)
 	},
 
-	testCommentIdExtraction: async () => {
-		// Test various comment ID formats
+	testReplyIdExtraction: async () => {
+		// Test various reply ID formats
 		const testCases = [
-			{ path: "/comment/123", expectedId: "123" },
-			{ path: "/comment/comment-abc-def", expectedId: "comment-abc-def" },
-			{ path: "/comment/uuid-style-123-456", expectedId: "uuid-style-123-456" }
+			{ path: "/reply/123", expectedId: "123" },
+			{ path: "/reply/reply-abc-def", expectedId: "reply-abc-def" },
+			{ path: "/reply/uuid-style-123-456", expectedId: "uuid-style-123-456" }
 		]
 		
 		for (const testCase of testCases) {
@@ -331,16 +331,16 @@ const tests = {
 				{ path: testCase.path },
 				{ user_id: 'user-456' }
 			)
-			req.results = { comments: [] }
+			req.results = { replies: [] }
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'WITH root_comment',
+				'WITH root_reply',
 				{ 
 					rows: [
 						{
-							comment_id: testCase.expectedId,
-							body: 'Test comment',
+							reply_id: testCase.expectedId,
+							body: 'Test reply',
 							user_id: 'user-789',
 							display_name: 'Author'
 						}
@@ -350,7 +350,7 @@ const tests = {
 			req.client.addQueryMock(
 				'SELECT t.title, t.slug',
 				{ 
-					rows: [{ title: 'Topic', slug: 'topic' }]
+					rows: [{ title: 'Post', slug: 'topic' }]
 				}
 			)
 			
@@ -360,8 +360,8 @@ const tests = {
 			
 			assertEquals(
 				testCase.expectedId,
-				req.results.comments[0].comment_id,
-				`Should extract comment ID correctly from path: ${testCase.path}.`
+				req.results.replies[0].reply_id,
+				`Should extract reply ID correctly from path: ${testCase.path}.`
 			)
 		}
 	},
@@ -369,26 +369,26 @@ const tests = {
 	testUserPermissions: async () => {
 		// Test edit permissions and favorited status
 		const req = createMockRequest(
-			{ path: "/reply/comment-123" },
+			{ path: "/reply/reply-123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ 
 				rows: [
 					{
-						comment_id: 'comment-own',
-						body: 'Own comment',
+						reply_id: 'reply-own',
+						body: 'Own reply',
 						user_id: 'user-456', // Same as requesting user
 						display_name: 'Current User',
 						edit: true,
 						favorited: false
 					},
 					{
-						comment_id: 'comment-other',
-						body: 'Other comment',
+						reply_id: 'reply-other',
+						body: 'Other reply',
 						user_id: 'user-789', // Different user
 						display_name: 'Other User',
 						edit: false,
@@ -399,7 +399,7 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Topic', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'topic' }] }
 		)
 		
 		const res = createMockResponse()
@@ -409,41 +409,41 @@ const tests = {
 		// Verify permissions
 		assertEquals(
 			true,
-			req.results.comments[0].edit,
-			"User should be able to edit their own comment."
+			req.results.replies[0].edit,
+			"User should be able to edit their own reply."
 		)
 		assertEquals(
 			false,
-			req.results.comments[1].edit,
-			"User should not be able to edit other's comment."
+			req.results.replies[1].edit,
+			"User should not be able to edit other's reply."
 		)
 		assertEquals(
 			false,
-			req.results.comments[0].favorited,
-			"Own comment should not be favorited."
+			req.results.replies[0].favorited,
+			"Own reply should not be favorited."
 		)
 		assertEquals(
 			true,
-			req.results.comments[1].favorited,
-			"Other comment should be favorited."
+			req.results.replies[1].favorited,
+			"Other reply should be favorited."
 		)
 	},
 
 	testGuestUserAccess: async () => {
 		// Test access without logged in user
 		const req = createMockRequest(
-			{ path: "/reply/comment-123" },
+			{ path: "/reply/reply-123" },
 			{ user_id: undefined }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ 
 				rows: [
 					{
-						comment_id: 'comment-123',
-						body: 'Public comment',
+						reply_id: 'reply-123',
+						body: 'Public reply',
 						user_id: 'user-789',
 						display_name: 'Author',
 						edit: false,
@@ -454,50 +454,50 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Topic', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'topic' }] }
 		)
 		
 		const res = createMockResponse()
 		
 		await getSingleThread(req, res)
 		
-		// Guest user should be able to view comments
+		// Guest user should be able to view replies
 		assertEquals(
 			1,
-			req.results.comments.length,
-			"Guest user should be able to view comments."
+			req.results.replies.length,
+			"Guest user should be able to view replies."
 		)
 		assertEquals(
 			false,
-			req.results.comments[0].edit,
+			req.results.replies[0].edit,
 			"Guest user should not have edit permissions."
 		)
 		assertEquals(
 			false,
-			req.results.comments[0].favorited,
+			req.results.replies[0].favorited,
 			"Guest user should not have favorited status."
 		)
 	},
 
-	testCommentFields: async () => {
-		// Test that all expected comment fields are present
+	testReplyFields: async () => {
+		// Test that all expected reply fields are present
 		const req = createMockRequest(
-			{ path: "/reply/comment-123" },
+			{ path: "/reply/reply-123" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ 
 				rows: [
 					{
 						create_date: '2024-01-15T10:00:00Z',
-						comment_id: 'comment-123',
-						body: 'Complete comment body',
-						note: 'Comment note',
+						reply_id: 'reply-123',
+						body: 'Complete reply body',
+						note: 'Reply note',
 						favorite_count: 7,
-						parent_comment_id: null,
+						parent_reply_id: null,
 						user_id: 'user-789',
 						display_name: 'Complete User',
 						display_name_index: 2,
@@ -513,43 +513,43 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			'SELECT t.title, t.slug',
-			{ rows: [{ title: 'Topic', slug: 'topic' }] }
+			{ rows: [{ title: 'Post', slug: 'topic' }] }
 		)
 		
 		const res = createMockResponse()
 		
 		await getSingleThread(req, res)
 		
-		const comment = req.results.comments[0]
+		const reply = req.results.replies[0]
 		
 		// Verify all fields are present
-		assertEquals('2024-01-15T10:00:00Z', comment.create_date, "Should have create_date.")
-		assertEquals('comment-123', comment.comment_id, "Should have comment_id.")
-		assertEquals('Complete comment body', comment.body, "Should have body.")
-		assertEquals('Comment note', comment.note, "Should have note.")
-		assertEquals(7, comment.favorite_count, "Should have favorite_count.")
-		assertEquals(null, comment.parent_comment_id, "Should have parent_comment_id.")
-		assertEquals('user-789', comment.user_id, "Should have user_id.")
-		assertEquals('Complete User', comment.display_name, "Should have display_name.")
-		assertEquals(2, comment.display_name_index, "Should have display_name_index.")
-		assertEquals('complete-user', comment.user_slug, "Should have user_slug.")
-		assertEquals('pic-uuid', comment.profile_picture_uuid, "Should have profile_picture_uuid.")
-		assertEquals(true, comment.user_verified, "Should have user_verified.")
-		assertEquals(false, comment.edit, "Should have edit permission.")
-		assertEquals('img1,img2', comment.image_uuids, "Should have image_uuids.")
-		assertEquals(true, comment.favorited, "Should have favorited status.")
+		assertEquals('2024-01-15T10:00:00Z', reply.create_date, "Should have create_date.")
+		assertEquals('reply-123', reply.reply_id, "Should have reply_id.")
+		assertEquals('Complete reply body', reply.body, "Should have body.")
+		assertEquals('Reply note', reply.note, "Should have note.")
+		assertEquals(7, reply.favorite_count, "Should have favorite_count.")
+		assertEquals(null, reply.parent_reply_id, "Should have parent_reply_id.")
+		assertEquals('user-789', reply.user_id, "Should have user_id.")
+		assertEquals('Complete User', reply.display_name, "Should have display_name.")
+		assertEquals(2, reply.display_name_index, "Should have display_name_index.")
+		assertEquals('complete-user', reply.user_slug, "Should have user_slug.")
+		assertEquals('pic-uuid', reply.profile_picture_uuid, "Should have profile_picture_uuid.")
+		assertEquals(true, reply.user_verified, "Should have user_verified.")
+		assertEquals(false, reply.edit, "Should have edit permission.")
+		assertEquals('img1,img2', reply.image_uuids, "Should have image_uuids.")
+		assertEquals(true, reply.favorited, "Should have favorited status.")
 	},
 
-	testEmptyCommentPath: async () => {
-		// Test edge case with empty comment ID
+	testEmptyReplyPath: async () => {
+		// Test edge case with empty reply ID
 		const req = createMockRequest(
-			{ path: "/comment/" },
+			{ path: "/reply/" },
 			{ user_id: 'user-456' }
 		)
-		req.results = { comments: [] }
+		req.results = { replies: [] }
 		
 		req.client.addQueryMock(
-			'WITH root_comment',
+			'WITH root_reply',
 			{ rows: [] }
 		)
 		
@@ -557,16 +557,16 @@ const tests = {
 		
 		await getSingleThread(req, res)
 		
-		// Should handle empty comment ID gracefully
+		// Should handle empty reply ID gracefully
 		assertEquals(
 			undefined,
 			req.results.path,
-			"Should not set path for empty comment ID."
+			"Should not set path for empty reply ID."
 		)
 		assertEquals(
 			0,
-			req.results.comments.length,
-			"Should return empty results for empty comment ID."
+			req.results.replies.length,
+			"Should return empty results for empty reply ID."
 		)
 	}
 }

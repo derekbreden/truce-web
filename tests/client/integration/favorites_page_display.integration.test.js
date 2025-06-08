@@ -14,8 +14,8 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -30,8 +30,8 @@ const tests = {
 			"/favorites": {
 				// For the actual favorites page
 				path: "/favorites",
-				topics: [], // Assuming no favorited topics for this basic display test
-				comments: [],
+				posts: [], // Assuming no favorited posts for this basic display test
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -45,7 +45,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -82,14 +82,14 @@ const tests = {
 			"Favorites page H2 header text mismatch (using innerText).",
 		)
 
-		// Adjusted container selector: Look for any <topics> container.
-		const $favoritesListContainer = $mainContent.$("topics")
-		const $renderedTopicElements =
+		// Adjusted container selector: Look for any <posts> container.
+		const $favoritesListContainer = $mainContent.$("posts")
+		const $renderedPostElements =
 			$favoritesListContainer.querySelectorAll("topic[trimmed]")
 		assertEquals(
 			0,
-			$renderedTopicElements.length,
-			"Should render 0 topic elements if mock data for /favorites has topics: [].",
+			$renderedPostElements.length,
+			"Should render 0 topic elements if mock data for /favorites has posts: [].",
 		)
 	},
 	testFavoritesPageDisplayWithActivities: async () => {
@@ -101,8 +101,8 @@ const tests = {
 			"/posts": {
 				// For navigation after agreeing to terms
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -117,22 +117,22 @@ const tests = {
 			"/favorites": {
 				// For the actual favorites page
 				path: "/favorites",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [
 					{
 						// Post activity fields
 						type: "post",
 						slug: "test-activity-topic-1",
-						title: "Activity Topic Title 1",
+						title: "Activity Post Title 1",
 						body: "Body of activity topic 1",
 						user_slug: "activity-user-1",
 						display_name: "Activity User One",
 						tags: "general",
-						comment_count: 0,
+						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						create_date: "2023-10-26T10:00:00Z",
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -144,9 +144,9 @@ const tests = {
 					{
 						// Reply activity fields
 						type: "reply",
-						id: "activity-comment-1",
-						parent_topic_title: "Parent Topic for Reply Activity",
-						parent_topic_slug: "parent-topic-comment-activity",
+						id: "activity-reply-1",
+						parent_topic_title: "Parent Post for Reply Activity",
+						parent_topic_slug: "parent-topic-reply-activity",
 						body: "This is an activity for a new reply.",
 						user_slug: "activity-user-2",
 						display_name: "Activity User Two",
@@ -155,13 +155,13 @@ const tests = {
 						display_name_index: 0,
 						user_verified: false,
 						note: "",
-						topic_id: "topic-for-comment-activity",
-						parent_comment_body: null,
-						parent_comment_display_name: null,
-						parent_comment_display_name_index: null,
-						parent_comment_user_slug: null,
-						parent_comment_profile_picture_uuid: null,
-						parent_comment_note: null,
+						topic_id: "topic-for-reply-activity",
+						parent_reply_body: null,
+						parent_reply_display_name: null,
+						parent_reply_display_name_index: null,
+						parent_reply_user_slug: null,
+						parent_reply_profile_picture_uuid: null,
+						parent_reply_note: null,
 					},
 				],
 				notifications: [],
@@ -176,7 +176,7 @@ const tests = {
 			},
 		})
 
-		// 2. Initial Navigation (Welcome -> Topics)
+		// 2. Initial Navigation (Welcome -> Posts)
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
@@ -213,13 +213,13 @@ const tests = {
 		// renderActivities > renderReplyActivity > h2 for parent topic title
 		const $topicTitle = $replyActivity.$("h2")
 		assertEquals(
-			"Parent Topic for Reply Activity",
+			"Parent Post for Reply Activity",
 			$topicTitle?.innerText.trim(),
 			"Reply activity's parent topic title mismatch.",
 		)
 
 		// renderActivities > renderReplyActivity > renderReply > p > span for body  
-		const $replyBody = $replyActivity.$("comment p > span")
+		const $replyBody = $replyActivity.$("reply p > span")
 		assertEquals(
 			"This is an activity for a new reply.",
 			$replyBody?.innerText.trim(),
@@ -227,7 +227,7 @@ const tests = {
 		)
 
 		// Author
-		const $replyAuthor = $replyActivity.$("comment author span")
+		const $replyAuthor = $replyActivity.$("reply author span")
 		assertEquals(
 			"Activity User Two",
 			$replyAuthor?.innerText.trim(),
@@ -246,7 +246,7 @@ const tests = {
 		const $titleElement = $postActivity.$("topic h2")
 		const titleText = $titleElement.firstChild?.textContent?.trim()
 		assertEquals(
-			"Activity Topic Title 1",
+			"Activity Post Title 1",
 			titleText,
 			"Post activity title text mismatch.",
 		)

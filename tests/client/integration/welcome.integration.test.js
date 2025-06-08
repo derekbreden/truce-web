@@ -34,8 +34,8 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [], // Empty topics list is fine for this test"s assertions
-				comments: [],
+				posts: [], // Empty posts list is fine for this test"s assertions
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -78,12 +78,12 @@ const tests = {
 			`localStorage "${window.local_storage_key || "trucev1"}:agreed" should be set to "true".`,
 		)
 
-		// 3. Verify new content is loaded (e.g., topics list)
-		const $topicsWrapper = $("topics")
+		// 3. Verify new content is loaded (e.g., posts list)
+		const $postsWrapper = $("posts")
 		assertEquals(
 			true,
-			Boolean($topicsWrapper),
-			"Topics wrapper element should be present after agreeing to terms.",
+			Boolean($postsWrapper),
+			"Posts wrapper element should be present after agreeing to terms.",
 		)
 
 		// Further check: The last_root_path in localStorage should be updated to /posts

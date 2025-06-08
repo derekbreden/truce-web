@@ -91,17 +91,17 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Clear the handler cache and import it after setting up mocks
-const saveTopicPath = require.resolve("../../../server/session/saveTopic.js")
-delete require.cache[saveTopicPath]
+const savePostPath = require.resolve("../../../server/session/savePost.js")
+delete require.cache[savePostPath]
 
 // Import the handler we're testing (after mocking everything)
-const saveTopic = require("../../../server/session/saveTopic.js")
+const savePost = require("../../../server/session/savePost.js")
 
 // Import prompts for verification
 const prompts = require("../../../server/prompts.js")
 
 const tests = {
-	testSuccessfulTopicCreation: async () => {
+	testSuccessfulPostCreation: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -109,9 +109,9 @@ const tests = {
 		// Setup mock request for new topic
 		const req = createMockRequest(
 			{ 
-				title: 'Test Topic Title',
+				title: 'Test Post Title',
 				body: 'This is a test topic body with some content.',
-				path: '/topics',
+				path: '/posts',
 				pngs: [
 					{ url: 'data:image/png;base64,image1data' },
 					{ url: 'data:image/png;base64,image2data' }
@@ -171,7 +171,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify AI calls were made
 		assertEquals(
@@ -203,7 +203,7 @@ const tests = {
 			"Should sanitize display name (removes uppercase and spaces)."
 		)
 		assertEquals(
-			'Test Topic Title\n\nThis is a test topic body with some content.',
+			'Test Post Title\n\nThis is a test topic body with some content.',
 			moderationCall.messages[0].content[0].text,
 			"Should combine title and body for moderation."
 		)
@@ -265,7 +265,7 @@ const tests = {
 			"Should return success."
 		)
 		assertEquals(
-			'Test_Topic_Title',
+			'Test_Post_Title',
 			responseData.slug,
 			"Should return generated slug."
 		)
@@ -293,7 +293,7 @@ const tests = {
 		)
 	},
 
-	testTopicCreationWithPoll: async () => {
+	testPostCreationWithPoll: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -301,9 +301,9 @@ const tests = {
 		// Setup mock request for poll topic
 		const req = createMockRequest(
 			{ 
-				title: 'Poll Topic',
+				title: 'Poll Post',
 				body: 'What do you think?',
-				path: '/topics',
+				path: '/posts',
 				pngs: [],
 				poll_1: 'Option A',
 				poll_2: 'Option B',
@@ -328,7 +328,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify AI calls include poll estimation
 		assertEquals(
@@ -387,7 +387,7 @@ const tests = {
 		)
 	},
 
-	testTopicUpdate: async () => {
+	testPostUpdate: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -395,9 +395,9 @@ const tests = {
 		// Setup mock request for topic update
 		const req = createMockRequest(
 			{ 
-				title: 'Updated Topic Title',
+				title: 'Updated Post Title',
 				body: 'Updated body content.',
-				path: '/topics',
+				path: '/posts',
 				pngs: [
 					{ url: 'data:image/png;base64,newimage' }
 				],
@@ -431,7 +431,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify old images were deleted from S3
 		assertEquals(
@@ -474,7 +474,7 @@ const tests = {
 		)
 	},
 
-	testSpamTopicRejected: async () => {
+	testSpamPostRejected: async () => {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
@@ -496,7 +496,7 @@ const tests = {
 			{ 
 				title: 'Spam Title',
 				body: 'Spam content here',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -509,7 +509,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify AI was called for moderation
 		assertEquals(
@@ -565,9 +565,9 @@ const tests = {
 		// Setup mock request with title needing slug processing
 		const req = createMockRequest(
 			{ 
-				title: 'Test Topic With Special Characters! @#$%',
+				title: 'Test Post With Special Characters! @#$%',
 				body: 'Body content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -589,12 +589,12 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify slug generation
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'Test_Topic_With_Special_Characters_',
+			'Test_Post_With_Special_Characters_',
 			responseData.slug,
 			"Should generate clean slug from title."
 		)
@@ -610,7 +610,7 @@ const tests = {
 			{ 
 				title: 'Duplicate Title',
 				body: 'Body content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -639,7 +639,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify slug collision handling
 		const responseData = JSON.parse(res.getResponseData())
@@ -672,9 +672,9 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				title: 'Tech Topic',
+				title: 'Tech Post',
 				body: 'Technology content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -707,7 +707,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify tags AI call
 		const tagsCall = aiAskCalls.find(call => call.type === 'tags')
@@ -755,9 +755,9 @@ const tests = {
 		// Setup mock request for poll
 		const req = createMockRequest(
 			{ 
-				title: 'Poll Topic',
+				title: 'Poll Post',
 				body: 'Poll question',
-				path: '/topics',
+				path: '/posts',
 				pngs: [],
 				poll_1: 'Yes',
 				poll_2: 'No'
@@ -791,7 +791,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify successful response (asks tag should be filtered out when polls tag exists)
 		const responseData = JSON.parse(res.getResponseData())
@@ -823,7 +823,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				body: 'Body content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -835,7 +835,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -865,7 +865,7 @@ const tests = {
 			{ 
 				title: 'Test Title',
 				body: 'Body content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -877,7 +877,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -902,7 +902,7 @@ const tests = {
 			{ 
 				title: 'Test Title',
 				body: 'Body content',
-				path: '/topics',
+				path: '/posts',
 				pngs: []
 			},
 			{ 
@@ -916,7 +916,7 @@ const tests = {
 		res.writableEnded = true
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify no action taken
 		assertEquals(
@@ -941,7 +941,7 @@ const tests = {
 			{ 
 				title: 'Updated Poll',
 				body: 'Updated poll question',
-				path: '/topics',
+				path: '/posts',
 				pngs: [],
 				poll_1: 'New Option A',
 				poll_2: 'New Option B',
@@ -967,7 +967,7 @@ const tests = {
 		const res = createMockResponse()
 		
 		// Execute the handler
-		await saveTopic(req, res)
+		await savePost(req, res)
 		
 		// Verify AI was called for poll estimation
 		assertEquals(
@@ -1000,7 +1000,7 @@ const cleanup = () => {
 	delete require.cache[aiPath]
 	delete require.cache[nodeCryptoPath]
 	delete require.cache[cryptoPath]
-	delete require.cache[saveTopicPath]
+	delete require.cache[savePostPath]
 }
 
 runTests(path.basename(__filename), Object.values(tests))

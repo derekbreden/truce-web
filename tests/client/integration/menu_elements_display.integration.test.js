@@ -13,8 +13,8 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: null,
@@ -107,8 +107,8 @@ const tests = {
 		window.setMockFetchResponseForPaths({
 			"/posts": {
 				path: "/posts",
-				topics: [],
-				comments: [],
+				posts: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user_slug: mockUser.user_slug,

@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
 		req.session.user_id &&
-		(req.body.topic_id_to_favorite || req.body.comment_id_to_favorite)
+		(req.body.topic_id_to_favorite || req.body.reply_id_to_favorite)
 	) {
 		// Remove the favorite
 		if (req.body.was_favorited) {
@@ -36,8 +36,8 @@ module.exports = async (req, res) => {
 				)
 			}
 
-			// For comment_id
-			if (req.body.comment_id_to_favorite) {
+			// For reply_id
+			if (req.body.reply_id_to_favorite) {
 				await req.client.query(
 					`
           DELETE FROM favorite_replies
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
             user_id = $1
             AND reply_id = $2
           `,
-					[req.session.user_id, req.body.comment_id_to_favorite],
+					[req.session.user_id, req.body.reply_id_to_favorite],
 				)
 				await req.client.query(
 					`
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
           ) AS subquery
           WHERE replies.reply_id = $1
           `,
-					[req.body.comment_id_to_favorite],
+					[req.body.reply_id_to_favorite],
 				)
 			}
 
@@ -98,8 +98,8 @@ module.exports = async (req, res) => {
 				)
 			}
 
-			// For comment_id
-			if (req.body.comment_id_to_favorite) {
+			// For reply_id
+			if (req.body.reply_id_to_favorite) {
 				await req.client.query(
 					`
           INSERT INTO favorite_replies
@@ -107,7 +107,7 @@ module.exports = async (req, res) => {
           VALUES
           ($1, $2)
           `,
-					[req.session.user_id, req.body.comment_id_to_favorite],
+					[req.session.user_id, req.body.reply_id_to_favorite],
 				)
 				await req.client.query(
 					`
@@ -124,7 +124,7 @@ module.exports = async (req, res) => {
           ) AS subquery
           WHERE replies.reply_id = $1
           `,
-					[req.body.comment_id_to_favorite],
+					[req.body.reply_id_to_favorite],
 				)
 			}
 		}

@@ -12,22 +12,22 @@ const tests = {
 		// Mock initial fetch responses for "/" and "/posts"
 		// The /posts response will include a topic with poll data.
 		window.setMockFetchResponseForPaths({
-			"/": { path: "/", topics: [], comments: [], activities: [], notifications: [] },
+			"/": { path: "/", posts: [], replies: [], activities: [], notifications: [] },
 			"/posts": {
 				path: "/posts",
-				topics: [
+				posts: [
 					{
 						topic_id: 1,
 						slug: "poll-topic-1",
-						title: "Topic with a Poll",
+						title: "Post with a Poll",
 						body: "This topic has a poll.",
 						user_slug: "testuser",
 						display_name: "Test User",
 						tags: "general",
-						comment_count: 0,
+						reply_count: 0,
 						favorite_count: 0,
 						favorited: false,
-						commented: false,
+						replyed: false,
 						image_uuids: null,
 						profile_picture_uuid: null,
 						display_name_index: 0,
@@ -43,7 +43,7 @@ const tests = {
 						edit: false // User cannot edit
 					},
 				],
-				comments: [],
+				replies: [],
 				activities: [],
 				notifications: [],
 				user: {},
@@ -65,7 +65,7 @@ const tests = {
 		)
 
 		// Find the topic element
-		const $topicElement = $(`topic[trimmed]`) // Assuming topics on /posts have 'trimmed' attribute
+		const $topicElement = $(`topic[trimmed]`) // Assuming posts on /posts have 'trimmed' attribute
 		// Assert Poll Wrapper Exists
 		const $pollWrapper = $topicElement.$("poll-wrapper")
 		// Assert Poll Options Text
@@ -85,7 +85,7 @@ const tests = {
 		assertEquals(false, Boolean($pollOption4), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
 
 		// Assert Poll Results Sections are NOT present (since user hasn't voted and edit is false)
-		// client/renderTopic.js removes these if topic.edit is false and topic.voted is false
+		// client/renderPost.js removes these if topic.edit is false and topic.voted is false
 		const $pollCountsActual = $pollWrapper.$("poll-counts-actual")
 		assertEquals(false, Boolean($pollCountsActual), "Actual poll counts element should NOT be present when user has not voted.")
 

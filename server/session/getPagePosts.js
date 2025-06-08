@@ -12,14 +12,14 @@
 module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
-		(req.body.path === "/topics" ||
-			req.body.path === "/topics/all" ||
+		(req.body.path === "/posts" ||
+			req.body.path === "/posts/all" ||
 			req.body.path === "/posts" ||
 			req.body.path === "/posts/all" ||
 			req.body.path?.substr(0, 5) === "/tag/" ||
 			req.body.path?.substr(0, 6) === "/user/")
 	) {
-		if (!req.body.max_comment_create_date) {
+		if (!req.body.max_reply_create_date) {
 			const topic_results = await req.client.query(
 				`
         SELECT
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
           p.poll_counts_estimated,
           p.note,
           p.favorite_count,
-          p.comment_count,
+          p.reply_count,
           p.counts_max_create_date,
           CASE WHEN p.user_id = $1 THEN true ELSE false END AS edit,
           p.image_uuids,
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
             FROM replies r
             WHERE r.parent_post_id = p.post_id
               AND r.user_id = $1
-          ) THEN TRUE ELSE FALSE END as commented,
+          ) THEN TRUE ELSE FALSE END as replyed,
           CASE WHEN v.user_id IS NOT NULL THEN TRUE ELSE FALSE END as voted,
           (
             SELECT STRING_AGG(ts.tag_name, ',')
@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
 							: ""
 					}
           ${
-						(req.body.path === "/topics" || req.body.path === "/posts") &&
+						(req.body.path === "/posts" || req.body.path === "/posts") &&
 						Number(req.session.subscribed_to_users) > 0
 							? `
                 AND p.user_id IN (
@@ -129,7 +129,7 @@ module.exports = async (req, res) => {
 				].filter((x) => x !== undefined),
 			)
 			req.results.path = req.body.path
-			req.results.topics.push(...topic_results.rows)
+			req.results.posts.push(...topic_results.rows)
 
 			//       let delayed = 0
 			//       topic_results.rows.forEach(async (topic) => {
