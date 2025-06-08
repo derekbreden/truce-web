@@ -132,8 +132,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id,
-					req.body.max_notification_unread_create_date || null,
-					req.body.min_notification_unread_create_date || null,
+					req.body.max_notification_unread_create_date ? new Date(req.body.max_notification_unread_create_date) : null,
+					req.body.min_notification_unread_create_date ? new Date(req.body.min_notification_unread_create_date) : null,
 				],
 			)
 			const notifications_read = await req.client.query(
@@ -181,8 +181,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id,
-					req.body.max_notification_read_create_date || null,
-					req.body.min_notification_read_create_date || null,
+					req.body.max_notification_read_create_date ? new Date(req.body.max_notification_read_create_date) : null,
+					req.body.min_notification_read_create_date ? new Date(req.body.min_notification_read_create_date) : null,
 				],
 			)
 			req.results.notifications = [

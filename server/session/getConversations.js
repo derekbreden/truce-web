@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
 			`,
 			[
 				req.session.user_id,
-				req.body.min_conversation_create_date || null,
+				req.body.min_conversation_create_date ? new Date(req.body.min_conversation_create_date) : null,
 			],
 		)
 

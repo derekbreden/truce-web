@@ -23,8 +23,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					req.body.min_create_date_for_counts,
-					req.body.min_counts_create_date,
+					req.body.min_create_date_for_counts ? new Date(req.body.min_create_date_for_counts) : null,
+					req.body.min_counts_create_date ? new Date(req.body.min_counts_create_date) : null,
 				],
 			)
 			req.results.post_counts = post_counts.rows
@@ -46,8 +46,8 @@ module.exports = async (req, res) => {
         `,
 				[
 					req.session.user_id || 0,
-					req.body.min_create_date_for_counts,
-					req.body.min_counts_create_date,
+					req.body.min_create_date_for_counts ? new Date(req.body.min_create_date_for_counts) : null,
+					req.body.min_counts_create_date ? new Date(req.body.min_counts_create_date) : null,
 				],
 			)
 			req.results.reply_counts = reply_counts.rows

@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
 				[
 					req.session.user_id || 0,
 					slug,
-					req.body.min_post_create_date || null,
+					req.body.min_post_create_date ? new Date(req.body.min_post_create_date) : null,
 				],
 			)
 			req.results.posts.push(...post_results.rows)
@@ -131,8 +131,8 @@ module.exports = async (req, res) => {
 				[
 					req.session.user_id || 0,
 					post_id,
-					req.body.min_reply_create_date || null,
-					req.body.max_reply_create_date || null,
+					req.body.min_reply_create_date ? new Date(req.body.min_reply_create_date) : null,
+					req.body.max_reply_create_date ? new Date(req.body.max_reply_create_date) : null,
 				],
 			)
 			const reply_replies = await req.client.query(
@@ -181,7 +181,7 @@ module.exports = async (req, res) => {
 					req.session.user_id || 0,
 					post_id,
 					root_replies.rows.map((c) => c.reply_id),
-					req.body.min_reply_create_date || null,
+					req.body.min_reply_create_date ? new Date(req.body.min_reply_create_date) : null,
 				],
 			)
 			req.results.replies.push(...root_replies.rows)

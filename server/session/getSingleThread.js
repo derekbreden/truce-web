@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
 			[
 				reply_id,
 				req.session.user_id || 0,
-				req.body.min_reply_create_date || null,
+				req.body.min_reply_create_date ? new Date(req.body.min_reply_create_date) : null,
 			],
 		)
 		if (reply_results.rows.length) {
