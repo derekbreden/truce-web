@@ -1,5 +1,6 @@
 const reconnectWs = () => {
-	state.ws = new WebSocket(`wss://${window.location.host}`)
+	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
+	state.ws = new WebSocket(`${protocol}//${window.location.host}`)
 	state.ws.addEventListener("message", (event) => {
 		if (event?.data === "UPDATE") {
 			getMoreRecent()
