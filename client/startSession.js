@@ -168,6 +168,12 @@ const getMoreRecent = () => {
 		},
 		"",
 	)
+	const min_message_create_date = current_cache.messages ? current_cache.messages.reduce(
+		(max, message) => {
+			return max > message.create_date ? max : message.create_date
+		},
+		"",
+	) : ""
 
 	// Find oldest post create_date for reply count, and max of the counts_max_create_date for the posts
 	const min_create_date_for_counts_1 = current_cache.posts.reduce(
@@ -244,6 +250,7 @@ const getMoreRecent = () => {
 			min_post_create_date,
 			min_notification_unread_create_date,
 			min_notification_read_create_date,
+			min_message_create_date,
 			min_counts_create_date,
 			min_create_date_for_counts,
 			has_posts,
@@ -320,12 +327,29 @@ const getMoreRecent = () => {
 				})
 			}
 
+			// Render messages if appropriate
+			if (data.messages?.length) {
+				if (!current_cache.messages) {
+					current_cache.messages = []
+				}
+				const new_ids = data.messages.map((message) => message.message_id)
+				current_cache.messages = current_cache.messages.filter(
+					(m) => new_ids.indexOf(m.message_id) === -1,
+				)
+				current_cache.messages.push(...data.messages)
+				if (data.conversation) {
+					current_cache.conversation = data.conversation
+				}
+				renderMessages(current_cache.messages, current_cache.conversation)
+			}
+
 			// Restore scroll position if we re-rendered anything
 			if (
 				data.activities?.length ||
 				data.replies?.length ||
 				data.posts?.length ||
-				data.notifications?.length
+				data.notifications?.length ||
+				data.messages?.length
 			) {
 				// Set a min threshold of scroll to do anything
 				let min_threshold = 0

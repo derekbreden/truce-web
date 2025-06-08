@@ -239,6 +239,30 @@ const $element = $("selector")[0]  // Get first from NodeList
 const $nested = $element.$("child") // Nested selection on single element
 ```
 
+**Custom Element Content Access**: Use nested selectors to access content within custom elements:
+```javascript
+// ❌ WRONG: Accessing content directly on custom element
+assertEquals(true, $message.innerText.includes("Hello"), "Check message content")
+
+// ✅ CORRECT: Use nested selector to access actual content span
+assertEquals(true, $message.$("message-content span").innerText.includes("Hello"), "Check message content")
+
+// ❌ WRONG: Accessing header text directly  
+assertEquals(true, $header.innerHTML.includes("Name"), "Check header")
+
+// ✅ CORRECT: Use specific nested selector
+assertEquals(true, $header.$("participants h2").innerText.includes("Name"), "Check header")
+```
+
+**WebSocket Testing**: Use the mock WebSocket's `triggerMessage` method:
+```javascript
+// ❌ WRONG: Using standard dispatchEvent
+state.ws.dispatchEvent(new MessageEvent("message", { data: "UPDATE" }))
+
+// ✅ CORRECT: Using mock WebSocket triggerMessage
+state.ws.triggerMessage("UPDATE")
+```
+
 ## Database and AI Integration
 
 ### Database Queries

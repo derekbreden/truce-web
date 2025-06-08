@@ -21,7 +21,7 @@ const renderMessage = (message) => {
 				$8
 		`,
 		[
-			isOwnMessage,
+			isOwnMessage ? "true" : "false",
 			message.profile_picture_uuid
 				? $(
 					`

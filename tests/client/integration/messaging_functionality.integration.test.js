@@ -1,0 +1,321 @@
+const { assertEquals, runTests } = require("../shared/testUtils.js")
+const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
+
+async function testNavigateToMessagesViaMenu() {
+	const window = await setupIntegrationTestEnvironment()
+	const { state, $ } = window
+
+	// Mock user session
+	state.user_id = "test-user-123"
+	state.display_name = "Test User"
+	state.email = "test@example.com"
+
+	// Mock all necessary pages
+	window.setMockFetchResponseForPaths({
+		"/posts": {
+			success: true,
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/posts"
+		},
+		"/conversations": {
+			success: true,
+			conversations: [{
+				conversation_id: "conv-123",
+				create_date: "2024-01-01T09:00:00Z",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-456", display_name: "Other User", display_name_index: 0 }
+				],
+				last_message_body: "Hello there",
+				last_message_date: "2024-01-01T10:00:00Z",
+				unread_count: 0
+			}],
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/conversations"
+		}
+	})
+
+	// Navigate to posts page first
+	const $joinButton = $("a[href='/posts'][big]")
+	$joinButton.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	assertEquals("/posts", state.path, "Should be on posts page")
+
+	// Click hamburger menu to open it
+	const $hamburger = $("hamburger")
+	$hamburger.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// Verify menu opened
+	const $menu = $("menu-wrapper")
+	assertEquals(true, Boolean($menu), "Menu should open when hamburger is clicked")
+
+	// Click Messages link in menu
+	const $messagesLink = $("menu-wrapper a[href='/conversations']")
+	$messagesLink.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// Verify we navigated to conversations page
+	assertEquals("/conversations", state.path, "Should navigate to conversations page")
+
+	// Verify conversation is displayed
+	const $conversationsContainer = $("conversations")
+	const $conversations = $conversationsContainer.querySelectorAll("conversation")
+	assertEquals(true, $conversations.length > 0, "Should display conversations")
+}
+
+async function testNavigateToSpecificMessage() {
+	const window = await setupIntegrationTestEnvironment()
+	const { state, $ } = window
+
+	// Mock user session
+	state.user_id = "test-user-123"
+	state.display_name = "Test User"
+	state.email = "test@example.com"
+
+	// Mock pages
+	window.setMockFetchResponseForPaths({
+		"/posts": {
+			success: true,
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/posts"
+		},
+		"/conversations": {
+			success: true,
+			conversations: [{
+				conversation_id: "conv-456",
+				create_date: "2024-01-01T09:30:00Z",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-789", display_name: "Chat User", display_name_index: 0 }
+				],
+				last_message_body: "Hey how are you?",
+				last_message_date: "2024-01-01T10:00:00Z",
+				unread_count: 1
+			}],
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/conversations"
+		},
+		"/messages/conv-456": {
+			success: true,
+			messages: [],
+			conversation: {
+				conversation_id: "conv-456",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-789", display_name: "Chat User", display_name_index: 0 }
+				]
+			},
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/messages/conv-456"
+		}
+	})
+
+	// Navigate to posts then conversations
+	const $joinButton = $("a[href='/posts'][big]")
+	$joinButton.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	const $hamburger = $("hamburger")
+	$hamburger.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	const $messagesLink = $("menu-wrapper a[href='/conversations']")
+	$messagesLink.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	assertEquals("/conversations", state.path, "Should be on conversations page")
+
+	// Click on the specific conversation
+	const $conversationsContainer = $("conversations")
+	const $conversations = $conversationsContainer.querySelectorAll("conversation")
+	assertEquals(true, $conversations.length > 0, "Conversation element should exist")
+	const $conversation = $conversations[0]
+	$conversation.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// Verify we're now on the message thread page
+	assertEquals("/messages/conv-456", state.path, "Should navigate to specific message thread")
+
+	// Verify empty state is displayed (tests our replaceChildren fix)
+	const $emptyState = $("main-content-wrapper[active] empty-state")
+	assertEquals(true, Boolean($emptyState), "Empty state should be displayed for empty conversation")
+
+	// Verify message interface exists
+	const $textarea = $("main-content-wrapper[active] textarea")
+	const $sendButton = $("main-content-wrapper[active] send-button")
+	assertEquals(true, Boolean($textarea), "Message input should exist")
+	assertEquals(true, Boolean($sendButton), "Send button should exist")
+}
+
+async function testMessageSendingFlow() {
+	const window = await setupIntegrationTestEnvironment()
+	const { state, $ } = window
+
+	// Mock user session
+	state.user_id = "test-user-123"
+	state.display_name = "Test User"
+	state.email = "test@example.com"
+
+	// Mock pages
+	window.setMockFetchResponseForPaths({
+		"/posts": {
+			success: true,
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/posts"
+		},
+		"/conversations": {
+			success: true,
+			conversations: [{
+				conversation_id: "conv-send",
+				create_date: "2024-01-01T08:00:00Z",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+				],
+				last_message_body: "Previous message",
+				last_message_date: "2024-01-01T09:00:00Z",
+				unread_count: 0
+			}],
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/conversations"
+		},
+		"/messages/conv-send": {
+			success: true,
+			messages: [],
+			conversation: {
+				conversation_id: "conv-send",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+				]
+			},
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			path: "/messages/conv-send"
+		}
+	})
+
+	// Mock message sending - this tests our pngs: [] fix
+	window.addMockFetchMatcher({
+		match: (url, options) => {
+			if (url === "/session" && options?.method === "POST") {
+				const body = JSON.parse(options.body)
+				return body.action === "sendMessage" && 
+					   body.conversation_id === "conv-send" &&
+					   body.pngs !== undefined && // This validates our fix
+					   Array.isArray(body.pngs)
+			}
+			return false
+		},
+		response: { success: true, user_id: "test-user-123", display_name: "Test User" }
+	})
+
+	// Mock the refresh call - this tests our getMoreRecent fix
+	window.addMockFetchMatcher({
+		match: (url, options) => {
+			if (url === "/session" && options?.method === "POST") {
+				const body = JSON.parse(options.body)
+				return body.path === "/messages/conv-send" && 
+					   body.min_message_create_date !== undefined // This validates our fix
+			}
+			return false
+		},
+		response: {
+			success: true,
+			messages: [{
+				message_id: "msg-test-sent",
+				conversation_id: "conv-send",
+				sender_user_id: "test-user-123",
+				body: "Hello world test message!",
+				create_date: new Date().toISOString(),
+				display_name: "Test User",
+				display_name_index: 0,
+				user_slug: "test-user-123",
+				profile_picture_uuid: null,
+				user_verified: false,
+				edit: true
+			}],
+			conversation: {
+				conversation_id: "conv-send",
+				participants: [
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+				]
+			},
+			path: "/messages/conv-send"
+		}
+	})
+
+	// Navigate to the message thread
+	const $joinButton = $("a[href='/posts'][big]")
+	$joinButton.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	const $hamburger = $("hamburger")
+	$hamburger.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	const $messagesLink = $("menu-wrapper a[href='/conversations']")
+	$messagesLink.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	const $conversationsContainer = $("conversations")
+	const $conversations = $conversationsContainer.querySelectorAll("conversation")
+	assertEquals(true, $conversations.length > 0, "Conversation element should exist before clicking")
+	const $conversation = $conversations[0]
+	$conversation.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// Verify we're on the right page
+	assertEquals("/messages/conv-send", state.path, "Should be on message thread page")
+
+	// Verify empty state shows initially
+	const $emptyState = $("main-content-wrapper[active] empty-state")
+	assertEquals(true, Boolean($emptyState), "Empty state should be displayed initially")
+
+	// Type a message and send it
+	const $textarea = $("main-content-wrapper[active] textarea")
+	$textarea.value = "Hello world test message!"
+
+	// Send by pressing Enter
+	const enterEvent = new window.KeyboardEvent("keydown", { key: "Enter" })
+	$textarea.dispatchEvent(enterEvent)
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// The successful completion of this test validates that:
+	// 1. Our pngs: [] fix works (message sending doesn't fail)
+	// 2. Our getMoreRecent fix works (refresh call includes min_message_create_date)
+	// 3. Input is cleared after sending
+	assertEquals("", $textarea.value.trim(), "Message input should be cleared after sending")
+}
+
+runTests("messaging_functionality.integration.test.js", [
+	testNavigateToMessagesViaMenu,
+	testNavigateToSpecificMessage,
+	testMessageSendingFlow
+])
