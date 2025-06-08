@@ -122,7 +122,7 @@ const renderMessages = (messages, conversation) => {
 		const $messages = messages.map(renderMessage)
 		
 		if ($messages.length === 0) {
-			$("main-content-wrapper[active] messages").appendChild(
+			$("main-content-wrapper[active] messages").replaceChildren(
 				$(
 					`
 					empty-state
@@ -154,7 +154,8 @@ const renderMessages = (messages, conversation) => {
 					body: JSON.stringify({
 						action: "sendMessage",
 						conversation_id: conversation.conversation_id,
-						body: messageBody
+						body: messageBody,
+						pngs: []
 					})
 				})
 				.then(response => response.json())
