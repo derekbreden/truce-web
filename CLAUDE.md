@@ -326,9 +326,28 @@ When working on tasks in this codebase, follow this workflow:
 - Use the TodoWrite tool to plan the task if required
 - Use the available search tools to understand the codebase and the user's query
 - Implement the solution using all tools available to you
+- **ALWAYS create comprehensive tests** without being asked:
+  - **Client integration tests** for all user-facing functionality and UI interactions
+  - **Server unit tests** for all session handlers and business logic
+  - **Test all code paths** including error cases, edge conditions, and security validations
+  - **Tests must remain part of the permanent test suite** - no temporary or throwaway tests
 - **ALWAYS run `npm test` after making any changes** to verify everything still works
 - **ALWAYS create a commit after tests pass** with a descriptive message about what was changed
 - The user handles pushing to remote - you should only commit locally
+
+### Test Coverage Requirements
+**Every new feature must include:**
+- Integration tests covering the complete user workflow from UI interaction to final state
+- Unit tests for each server session handler with mocked dependencies
+- Error case testing (invalid inputs, network failures, authorization failures)
+- Security testing (blocked users, unauthorized access, input validation)
+- Real-time functionality testing (WebSocket events, cache updates)
+
+**Existing messaging feature test gaps that need addressing:**
+- Missing server unit tests for complex scenarios (blocked users, conversation validation)
+- Missing integration tests for error states and edge cases
+- Incomplete coverage of image upload/deletion workflows
+- No tests for typing indicator race conditions or WebSocket reconnection
 
 ## Debugging Philosophy
 - **Test the suspected layer directly** - If you suspect database issues, write a minimal database test
