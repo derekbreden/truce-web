@@ -1,11 +1,11 @@
 const renderNotification = (notification) => {
 	const short_body =
 		notification.body.length > 50
-			? notification.body.substr(0, 50) + "..."
+			? notification.body.slice(0, 50) + "..."
 			: notification.body
 	const short_title =
 		notification.title.length > 20
-			? notification.title.substr(0, 20) + "..."
+			? notification.title.slice(0, 20) + "..."
 			: notification.title
 
 	const reply_text =

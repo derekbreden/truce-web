@@ -1,7 +1,7 @@
 const renderConversation = (conversation) => {
 	const lastMessageBody = conversation.last_message_body || "No messages yet"
 	const shortBody = lastMessageBody.length > 60 
-		? lastMessageBody.substr(0, 60) + "..." 
+		? lastMessageBody.slice(0, 60) + "..." 
 		: lastMessageBody
 
 	// Get other participants (exclude current user)

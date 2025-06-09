@@ -204,11 +204,11 @@ module.exports = async (req, res) => {
 		subscriptions.rows.forEach(async (subscription) => {
 			const short_display_name =
 				req.session.display_name.length > 20
-					? req.session.display_name.substr(0, 20) + "..."
+					? req.session.display_name.slice(0, 20) + "..."
 					: req.session.display_name
 			const short_body =
 				req.body.body.length > 50
-					? req.body.body.substr(0, 50) + "..."
+					? req.body.body.slice(0, 50) + "..."
 					: req.body.body
 
 			// Get the unread count for this user id

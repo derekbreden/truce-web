@@ -4,7 +4,7 @@ const object_client = new S3Client({
 })
 
 module.exports = async (req, res) => {
-	const image_uuid = req.path.substr(5)
+	const image_uuid = req.path.slice(5)
 	try {
 		const response = await object_client.send(
 			new GetObjectCommand({

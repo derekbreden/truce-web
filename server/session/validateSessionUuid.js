@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
 	// Workaround for replit Webview not supporting Set-Cookie
 	const authorization_header = req.headers.authorization || ""
 	if (authorization_header.startsWith("Bearer ")) {
-		cookies.session_uuid = authorization_header.substr(7)
+		cookies.session_uuid = authorization_header.slice(7)
 	}
 	// END Workaround
 

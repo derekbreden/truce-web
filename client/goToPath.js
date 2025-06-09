@@ -112,7 +112,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			state.path === "/" ||
 			state.path === "/posts" ||
 			state.path === "/posts/all" ||
-			state.path.substr(0, 7) === "/topic/"
+			state.path.startsWith("/topic/")
 		) {
 			localStorage.setItem(
 				`${window.local_storage_key}:last_root_path`,

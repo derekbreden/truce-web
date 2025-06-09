@@ -4,7 +4,7 @@ const object_client = new S3Client({
 })
 
 module.exports = async (req, res) => {
-	const mp3_uuid = req.path.substr(3)
+	const mp3_uuid = req.path.slice(3)
 
 	try {
 		const response = await object_client.send(
