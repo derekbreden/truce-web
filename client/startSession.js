@@ -111,6 +111,12 @@ const startSession = (was_same_path) => {
 		})
 }
 
+const findMaxDate = (items, date_field = "create_date") => {
+	return items.reduce((max, item) => {
+		return max > item[date_field] ? max : item[date_field]
+	}, "")
+}
+
 const getMoreRecent = () => {
 	// Skip for introduction
 	if (
@@ -131,49 +137,33 @@ const getMoreRecent = () => {
 	const current_path = state.path
 	const current_cache = state.cache[current_path]
 
-	// Find the newest (max) create_date of what we have so far
-	const min_create_date = current_cache.activities.reduce((max, activity) => {
+	const client_max_post_date = findMaxDate(current_cache.posts)
+	const client_max_reply_date = findMaxDate(current_cache.replies)
+	const client_max_message_date = current_cache.messages ? findMaxDate(current_cache.messages) : ""
+	
+	const client_max_activity_date = current_cache.activities.reduce((max, activity) => {
 		if (current_cache === "/favorites") {
-			return max > activity.favorite_create_date
-				? max
-				: activity.favorite_create_date
+			return max > activity.favorite_create_date ? max : activity.favorite_create_date
 		} else {
 			return max > activity.create_date ? max : activity.create_date
 		}
 	}, "")
-	const min_reply_create_date = current_cache.replies.reduce(
-		(max, reply) => {
-			return max > reply.create_date ? max : reply.create_date
-		},
-		"",
-	)
-	const min_post_create_date = current_cache.posts.reduce((max, post) => {
-		return max > post.create_date ? max : post.create_date
+	
+	const client_max_notification_unread_date = current_cache.notifications.reduce((max, notification) => {
+		if (!notification.read) {
+			return max > notification.create_date ? max : notification.create_date
+		} else {
+			return max
+		}
 	}, "")
-	const min_notification_unread_create_date =
-		current_cache.notifications.reduce((max, notification) => {
-			if (!notification.read) {
-				return max > notification.create_date ? max : notification.create_date
-			} else {
-				return max
-			}
-		}, "")
-	const min_notification_read_create_date = current_cache.notifications.reduce(
-		(max, notification) => {
-			if (notification.read) {
-				return max > notification.create_date ? max : notification.create_date
-			} else {
-				return max
-			}
-		},
-		"",
-	)
-	const min_message_create_date = current_cache.messages ? current_cache.messages.reduce(
-		(max, message) => {
-			return max > message.create_date ? max : message.create_date
-		},
-		"",
-	) : ""
+	
+	const client_max_notification_read_date = current_cache.notifications.reduce((max, notification) => {
+		if (notification.read) {
+			return max > notification.create_date ? max : notification.create_date
+		} else {
+			return max
+		}
+	}, "")
 
 	// Find oldest post create_date for reply count, and max of the counts_max_create_date for the posts
 	const min_create_date_for_counts_1 = current_cache.posts.reduce(
@@ -245,12 +235,12 @@ const getMoreRecent = () => {
 		method: "POST",
 		body: JSON.stringify({
 			path: current_path,
-			min_create_date,
-			min_reply_create_date,
-			min_post_create_date,
-			min_notification_unread_create_date,
-			min_notification_read_create_date,
-			min_message_create_date,
+			min_create_date: client_max_activity_date,
+			min_reply_create_date: client_max_reply_date,
+			min_post_create_date: client_max_post_date,
+			min_notification_unread_create_date: client_max_notification_unread_date,
+			min_notification_read_create_date: client_max_notification_read_date,
+			min_message_create_date: client_max_message_date,
 			min_counts_create_date,
 			min_create_date_for_counts,
 			has_posts,
