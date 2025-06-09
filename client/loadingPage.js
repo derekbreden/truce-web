@@ -13,7 +13,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				main-content
 				main-content-2
 			`,
-			[!!skip_state, !!clicked_back],
+			[Boolean(skip_state), Boolean(clicked_back)],
 		),
 	)
 	bindScrollEvent()

@@ -124,7 +124,7 @@ const renderNotifications = (notifications) => {
 		`
     h3 $1
     `,
-		[state.unread_count ? `Unread (${state.unread_count})` : "Unread"],
+		[Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"],
 	)
 	const $read_header = $(
 		`
@@ -132,7 +132,7 @@ const renderNotifications = (notifications) => {
     `,
 	)
 	let $unread_allclear = []
-	if (!state.unread_count) {
+	if (!Boolean(state.unread_count)) {
 		$unread_allclear = [
 			$(
 				`
@@ -221,7 +221,7 @@ const renderMarkAllAsRead = () => {
       mark-all-as-read-wrapper
         button[mark-all-as-read][small][alt][faint=$1] Mark all as read
       `,
-			[!state.unread_count],
+			[!Boolean(state.unread_count)],
 		)
 		$mark_all_as_read.on("click", () => {
 			$mark_all_as_read.$("button").setAttribute("alt", "")
@@ -254,7 +254,7 @@ const renderMarkAllAsRead = () => {
 		})
 		if (
 			(state.push_active || state.fcm_push_active) &&
-			!!state.unread_count
+			Boolean(state.unread_count)
 		) {
 			$("main-content-wrapper[active] main-content notifications").append(
 				$mark_all_as_read,
@@ -460,7 +460,7 @@ const getUnreadCountUnseenCount = () => {
 						}),
 					)
 				}
-				if (state.unread_count) {
+				if (Boolean(state.unread_count)) {
 					$("hamburger").setAttribute("unread", "")
 					$("footer a[notifications]").setAttribute("unread", "")
 				} else {
