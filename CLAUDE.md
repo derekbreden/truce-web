@@ -241,30 +241,68 @@ window.addMockFetchMatcher({
 // ❌ WRONG: Direct string comparison
 assertEquals("/image/uuid", $img.src, "Check src")
 
-// ✅ CORRECT: Use endsWith for URL comparison
+// ✅ CORRECT: Use endsWith for URL comparison  
 assertEquals(true, $img.src.endsWith("/image/uuid"), "Check src")
+
+// ✅ BETTER: Direct property access for attributes
+assertEquals("http://localhost/mp3/test.mp3", $("audio").src, "Check audio src")
 ```
 
-**Flint.js Element Access**: Multiple ways to access DOM elements:
+**Flint.js Element Access and Direct Property Access**: 
 ```javascript
-// Single element selectors may return NodeList
-const $element = $("selector")[0]  // Get first from NodeList
-const $nested = $element.$("child") // Nested selection on single element
+// When you know there's exactly one element, use direct property access
+assertEquals("Test Image", $("post img").alt, "Check alt text")  // Direct property access
+assertEquals("/path/to/image", $("post img").src, "Check src")   // No need for getAttribute()
+
+// Flint returns NodeList even for single matches, but supports direct property access
+const $element = $("selector")     // Returns NodeList-like object
+const text = $element.innerText    // Direct access works when there's one match
+const $first = $("selector")[0]    // Explicit first element access when needed
 ```
 
-**Custom Element Content Access**: Use nested selectors to access content within custom elements:
+**CRITICAL - JSDOM innerText Behavior**: In JSDOM, `innerText` is ONLY set on the actual elements that contain text, not propagated to parents:
 ```javascript
-// ❌ WRONG: Accessing content directly on custom element
-assertEquals(true, $message.innerText.includes("Hello"), "Check message content")
+// Given this DOM: <p bold><span>Header Text</span></p>
 
-// ✅ CORRECT: Use nested selector to access actual content span
-assertEquals(true, $message.$("message-content span").innerText.includes("Hello"), "Check message content")
+// ❌ WRONG: Parent elements don't have innerText in JSDOM
+assertEquals("Header Text", $("p[bold]").innerText, "Check header")  // Will be undefined!
 
-// ❌ WRONG: Accessing header text directly  
-assertEquals(true, $header.innerHTML.includes("Name"), "Check header")
+// ✅ CORRECT: Access the actual text-containing element
+assertEquals("Header Text", $("p[bold] span").innerText.trim(), "Check header")
 
-// ✅ CORRECT: Use specific nested selector
-assertEquals(true, $header.$("participants h2").innerText.includes("Name"), "Check header")
+// ❌ WRONG: Searching through multiple elements when you know there's only one
+let found = false
+$("p[bold]").forEach($p => {
+  if ($p.innerText && $p.innerText.includes("Header")) found = true
+})
+assertEquals(true, found, "Should find header")
+
+// ✅ CORRECT: Direct assertion on the one element you expect
+assertEquals("Header Text", $("p[bold] span").innerText.trim(), "Check header")
+```
+
+**Markdown Rendering Gotchas**: 
+```javascript
+// Lists require blank lines before items in markdown
+const markdown = `Here's a list:\n\n- Item one`  // ✅ CORRECT - blank line before list
+const markdown = `Here's a list:\n- Item one`     // ❌ WRONG - no blank line, won't render as list
+```
+
+**Test Data Simplicity**: When testing, use minimal data:
+```javascript
+// ❌ WRONG: Creating complex scenarios with multiple elements
+posts: [
+  { body: "# Header 1" },
+  { body: "# Header 2" },
+  { body: "# Header 3" }
+]
+// Then using forEach to find the right one...
+
+// ✅ CORRECT: One simple test case with all features you need
+posts: [{
+  body: `# Header Test\n\n> Quote Test\n\n**Bold Test**`
+}]
+// Direct assertions on the single elements
 ```
 
 **WebSocket Testing**: Use the mock WebSocket's `triggerMessage` method:

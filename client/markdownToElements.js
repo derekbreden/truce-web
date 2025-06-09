@@ -1,40 +1,25 @@
-// Limited markdown processing in a safe and readable way
-//
-// Supports:
-// ![alt](src)
-// >
-// #
-// [text](href)
-//
 const markdownToElements = (text) => {
-	// Double line breaks seperate paragraphs
 	const p_contents = text.split("\n\n")
 
-	// Process one <p> topic at a time
 	return p_contents.map((p_content) => {
 		p_content = p_content.trim()
 		const p_element = document.createElement("p")
 
-		// Support for links not marked down
-		// Auto-link URLs that are not already part of a markdown link's URL section.
 		if (p_content.includes("http")) {
 			const autoLinkRegex = /(?<!]\()http[^\s]*/g
 			const matches = p_content.match(autoLinkRegex)
 			if (matches) {
-				// Null check for matches
 				for (let match of matches) {
-					// Declared match with let
 					if (match.endsWith(".")) {
-						match = match.substring(0, match.length - 1)
+						match = match.slice(0, -1)
 					}
 					let abbreviated = match.replace(/(https?:\/\/)(www\.)?/, "")
 					if (abbreviated.length > 32) {
-						const possible_extension = abbreviated.split(".").pop()
-						if (possible_extension.length < 5) {
-							abbreviated =
-								abbreviated.substring(0, 27) + "..." + possible_extension
+						const extension = abbreviated.split(".").pop()
+						if (extension.length < 5) {
+							abbreviated = abbreviated.slice(0, 27) + "..." + extension
 						} else {
-							abbreviated = abbreviated.substring(0, 30) + "..."
+							abbreviated = abbreviated.slice(0, 30) + "..."
 						}
 					}
 					p_content = p_content.replace(match, `[${abbreviated}](${match})`)
@@ -42,37 +27,31 @@ const markdownToElements = (text) => {
 			}
 		}
 
-		// Support for >
 		if (p_content.startsWith("> ")) {
 			p_element.setAttribute("quote", "")
 			p_content = p_content.replace(/> /g, "")
 		}
 
-		// Support for #
 		if (p_content.startsWith("# ") || p_content.startsWith("##")) {
 			p_element.setAttribute("bold", "")
 			p_content = p_content.replace(/#{1,} /g, "").replace(/\*{2,}/g, "")
 		}
 
-		// Support for **
 		if (p_content.startsWith("**")) {
 			p_element.setAttribute("bold", "")
 			p_content = p_content.replace(/\*{2,}/g, "")
 		}
 
-		// Support for *
 		if (p_content.startsWith("*")) {
 			p_element.setAttribute("italic", "")
 			p_content = p_content.replace(/\*{1,}/g, "")
 		}
 
-		// Support for ---
 		if (p_content === "---") {
 			p_element.setAttribute("hr", "")
 			p_content = ""
 		}
 
-		// Support for -
 		if (p_content.startsWith("- ")) {
 			const li_contents = p_content.split("\n")
 			if (
@@ -95,7 +74,6 @@ const markdownToElements = (text) => {
 			}
 		}
 
-		// Support for 1. 2. 3.
 		if (/^\d+\. /.test(p_content)) {
 			const li_contents = p_content.split("\n")
 			if (li_contents.length > 0) {
@@ -114,7 +92,6 @@ const markdownToElements = (text) => {
 			}
 		}
 
-		// Support for /mp3/
 		if (p_content.startsWith("/mp3/")) {
 			return $(
 				`
@@ -125,20 +102,13 @@ const markdownToElements = (text) => {
 		}
 
 		let inserts = []
-		let imgs
-		let links
-
-		// Store original p_content for creating text spans accurately
-		const original_p_content_for_spans = p_content
-		// Use a new variable for placeholder replacements to avoid corrupting original
-		let p_content_placeholders = p_content
+		const original = p_content
+		let placeholders = p_content
 
 		const imgRegex = /!\[([^\]]*)\]\(((?:[^\(\)]|\([^\)]*\))*)\)/
 		let current_search_offset = 0
-		while (current_search_offset < p_content_placeholders.length) {
-			const search_space = p_content_placeholders.substring(
-				current_search_offset,
-			)
+		while (current_search_offset < placeholders.length) {
+			const search_space = placeholders.slice(current_search_offset)
 			const match_result = search_space.match(imgRegex)
 			if (!match_result) break
 
@@ -158,19 +128,14 @@ const markdownToElements = (text) => {
 			)
 			inserts.push([absolute_match_start, absolute_match_end, img_element])
 
-			p_content_placeholders =
-				p_content_placeholders.substring(0, absolute_match_start) +
-				new Array(matched_text.length + 1).join("X") +
-				p_content_placeholders.substring(absolute_match_end)
+			placeholders = placeholders.slice(0, absolute_match_start) + "X".repeat(matched_text.length) + placeholders.slice(absolute_match_end)
 			current_search_offset = absolute_match_start + matched_text.length
 		}
 
 		const linkRegex = /\[([^\]]*)\]\(((?:[^\(\)]|\([^\)]*\))*)\)/
 		current_search_offset = 0
-		while (current_search_offset < p_content_placeholders.length) {
-			const search_space = p_content_placeholders.substring(
-				current_search_offset,
-			)
+		while (current_search_offset < placeholders.length) {
+			const search_space = placeholders.slice(current_search_offset)
 			const match_result = search_space.match(linkRegex)
 			if (!match_result) break
 
@@ -182,8 +147,7 @@ const markdownToElements = (text) => {
 				current_search_offset + search_space.indexOf(matched_text)
 			const absolute_match_end = absolute_match_start + matched_text.length
 
-			// 'big' if link is the entire original content (before any X/Y placeholders)
-			const big = Boolean(matched_text === original_p_content_for_spans)
+			const big = matched_text === original
 			const link_element = $(
 				`
 					a[href=$1][big=$2] $3
@@ -192,22 +156,15 @@ const markdownToElements = (text) => {
 			)
 			inserts.push([absolute_match_start, absolute_match_end, link_element])
 
-			p_content_placeholders =
-				p_content_placeholders.substring(0, absolute_match_start) +
-				new Array(matched_text.length + 1).join("Y") +
-				p_content_placeholders.substring(absolute_match_end)
+			placeholders = placeholders.slice(0, absolute_match_start) + "Y".repeat(matched_text.length) + placeholders.slice(absolute_match_end)
 			current_search_offset = absolute_match_start + matched_text.length
 		}
 
-		// Sort inserts by their start position to process them in order of appearance
 		inserts.sort((a, b) => a[0] - b[0])
 
 		let current_offset_in_original = 0
 		inserts.forEach((insert) => {
-			const text_before_insert = original_p_content_for_spans.slice(
-				current_offset_in_original,
-				insert[0],
-			)
+			const text_before_insert = original.slice(current_offset_in_original, insert[0])
 			if (text_before_insert.length > 0) {
 				p_element.appendChild(
 					$(
@@ -222,21 +179,17 @@ const markdownToElements = (text) => {
 			current_offset_in_original = insert[1]
 		})
 
-		// Append any remaining text from the original content
-		const remaining_text_after_all_inserts = original_p_content_for_spans.slice(
-			current_offset_in_original,
-		)
-		if (remaining_text_after_all_inserts.length > 0) {
+		const remaining_text = original.slice(current_offset_in_original)
+		if (remaining_text.length > 0) {
 			p_element.appendChild(
 				$(
 					`
 				span $1
 				`,
-					[remaining_text_after_all_inserts],
+					[remaining_text],
 				),
 			)
 		}
-
 
 		return p_element
 	})
