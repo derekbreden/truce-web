@@ -33,10 +33,10 @@ const reconnectWs = () => {
 reconnectWs()
 
 // Update WebSocket when path changes
-const updateWebSocketPath = (newPath) => {
+const updateWebSocketPath = (new_path) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 		state.ws.send(JSON.stringify({ 
-			path: newPath,
+			path: new_path,
 			user_id: state.user_id 
 		}))
 	}
@@ -52,11 +52,11 @@ const handleTypingIndicator = (data) => {
 			if (!typingIndicator) {
 				// Get display name from cached conversation data
 				const conversation = state.cache[state.path]
-				let displayName = data.user_id // fallback
+				let display_name = data.user_id // fallback
 				if (conversation && conversation.participants) {
-					const participant = conversation.participants.find(p => p.user_id === data.user_id)
+					const participant = conversation.participants.find(participant => participant.user_id === data.user_id)
 					if (participant) {
-						displayName = participant.display_name
+						display_name = participant.display_name
 					}
 				}
 				
@@ -65,7 +65,7 @@ const handleTypingIndicator = (data) => {
 					typing-indicator
 						span $1 is typing...
 					`,
-					[displayName]
+					[display_name]
 				)
 				$("main-content-wrapper[active] messages").appendChild($indicator)
 			}
@@ -77,18 +77,18 @@ const handleTypingIndicator = (data) => {
 }
 
 // Send typing indicator
-let typingTimeout
-const sendTypingIndicator = (isTyping, conversationId) => {
-	if (state.ws && state.ws.readyState === WebSocket.OPEN && conversationId) {
+let typing_timeout
+const sendTypingIndicator = (is_typing, conversation_id) => {
+	if (state.ws && state.ws.readyState === WebSocket.OPEN && conversation_id) {
 		state.ws.send(JSON.stringify({
-			typing: isTyping,
-			conversation_id: conversationId
+			typing: is_typing,
+			conversation_id: conversation_id
 		}))
 		
-		if (isTyping) {
-			clearTimeout(typingTimeout)
-			typingTimeout = setTimeout(() => {
-				sendTypingIndicator(false, conversationId)
+		if (is_typing) {
+			clearTimeout(typing_timeout)
+			typing_timeout = setTimeout(() => {
+				sendTypingIndicator(false, conversation_id)
 			}, 3000)
 		}
 	}

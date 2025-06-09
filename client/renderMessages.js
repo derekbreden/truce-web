@@ -13,8 +13,8 @@ const renderMessageImages = (image_uuids) => {
 }
 
 const renderMessage = (message) => {
-	const isOwnMessage = message.sender_user_id === state.user_id
-	const timeAgo = new Date(message.create_date).toLocaleString()
+	const is_own_message = message.sender_user_id === state.user_id
+	const time_ago = new Date(message.create_date).toLocaleString()
 	
 	let $message_body = markdownToElements(message.body)
 
@@ -35,7 +35,7 @@ const renderMessage = (message) => {
 				$8
 		`,
 		[
-			isOwnMessage ? "true" : "false",
+			is_own_message ? "true" : "false",
 			message.profile_picture_uuid
 				? $(
 					`
@@ -55,16 +55,16 @@ const renderMessage = (message) => {
 					[$("icons icon[verified] svg").cloneNode(true)]
 				)
 				: [],
-			timeAgo,
+			time_ago,
 			$message_body,
 			message.image_uuids
-				? renderMessageImages(message.image_uuids.split(",").filter(x => x))
+				? renderMessageImages(message.image_uuids.split(",").filter(uuid => uuid))
 				: []
 		]
 	)
 
 	// Add edit functionality for own messages
-	if (isOwnMessage) {
+	if (is_own_message) {
 		$message.$("message-header").appendChild(
 			$(
 				`
@@ -117,9 +117,9 @@ const renderMessages = (messages, conversation) => {
 	if (!skip_messages) {
 		// Update conversation header with participants
 		if (conversation && conversation.participants) {
-			const otherParticipants = conversation.participants.filter(p => p.user_id !== state.user_id)
-			const participantNames = otherParticipants.map(p => 
-				renderName(p.display_name, p.display_name_index || 0)
+			const other_participants = conversation.participants.filter(participant => participant.user_id !== state.user_id)
+			const participant_names = other_participants.map(participant => 
+				renderName(participant.display_name, participant.display_name_index || 0)
 			).join(", ")
 			
 			$("main-content-wrapper[active] conversation-header participants").replaceChildren(
@@ -127,7 +127,7 @@ const renderMessages = (messages, conversation) => {
 					`
 					h2 $1
 					`,
-					[participantNames]
+					[participant_names]
 				)
 			)
 		}
@@ -164,15 +164,15 @@ const renderMessages = (messages, conversation) => {
 		const $textarea = $("main-content-wrapper[active] textarea")
 		const $sendButton = $("main-content-wrapper[active] send-button")
 		
-		const sendMessage = () => {
-			const messageBody = $textarea.value.trim()
-			if (messageBody && conversation) {
+		const send_message = () => {
+			const message_body = $textarea.value.trim()
+			if (message_body && conversation) {
 				fetch("/session", {
 					method: "POST",
 					body: JSON.stringify({
 						action: "sendMessage",
 						conversation_id: conversation.conversation_id,
-						body: messageBody,
+						body: message_body,
 						pngs: []
 					})
 				})
@@ -193,27 +193,27 @@ const renderMessages = (messages, conversation) => {
 			}
 		}
 
-		$sendButton.on("click", sendMessage)
+		$sendButton.on("click", send_message)
 		$textarea.on("keydown", (e) => {
 			if (e.key === "Enter" && !e.shiftKey) {
 				e.preventDefault()
-				sendMessage()
+				send_message()
 			}
 		})
 
 		// Add typing indicators
-		let lastTypingTime = 0
+		let last_typing_time = 0
 		$textarea.on("input", () => {
 			if (conversation && conversation.conversation_id) {
 				const now = Date.now()
-				lastTypingTime = now
+				last_typing_time = now
 				
 				// Start typing indicator
 				sendTypingIndicator(true, conversation.conversation_id)
 				
 				// Stop typing after 1 second of no input
 				setTimeout(() => {
-					if (Date.now() - lastTypingTime >= 1000) {
+					if (Date.now() - last_typing_time >= 1000) {
 						sendTypingIndicator(false, conversation.conversation_id)
 					}
 				}, 1000)

@@ -1,20 +1,20 @@
 const renderConversation = (conversation) => {
-	const lastMessageBody = conversation.last_message_body || "No messages yet"
-	const shortBody = lastMessageBody.length > 60 
-		? lastMessageBody.slice(0, 60) + "..." 
-		: lastMessageBody
+	const last_message_body = conversation.last_message_body || "No messages yet"
+	const short_body = last_message_body.length > 60 
+		? last_message_body.slice(0, 60) + "..." 
+		: last_message_body
 
 	// Get other participants (exclude current user)
-	const otherParticipants = conversation.participants.filter(p => p.user_id !== state.user_id)
-	const participantNames = otherParticipants.map(p => 
-		renderName(p.display_name, p.display_name_index || 0)
+	const other_participants = conversation.participants.filter(participant => participant.user_id !== state.user_id)
+	const participant_names = other_participants.map(participant => 
+		renderName(participant.display_name, participant.display_name_index || 0)
 	).join(", ")
 
-	const timeAgo = conversation.last_message_date 
+	const time_ago = conversation.last_message_date 
 		? new Date(conversation.last_message_date).toLocaleString()
 		: new Date(conversation.create_date).toLocaleString()
 
-	const unreadCount = parseInt(conversation.unread_count) || 0
+	const unread_count = parseInt(conversation.unread_count) || 0
 
 	const $conversation = $(
 		`
@@ -27,15 +27,15 @@ const renderConversation = (conversation) => {
 				$5
 		`,
 		[
-			unreadCount > 0,
-			participantNames,
-			timeAgo,
-			shortBody,
-			unreadCount > 0 ? $(
+			unread_count > 0,
+			participant_names,
+			time_ago,
+			short_body,
+			unread_count > 0 ? $(
 				`
 				unread-count $1
 				`,
-				[unreadCount]
+				[unread_count]
 			) : ""
 		]
 	)
