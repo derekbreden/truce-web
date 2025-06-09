@@ -11,24 +11,16 @@
 */
 
 const $ = (selector_or_flint, flint_args_or_element) => {
-	// Function to add helper methods to the selected elements
 	const addHelpers = (element, $all) => {
-		// Bind event listener
 		element.on = element.addEventListener.bind(element)
-
-		// Allow forEach even for single element
 		element.forEach = (f) => $all.forEach(f)
-
-		// Enable nested selection
 		element.$ = (selector) => $(selector, element)
 	}
 
-	// Check if the input is a template string for creating new elements
 	if (selector_or_flint.startsWith("\n")) {
 		let flint = selector_or_flint
 		const flint_args = flint_args_or_element
 
-		// Split the template into lines and create nodes with their text and indentation level
 		flint = flint
 			.split("\n")
 			.filter((x) => x.trim() !== "")
@@ -39,15 +31,12 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 				}
 			})
 
-		// Helper function to create elements recursively from the nodes
 		const createElement = (nodes, index = 0, parent = null) => {
-			// Base case for recursion
 			if (index >= nodes.length) {
 				return null
 			}
 			const node = nodes[index]
 
-			// Extract attributes from the node text
 			const attributes = (node.text.match(/\[[^\]]*\]/g) || []).map((attr) => {
 				let [key, value] = attr.slice(1, -1).split("=")
 				if (key.startsWith("$")) {
@@ -72,7 +61,6 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 				}
 			})
 
-			// Remove attributes from the text to get the tag and inner text
 			node.text = node.text.replace(/\[[^\]]*\]/g, "")
 			const parts = node.text.split(" ")
 			let tag = parts[0]
@@ -80,29 +68,21 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 
 			let element = null
 
-			// Handle argument substitution for dynamic content
 			if (tag.startsWith("$")) {
 				const arg_index = parseInt(tag.slice(1)) - 1
 				const arg = flint_args[arg_index]
 
-				// Create text node
 				if (typeof arg === "string") {
 					element = document.createTextNode(arg)
-
-					// Create document fragment for array of elements
 				} else if (Array.isArray(arg)) {
 					element = document.createDocumentFragment()
 					arg.forEach((child) => element.appendChild(child))
-
-					// Use the argument as the element itself
 				} else {
 					element = arg
 				}
 			} else {
-				// Create the element with the tag name
 				element = document.createElement(tag)
 
-				// Set attributes on the element
 				attributes.forEach((attr) => {
 					if (
 						attr.value !== false &&
@@ -113,7 +93,6 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 					}
 				})
 
-				// Handle dynamic content within the element's inner text
 				if (rest.includes("$")) {
 					const content = rest.replace(/\$\d+/g, (match) => {
 						const arg_index = parseInt(match.slice(1)) - 1
@@ -131,12 +110,10 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 				}
 			}
 
-			// Append the created element to its parent
 			if (parent) {
 				parent.appendChild(element)
 			}
 
-			// Recursively create and append child elements
 			const children = []
 			let child_level = false
 			for (let i = index + 1; i < nodes.length; i++) {
@@ -155,10 +132,8 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 			return element
 		}
 
-		// Create a wrapper for potential multiple root elements
 		const rootElement = document.createElement("div")
 
-		// Iterate and create all potential root elements into actual root elements in that container
 		let child_level = false
 		for (let i = 0; i < flint.length; i++) {
 			if (!child_level) {
@@ -169,26 +144,20 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 			}
 		}
 
-		// If there is just a single root element, return that with helpers
 		if (rootElement.children.length === 1) {
 			addHelpers(rootElement.children[0])
 			return rootElement.children[0]
-
-			// If there are multiple root elemeents, return the wrapper with helpers
 		} else {
 			addHelpers(rootElement)
 			return rootElement
 		}
 	} else {
-		// Handle element selection and manipulation
 		const element = flint_args_or_element || document
 		const selector = selector_or_flint
 		const $all = element.querySelectorAll(selector)
 
-		// Add helper methods to each selected element
 		$all.forEach((element) => addHelpers(element, $all))
 
-		// Return the appropriate result based on the number of elements found
 		if ($all.length === 1) {
 			return $all[0]
 		} else if ($all.length === 0) {
