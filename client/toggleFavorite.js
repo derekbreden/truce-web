@@ -69,31 +69,12 @@ const toggleFavorite = async (post_or_reply) => {
 			: $("icons icon[favorites] svg").cloneNode(true),
 	)
 	const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
-	$favoritesP.replaceWith(
-		$(
-			`
-		p $1
-		`,
-			[post_or_reply.favorite_count],
-		),
-	)
+	$favoritesP.innerText = post_or_reply.favorite_count
 
 	// Alert the user to the change
-	if (was_favorited) {
-		if (post_or_reply.$post) {
-			alertInfo("Post removed from your favorites")
-		}
-		if (post_or_reply.$reply) {
-			alertInfo("Reply removed from your favorites")
-		}
-	} else {
-		if (post_or_reply.$post) {
-			alertInfo("Post added to your favorites")
-		}
-		if (post_or_reply.$reply) {
-			alertInfo("Reply added to your favorites")
-		}
-	}
+	const action = was_favorited ? "removed from" : "added to"
+	const type = post_or_reply.$post ? "Post" : "Reply"
+	alertInfo(`${type} ${action} your favorites`)
 
 	// Queue up the save
 	pending_toggle_saves.push(() => {
