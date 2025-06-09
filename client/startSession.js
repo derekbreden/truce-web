@@ -421,7 +421,6 @@ const getMoreRecent = () => {
 							(found_post || found_activity).poll_1 &&
 							post_count.poll_counts
 						) {
-							console.warn("FAVORITES WHY?")
 							;(found_post || found_activity).poll_counts =
 								post_count.poll_counts
 							;(found_post || found_activity).$post.replaceWith(
