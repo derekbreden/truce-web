@@ -1,14 +1,3 @@
-// const pool = require("../pool")
-// const sleep = (ms) => {
-//   return new Promise((resolve) => setTimeout(resolve, ms))
-// }
-// const ai = require("../ai")
-// const prompts = require("../prompts")
-// const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3")
-// const object_client = new S3Client({
-//   region: "us-east-1",
-// })
-
 module.exports = async (req, res) => {
 	if (
 		!res.writableEnded &&
