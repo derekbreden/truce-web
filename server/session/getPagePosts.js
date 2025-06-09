@@ -3,8 +3,6 @@ module.exports = async (req, res) => {
 		!res.writableEnded &&
 		(req.body.path === "/posts" ||
 			req.body.path === "/posts/all" ||
-			req.body.path === "/posts" ||
-			req.body.path === "/posts/all" ||
 			req.body.path?.startsWith("/topic/") ||
 			req.body.path?.startsWith("/user/"))
 	) {
