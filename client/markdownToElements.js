@@ -105,60 +105,50 @@ const markdownToElements = (text) => {
 		const original = p_content
 		let placeholders = p_content
 
-		const imgRegex = /!\[([^\]]*)\]\(((?:[^\(\)]|\([^\)]*\))*)\)/
-		let current_search_offset = 0
-		while (current_search_offset < placeholders.length) {
-			const search_space = placeholders.slice(current_search_offset)
-			const match_result = search_space.match(imgRegex)
-			if (!match_result) break
+		const parseElements = (regex, createElement, placeholder_char) => {
+			let current_search_offset = 0
+			while (current_search_offset < placeholders.length) {
+				const search_space = placeholders.slice(current_search_offset)
+				const match_result = search_space.match(regex)
+				if (!match_result) break
 
-			const matched_text = match_result[0]
+				const matched_text = match_result[0]
+				const absolute_match_start =
+					current_search_offset + search_space.indexOf(matched_text)
+				const absolute_match_end = absolute_match_start + matched_text.length
+
+				const element = createElement(match_result, original)
+				inserts.push([absolute_match_start, absolute_match_end, element])
+
+				placeholders = placeholders.slice(0, absolute_match_start) + placeholder_char.repeat(matched_text.length) + placeholders.slice(absolute_match_end)
+				current_search_offset = absolute_match_start + matched_text.length
+			}
+		}
+
+		const imgRegex = /!\[([^\]]*)\]\(((?:[^\(\)]|\([^\)]*\))*)\)/
+		parseElements(imgRegex, (match_result) => {
 			const alt_text = match_result[1]
 			const src_text = match_result[2]
-
-			const absolute_match_start =
-				current_search_offset + search_space.indexOf(matched_text)
-			const absolute_match_end = absolute_match_start + matched_text.length
-
-			const img_element = $(
+			return $(
 				`
-					img[alt=$1][src=$2]
-					`,
+				img[alt=$1][src=$2]
+				`,
 				[alt_text, src_text],
 			)
-			inserts.push([absolute_match_start, absolute_match_end, img_element])
-
-			placeholders = placeholders.slice(0, absolute_match_start) + "X".repeat(matched_text.length) + placeholders.slice(absolute_match_end)
-			current_search_offset = absolute_match_start + matched_text.length
-		}
+		}, "X")
 
 		const linkRegex = /\[([^\]]*)\]\(((?:[^\(\)]|\([^\)]*\))*)\)/
-		current_search_offset = 0
-		while (current_search_offset < placeholders.length) {
-			const search_space = placeholders.slice(current_search_offset)
-			const match_result = search_space.match(linkRegex)
-			if (!match_result) break
-
-			const matched_text = match_result[0]
+		parseElements(linkRegex, (match_result, original) => {
 			const link_text = match_result[1]
 			const href_text = match_result[2]
-
-			const absolute_match_start =
-				current_search_offset + search_space.indexOf(matched_text)
-			const absolute_match_end = absolute_match_start + matched_text.length
-
-			const big = matched_text === original
-			const link_element = $(
+			const big = match_result[0] === original
+			return $(
 				`
-					a[href=$1][big=$2] $3
-					`,
+				a[href=$1][big=$2] $3
+				`,
 				[href_text, big, link_text],
 			)
-			inserts.push([absolute_match_start, absolute_match_end, link_element])
-
-			placeholders = placeholders.slice(0, absolute_match_start) + "Y".repeat(matched_text.length) + placeholders.slice(absolute_match_end)
-			current_search_offset = absolute_match_start + matched_text.length
-		}
+		}, "Y")
 
 		inserts.sort((a, b) => a[0] - b[0])
 

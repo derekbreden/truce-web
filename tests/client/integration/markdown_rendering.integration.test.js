@@ -155,4 +155,95 @@ https://example.com/file.pdf`,
 	assertEquals(true, $("a[href*='file.pdf']").innerText.trim().includes("pdf"), "Should preserve file extensions in abbreviated URLs")
 }
 
-runTests("markdown_rendering.integration.test.js", [testMarkdownRendering, testComplexMarkdownCombinations])
+async function testComplexMarkdownParsing() {
+	const window = await setupIntegrationTestEnvironment()
+	const { state, $ } = window
+
+	// Test complex mixed image and link parsing that exercises both parsing loops
+	window.setMockFetchResponseForPaths({
+		"/posts": {
+			path: "/posts",
+			posts: [
+				{
+					slug: "complex-parsing-test",
+					title: "Complex Parsing Test",
+					body: `Mixed content: ![image1](img1.jpg) with text [link1](url1.com) more text.
+
+![image2](img2.jpg)[link2](url2.com)
+
+Text ![img3](img3.jpg) between [link3](url3.com) elements ![img4](img4.jpg) and [link4](url4.com) end.
+
+[Link with (parens)](http://example.com/path(param)) and ![Image (alt)](image(name).jpg)
+
+Multiple: ![a](1.jpg) ![b](2.jpg) [x](u1.com) [y](u2.com) ![c](3.jpg) [z](u3.com)`,
+					user_slug: "testuser",
+					display_name: "Test User",
+					topics: "general",
+					reply_count: 0,
+					favorite_count: 0,
+					favorited: false,
+					replyed: false,
+					image_uuids: null,
+					profile_picture_uuid: null,
+					display_name_index: 0,
+					user_verified: false,
+					note: "",
+					poll_1: null
+				}
+			],
+			replies: [],
+			activities: [],
+			notifications: [],
+			user_slug: null,
+			subscribed_to_users: 0,
+			user_id: null,
+			email: null,
+			display_name: null,
+			profile_picture_uuid: null,
+			display_name_index: 0,
+			has_more: false
+		}
+	})
+
+	// Navigate to posts to trigger markdown rendering
+	const $joinButton = $("a[href='/posts'][big]")
+	$joinButton.click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+
+	// Verify complex parsing worked correctly
+	const $post = $("post[trimmed]")
+	
+	// Test basic parsing worked - check total counts
+	const $allImages = $post.querySelectorAll("img")
+	const $allLinks = $post.querySelectorAll("a")
+	assertEquals(8, $allImages.length, "Should parse all 8 images from complex markdown")
+	assertEquals(8, $allLinks.length, "Should parse all 8 links from complex markdown")
+
+	// Test specific elements to verify parsing accuracy
+	assertEquals("img1.jpg", $allImages[0].getAttribute("src"), "First image should be parsed correctly")
+	assertEquals("url1.com", $allLinks[0].getAttribute("href"), "First link should be parsed correctly")
+	assertEquals("img2.jpg", $allImages[1].getAttribute("src"), "Second image (adjacent) should be parsed")
+	assertEquals("url2.com", $allLinks[1].getAttribute("href"), "Second link (adjacent) should be parsed")
+	
+	// Test parentheses handling
+	assertEquals("Link with (parens)", $allLinks[4].innerText.trim(), "Should handle parentheses in link text")
+	assertEquals("http://example.com/path(param)", $allLinks[4].getAttribute("href"), "Should handle parentheses in URL")
+	assertEquals("Image (alt)", $allImages[4].getAttribute("alt"), "Should handle parentheses in image alt")
+	assertEquals("image(name).jpg", $allImages[4].getAttribute("src"), "Should handle parentheses in image src")
+
+	// Test sequence preservation in complex alternating paragraph
+	assertEquals("1.jpg", $allImages[5].getAttribute("src"), "First image in alternating sequence")
+	assertEquals("2.jpg", $allImages[6].getAttribute("src"), "Second image in alternating sequence")
+	assertEquals("3.jpg", $allImages[7].getAttribute("src"), "Third image in alternating sequence")
+	assertEquals("u1.com", $allLinks[5].getAttribute("href"), "First link in alternating sequence")
+	assertEquals("u2.com", $allLinks[6].getAttribute("href"), "Second link in alternating sequence")
+	assertEquals("u3.com", $allLinks[7].getAttribute("href"), "Third link in alternating sequence")
+	
+	// Verify text spans are created properly around elements
+	const $allSpans = $post.querySelectorAll("p span")
+	assertEquals(true, $allSpans.length > 0, "Should create text spans around parsed elements")
+	assertEquals("Mixed content: ", $allSpans[0].innerText, "Should preserve text before first image")
+	assertEquals(" with text ", $allSpans[1].innerText, "Should preserve text between elements")
+}
+
+runTests("markdown_rendering.integration.test.js", [testMarkdownRendering, testComplexMarkdownCombinations, testComplexMarkdownParsing])
