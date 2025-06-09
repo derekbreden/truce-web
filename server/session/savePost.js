@@ -258,8 +258,6 @@ B) ${req.body.poll_2}`
             `,
 						[post_id, topic_ids[topic]],
 					)
-				} else {
-					console.error("Unable to find topic", topic)
 				}
 			}
 

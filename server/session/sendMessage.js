@@ -243,10 +243,7 @@ module.exports = async (req, res) => {
 				}
 				try {
 					const result = await firebase.getMessaging().send(message)
-					console.log(result)
 				} catch (e) {
-					console.log(e.message)
-					console.log(e.code)
 					if (e.code === "messaging/registration-token-not-registered") {
 						console.log("Unsubscribing", subscription.fcm_token)
 						await req.client.query(
@@ -256,6 +253,9 @@ module.exports = async (req, res) => {
 							`,
 							[subscription.fcm_token],
 						)
+					} else {
+						console.error("Unhandled FCM message:", e.message)
+						console.error("Unhandled FCM code:", e.code)
 					}
 				}
 
@@ -271,7 +271,9 @@ module.exports = async (req, res) => {
 							unread_count,
 						}),
 					)
-					.then(console.log)
+					.then((result) => {
+						// console.log(result)
+					})
 					.catch(async (error) => {
 						// 410 means unsubscribed and is expected, but means we need to stop sending to that subscription_json
 						if (error.statusCode === 410) {

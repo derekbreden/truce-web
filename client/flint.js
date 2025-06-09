@@ -1,42 +1,14 @@
-/**
- * Flint.js - A minimalistic DOM manipulation library
- * ================================================
- *
- * Flint.js is a lightweight library designed to make DOM manipulation
- * easier and more intuitive. It provides a simple interface for
- * selecting elements, binding events, and creating new elements using
- * a template syntax.
- *
- * Usage Examples:
- * ---------------
- *
- * 1. Selecting and manipulating elements:
- *		const $title = $("h1")
- *		$title.innerText = "New Title"
- *
- * 2. Binding events:
- *		const $button = $("button")
- *		$button.on("click", () => {
- *			alert("Button clicked!")
- *		})
- *
- * 3. Creating new elements with template syntax:
- *		const $newElement = $(`
- *			div
- *				h2 Title
- *				p This is a paragraph
- *				ul
- *					li Item 1
- *					li Item 2
- *		`)
- *		document.body.appendChild($newElement)
- *
- * 4. Using arguments in template (NOTE: The first line break is required):
- *		const $listItem = $(`
- *			li[style=$1] $2
- *		`, ["color: red;", "Red Item"])
- *		$("ul").appendChild($listItem)
- */
+/*
+	Flint provides an interface for selecting or creating elements.
+	1) Selecting:
+		const $title = $("h1")
+		$title.innerText = "New Title"
+	2) Creating:
+		const $listItem = $(`
+			li[class=$1] $2
+		`, ["red", "Red Item"])
+		$("ul").appendChild($listItem)
+*/
 
 const $ = (selector_or_flint, flint_args_or_element) => {
 	// Function to add helper methods to the selected elements

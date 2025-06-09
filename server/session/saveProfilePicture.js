@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
 			console.error("Failed to parse AI JSON", ai_response, e)
 		}
 		const first_word = ai_response_parsed.keyword
-		console.log("Profile picture AI response", ai_response_parsed.keyword)
+		// console.log("Profile picture AI response", ai_response_parsed.keyword)
 		if (!["Spam", "Violent", "Hateful", "Sexual"].includes(first_word)) {
 			const profile_picture_uuid = crypto.randomUUID()
 			try {
