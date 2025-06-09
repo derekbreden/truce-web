@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
         WHERE
           parent_reply_id IS NULL
           AND reply_id IN (
-            SELECT ancestor_id AS reply_id
+            SELECT ancestor_reply_id AS reply_id
             FROM reply_ancestors
             WHERE reply_id = $1
             UNION
@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
           ) OR c.reply_id IN (
             SELECT reply_id
             FROM reply_ancestors
-            WHERE ancestor_id IN (
+            WHERE ancestor_reply_id IN (
               SELECT reply_id FROM root_reply
             )
           )

@@ -140,7 +140,7 @@ module.exports = async (req, res) => {
 				})
 			}
 		}
-		const ancestor_ids = []
+		const ancestor_reply_ids = []
 		if (req.body.parent_reply_id) {
 			messages.push({
 				role: "user",
@@ -160,7 +160,7 @@ module.exports = async (req, res) => {
         WHERE
           c.reply_id = $1
           OR c.reply_id IN (
-            SELECT ancestor_id
+            SELECT ancestor_reply_id
             FROM reply_ancestors
             WHERE reply_id = $1
           )
@@ -227,7 +227,7 @@ module.exports = async (req, res) => {
 					})
 				}
 			}
-			ancestor_ids.push(...reply_ancestors.rows.map((c) => c.reply_id))
+			ancestor_reply_ids.push(...reply_ancestors.rows.map((c) => c.reply_id))
 		}
 		messages.push({
 			role: "user",
@@ -338,10 +338,10 @@ module.exports = async (req, res) => {
 		await require("./updateDisplayName")(req, res)
 
 		// Insert all of the ancestors
-		if (ancestor_ids.length > 0 && !req.body.reply_id) {
+		if (ancestor_reply_ids.length > 0 && !req.body.reply_id) {
 			// Create a values string for the bulk insert
-			const values = ancestor_ids
-				.map((ancestor_id, index) => `($1, $${index + 2})`)
+			const values = ancestor_reply_ids
+				.map((ancestor_reply_id, index) => `($1, $${index + 2})`)
 				.join(", ")
 
 			// Execute the bulk insert query
@@ -350,7 +350,7 @@ module.exports = async (req, res) => {
         INSERT INTO reply_ancestors (reply_id, ancestor_reply_id)
         VALUES ${values}
         `,
-				[reply_id, ...ancestor_ids],
+				[reply_id, ...ancestor_reply_ids],
 			)
 		}
 
@@ -452,7 +452,7 @@ module.exports = async (req, res) => {
         SELECT user_id
         FROM replies
         WHERE reply_id IN (
-          SELECT ancestor_id
+          SELECT ancestor_reply_id
           FROM reply_ancestors
           WHERE reply_id = $2
         )
@@ -475,7 +475,7 @@ module.exports = async (req, res) => {
       FROM replies
       WHERE
         reply_id IN (
-          SELECT ancestor_id
+          SELECT ancestor_reply_id
           FROM reply_ancestors
           WHERE reply_id = $2
         )
