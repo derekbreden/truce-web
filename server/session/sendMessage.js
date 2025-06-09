@@ -272,7 +272,6 @@ module.exports = async (req, res) => {
 						}),
 					)
 					.then((result) => {
-						// console.log(result)
 					})
 					.catch(async (error) => {
 						// 410 means unsubscribed and is expected, but means we need to stop sending to that subscription_json
