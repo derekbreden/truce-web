@@ -28,7 +28,7 @@ const showMenu = () => {
 						icon[notifications]
 						p Alerts
 		`,
-		[Boolean(state.unread_messages_count), Boolean(state.unread_count)],
+		[!!state.unread_messages_count, !!state.unread_count],
 	)
 	$menu
 		.$("icon[welcome]")

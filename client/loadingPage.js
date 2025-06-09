@@ -13,7 +13,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				main-content
 				main-content-2
 			`,
-			[Boolean(skip_state), Boolean(clicked_back)],
+			[!!skip_state, !!clicked_back],
 		),
 	)
 	bindScrollEvent()
@@ -73,7 +73,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				`,
 				[
 					$("icons icon[welcome] svg").cloneNode(true),
-					!Boolean(window.webkit) &&
+					!window.webkit &&
 					document.referrer !== "android-app://net.truce.twa/"
 						? $(
 								`

@@ -54,10 +54,10 @@ async function debugConversationRendering() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $menu = $("menu-wrapper")
-	assertEquals(true, Boolean($menu), "Menu should open")
+	assertEquals("menu-wrapper", $menu.tagName.toLowerCase(), "Menu should open")
 
 	const $conversationsLink = $("menu-wrapper a[href='/conversations']")
-	assertEquals(true, Boolean($conversationsLink), "Conversations link should exist in menu")
+	assertEquals("/conversations", $conversationsLink.getAttribute("href"), "Conversations link should exist in menu")
 	$conversationsLink.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 

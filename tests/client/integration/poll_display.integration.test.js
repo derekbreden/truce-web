@@ -78,25 +78,15 @@ const tests = {
 		assertEquals("Option B", $pollOption2.innerText.trim(), "Poll option 2 text should be 'Option B'.")
 
 		// Assert that elements for poll_3 and poll_4 are not present as they are null in mock data
-		const $pollOption3 = $pollVoteWrapper.$("poll-3") // Corrected selector
-		assertEquals(false, Boolean($pollOption3), "Poll option 3 element should not be present in poll-vote-wrapper if its value is null.")
-
-		const $pollOption4 = $pollVoteWrapper.$("poll-4") // Corrected selector
-		assertEquals(false, Boolean($pollOption4), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
+		assertEquals(null, $pollVoteWrapper.$("poll-3"), "Poll option 3 element should not be present in poll-vote-wrapper if its value is null.")
+		assertEquals(null, $pollVoteWrapper.$("poll-4"), "Poll option 4 element should not be present in poll-vote-wrapper if its value is null.")
 
 		// Assert Poll Results Sections are NOT present (since user hasn't voted and edit is false)
 		// client/renderPost.js removes these if post.edit is false and post.voted is false
-		const $pollCountsActual = $pollWrapper.$("poll-counts-actual")
-		assertEquals(false, Boolean($pollCountsActual), "Actual poll counts element should NOT be present when user has not voted.")
-
-		const $pollResultsActualText = $pollWrapper.$("p[results][actual]")
-		assertEquals(false, Boolean($pollResultsActualText), "Actual results text element should NOT be present when user has not voted.")
-
-		const $pollCountsEstimated = $pollWrapper.$("poll-counts-estimated")
-		assertEquals(false, Boolean($pollCountsEstimated), "Estimated poll counts element should NOT be present when user has not voted.")
-
-		const $pollResultsEstimatedText = $pollWrapper.$("p[results][estimated]")
-		assertEquals(false, Boolean($pollResultsEstimatedText), "Estimated results text element should NOT be present when user has not voted.")
+		assertEquals(null, $pollWrapper.$("poll-counts-actual"), "Actual poll counts element should NOT be present when user has not voted.")
+		assertEquals(null, $pollWrapper.$("p[results][actual]"), "Actual results text element should NOT be present when user has not voted.")
+		assertEquals(null, $pollWrapper.$("poll-counts-estimated"), "Estimated poll counts element should NOT be present when user has not voted.")
+		assertEquals(null, $pollWrapper.$("p[results][estimated]"), "Estimated results text element should NOT be present when user has not voted.")
 
 	},
 }
