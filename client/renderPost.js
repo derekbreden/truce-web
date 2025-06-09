@@ -223,6 +223,14 @@ const renderPost = (post) => {
 		})
 	})
 	if (post.poll_1) {
+		const updatePollDisplay = (type, percentages) => {
+			percentages.forEach((percent, index) => {
+				const option_num = index + 1
+				$post.$(`poll-counts-${type} poll-${option_num} percent`).innerText = percent + "%"
+				$post.$(`poll-counts-${type} poll-${option_num} bg`).style.width = percent + "%"
+			})
+		}
+
 		const counts_actual = post.poll_counts.split(",")
 		const votes_1 = Number(counts_actual[0] || 0)
 		const votes_2 = Number(counts_actual[1] || 0)
@@ -231,44 +239,27 @@ const renderPost = (post) => {
 		const votes_sum = votes_1 + votes_2 + votes_3 + votes_4
 		$post.$("p[results][actual]").innerText =
 			`Actual results: (${votes_sum} ${votes_sum === 1 ? `vote` : `votes`})`
-		const percent_1 = Math.round((votes_1 / votes_sum) * 100) || 0
-		const percent_2 = Math.round((votes_2 / votes_sum) * 100) || 0
-		const percent_3 = Math.round((votes_3 / votes_sum) * 100) || 0
-		const percent_4 = Math.round((votes_4 / votes_sum) * 100) || 0
-		$post.$("poll-counts-actual poll-1 percent").innerText = percent_1 + "%"
-		$post.$("poll-counts-actual poll-1 bg").style.width = percent_1 + "%"
-		$post.$("poll-counts-actual poll-2 percent").innerText = percent_2 + "%"
-		$post.$("poll-counts-actual poll-2 bg").style.width = percent_2 + "%"
-		$post.$("poll-counts-actual poll-3 percent").innerText = percent_3 + "%"
-		$post.$("poll-counts-actual poll-3 bg").style.width = percent_3 + "%"
-		$post.$("poll-counts-actual poll-4 percent").innerText = percent_4 + "%"
-		$post.$("poll-counts-actual poll-4 bg").style.width = percent_4 + "%"
+		const actual_percentages = [
+			Math.round((votes_1 / votes_sum) * 100) || 0,
+			Math.round((votes_2 / votes_sum) * 100) || 0,
+			Math.round((votes_3 / votes_sum) * 100) || 0,
+			Math.round((votes_4 / votes_sum) * 100) || 0
+		]
+		updatePollDisplay("actual", actual_percentages)
+
 		const counts_estimated = post.poll_counts_estimated.split(",")
 		const est_votes_1 = Number(counts_estimated[0] || 0)
 		const est_votes_2 = Number(counts_estimated[1] || 0)
 		const est_votes_3 = Number(counts_estimated[2] || 0)
 		const est_votes_4 = Number(counts_estimated[3] || 0)
 		const est_votes_sum = est_votes_1 + est_votes_2 + est_votes_3 + est_votes_4
-		const est_percent_1 = Math.round((est_votes_1 / est_votes_sum) * 100)
-		const est_percent_2 = Math.round((est_votes_2 / est_votes_sum) * 100)
-		const est_percent_3 = Math.round((est_votes_3 / est_votes_sum) * 100)
-		const est_percent_4 = Math.round((est_votes_4 / est_votes_sum) * 100)
-		$post.$("poll-counts-estimated poll-1 percent").innerText =
-			est_percent_1 + "%"
-		$post.$("poll-counts-estimated poll-1 bg").style.width =
-			est_percent_1 + "%"
-		$post.$("poll-counts-estimated poll-2 percent").innerText =
-			est_percent_2 + "%"
-		$post.$("poll-counts-estimated poll-2 bg").style.width =
-			est_percent_2 + "%"
-		$post.$("poll-counts-estimated poll-3 percent").innerText =
-			est_percent_3 + "%"
-		$post.$("poll-counts-estimated poll-3 bg").style.width =
-			est_percent_3 + "%"
-		$post.$("poll-counts-estimated poll-4 percent").innerText =
-			est_percent_4 + "%"
-		$post.$("poll-counts-estimated poll-4 bg").style.width =
-			est_percent_4 + "%"
+		const estimated_percentages = [
+			Math.round((est_votes_1 / est_votes_sum) * 100),
+			Math.round((est_votes_2 / est_votes_sum) * 100),
+			Math.round((est_votes_3 / est_votes_sum) * 100),
+			Math.round((est_votes_4 / est_votes_sum) * 100)
+		]
+		updatePollDisplay("estimated", estimated_percentages)
 		const savePollChoice = (poll_choice) => {
 			$post.$("poll-vote-wrapper").replaceWith(
 				$(

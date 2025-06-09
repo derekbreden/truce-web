@@ -89,6 +89,90 @@ const tests = {
 		assertEquals(null, $pollWrapper.$("p[results][estimated]"), "Estimated results text element should NOT be present when user has not voted.")
 
 	},
+
+	testPollPercentageDisplay: async () => {
+		const window = await setupIntegrationTestEnvironment()
+		const { state, $ } = window
+
+		// Mock post with poll results - user has voted so we can see percentages
+		window.setMockFetchResponseForPaths({
+			"/": { path: "/", posts: [], replies: [], activities: [], notifications: [] },
+			"/posts": {
+				path: "/posts",
+				posts: [
+					{
+						post_id: 2,
+						slug: "poll-with-results",
+						title: "Poll with Results",
+						body: "This poll has results to display.",
+						user_slug: "testuser",
+						display_name: "Test User",
+						topics: "general",
+						reply_count: 0,
+						favorite_count: 0,
+						favorited: false,
+						replyed: false,
+						image_uuids: null,
+						profile_picture_uuid: null,
+						display_name_index: 0,
+						user_verified: false,
+						note: "",
+						poll_1: "Option A",
+						poll_2: "Option B", 
+						poll_3: "Option C",
+						poll_4: "", // No fourth option
+						poll_counts: "60,30,10,0", // 60%, 30%, 10%, 0%
+						poll_counts_estimated: "50,25,20,5", // Different estimated percentages
+						voted: true, // User has voted, so results will display
+						edit: false
+					},
+				],
+				replies: [],
+				activities: [],
+				notifications: [],
+				user: {},
+				topic: {},
+				subscribed_to_users: 0,
+			},
+		})
+
+		// Navigate to posts
+		const $joinButton = $(`a[href="/posts"][big]`)
+		$joinButton.click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		// Find the post element
+		const $postElement = $(`post[trimmed]`)
+		const $pollWrapper = $postElement.$("poll-wrapper")
+
+		// Test actual results display
+		const $actualResults = $pollWrapper.$("p[results][actual]")
+		assertEquals("Actual results: (100 votes)", $actualResults.innerText.trim(), "Should show correct vote count")
+
+		// Test actual percentages  
+		assertEquals("60%", $pollWrapper.$("poll-counts-actual poll-1 percent").innerText, "Option A should show 60%")
+		assertEquals("30%", $pollWrapper.$("poll-counts-actual poll-2 percent").innerText, "Option B should show 30%")
+		assertEquals("10%", $pollWrapper.$("poll-counts-actual poll-3 percent").innerText, "Option C should show 10%")
+		// poll-4 should be removed since poll_4 is empty, so don't test it
+
+		// Test actual bar widths
+		assertEquals("60%", $pollWrapper.$("poll-counts-actual poll-1 bg").style.width, "Option A bar should be 60% width")
+		assertEquals("30%", $pollWrapper.$("poll-counts-actual poll-2 bg").style.width, "Option B bar should be 30% width")
+
+		// Test estimated results display  
+		const $estimatedResults = $pollWrapper.$("p[results][estimated]")
+		assertEquals("Estimated results:", $estimatedResults.innerText.trim(), "Should show estimated results label")
+
+		// Test estimated percentages (from poll_counts_estimated: "50,25,20,5")
+		assertEquals("50%", $pollWrapper.$("poll-counts-estimated poll-1 percent").innerText, "Estimated Option A should show 50%")
+		assertEquals("25%", $pollWrapper.$("poll-counts-estimated poll-2 percent").innerText, "Estimated Option B should show 25%")
+		assertEquals("20%", $pollWrapper.$("poll-counts-estimated poll-3 percent").innerText, "Estimated Option C should show 20%")
+		// poll-4 should be removed since poll_4 is empty, so don't test it
+
+		// Test estimated bar widths
+		assertEquals("50%", $pollWrapper.$("poll-counts-estimated poll-1 bg").style.width, "Estimated Option A bar should be 50% width")
+		assertEquals("25%", $pollWrapper.$("poll-counts-estimated poll-2 bg").style.width, "Estimated Option B bar should be 25% width")
+	},
 }
 
 runTests(path.basename(__filename), Object.values(tests))
