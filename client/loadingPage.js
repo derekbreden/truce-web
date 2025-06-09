@@ -1,11 +1,13 @@
 const loadingPage = (first_render, skip_state, clicked_back) => {
-	if (clicked_back) {
-		$("main-content-wrapper[active]")?.setAttribute("clicked-back", "")
-	} else {
-		$("main-content-wrapper[active]")?.removeAttribute("clicked-back")
+	if (!first_render) {
+		if (clicked_back) {
+			$("main-content-wrapper[active]").setAttribute("clicked-back", "")
+		} else {
+			$("main-content-wrapper[active]").removeAttribute("clicked-back")
+		}
+		$("main-content-wrapper[active]").setAttribute("inactive", "")
+		$("main-content-wrapper[active]").removeAttribute("active")
 	}
-	$("main-content-wrapper[active]")?.setAttribute("inactive", "")
-	$("main-content-wrapper[active]")?.removeAttribute("active")
 	$("body").appendChild(
 		$(
 			`
