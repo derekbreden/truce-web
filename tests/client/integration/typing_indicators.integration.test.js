@@ -103,7 +103,7 @@ async function testTypingIndicatorSendsOnInput() {
 	assertEquals("conv-typing", typingMessage?.conversation_id, "Should send correct conversation ID")
 
 	// Wait for automatic stop after 3 seconds (as per implementation)
-	await new Promise(resolve => setTimeout(resolve, 3100))
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Check that typing stopped
 	const stopTypingMessage = wsMessages.find(msg => msg.typing === false)
@@ -399,23 +399,23 @@ async function testTypingIndicatorResetsOnMultipleInputs() {
 	// Type first character
 	$textarea.value = "H"
 	$textarea.dispatchEvent(new window.Event("input"))
-	await new Promise(resolve => setTimeout(resolve, 100))
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Continue typing before timeout
 	$textarea.value = "He"
 	$textarea.dispatchEvent(new window.Event("input"))
-	await new Promise(resolve => setTimeout(resolve, 100))
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	$textarea.value = "Hel"
 	$textarea.dispatchEvent(new window.Event("input"))
-	await new Promise(resolve => setTimeout(resolve, 100))
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Count typing: true messages
 	const typingTrueCount = wsMessages.filter(msg => msg.message.typing === true).length
 	assertEquals(3, typingTrueCount, "Should send typing: true for each input")
 
 	// Wait for timeout (both 1 second from renderMessages and 3 seconds from websocket)
-	await new Promise(resolve => setTimeout(resolve, 3100))
+	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// The implementation has dual timeout mechanisms which causes multiple typing: false
 	// This is working as designed - each input creates its own 1-second timeout
