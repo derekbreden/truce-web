@@ -1,3 +1,13 @@
+const getPostDisplayMode = () => {
+	return state.path === "/posts" ||
+		state.path === "/posts/all" ||
+		state.path === "/favorites" ||
+		state.path.startsWith("/topic/") ||
+		state.path.startsWith("/user/")
+}
+
+const cloneIcon = (iconName) => $(`icons icon[${iconName}] svg`).cloneNode(true)
+
 const renderPost = (post) => {
 	const note = post.note || ""
 	const note_title = note.slice(0, note.indexOf(" ")).replace(/[^a-z\-]/gi, "")
@@ -5,16 +15,7 @@ const renderPost = (post) => {
 	let $post_body = markdownToElements(post.body)
 	let characters_used = 0
 	let trimmed = false
-	let summary_only = false
-	if (
-		state.path === "/posts" ||
-		state.path === "/posts/all" ||
-		state.path === "/favorites" ||
-		state.path.startsWith("/topic/") ||
-		state.path.startsWith("/user/")
-	) {
-		summary_only = true
-	}
+	const summary_only = getPostDisplayMode()
 	if (summary_only) {
 		$post_body = $post_body.reduce((acc, child) => {
 			characters_used += child.textContent.length
@@ -54,7 +55,7 @@ const renderPost = (post) => {
 				icon[more]
 					$1
 				`,
-				[$("icons icon[more] svg").cloneNode(true)],
+				[cloneIcon("more")],
 			),
 			$(
 				`
@@ -79,7 +80,7 @@ const renderPost = (post) => {
 								`,
 								["/image/" + post.profile_picture_uuid],
 							)
-						: $("icons icon[profile-picture] svg").cloneNode(true),
+						: cloneIcon("profile-picture"),
 					renderName(post.display_name, post.display_name_index),
 					post.user_verified
 						? $(
@@ -87,7 +88,7 @@ const renderPost = (post) => {
 								icon
 									$1
 								`,
-								[$("icons icon[verified] svg").cloneNode(true)],
+								[cloneIcon("verified")],
 							)
 						: [],
 					(post.topics || "")
@@ -103,7 +104,7 @@ const renderPost = (post) => {
 								`,
 								[
 									topic,
-									$(`icons icon[${topic}] svg`).cloneNode(true),
+									cloneIcon(topic),
 									topic[0].toUpperCase() + topic.slice(1),
 								],
 							),
@@ -197,14 +198,14 @@ const renderPost = (post) => {
 				[
 					post.favorited,
 					post.favorited
-						? $("icons icon[favorited] svg").cloneNode(true)
-						: $("icons icon[favorites] svg").cloneNode(true),
+						? cloneIcon("favorited")
+						: cloneIcon("favorites"),
 					post.favorite_count,
 					post.replyed
-						? $("icons icon[replyed] svg").cloneNode(true)
-						: $("icons icon[reply] svg").cloneNode(true),
+						? cloneIcon("replyed")
+						: cloneIcon("reply"),
 					post.reply_count,
-					$("icons icon[forward] svg").cloneNode(true),
+					cloneIcon("forward"),
 				],
 			),
 		],
@@ -223,6 +224,11 @@ const renderPost = (post) => {
 		})
 	})
 	if (post.poll_1) {
+		const calculatePercentages = (votes) => {
+			const total = votes.reduce((sum, count) => sum + count, 0)
+			return total > 0 ? votes.map(count => Math.round((count / total) * 100)) : votes.map(() => 0)
+		}
+
 		const updatePollDisplay = (type, percentages) => {
 			percentages.forEach((percent, index) => {
 				const option_num = index + 1
@@ -231,34 +237,15 @@ const renderPost = (post) => {
 			})
 		}
 
-		const counts_actual = post.poll_counts.split(",")
-		const votes_1 = Number(counts_actual[0] || 0)
-		const votes_2 = Number(counts_actual[1] || 0)
-		const votes_3 = Number(counts_actual[2] || 0)
-		const votes_4 = Number(counts_actual[3] || 0)
-		const votes_sum = votes_1 + votes_2 + votes_3 + votes_4
+		const actual_votes = post.poll_counts.split(",").map(count => Number(count || 0))
+		const actual_total = actual_votes.reduce((sum, count) => sum + count, 0)
 		$post.$("p[results][actual]").innerText =
-			`Actual results: (${votes_sum} ${votes_sum === 1 ? `vote` : `votes`})`
-		const actual_percentages = [
-			Math.round((votes_1 / votes_sum) * 100) || 0,
-			Math.round((votes_2 / votes_sum) * 100) || 0,
-			Math.round((votes_3 / votes_sum) * 100) || 0,
-			Math.round((votes_4 / votes_sum) * 100) || 0
-		]
+			`Actual results: (${actual_total} ${actual_total === 1 ? `vote` : `votes`})`
+		const actual_percentages = calculatePercentages(actual_votes)
 		updatePollDisplay("actual", actual_percentages)
 
-		const counts_estimated = post.poll_counts_estimated.split(",")
-		const est_votes_1 = Number(counts_estimated[0] || 0)
-		const est_votes_2 = Number(counts_estimated[1] || 0)
-		const est_votes_3 = Number(counts_estimated[2] || 0)
-		const est_votes_4 = Number(counts_estimated[3] || 0)
-		const est_votes_sum = est_votes_1 + est_votes_2 + est_votes_3 + est_votes_4
-		const estimated_percentages = [
-			Math.round((est_votes_1 / est_votes_sum) * 100),
-			Math.round((est_votes_2 / est_votes_sum) * 100),
-			Math.round((est_votes_3 / est_votes_sum) * 100),
-			Math.round((est_votes_4 / est_votes_sum) * 100)
-		]
+		const estimated_votes = post.poll_counts_estimated.split(",").map(count => Number(count || 0))
+		const estimated_percentages = calculatePercentages(estimated_votes)
 		updatePollDisplay("estimated", estimated_percentages)
 		const savePollChoice = (poll_choice) => {
 			$post.$("poll-vote-wrapper").replaceWith(
@@ -363,10 +350,10 @@ const renderPost = (post) => {
 				modal-bg
 			`,
 			[
-				$("icons icon[edit] svg").cloneNode(true),
-				$("icons icon[share] svg").cloneNode(true),
-				$("icons icon[flag] svg").cloneNode(true),
-				$("icons icon[block] svg").cloneNode(true),
+				cloneIcon("edit"),
+				cloneIcon("share"),
+				cloneIcon("flag"),
+				cloneIcon("block"),
 			],
 		)
 		const moreModalCancel = () => {
@@ -400,7 +387,7 @@ const renderPost = (post) => {
 						p This will hide all content from this user.
 						p This action cannot be undone.
 						`,
-						[$("icons icon[block] svg").cloneNode(true)],
+						[cloneIcon("block")],
 					),
 					() => {
 						markBlocked(post)
@@ -440,7 +427,7 @@ const renderPost = (post) => {
 					p This will hide this post for everyone.
 					p This action cannot be undone.
 					`,
-					[$("icons icon[flag] svg").cloneNode(true)],
+					[cloneIcon("flag")],
 				),
 				() => {
 					markFlagged(post)
