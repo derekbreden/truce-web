@@ -373,6 +373,37 @@ When working on tasks in this codebase, follow this workflow:
 - **ALWAYS create a commit after tests pass** with a descriptive message about what was changed
 - The user handles pushing to remote - you should only commit locally
 
+### CRITICAL: Test-First Refactoring Workflow
+
+When refactoring or cleaning up existing code that lacks tests:
+
+1. **Write comprehensive tests FIRST** that exercise the functionality you're about to change
+2. **Ensure ALL tests pass completely** with the original code - no failures, no exceptions, no "this will probably work"
+3. **Only then** make your refactoring changes
+4. **Verify tests still pass with identical results** after your changes
+5. **Any test failure means your refactoring broke something** - fix the code, not the test
+
+**Example of WRONG workflow (what NOT to do):**
+```
+❌ Write test for markdownToElements function
+❌ See test has 13 passes, 2 failures
+❌ "Oh those failures are probably just test issues, not real problems"
+❌ Apply refactoring changes anyway
+❌ Run test again, still has failures, assume refactoring worked
+```
+
+**Example of CORRECT workflow:**
+```
+✅ Write comprehensive test for markdownToElements function
+✅ Fix test data and assertions until ALL tests pass (e.g. add missing line breaks for lists)
+✅ Verify 100% pass rate with original code
+✅ Apply refactoring changes (remove comments, modernize syntax, etc.)
+✅ Run tests again - must have identical results (same number of passes, zero failures)
+✅ If any test fails after refactoring, the refactoring broke something - fix the code
+```
+
+**The test is your contract:** If the test doesn't pass 100% before your changes, you have no way to verify that your changes preserved functionality. Test failures are not "probably fine" - they indicate real problems that must be fixed before proceeding.
+
 ### Test Coverage Requirements
 **Every new feature must include:**
 - Integration tests covering the complete user workflow from UI interaction to final state
