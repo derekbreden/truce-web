@@ -56,35 +56,27 @@ const toggleFavorite = async (post_or_reply) => {
 
 	// Update the current DOM
 	const $element = post_or_reply.$post || post_or_reply.$reply
-	if ($element) {
-		const $favoritesDetail = $element.$(":scope > [detail-wrapper] detail[favorites]")
-		if ($favoritesDetail) {
-			if (post_or_reply.favorited) {
-				$favoritesDetail.setAttribute("favorited", "")
-			} else {
-				$favoritesDetail.removeAttribute("favorited")
-			}
-		}
-		const $favoritesSvg = $element.$(":scope > [detail-wrapper] detail[favorites] svg")
-		if ($favoritesSvg) {
-			$favoritesSvg.replaceWith(
-				post_or_reply.favorited
-					? $("icons icon[favorited] svg").cloneNode(true)
-					: $("icons icon[favorites] svg").cloneNode(true),
-			)
-		}
-		const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
-		if ($favoritesP) {
-			$favoritesP.replaceWith(
-				$(
-					`
-				p $1
-				`,
-					[post_or_reply.favorite_count],
-				),
-			)
-		}
+	const $favoritesDetail = $element.$(":scope > [detail-wrapper] detail[favorites]")
+	if (post_or_reply.favorited) {
+		$favoritesDetail.setAttribute("favorited", "")
+	} else {
+		$favoritesDetail.removeAttribute("favorited")
 	}
+	const $favoritesSvg = $element.$(":scope > [detail-wrapper] detail[favorites] svg")
+	$favoritesSvg.replaceWith(
+		post_or_reply.favorited
+			? $("icons icon[favorited] svg").cloneNode(true)
+			: $("icons icon[favorites] svg").cloneNode(true),
+	)
+	const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
+	$favoritesP.replaceWith(
+		$(
+			`
+		p $1
+		`,
+			[post_or_reply.favorite_count],
+		),
+	)
 
 	// Alert the user to the change
 	if (was_favorited) {
