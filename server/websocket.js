@@ -114,40 +114,32 @@ module.exports = {
 		})
 	},
 	sendMessage(message, post_id) {
-		console.log(`Found ${Object.keys(this.ws_active).length} total clients`)
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (
 				!this.ws_active[ws_uuid].active_post_id ||
 				this.ws_active[ws_uuid].active_post_id === post_id
 			) {
-				console.log(`Sending message to ${ws_uuid} for ${post_id}`)
 				this.ws_active[ws_uuid].send(message)
 			}
 		})
 	},
 	sendMessageToConversation(message, conversation_id) {
-		console.log(`Found ${Object.keys(this.ws_active).length} total clients`)
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (this.ws_active[ws_uuid].active_conversation_id === conversation_id) {
-				console.log(`Sending message to ${ws_uuid} for conversation ${conversation_id}`)
 				this.ws_active[ws_uuid].send(message)
 			}
 		})
 	},
 	sendMessageToUser(message, user_id) {
-		console.log(`Found ${Object.keys(this.ws_active).length} total clients`)
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (this.ws_active[ws_uuid].user_id === user_id) {
-				console.log(`Sending message to ${ws_uuid} for user ${user_id}`)
 				this.ws_active[ws_uuid].send(message)
 			}
 		})
 	},
 	sendMessageToUsers(message, user_ids) {
-		console.log(`Found ${Object.keys(this.ws_active).length} total clients`)
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (user_ids.includes(this.ws_active[ws_uuid].user_id)) {
-				console.log(`Sending message to ${ws_uuid} for users ${user_ids.join(', ')}`)
 				this.ws_active[ws_uuid].send(message)
 			}
 		})

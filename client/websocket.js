@@ -2,40 +2,28 @@ const reconnectWs = () => {
 	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
 	state.ws = new WebSocket(`${protocol}//${window.location.host}`)
 	state.ws.addEventListener("message", (event) => {
-		if (event?.data === "UPDATE") {
+		if (event.data === "UPDATE") {
 			getMoreRecent()
-		} else if (event?.data === "MESSAGE_UPDATE") {
-			// Reload current conversation if we're viewing messages
+		} else if (event.data === "MESSAGE_UPDATE") {
 			if (state.path.startsWith("/messages/")) {
 				getMoreRecent()
 			}
-		} else if (event?.data === "CONVERSATION_UPDATE") {
-			// Reload conversations list if we're viewing it
+		} else if (event.data === "CONVERSATION_UPDATE") {
 			if (state.path === "/conversations") {
 				getMoreRecent()
 			}
 		} else {
-			// Handle JSON messages (like typing indicators)
-			try {
-				const data = JSON.parse(event.data)
-				if (data.type === "TYPING_INDICATOR") {
-					handleTypingIndicator(data)
-				}
-			} catch (e) {
-				// Not JSON, ignore
+			const data = JSON.parse(event.data)
+			if (data.type === "TYPING_INDICATOR") {
+				handleTypingIndicator(data)
 			}
 		}
 	})
 	state.ws.addEventListener("open", () => {
-		// Tell the websocket we are on a new path and send user_id for messaging
-		try {
-			state.ws.send(JSON.stringify({ 
-				path: state.path,
-				user_id: state.user_id 
-			}))
-		} catch (e) {
-			console.error(e)
-		}
+		state.ws.send(JSON.stringify({ 
+			path: state.path,
+			user_id: state.user_id 
+		}))
 	})
 	state.ws.addEventListener("close", (event) => {
 		state.ws.close()
@@ -47,14 +35,10 @@ reconnectWs()
 // Update WebSocket when path changes
 const updateWebSocketPath = (newPath) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-		try {
-			state.ws.send(JSON.stringify({ 
-				path: newPath,
-				user_id: state.user_id 
-			}))
-		} catch (e) {
-			console.error(e)
-		}
+		state.ws.send(JSON.stringify({ 
+			path: newPath,
+			user_id: state.user_id 
+		}))
 	}
 }
 
@@ -96,21 +80,16 @@ const handleTypingIndicator = (data) => {
 let typingTimeout
 const sendTypingIndicator = (isTyping, conversationId) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN && conversationId) {
-		try {
-			state.ws.send(JSON.stringify({
-				typing: isTyping,
-				conversation_id: conversationId
-			}))
-			
-			// Auto-stop typing after 3 seconds of inactivity
-			if (isTyping) {
-				clearTimeout(typingTimeout)
-				typingTimeout = setTimeout(() => {
-					sendTypingIndicator(false, conversationId)
-				}, 3000)
-			}
-		} catch (e) {
-			console.error(e)
+		state.ws.send(JSON.stringify({
+			typing: isTyping,
+			conversation_id: conversationId
+		}))
+		
+		if (isTyping) {
+			clearTimeout(typingTimeout)
+			typingTimeout = setTimeout(() => {
+				sendTypingIndicator(false, conversationId)
+			}, 3000)
 		}
 	}
 }
