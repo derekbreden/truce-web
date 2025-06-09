@@ -35,7 +35,7 @@ const mockAI = {
 		
 		// Default responses based on type
 		if (type === 'topics') {
-			return JSON.stringify({ topics: ['general', 'technology'] })
+			return JSON.stringify({ topics: ['general', 'technology'] }) // Match the topics in testSuccessfulPostCreation
 		} else if (type === 'poll_estimate') {
 			return JSON.stringify({ 
 				response_rate: 0.5, 
@@ -298,6 +298,18 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
+		// Mock AI to return empty topics (no topics database in this test)
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: [] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
+		
 		// Setup mock request for poll post
 		const req = createMockRequest(
 			{ 
@@ -391,6 +403,18 @@ const tests = {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
+		
+		// Mock AI to return empty topics (no topics database in this test)
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: [] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
 		
 		// Setup mock request for post update
 		const req = createMockRequest(
@@ -562,6 +586,18 @@ const tests = {
 		s3SendCalls = []
 		aiAskCalls = []
 		
+		// Mock AI to return empty topics (no topics database in this test)
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: [] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
+		
 		// Setup mock request with title needing slug processing
 		const req = createMockRequest(
 			{ 
@@ -604,6 +640,18 @@ const tests = {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
+		
+		// Mock AI to return empty topics (no topics database in this test)
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: [] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -729,7 +777,7 @@ const tests = {
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
 			if (type === 'topics') {
-				return JSON.stringify({ topics: ['general'] })
+				return JSON.stringify({ topics: [] })
 			} else if (type === 'poll_estimate') {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -805,7 +853,7 @@ const tests = {
 		mockAI.ask = async (messages, type, format) => {
 			aiAskCalls.push({ messages, type, format })
 			if (type === 'topics') {
-				return JSON.stringify({ topics: ['general'] })
+				return JSON.stringify({ topics: [] })
 			} else if (type === 'poll_estimate') {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -935,6 +983,18 @@ const tests = {
 		// Reset all calls
 		s3SendCalls = []
 		aiAskCalls = []
+		
+		// Mock AI to return empty topics (no topics database in this test)
+		mockAI.ask = async (messages, type, format) => {
+			aiAskCalls.push({ messages, type, format })
+			if (type === 'topics') {
+				return JSON.stringify({ topics: [] })
+			} else if (type === 'poll_estimate') {
+				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
+			} else {
+				return JSON.stringify({ keyword: "OK" })
+			}
+		}
 		
 		// Setup mock request for poll post update
 		const req = createMockRequest(

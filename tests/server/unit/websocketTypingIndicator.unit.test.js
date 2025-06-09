@@ -11,7 +11,6 @@ const createMockWebSocketModule = () => {
 			}
 		},
 		sendTypingIndicator(isTyping, conversation_id, from_user_id) {
-			console.log(`Sending typing indicator (${isTyping}) for conversation ${conversation_id} from user ${from_user_id}`)
 			Object.keys(this.ws_active).forEach((ws_uuid) => {
 				// Send to users viewing this conversation, but not the sender
 				if (this.ws_active[ws_uuid].active_conversation_id === conversation_id && 
