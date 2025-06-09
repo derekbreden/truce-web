@@ -276,6 +276,16 @@ state.ws.dispatchEvent(new MessageEvent("message", { data: "UPDATE" }))
 state.ws.triggerMessage("UPDATE")
 ```
 
+**setTimeout in Tests**: The JSDOM environment mocks setTimeout for client-side code:
+```javascript
+// In test code itself - these have real delays
+await new Promise(resolve => setTimeout(resolve, 100)) // Actually waits 100ms
+
+// But client-side timeouts (renderMessages.js, websocket.js) execute immediately in JSDOM
+// So typing indicator timeouts, auto-refresh timers, etc. fire synchronously in tests
+sendTypingIndicator(true, conversationId) // The 3-second timeout inside fires immediately
+```
+
 **getMoreRecent() Response Handling**: Ensure all data types are handled in startSession.js:
 ```javascript
 // The getMoreRecent() function in startSession.js must handle all response data types
@@ -326,6 +336,27 @@ When working on tasks in this codebase, follow this workflow:
 - **One variable at a time** - Change only the thing you're testing
 - **Hypothesis-driven** - Form specific theories ("CockroachDB doesn't like ISO strings") and test them
 - **Avoid cargo cult debugging** - Don't add logging everywhere, guard assertions, or "comprehensive" edge case testing before understanding the core issue
+
+### WebSocket Race Condition Patterns
+WebSocket connections can be deleted while message processing is still accessing them:
+
+```javascript
+// ❌ WRONG: Direct property access without checking existence
+delete this.ws_active[ws_uuid].active_post_id
+
+// ✅ CORRECT: Guard against deleted connections
+if (this.ws_active[ws_uuid]) {
+  delete this.ws_active[ws_uuid].active_post_id
+}
+
+// ✅ BETTER: Helper function for safe cleanup
+clearConnectionProperties(ws_uuid) {
+  if (this.ws_active[ws_uuid]) {
+    delete this.ws_active[ws_uuid].active_post_id
+    delete this.ws_active[ws_uuid].active_conversation_id
+  }
+}
+```
 
 ## Anti-Patterns to Avoid
 - **Debugging by addition** - Adding logging, complexity, or "safety" before understanding the problem
