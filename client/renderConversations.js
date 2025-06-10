@@ -68,10 +68,8 @@ const renderConversations = (conversations) => {
 			$("main-content-wrapper[active] main-content conversations").appendChild(
 				$(
 					`
-					empty-state
-						icon mail
-						h3 No conversations yet
-						p Start a conversation by messaging someone from their profile
+					all-clear-wrapper
+						p Nothing to see here
 					`
 				)
 			)

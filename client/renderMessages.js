@@ -135,10 +135,8 @@ const renderMessages = (messages, conversation) => {
 			$("main-content-wrapper[active] messages").replaceChildren(
 				$(
 					`
-					empty-state
-						icon mail
-						h3 No messages yet
-						p Start the conversation by typing a message below
+					all-clear-wrapper
+						p Nothing to see here
 					`
 				)
 			)

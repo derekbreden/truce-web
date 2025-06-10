@@ -150,7 +150,7 @@ async function testNavigateToSpecificMessage() {
 	assertEquals("/messages/conv-456", state.path, "Should navigate to specific message thread")
 
 	// Verify empty state is displayed (tests our replaceChildren fix)
-	assertEquals("empty-state", $("main-content-wrapper[active] empty-state").tagName.toLowerCase(), "Empty state should be displayed for empty conversation")
+	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed for empty conversation")
 
 	// Verify message interface exists
 	assertEquals("textarea", $("main-content-wrapper[active] textarea").tagName.toLowerCase(), "Message input should exist")
@@ -286,7 +286,7 @@ async function testMessageSendingFlow() {
 	assertEquals("/messages/conv-send", state.path, "Should be on message thread page")
 
 	// Verify empty state shows initially  
-	assertEquals("empty-state", $("main-content-wrapper[active] empty-state").tagName.toLowerCase(), "Empty state should be displayed initially")
+	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed initially")
 
 	// Type a message and send it
 	const $textarea = $("main-content-wrapper[active] textarea")
