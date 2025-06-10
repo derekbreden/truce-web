@@ -227,46 +227,13 @@ When working on tasks:
 - Eliminate ceremony, boilerplate, and "just in case" code
 - Prefer failures that give actionable information
 
-## DRY vs Readability Guidelines
+## DRY vs Readability
 
-### When to Abstract (DRY Principle)
-**Apply abstraction when ALL criteria are met:**
-1. **Significant duplication**: 20+ lines or complex logic repeated
-2. **Identical behavior**: Same inputs, same outputs, same side effects
-3. **Clear improvement**: Abstraction makes intent clearer, not more obscure
-4. **Multiple instances**: Used 3+ times (2 times is questionable)
+**Abstract when:** 20+ lines repeated identically 3+ times AND abstraction is clearer than original
 
-**Examples of good abstraction:**
-- `calculatePercentages()` - Pure math function, reusable, testable
-- `cloneIcon(name)` - Eliminates 20+ character verbose selectors
-- Path parsing array - 5 identical blocks to 1 clear check
+**Keep duplication when:** Functions serve different purposes, used only twice, or abstraction adds complexity
 
-### When to Keep Duplication (Readability Priority)
-**Avoid abstraction when ANY apply:**
-1. **Functions have different purposes** despite similar code
-2. **Abstraction adds indirection** without clear benefit
-3. **Configuration complexity** exceeds the original duplication
-4. **Used only twice** and each instance is clear on its own
-
-**Examples where duplication is better:**
-- `modalInfo` vs `modalError` - Similar structure but different purposes
-- Cache update patterns with different filtering/insertion logic
-- Queue management with action-specific behaviors
-
-### Red Flags for Bad Abstraction
-- Parameter objects with 5+ properties to handle variations
-- Conditional logic inside abstraction to handle different use cases
-- Function names that don't clearly indicate what they do
-- Abstractions that require documentation to understand
-
-### The Test: "Is this more readable?"
-Before abstracting, ask:
-- Can a new developer understand what this does in 10 seconds?
-- Does the abstraction name clearly convey its purpose?
-- Would I rather debug the abstracted or original version?
-- Does this reduce cognitive load or increase it?
-
-**Remember:** Duplication is not inherently evil. Sometimes two similar things should remain separate because they serve different purposes or may evolve differently.
+**The test:** Would you rather debug the abstracted or original version?
 
 ## Key Files
 - `index.js`: Application entry point
