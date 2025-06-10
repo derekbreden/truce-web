@@ -16,7 +16,7 @@ process.env.VAPID_PRIVATE_KEY = "test-vapid-private-key"
 
 // Mock S3 client (external dependency)
 let s3_send_calls = []
-const mockS3Client = {
+const mock_s3_client = {
 	send: async (command) => {
 		s3_send_calls.push(command)
 		// Simulate different S3 responses based on command type
@@ -33,11 +33,11 @@ const mockS3Client = {
 }
 
 // Replace AWS S3 client in require cache
-const awsS3Path = require.resolve("@aws-sdk/client-s3")
-delete require.cache[awsS3Path]
-require.cache[awsS3Path] = {
+const aws_s3_path = require.resolve("@aws-sdk/client-s3")
+delete require.cache[aws_s3_path]
+require.cache[aws_s3_path] = {
 	exports: {
-		S3Client: function() { return mockS3Client },
+		S3Client: function() { return mock_s3_client },
 		GetObjectCommand: function(params) {
 			this.input = params
 			this.commandType = "GetObject"
@@ -52,12 +52,12 @@ require.cache[awsS3Path] = {
 		}
 	},
 	loaded: true,
-	id: awsS3Path
+	id: aws_s3_path
 }
 
 // Mock AI module (internal dependency - use real one but control responses)
 let ai_ask_calls = []
-const mockAI = {
+const mock_ai = {
 	ask: async (messages, type, format) => {
 		ai_ask_calls.push({ messages, type, format })
 		// Default to OK for content moderation
@@ -66,39 +66,39 @@ const mockAI = {
 }
 
 // Replace AI module in require cache
-const aiPath = require.resolve("../../../server/ai")
-delete require.cache[aiPath]
-require.cache[aiPath] = {
-	exports: mockAI,
+const ai_path = require.resolve("../../../server/ai")
+delete require.cache[ai_path]
+require.cache[ai_path] = {
+	exports: mock_ai,
 	loaded: true,
-	id: aiPath
+	id: ai_path
 }
 
 // Mock crypto.randomUUID
 let mock_uuid_result = "test-uuid-123"
-const mockCrypto = {
+const mock_crypto = {
 	randomUUID: () => mock_uuid_result
 }
 
 // Clear and replace node:crypto in require cache
-const nodeCryptoPath = "node:crypto"
-const cryptoPath = require.resolve("crypto")
-delete require.cache[nodeCryptoPath]
-delete require.cache[cryptoPath]
-require.cache[nodeCryptoPath] = {
-	exports: mockCrypto,
+const node_crypto_path = "node:crypto"
+const crypto_path = require.resolve("crypto")
+delete require.cache[node_crypto_path]
+delete require.cache[crypto_path]
+require.cache[node_crypto_path] = {
+	exports: mock_crypto,
 	loaded: true,
-	id: nodeCryptoPath
+	id: node_crypto_path
 }
-require.cache[cryptoPath] = {
-	exports: mockCrypto,
+require.cache[crypto_path] = {
+	exports: mock_crypto,
 	loaded: true,
-	id: cryptoPath
+	id: crypto_path
 }
 
 // Mock web-push (external dependency)
 let web_push_calls = []
-const mockWebPush = {
+const mock_web_push = {
 	setVapidDetails: () => {},
 	sendNotification: async (subscription, payload) => {
 		web_push_calls.push({ subscription, payload })
@@ -107,57 +107,57 @@ const mockWebPush = {
 }
 
 // Replace web-push in require cache
-const webPushPath = require.resolve("web-push")
-delete require.cache[webPushPath]
-require.cache[webPushPath] = {
-	exports: mockWebPush,
+const web_push_path = require.resolve("web-push")
+delete require.cache[web_push_path]
+require.cache[web_push_path] = {
+	exports: mock_web_push,
 	loaded: true,
-	id: webPushPath
+	id: web_push_path
 }
 
 // Mock Firebase Admin (external dependency)
 let fcm_send_calls = []
-const mockFCMMessaging = {
+const mock_fcm_messaging = {
 	send: async (message) => {
 		fcm_send_calls.push(message)
 		return "fcm-message-id-123"
 	}
 }
 
-const mockFirebaseAdmin = {
+const mock_firebase_admin = {
 	credential: {
 		cert: () => ({})
 	}
 }
 
-const mockFirebaseApp = {
+const mock_firebase_app = {
 	initializeApp: () => ({}),
-	getMessaging: () => mockFCMMessaging
+	getMessaging: () => mock_fcm_messaging
 }
 
 // Replace Firebase modules in require cache
-const firebaseAdminPath = require.resolve("firebase-admin")
-const firebaseAppPath = require.resolve("firebase-admin/app")
-const firebaseMessagingPath = require.resolve("firebase-admin/messaging")
+const firebase_admin_path = require.resolve("firebase-admin")
+const firebase_app_path = require.resolve("firebase-admin/app")
+const firebase_messaging_path = require.resolve("firebase-admin/messaging")
 
-delete require.cache[firebaseAdminPath]
-delete require.cache[firebaseAppPath]
-delete require.cache[firebaseMessagingPath]
+delete require.cache[firebase_admin_path]
+delete require.cache[firebase_app_path]
+delete require.cache[firebase_messaging_path]
 
-require.cache[firebaseAdminPath] = {
-	exports: mockFirebaseAdmin,
+require.cache[firebase_admin_path] = {
+	exports: mock_firebase_admin,
 	loaded: true,
-	id: firebaseAdminPath
+	id: firebase_admin_path
 }
-require.cache[firebaseAppPath] = {
-	exports: mockFirebaseApp,
+require.cache[firebase_app_path] = {
+	exports: mock_firebase_app,
 	loaded: true,
-	id: firebaseAppPath
+	id: firebase_app_path
 }
-require.cache[firebaseMessagingPath] = {
-	exports: mockFirebaseApp,
+require.cache[firebase_messaging_path] = {
+	exports: mock_firebase_app,
 	loaded: true,
-	id: firebaseMessagingPath
+	id: firebase_messaging_path
 }
 
 // Track updateDisplayName calls by monitoring for its specific database query
@@ -172,8 +172,8 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Clear the handler cache and import it after setting up mocks
-const saveReplyPath = require.resolve("../../../server/session/saveReply.js")
-delete require.cache[saveReplyPath]
+const save_reply_path = require.resolve("../../../server/session/saveReply.js")
+delete require.cache[save_reply_path]
 
 // Import the handler we"re testing (after mocking everything)
 const saveReply = require("../../../server/session/saveReply.js")
@@ -590,7 +590,7 @@ const tests = {
 		update_display_name_calls = []
 		
 		// Mock AI to return Spam
-		mockAI.ask = async (messages, type, format) => {
+		mock_ai.ask = async (messages, type, format) => {
 			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Spam",
@@ -669,7 +669,7 @@ const tests = {
 		)
 		
 		// Reset AI mock for other tests
-		mockAI.ask = async (messages, type, format) => {
+		mock_ai.ask = async (messages, type, format) => {
 			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -684,7 +684,7 @@ const tests = {
 		update_display_name_calls = []
 		
 		// Mock AI to return flagged content
-		mockAI.ask = async (messages, type, format) => {
+		mock_ai.ask = async (messages, type, format) => {
 			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Inappropriate",
@@ -780,7 +780,7 @@ const tests = {
 		)
 		
 		// Reset AI mock
-		mockAI.ask = async (messages, type, format) => {
+		mock_ai.ask = async (messages, type, format) => {
 			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -1135,16 +1135,16 @@ const tests = {
 // Restore original functions after tests
 const cleanup = () => {
 	// Restore original modules
-	delete require.cache[awsS3Path]
-	delete require.cache[aiPath]
-	delete require.cache[nodeCryptoPath]
-	delete require.cache[cryptoPath]
-	delete require.cache[webPushPath]
-	delete require.cache[firebaseAdminPath]
-	delete require.cache[firebaseAppPath]
-	delete require.cache[firebaseMessagingPath]
+	delete require.cache[aws_s3_path]
+	delete require.cache[ai_path]
+	delete require.cache[node_crypto_path]
+	delete require.cache[crypto_path]
+	delete require.cache[web_push_path]
+	delete require.cache[firebase_admin_path]
+	delete require.cache[firebase_app_path]
+	delete require.cache[firebase_messaging_path]
 	// updateDisplayNamePath was removed
-	delete require.cache[saveReplyPath]
+	delete require.cache[save_reply_path]
 }
 
 runTests(path.basename(__filename), Object.values(tests))

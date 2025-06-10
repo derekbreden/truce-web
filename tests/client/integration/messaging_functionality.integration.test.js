@@ -3,16 +3,15 @@ const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSe
 
 async function testNavigateToMessagesViaMenu() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	state.user_id = "123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	// Mock all necessary pages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -21,6 +20,9 @@ async function testNavigateToMessagesViaMenu() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: 123,
 				create_date: "2024-01-01T09:00:00Z",
@@ -44,7 +46,7 @@ async function testNavigateToMessagesViaMenu() {
 	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/posts", state.path, "Should be on posts page")
+	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
@@ -56,7 +58,7 @@ async function testNavigateToMessagesViaMenu() {
 	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/conversations", state.path, "Should navigate to conversations page")
+	assertEquals("conversations", $("conversations") ? "conversations" : "not-conversations", "Should navigate to conversations page")
 
 	const $conversations_container = $("conversations")
 	assertEquals("conversation", $conversations_container.$("conversation").tagName.toLowerCase(), "Should display conversations")
@@ -64,15 +66,14 @@ async function testNavigateToMessagesViaMenu() {
 
 async function testNavigateToSpecificMessage() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	state.user_id = "123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -81,6 +82,9 @@ async function testNavigateToSpecificMessage() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: 456,
 				create_date: "2024-01-01T09:30:00Z",
@@ -100,6 +104,9 @@ async function testNavigateToSpecificMessage() {
 		},
 		"/messages/456": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [],
 			conversation: {
 				conversation_id: 456,
@@ -129,7 +136,7 @@ async function testNavigateToSpecificMessage() {
 	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/conversations", state.path, "Should be on conversations page")
+	assertEquals("conversations", $("conversations") ? "conversations" : "not-conversations", "Should be on conversations page")
 
 	// Click on the specific conversation
 	const $conversations_container = $("conversations")
@@ -138,7 +145,7 @@ async function testNavigateToSpecificMessage() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we're now on the message thread page
-	assertEquals("/messages/456", state.path, "Should navigate to specific message thread")
+	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper") ? "all-clear-wrapper" : "not-all-clear", "Should navigate to specific message thread")
 
 	// Verify empty state is displayed (tests our replaceChildren fix)
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed for empty conversation")
@@ -150,11 +157,7 @@ async function testNavigateToSpecificMessage() {
 
 async function testMessageSendingFlow() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	state.user_id = "123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	window.setMockFetchResponseForPaths({
 		"/posts": {

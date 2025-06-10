@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate successful S3 operations
 		return { $metadata: { httpStatusCode: 200 } }
 	}
@@ -16,11 +16,11 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -28,10 +28,10 @@ require.cache[awsS3Path] = {
 }
 
 // Mock AI module (internal dependency - use real one)
-let aiAskCalls = []
+let ai_ask_calls = []
 const mockAI = {
 	ask: async (messages, type, format) => {
-		aiAskCalls.push({ messages, type, format })
+		ai_ask_calls.push({ messages, type, format })
 		// Return OK by default, can be overridden per test
 		return JSON.stringify({ keyword: "OK" })
 	}
@@ -47,9 +47,9 @@ require.cache[aiPath] = {
 }
 
 // Mock crypto.randomUUID by replacing the node:crypto module
-let mockUuidResult = 'test-uuid-123'
+let mock_uuid_result = "test-uuid-123"
 const mockCrypto = {
-	randomUUID: () => mockUuidResult
+	randomUUID: () => mock_uuid_result
 }
 
 // Clear and replace node:crypto in require cache
@@ -89,12 +89,12 @@ const prompts = require("../../../server/prompts.js")
 const tests = {
 	testSuccessfulProfilePictureUpload: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -112,7 +112,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -122,12 +122,12 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
 		// Set specific UUID for this test
-		mockUuidResult = 'new-picture-uuid-789'
+		mock_uuid_result = "new-picture-uuid-789"
 		
 		const res = createMockResponse()
 		
@@ -137,87 +137,87 @@ const tests = {
 		// Verify AI was called with correct parameters
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI once for moderation."
 		)
 		
-		const aiCall = aiAskCalls[0]
+		const ai_call = ai_ask_calls[0]
 		assertEquals(
 			'profile_picture',
-			aiCall.type,
+			ai_call.type,
 			"Should use profile_picture AI type."
 		)
 		assertEquals(
 			prompts.profile_picture_response_format,
-			aiCall.format,
+			ai_call.format,
 			"Should use correct prompt format."
 		)
 		assertEquals(
 			1,
-			aiCall.messages.length,
+			ai_call.messages.length,
 			"Should send one message to AI."
 		)
 		assertEquals(
 			'TestUser',
-			aiCall.messages[0].name,
+			ai_call.messages[0].name,
 			"Should sanitize display name for AI."
 		)
 		assertEquals(
 			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-			aiCall.messages[0].content[0].image_url.url,
+			ai_call.messages[0].content[0].image_url.url,
 			"Should pass profile picture to AI."
 		)
 		
 		// Verify S3 operations
 		assertEquals(
 			2,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform 2 S3 operations: upload new, delete old."
 		)
 		
 		// Check upload command
-		const uploadCommand = s3SendCalls[0]
+		const upload_command = s3_send_calls[0]
 		assertEquals(
 			'PutObject',
-			uploadCommand.commandType,
+			upload_command.commandType,
 			"First command should be upload."
 		)
 		assertEquals(
 			'truce.net',
-			uploadCommand.input.Bucket,
+			upload_command.input.Bucket,
 			"Should upload to correct bucket."
 		)
 		assertEquals(
 			true,
-			uploadCommand.input.Key.endsWith('.png'),
+			upload_command.input.Key.endsWith('.png'),
 			"Should use .png extension for upload key."
 		)
 		assertEquals(
 			true,
-			uploadCommand.input.Key.length === 40, // UUID (36) + '.png' (4)
+			upload_command.input.Key.length === 40, // UUID (36) + '.png' (4)
 			"Should use UUID format for upload key."
 		)
 		assertEquals(
 			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-			uploadCommand.input.Body,
+			upload_command.input.Body,
 			"Should upload the profile picture data."
 		)
 		
 		// Check delete command
-		const deleteCommand = s3SendCalls[1]
+		const delete_command = s3_send_calls[1]
 		assertEquals(
 			'Delete',
-			deleteCommand.commandType,
+			delete_command.commandType,
 			"Second command should be delete."
 		)
 		assertEquals(
 			'truce.net',
-			deleteCommand.input.Bucket,
+			delete_command.input.Bucket,
 			"Should delete from correct bucket."
 		)
 		assertEquals(
 			'old-picture-uuid.png',
-			deleteCommand.input.Key,
+			delete_command.input.Key,
 			"Should delete old picture."
 		)
 		
@@ -243,12 +243,12 @@ const tests = {
 
 	testSpamProfilePictureRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return Spam
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Spam",
 				note: "This appears to be spam content"
@@ -275,14 +275,14 @@ const tests = {
 		// Verify AI was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation."
 		)
 		
 		// Verify no S3 operations were performed
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform any S3 operations for spam."
 		)
 		
@@ -308,12 +308,12 @@ const tests = {
 
 	testViolentProfilePictureRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return Violent
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Violent",
 				note: "This contains violent content"
@@ -340,7 +340,7 @@ const tests = {
 		// Verify no S3 operations
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations for violent content."
 		)
 		
@@ -355,12 +355,12 @@ const tests = {
 
 	testHatefulProfilePictureRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return Hateful
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Hateful",
 				note: "This contains hateful content"
@@ -395,12 +395,12 @@ const tests = {
 
 	testSexualProfilePictureRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return Sexual
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Sexual",
 				note: "This contains sexual content"
@@ -435,12 +435,12 @@ const tests = {
 
 	testNoExistingProfilePicture: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -458,7 +458,7 @@ const tests = {
 		
 		// Setup mock database response with no existing picture
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -468,11 +468,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
-		mockUuidResult = 'first-picture-uuid'
+		mock_uuid_result = "first-picture-uuid"
 		
 		const res = createMockResponse()
 		
@@ -482,24 +482,24 @@ const tests = {
 		// Should only upload, not delete
 		assertEquals(
 			1,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should only perform upload operation when no existing picture."
 		)
 		
-		const uploadCommand = s3SendCalls[0]
+		const upload_command = s3_send_calls[0]
 		assertEquals(
 			'PutObject',
-			uploadCommand.commandType,
+			upload_command.commandType,
 			"Should be upload command."
 		)
 		assertEquals(
 			true,
-			uploadCommand.input.Key.endsWith('.png'),
+			upload_command.input.Key.endsWith('.png'),
 			"Should use .png extension for upload."
 		)
 		assertEquals(
 			true,
-			uploadCommand.input.Key.length === 40, // UUID (36) + '.png' (4)
+			upload_command.input.Key.length === 40, // UUID (36) + '.png' (4)
 			"Should use UUID format for upload."
 		)
 		
@@ -520,12 +520,12 @@ const tests = {
 
 	testDisplayNameSanitization: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -543,7 +543,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -553,7 +553,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
@@ -565,24 +565,24 @@ const tests = {
 		// Verify display name was sanitized in AI call
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI once."
 		)
 		assertEquals(
 			'UserName123',
-			aiAskCalls[0].messages[0].name,
+			ai_ask_calls[0].messages[0].name,
 			"Should sanitize display name removing special characters."
 		)
 	},
 
 	testAnonymousDisplayName: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -600,7 +600,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -610,7 +610,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
@@ -622,15 +622,15 @@ const tests = {
 		// Verify "Anonymous" was used as fallback
 		assertEquals(
 			'Anonymous',
-			aiAskCalls[0].messages[0].name,
+			ai_ask_calls[0].messages[0].name,
 			"Should use 'Anonymous' when no display name."
 		)
 	},
 
 	testNoActionWhenMissingProfilePicture: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request without profile_picture
 		const req = createMockRequest(
@@ -655,20 +655,20 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when profile_picture missing."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not call S3 when profile_picture missing."
 		)
 	},
 
 	testNoActionWhenMissingUserId: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request without user_id
 		const req = createMockRequest(
@@ -695,20 +695,20 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when user_id missing."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not call S3 when user_id missing."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -737,24 +737,24 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when response already ended."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not call S3 when response already ended."
 		)
 	},
 
 	testUuidGeneration: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -773,7 +773,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT profile_picture_uuid',
+				"SELECT profile_picture_uuid",
 				{ 
 					rows: [
 						{
@@ -783,7 +783,7 @@ const tests = {
 				}
 			)
 			req.client.addQueryMock(
-				'UPDATE users',
+				"UPDATE users",
 				{ rows: [] }
 			)
 			
@@ -792,15 +792,15 @@ const tests = {
 			await saveProfilePicture(req, res)
 			
 			// Verify UUID was used in S3 key
-			const lastUploadCommand = s3SendCalls[s3SendCalls.length - 1]
+			const last_upload_command = s3_send_calls[s3_send_calls.length - 1]
 			assertEquals(
 				true,
-				lastUploadCommand.input.Key.endsWith('.png'),
+				last_upload_command.input.Key.endsWith('.png'),
 				`Should use .png extension for iteration ${i}.`
 			)
 			assertEquals(
 				true,
-				lastUploadCommand.input.Key.length === 40,
+				last_upload_command.input.Key.length === 40,
 				`Should use UUID format for iteration ${i}.`
 			)
 			
@@ -816,19 +816,19 @@ const tests = {
 		// Verify all uploads were performed
 		assertEquals(
 			3,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform 3 uploads."
 		)
 	},
 
 	testDatabaseSequence: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Reset AI mock to return OK
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 		
@@ -846,7 +846,7 @@ const tests = {
 		
 		// Setup sequential mock responses
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -856,7 +856,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
@@ -881,17 +881,17 @@ const tests = {
 		// Verify S3 operations were performed in correct order
 		assertEquals(
 			2,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform upload then delete sequence."
 		)
 		assertEquals(
 			'PutObject',
-			s3SendCalls[0].commandType,
+			s3_send_calls[0].commandType,
 			"First operation should be upload."
 		)
 		assertEquals(
 			'Delete',
-			s3SendCalls[1].commandType,
+			s3_send_calls[1].commandType,
 			"Second operation should be delete."
 		)
 	}

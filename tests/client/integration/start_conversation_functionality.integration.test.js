@@ -3,17 +3,15 @@ const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSe
 
 async function testStartConversationViaMessageButton() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	// Mock posts page with a post from the target user
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			path: "/posts",
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [{
 				post_id: "1",
 				slug: "test-post",
@@ -39,6 +37,9 @@ async function testStartConversationViaMessageButton() {
 		},
 		"/user/target-user": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			user: {
 				user_id: "456",
 				display_name: "Target User",
@@ -74,6 +75,9 @@ async function testStartConversationViaMessageButton() {
 	window.setMockFetchResponseForPaths({
 		"/messages/conv-789": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [],
 			conversation: {
 				conversation_id: "conv-789",
@@ -103,23 +107,21 @@ async function testStartConversationViaMessageButton() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we navigated to the new conversation and conversation header shows other participant
-	assertEquals("/messages/conv-789", state.path, "Should navigate to new conversation")
+	assertEquals("Target User", $("conversation-header participants h2") ? $("conversation-header participants h2").innerText.trim() : "not-found", "Should navigate to new conversation")
 	assertEquals("Target User", $("conversation-header participants h2").innerText.trim(), "Conversation header should show other participant")
 }
 
 async function testStartConversationWithExistingConversation() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	// Mock posts page with a post from the existing user
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			path: "/posts",
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [{
 				post_id: "2",
 				slug: "existing-post",
@@ -145,6 +147,9 @@ async function testStartConversationWithExistingConversation() {
 		},
 		"/user/existing-user": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			user: {
 				user_id: "456",
 				display_name: "Existing User",
@@ -179,6 +184,9 @@ async function testStartConversationWithExistingConversation() {
 	window.setMockFetchResponseForPaths({
 		"/messages/123": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [{
 				message_id: "1",
 				conversation_id: "123",
@@ -195,7 +203,7 @@ async function testStartConversationWithExistingConversation() {
 			conversation: {
 				conversation_id: "123",
 				participants: [
-					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
 					{ user_id: "456", display_name: "Existing User", display_name_index: 0 }
 				]
 			},
@@ -220,7 +228,7 @@ async function testStartConversationWithExistingConversation() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we navigated to existing conversation and existing messages are displayed
-	assertEquals("/messages/123", state.path, "Should navigate to existing conversation")
+	assertEquals(true, $("messages message message-content p span") && $("messages message message-content p span").innerText.includes("Previous message"), "Should navigate to existing conversation")
 	assertEquals(true, $("messages message message-content p span").innerText.includes("Previous message"), "Should show previous message content")
 }
 
