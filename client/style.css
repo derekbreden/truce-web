@@ -419,9 +419,6 @@ ol {
   list-style-type: square;
 }
 
-debug {
-  white-space: pre;
-}
 
 header {
   position: fixed;

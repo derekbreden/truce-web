@@ -108,11 +108,6 @@ const alertError = (message) => {
 		[message],
 	)
 	clearTimeout(alert_timeout)
-	$alert.on("click", () => {
-		if (state.most_recent_error) {
-			console.error("Recent error:", state.most_recent_error)
-		}
-	})
 	if ($("alert-wrapper")) {
 		$alert.style.zIndex =
 			(Number($("alert-wrapper alert").length || 1) + 1) * -1
