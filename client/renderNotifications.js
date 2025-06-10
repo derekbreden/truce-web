@@ -31,12 +31,7 @@ const renderNotification = (notification) => {
 
 			// Mark as read
 			if (!notification.read) {
-				fetch("/session", {
-					method: "POST",
-					body: JSON.stringify({
-						mark_as_read: [notification.notification_id],
-					}),
-				})
+				markAsRead(notification.notification_id)
 			}
 		})
 		return $notification
