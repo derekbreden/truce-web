@@ -14,7 +14,7 @@ const renderConversation = (conversation) => {
 		? new Date(conversation.last_message_date).toLocaleString()
 		: new Date(conversation.create_date).toLocaleString()
 
-	const unread_count = parseInt(conversation.unread_count) || 0
+	const unread_count = Number(conversation.unread_count)
 
 	const $conversation = $(
 		`
