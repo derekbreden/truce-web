@@ -1,6 +1,6 @@
 const showMessageModal = (participantUserIds, existingConversationId = null) => {
-	const isNewConversation = !existingConversationId
-	const title = isNewConversation ? "New Message" : "Reply"
+	const is_new_conversation = !existingConversationId
+	const title = is_new_conversation ? "New Message" : "Reply"
 
 	const $modal = $(
 		`
@@ -23,7 +23,7 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 		`,
 		[
 			title,
-			isNewConversation ? $(
+			is_new_conversation ? $(
 				`
 				label To:
 				participants-display
@@ -34,7 +34,7 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 	)
 
 	// Handle new conversation participant display
-	if (isNewConversation && participantUserIds) {
+	if (is_new_conversation && participantUserIds) {
 		// For now, we'll just show the user IDs
 		// In a full implementation, you'd fetch user details
 		$modal.$("participants-display").textContent = `Users: ${participantUserIds.join(", ")}`
@@ -102,7 +102,7 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 		$submitButton.disabled = true
 		$submitButton.textContent = "Sending..."
 
-		if (isNewConversation) {
+		if (is_new_conversation) {
 			// Create conversation first
 			fetch("/session", {
 				method: "POST",
