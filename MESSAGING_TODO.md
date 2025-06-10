@@ -40,33 +40,29 @@
 - **Current**: Only scrolls on initial render in `renderMessages.js:147`
 - **Fix**: Add scroll logic to WebSocket message handler
 
-### 7. Message Edit Missing Conversation ID Fallback
-- **Problem**: `showMessageModal.js:325` uses `state.active_conversation_id` fallback
-- **Risk**: Could fail if state not properly set
-- **Fix**: Pass conversation_id explicitly to edit modal
+### 7. Broken Message Edit Functionality
+- **Problem**: `renderMessages.js:80` calls `showEditMessageModal(message)` but function doesn't exist
+- **Risk**: Clicking edit button causes JavaScript runtime error
+- **Fix**: Either implement `showEditMessageModal()` function or remove edit button
+- **Status**: **CRITICAL** - This breaks the application when users try to edit messages
 
 ## Low Priority Issues
 
-### 8. Inconsistent Action Patterns
-- **Problem**: Message sending uses `action: "sendMessage"` but other endpoints use direct approach
-- **Location**: `showMessageModal.js` and `renderMessages.js`
-- **Fix**: Standardize to match other session endpoints
-
-### 9. Inconsistent Empty State Patterns
+### 8. Inconsistent Empty State Patterns
 - **Messages**: Uses generic "Nothing to see here" in `renderMessages.js:139`
 - **Fix**: Match favorites pattern with relevant icon and instructions
 
-### 10. Missing Error Handling for Blocked Users
+### 9. Missing Error Handling for Blocked Users
 - **Problem**: Server properly blocks, but client shows generic network errors
 - **Fix**: Handle specific "user blocked" error messages in client
 - **Location**: Message sending and conversation creation error handlers
 
-### 11. CSS/Styling Issues
+### 10. CSS/Styling Issues
 - **Unread Indicator**: `style.css:2706` defines `unread-indicator` but code creates `unread-count`
 - **Missing**: `conversation[unread]` styling for visual distinction
 - **Fix**: Align CSS selectors with actual DOM structure
 
-### 12. Conversation Header Shows Redundant Info
+### 11. Conversation Header Shows Redundant Info
 - **Problem**: Message header shows filtered participants correctly, but could be clearer
 - **Location**: `renderMessages.js:116-118`
 - **Status**: Actually working correctly, low priority
@@ -89,9 +85,29 @@
 - No tests for WebSocket message updates
 - Missing tests for blocked user scenarios
 
+## Code Review Findings (Updated)
+
+### Verified Issues ✅
+- **Items 1, 2, 3**: Unread indicators, infinite scroll, and read marking issues are accurate
+- **Item 10**: CSS/DOM structure mismatches confirmed (`unread-indicator` vs `unread-count`)
+- **Item 4**: Empty state patterns need improvement
+- **Items 5, 6**: WebSocket updates and scroll behavior need enhancement
+
+### Fixed Inaccuracies 🔧
+- **Item 7**: Corrected to reflect actual broken `showEditMessageModal()` function (critical runtime error)
+- **Removed**: "Inconsistent Action Patterns" - analysis showed patterns are actually consistent
+
+### Action Patterns Analysis
+The messaging system correctly uses:
+- **Action pattern**: For operations requiring routing (`sendMessage`, `createConversation`)
+- **Direct data pattern**: For simple CRUD operations (like posts, replies, favorites)
+
+This is architecturally sound and consistent with the rest of the codebase.
+
 ## Notes
 
 - Follow existing patterns from other features (posts, replies, notifications)
 - Maintain consistency with established UI/UX patterns
 - Test thoroughly with multiple users and conversations
 - Consider performance impact of frequent read status updates
+- **Priority**: Fix the broken edit functionality immediately to prevent runtime errors

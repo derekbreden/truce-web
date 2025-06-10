@@ -66,16 +66,16 @@ And a numbered list:
 	})
 
 	// Navigate from welcome to posts
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Test markdown rendering
 	assertEquals("/posts", state.path, "Should be on posts page")
 	assertEquals("Header Test", $("p[bold] span").innerText.trim(), "Should render header with bold attribute")
 	assertEquals("This is a quote block", $("p[quote] span").innerText.trim(), "Should render quote with quote attribute")
-	assertEquals("https://example.com/test", $("a[href='https://example.com/test']").getAttribute("href"), "Should auto-link plain URLs")
-	assertEquals("This is a link", $("a[href='https://example.com']").innerText.trim(), "Should render explicit markdown links")
+	assertEquals("https://example.com/test", $(`a[href="https://example.com/test"]`).getAttribute("href"), "Should auto-link plain URLs")
+	assertEquals("This is a link", $(`a[href="https://example.com"]`).innerText.trim(), "Should render explicit markdown links")
 	assertEquals("Test Image", $("post img").alt, "Image should have alt")
 	assertEquals("https://example.com/image.jpg", $("post img").src, "Image should have src")
 	assertEquals("Item one", $("ul li").innerText.trim(), "Should render unordered lists")
@@ -141,8 +141,8 @@ https://example.com/file.pdf`,
 	})
 
 	// Navigate from welcome to posts
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Test markdown rendering in the posts list
@@ -151,8 +151,8 @@ https://example.com/file.pdf`,
 	assertEquals(true, $("p span").length > 0, "Should render mixed content with spans")
 	assertEquals(3, $("post p a").length, "Should render links in mixed content")
 	assertEquals("Image with spaces in alt text", $("post img").alt, "Should handle images with spaces in alt text")
-	assertEquals(true, $("a[href*='very-long-url-that-should-be-abbreviated.com']").innerText.trim().length < $("a[href*='very-long-url-that-should-be-abbreviated.com']").getAttribute("href").length, "Should abbreviate long URLs")
-	assertEquals(true, $("a[href*='file.pdf']").innerText.trim().includes("pdf"), "Should preserve file extensions in abbreviated URLs")
+	assertEquals(true, $(`a[href*="very-long-url-that-should-be-abbreviated.com"]`).innerText.trim().length < $(`a[href*="very-long-url-that-should-be-abbreviated.com"]`).getAttribute("href").length, "Should abbreviate long URLs")
+	assertEquals(true, $(`a[href*="file.pdf"]`).innerText.trim().includes("pdf"), "Should preserve file extensions in abbreviated URLs")
 }
 
 async function testComplexMarkdownParsing() {
@@ -206,8 +206,8 @@ Multiple: ![a](1.jpg) ![b](2.jpg) [x](u1.com) [y](u2.com) ![c](3.jpg) [z](u3.com
 	})
 
 	// Navigate to posts to trigger markdown rendering
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify complex parsing worked correctly

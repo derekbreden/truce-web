@@ -58,14 +58,14 @@ const tests = {
 		assertEquals(
 			"Title",
 			$titleInput.getAttribute("placeholder"),
-			"Title input placeholder should be 'Title'.",
+			`Title input placeholder should be "Title".`,
 		)
 
 		const $bodyTextarea = $formContainer.$("textarea[body]")
 		assertEquals(
 			true,
 			$bodyTextarea.getAttribute("placeholder")?.includes("Content"),
-			"Body textarea placeholder should contain 'Content'.",
+			`Body textarea placeholder should contain "Content".`,
 		)
 
 		const $pollIconContainer = $formContainer.$("label[poll] icon")
@@ -98,7 +98,7 @@ const tests = {
 		assertEquals(
 			"Add post",
 			$submitButton.innerText.trim(),
-			"Submit button text should be 'Add post'.",
+			`Submit button text should be "Add post".`,
 		)
 
 		const $cancelButton = $formContainer.$("button[alt][cancel]")

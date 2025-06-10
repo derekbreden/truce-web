@@ -44,11 +44,11 @@ const tests = {
 
 		// Assertions for logged-out user
 		// Settings link (NOT visible for logged-out user as per menu.js)
-		const $settingsLink = $menu.$("links a[href='/settings']")
+		const $settings_link = $menu.$(`links a[href="/settings"]`)
 		assertEquals(
 			false,
-			Boolean($settingsLink),
-			"Settings link (a[href='/settings']) should NOT exist in the menu for a logged-out user.",
+			Boolean($settings_link),
+			`Settings link (a[href="/settings"]) should NOT exist in the menu for a logged-out user.`,
 		)
 
 		// Sign In / Sign Up form (visible when not logged in)
@@ -58,7 +58,7 @@ const tests = {
 		assertEquals(
 			"Sign up / Sign in",
 			$submitButton.innerText.trim(),
-			"Submit button text should be 'Sign up / Sign in'.",
+			`Submit button text should be "Sign up / Sign in".`,
 		)
 
 		// Ensure individual "Login" and "Sign Up" links as previously checked are NOT there
@@ -138,11 +138,11 @@ const tests = {
 
 		// Assertions for logged-in user
 		// Settings link (visible for logged-in user)
-		const $settingsLink = $menu.$("links a[href='/settings']")
-		const $settingsLinkText = $settingsLink.$("p") // menu.js structure: a > icon + p
+		const $settings_link = $menu.$(`links a[href="/settings"]`)
+		const $settings_link_text = $settings_link.$("p") // menu.js structure: a > icon + p
 		assertEquals(
 			"Account settings",
-			$settingsLinkText.innerText.trim(),
+			$settings_link_text.innerText.trim(),
 			"Settings link text should be 'Account settings'.",
 		)
 

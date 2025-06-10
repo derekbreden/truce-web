@@ -5,7 +5,6 @@ async function testNavigateToMessagesViaMenu() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
 	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
@@ -41,44 +40,36 @@ async function testNavigateToMessagesViaMenu() {
 		}
 	})
 
-	// Navigate to posts page first
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	assertEquals("/posts", state.path, "Should be on posts page")
 
-	// Click hamburger menu to open it
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify menu opened
 	assertEquals("menu", $("menu-wrapper menu").tagName.toLowerCase(), "Menu should open when hamburger is clicked")
 
-	// Click Messages link in menu
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify we navigated to conversations page
 	assertEquals("/conversations", state.path, "Should navigate to conversations page")
 
-	// Verify conversation is displayed
-	const $conversationsContainer = $("conversations")
-	assertEquals("conversation", $conversationsContainer.$("conversation").tagName.toLowerCase(), "Should display conversations")
+	const $conversations_container = $("conversations")
+	assertEquals("conversation", $conversations_container.$("conversation").tagName.toLowerCase(), "Should display conversations")
 }
 
 async function testNavigateToSpecificMessage() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
 	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
-	// Mock pages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
@@ -126,23 +117,23 @@ async function testNavigateToSpecificMessage() {
 	})
 
 	// Navigate to posts then conversations
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	assertEquals("/conversations", state.path, "Should be on conversations page")
 
 	// Click on the specific conversation
-	const $conversationsContainer = $("conversations")
-	const $conversation = $conversationsContainer.$("conversation")
+	const $conversations_container = $("conversations")
+	const $conversation = $conversations_container.$("conversation")
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
@@ -161,12 +152,10 @@ async function testMessageSendingFlow() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
 	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
-	// Mock pages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
@@ -220,7 +209,7 @@ async function testMessageSendingFlow() {
 				const body = JSON.parse(options.body)
 				return body.action === "sendMessage" && 
 					   body.conversation_id === 101 &&
-					   body.pngs !== undefined && // This validates our fix
+					   body.pngs !== undefined &&
 					   Array.isArray(body.pngs)
 			}
 			return false
@@ -228,13 +217,12 @@ async function testMessageSendingFlow() {
 		response: { success: true, user_id: "123", display_name: "Test User" }
 	})
 
-	// Mock the refresh call - this tests our getMoreRecent fix
 	window.addMockFetchMatcher({
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
 				return body.path === "/messages/101" && 
-					   body.min_message_create_date !== undefined // This validates our fix
+					   body.min_message_create_date !== undefined
 			}
 			return false
 		},
@@ -265,20 +253,20 @@ async function testMessageSendingFlow() {
 	})
 
 	// Navigate to the message thread
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $conversationsContainer = $("conversations")
-	const $conversation = $conversationsContainer.$("conversation")
+	const $conversations_container = $("conversations")
+	const $conversation = $conversations_container.$("conversation")
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
@@ -288,19 +276,13 @@ async function testMessageSendingFlow() {
 	// Verify empty state shows initially  
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed initially")
 
-	// Type a message and send it
 	const $textarea = $("main-content-wrapper[active] textarea")
 	$textarea.value = "Hello world test message!"
 
-	// Send by pressing Enter
 	const enterEvent = new window.KeyboardEvent("keydown", { key: "Enter" })
 	$textarea.dispatchEvent(enterEvent)
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// The successful completion of this test validates that:
-	// 1. Our pngs: [] fix works (message sending doesn't fail)
-	// 2. Our getMoreRecent fix works (refresh call includes min_message_create_date)
-	// 3. Input is cleared after sending
 	assertEquals("", $textarea.value.trim(), "Message input should be cleared after sending")
 }
 

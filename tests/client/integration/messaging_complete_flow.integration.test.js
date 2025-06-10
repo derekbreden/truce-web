@@ -5,12 +5,10 @@ async function testMessageDisplayWithContent() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
 	state.user_id = "test-user-123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
-	// Mock pages with conversation containing messages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
@@ -84,48 +82,41 @@ async function testMessageDisplayWithContent() {
 		}
 	})
 
-	// Navigate to the conversation with messages
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $conversationsContainer = $("conversations")
-	const $conversations = $conversationsContainer.querySelectorAll("conversation")
+	const $conversations_container = $("conversations")
+	const $conversations = $conversations_container.querySelectorAll("conversation")
 	const $conversation = $conversations[0]
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify we're on the messages page
 	assertEquals("/messages/conv-with-messages", state.path, "Should be on message thread page")
 
-	// Verify messages are displayed correctly
-	const $messagesContainer = $("messages")
-	const $messages = $messagesContainer.querySelectorAll("message")
+	const $messages_container = $("messages")
+	const $messages = $messages_container.querySelectorAll("message")
 	assertEquals(2, $messages.length, "Should display two messages")
 
-	// Verify first message (from other user)
-	const $firstMessage = $messages[0]
-	assertEquals("false", $firstMessage.getAttribute("own"), "First message should not be own")
+	const $first_message = $messages[0]
+	assertEquals("false", $first_message.getAttribute("own"), "First message should not be own")
 
-	assertEquals(true, $firstMessage.$("message-content span").innerText.includes("Hello there!"), "First message should have correct content")
+	assertEquals(true, $first_message.$("message-content span").innerText.includes("Hello there!"), "First message should have correct content")
 
-	// Verify second message (from current user) 
 	const $secondMessage = $messages[1]
 	assertEquals("true", $secondMessage.getAttribute("own"), "Second message should be own")
 	assertEquals(true, $secondMessage.$("message-content span").innerText.includes("Hey there!"), "Second message should have correct content")
 
-	// Verify no empty state when messages exist
-	assertEquals(null, $messagesContainer.querySelector("empty-state"), "Empty state should not exist when messages are present")
+	assertEquals(null, $messages_container.querySelector("empty-state"), "Empty state should not exist when messages are present")
 
-	// Verify conversation header shows other participant
 	const $conversationHeader = $("conversation-header participants h2")
 	assertEquals(true, $conversationHeader.innerText.includes("Chat Partner"), "Conversation header should show other participant")
 }
@@ -199,30 +190,28 @@ async function testWebSocketMessageUpdates() {
 	})
 
 	// Navigate to the conversation
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $conversationsContainer = $("conversations")
-	const $conversations = $conversationsContainer.querySelectorAll("conversation")
+	const $conversations_container = $("conversations")
+	const $conversations = $conversations_container.querySelectorAll("conversation")
 	const $conversation = $conversations[0]
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify initial state - one message
-	const $messagesContainer = $("messages")
-	let $messages = $messagesContainer.querySelectorAll("message")
+	const $messages_container = $("messages")
+	let $messages = $messages_container.querySelectorAll("message")
 	assertEquals(1, $messages.length, "Should have one initial message")
 
-	// Mock getMoreRecent response for WebSocket update (simulates new message arriving)
 	window.addMockFetchMatcher({
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
@@ -261,15 +250,12 @@ async function testWebSocketMessageUpdates() {
 		}
 	})
 
-	// Simulate WebSocket MESSAGE_UPDATE event
 	state.ws.triggerMessage("MESSAGE_UPDATE")
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify new message appears
-	$messages = $messagesContainer.querySelectorAll("message")
+	$messages = $messages_container.querySelectorAll("message")
 	assertEquals(2, $messages.length, "Should have two messages after WebSocket update")
 
-	// Verify the new message content
 	const $newMessage = $messages[1]
 	assertEquals("false", $newMessage.getAttribute("own"), "New message should not be own")
 	assertEquals(true, $newMessage.$("message-content span").innerText.includes("New message via WebSocket!"), "New message should have correct content")
@@ -316,24 +302,22 @@ async function testConversationUpdateViaWebSocket() {
 	})
 
 	// Navigate to conversations page
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify initial conversation list
-	const $conversationsContainer = $("conversations")
-	let $conversations = $conversationsContainer.querySelectorAll("conversation")
+	const $conversations_container = $("conversations")
+	let $conversations = $conversations_container.querySelectorAll("conversation")
 	assertEquals(1, $conversations.length, "Should have one initial conversation")
 
-	// Mock getMoreRecent response for conversation update
 	window.addMockFetchMatcher({
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
@@ -376,12 +360,10 @@ async function testConversationUpdateViaWebSocket() {
 		}
 	})
 
-	// Simulate WebSocket CONVERSATION_UPDATE event
 	state.ws.triggerMessage("CONVERSATION_UPDATE")
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify conversations are updated
-	$conversations = $conversationsContainer.querySelectorAll("conversation")
+	$conversations = $conversations_container.querySelectorAll("conversation")
 	assertEquals(2, $conversations.length, "Should have two conversations after WebSocket update")
 }
 

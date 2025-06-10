@@ -59,6 +59,17 @@ require.cache[firebaseMessagingPath] = {
 	id: firebaseMessagingPath
 }
 
+const webpushPath = require.resolve("web-push")
+delete require.cache[webpushPath]
+require.cache[webpushPath] = {
+	exports: {
+		setVapidDetails: () => {},
+		sendNotification: async () => ({ success: true })
+	},
+	loaded: true,
+	id: webpushPath
+}
+
 const { createMockRequest, createMockResponse, assertEquals, runTests } = require("../shared/serverTestSetup.js")
 const sendMessage = require("../../../server/session/sendMessage.js")
 

@@ -82,7 +82,7 @@ const tests = {
 		assertEquals(
 			"/posts",
 			state.path,
-			"After clicking 'Join', path should be /posts.",
+			`After clicking "Join", path should be /posts.`,
 		)
 		assertEquals(
 			mockUser.user_id,
@@ -118,11 +118,11 @@ const tests = {
 		assertEquals(
 			mockUser.display_name + ":",
 			$displayNameText.innerText.trim(),
-			`Add reply form: Display name should be '${mockUser.display_name}:'. Actual: '${$displayNameText.innerText.trim()}'`,
+			`Add reply form: Display name should be "${mockUser.display_name}:". Actual: "${$displayNameText.innerText.trim()}"`,
 		)
 
 		const $profilePictureImg = $displayNameWrapper.$(
-			`profile-picture img[src='/image/${mockUser.profile_picture_uuid}']`,
+			`profile-picture img[src="/image/${mockUser.profile_picture_uuid}"]`,
 		)
 		assertEquals(
 			`/image/${mockUser.profile_picture_uuid}`,
@@ -134,21 +134,21 @@ const tests = {
 		assertEquals(
 			"Reply",
 			$bodyTextarea.getAttribute("placeholder"),
-			"Body textarea placeholder should be 'Reply'.",
+			`Body textarea placeholder should be "Reply".`,
 		)
 
 		const $submitButton = $addNewReplyForm.$(`button[submit]`)
 		assertEquals(
 			"Add reply",
 			$submitButton.innerText.trim(),
-			"Submit button text should be 'Add reply'.",
+			`Submit button text should be "Add reply".`,
 		)
 
 		const $cancelButton = $addNewReplyForm.$(`button[alt][cancel]`)
 		assertEquals(
 			"Cancel",
 			$cancelButton.innerText.trim(),
-			"Cancel button text should be 'Cancel'.",
+			`Cancel button text should be "Cancel".`,
 		)
 	},
 }

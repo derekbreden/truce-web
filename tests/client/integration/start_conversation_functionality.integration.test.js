@@ -70,7 +70,7 @@ async function testStartConversationViaMessageButton() {
 		response: { success: true, conversation_id: "conv-789", existing: false }
 	})
 
-	// Mock the conversation page that we'll navigate to
+	// Mock the conversation page that we will navigate to
 	window.setMockFetchResponseForPaths({
 		"/messages/conv-789": {
 			success: true,
@@ -91,11 +91,11 @@ async function testStartConversationViaMessageButton() {
 	})
 
 	// Navigate to posts page
-	$("a[href='/posts'][big]").click()
+	$(`a[href="/posts"][big]`).click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Navigate to user profile by clicking on author
-	$("posts post author[slug='target-user']").click()
+	$(`posts post author[slug="target-user"]`).click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Click the message button on the user profile page
@@ -208,11 +208,11 @@ async function testStartConversationWithExistingConversation() {
 	})
 
 	// Navigate to posts page
-	$("a[href='/posts'][big]").click()
+	$(`a[href="/posts"][big]`).click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Navigate to user profile by clicking on author
-	$("posts post author[slug='existing-user']").click()
+	$(`posts post author[slug="existing-user"]`).click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Click message button

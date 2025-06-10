@@ -66,8 +66,8 @@ async function testTypingIndicatorSendsOnInput() {
 	})
 
 	// Navigate to posts page first
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Click hamburger menu
@@ -76,8 +76,8 @@ async function testTypingIndicatorSendsOnInput() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Click Messages link
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Click on the conversation
@@ -85,7 +85,7 @@ async function testTypingIndicatorSendsOnInput() {
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify we're on the message thread
+	// Verify we are on the message thread
 	assertEquals("/messages/conv-typing", state.path, "Should be on message thread")
 
 	// Clear any existing WebSocket messages from navigation
@@ -168,16 +168,16 @@ async function testTypingIndicatorDisplaysForOtherUser() {
 	})
 
 	// Navigate to the conversation
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $conversation = $("conversations conversation")
@@ -277,16 +277,16 @@ async function testTypingIndicatorOnlyShowsInCorrectConversation() {
 	})
 
 	// Navigate to the conversation
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $conversation = $("conversations conversation")
@@ -375,16 +375,16 @@ async function testTypingIndicatorResetsOnMultipleInputs() {
 	})
 
 	// Navigate to the conversation
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	const $messagesLink = $("menu-wrapper a[href='/conversations']")
-	$messagesLink.click()
+	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
+	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	const $conversation = $("conversations conversation")

@@ -60,8 +60,8 @@ const tests = {
 		$hamburger.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		
-		const $favoritesMenuLink = $("menu-wrapper a[href='/favorites']")
-		$favoritesMenuLink.click()
+		const $favorites_menu_link = $(`menu-wrapper a[href="/favorites"]`)
+		$favorites_menu_link.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			"/favorites",
@@ -195,8 +195,8 @@ const tests = {
 		$hamburger.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		
-		const $favoritesMenuLink = $("menu-wrapper a[href='/favorites']")
-		$favoritesMenuLink.click()
+		const $favorites_menu_link = $(`menu-wrapper a[href="/favorites"]`)
+		$favorites_menu_link.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
 			"/favorites",
@@ -223,7 +223,7 @@ const tests = {
 		assertEquals(
 			"Parent Post for Reply Activity",
 			$postTitle?.innerText.trim(),
-			"Reply activity's parent post title mismatch.",
+			`Reply activity's parent post title mismatch.`,
 		)
 
 		// renderActivities > renderReplyActivity > renderReply > p > span for body  

@@ -42,8 +42,8 @@ async function debugConversationRendering() {
 	})
 
 	// Navigate to posts then conversations
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
+	const $join_button = $(`a[href="/posts"][big]`)
+	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	assertEquals("/posts", state.path, "Should be on posts page")
@@ -56,9 +56,9 @@ async function debugConversationRendering() {
 	const $menu = $("menu-wrapper")
 	assertEquals("menu-wrapper", $menu.tagName.toLowerCase(), "Menu should open")
 
-	const $conversationsLink = $("menu-wrapper a[href='/conversations']")
-	assertEquals("/conversations", $conversationsLink.getAttribute("href"), "Conversations link should exist in menu")
-	$conversationsLink.click()
+	const $conversations_link = $(`menu-wrapper a[href="/conversations"]`)
+	assertEquals("/conversations", $conversations_link.getAttribute("href"), "Conversations link should exist in menu")
+	$conversations_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	assertEquals("/conversations", state.path, "Should navigate to conversations")

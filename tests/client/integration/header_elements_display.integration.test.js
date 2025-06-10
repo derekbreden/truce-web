@@ -14,12 +14,12 @@ const tests = {
 		assertEquals(
 			"Truce.",
 			$headerTitle.textContent.trim(),
-			"Header title text should be 'Truce.'.",
+			`Header title text should be "Truce.".`,
 		)
 
 		// Test for header logo <img alt="A bridge between ideological differences">
 		const $headerLogo = $(
-			"header img[alt='A bridge between ideological differences']",
+			`header img[alt="A bridge between ideological differences"]`,
 		)
 		assertEquals(
 			"/icon2.svg?v=2",

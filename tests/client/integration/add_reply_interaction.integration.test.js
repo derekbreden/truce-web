@@ -173,8 +173,8 @@ const tests = {
 		})
 
 		// 1. Navigate to posts page
-		const $joinButton = $("a[href='/posts'][big]")
-		$joinButton.click()
+		const $join_button = $(`a[href="/posts"][big]`)
+		$join_button.click()
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -209,7 +209,7 @@ const tests = {
 		assertEquals(
 			"Reply to post",
 			$replyButton.innerText.trim(),
-			"Button should say 'Reply to post'.",
+			`Button should say "Reply to post".`,
 		)
 
 		$replyButton.click()
@@ -238,7 +238,7 @@ const tests = {
 		$bodyTextarea.value = testReplyText
 		
 		// Simulate input event to update the form
-		const inputEvent = new window.Event('input', { bubbles: true })
+		const inputEvent = new window.Event("input", { bubbles: true })
 		$bodyTextarea.dispatchEvent(inputEvent)
 
 		// 8. Submit the reply by clicking the submit button
@@ -249,7 +249,7 @@ const tests = {
 		assertEquals(
 			"Validating...",
 			$validatingMessage?.innerText?.trim() || "NOT_FOUND",
-			"Should show 'Validating...' message immediately after submit.",
+			`Should show "Validating..." message immediately after submit.`,
 		)
 
 		// 10. Immediately verify form controls have disabled attribute during submission
@@ -283,7 +283,7 @@ const tests = {
 		assertEquals(
 			mockUser.display_name,
 			submittedReplyData.display_name,
-			"Submitted display name should match user's name.",
+			`Submitted display name should match user's name.`,
 		)
 		assertEquals(
 			"/post/test-post-for-reply",
