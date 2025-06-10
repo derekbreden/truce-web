@@ -92,7 +92,7 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 	const $submitButton = $modal.$("button[submit]")
 	const $textarea = $modal.$("textarea[body]")
 	
-	$submitButton.on("click", async () => {
+	$submitButton.on("click", () => {
 		const messageBody = $textarea.value.trim()
 		if (!messageBody) {
 			modalError("Please enter a message")
@@ -102,42 +102,79 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 		$submitButton.disabled = true
 		$submitButton.textContent = "Sending..."
 
-		try {
-			if (isNewConversation) {
-				// Create conversation first
-				const conversationResponse = await send({
+		if (isNewConversation) {
+			// Create conversation first
+			fetch("/session", {
+				method: "POST",
+				body: JSON.stringify({
 					participant_user_ids: participantUserIds
-				}, "createConversation")
-
-				if (conversationResponse.success) {
-					// Send the message
-					await send({
-						conversation_id: conversationResponse.conversation_id,
+				})
+			})
+			.then(response => response.json())
+			.then(conversationData => {
+				if (conversationData.error || !conversationData.success) {
+					modalError(conversationData.error || "Failed to create conversation")
+					$submitButton.disabled = false
+					$submitButton.textContent = "Send"
+					return
+				}
+				
+				// Send the message
+				fetch("/session", {
+					method: "POST", 
+					body: JSON.stringify({
+						conversation_id: conversationData.conversation_id,
 						body: messageBody,
 						pngs: selectedImages
-					}, "sendMessage")
-
+					})
+				})
+				.then(response => response.json())
+				.then(messageData => {
+					if (messageData.error || !messageData.success) {
+						modalError(messageData.error || "Failed to send message")
+						$submitButton.disabled = false
+						$submitButton.textContent = "Send"
+						return
+					}
 					modalCancel()
-					// Navigate to the new conversation
-					goToPath(`/messages/${conversationResponse.conversation_id}`)
-				} else {
-					throw new Error(conversationResponse.error || "Failed to create conversation")
-				}
-			} else {
-				// Send message to existing conversation
-				await send({
+					goToPath(`/messages/${conversationData.conversation_id}`)
+				})
+				.catch(error => {
+					modalError("Network error")
+					$submitButton.disabled = false
+					$submitButton.textContent = "Send"
+				})
+			})
+			.catch(error => {
+				modalError("Network error")
+				$submitButton.disabled = false
+				$submitButton.textContent = "Send"
+			})
+		} else {
+			// Send message to existing conversation
+			fetch("/session", {
+				method: "POST",
+				body: JSON.stringify({
 					conversation_id: existingConversationId,
 					body: messageBody,
 					pngs: selectedImages
-				}, "sendMessage")
-
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.error || !data.success) {
+					modalError(data.error || "Failed to send message")
+					$submitButton.disabled = false
+					$submitButton.textContent = "Send"
+					return
+				}
 				modalCancel()
-			}
-		} catch (error) {
-			console.error("Error sending message:", error)
-			modalError("Failed to send message. Please try again.")
-			$submitButton.disabled = false
-			$submitButton.textContent = "Send"
+			})
+			.catch(error => {
+				modalError("Network error")
+				$submitButton.disabled = false
+				$submitButton.textContent = "Send"
+			})
 		}
 	})
 
@@ -271,7 +308,7 @@ const showEditMessageModal = (message) => {
 	const $submitButton = $modal.$("button[submit]")
 	const $textarea = $modal.$("textarea[body]")
 	
-	$submitButton.on("click", async () => {
+	$submitButton.on("click", () => {
 		const messageBody = $textarea.value.trim()
 		if (!messageBody) {
 			modalError("Please enter a message")
@@ -281,21 +318,30 @@ const showEditMessageModal = (message) => {
 		$submitButton.disabled = true
 		$submitButton.textContent = "Saving..."
 
-		try {
-			await send({
+		fetch("/session", {
+			method: "POST",
+			body: JSON.stringify({
 				message_id: message.message_id,
 				conversation_id: message.conversation_id || state.active_conversation_id,
 				body: messageBody,
 				pngs: selectedImages
-			}, "sendMessage")
-
+			})
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.error || !data.success) {
+				modalError(data.error || "Failed to update message")
+				$submitButton.disabled = false
+				$submitButton.textContent = "Save Changes"
+				return
+			}
 			modalCancel()
-		} catch (error) {
-			console.error("Error updating message:", error)
-			modalError("Failed to update message. Please try again.")
+		})
+		.catch(error => {
+			modalError("Network error")
 			$submitButton.disabled = false
 			$submitButton.textContent = "Save Changes"
-		}
+		})
 	})
 
 	// Handle canceling
