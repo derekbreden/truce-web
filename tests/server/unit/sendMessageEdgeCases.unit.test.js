@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate successful S3 operations
 		return { $metadata: { httpStatusCode: 200 } }
 	}
@@ -16,11 +16,11 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -161,19 +161,19 @@ async function testSendMessageWithImages() {
 	
 	// Mock conversation check
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		'SELECT user_id_blocked',
+		"SELECT user_id_blocked",
 		{ rows: [] }
 	)
 	
 	// Mock message insertion
 	req.client.addQueryMock(
-		'INSERT INTO messages',
+		"INSERT INTO messages",
 		{ rows: [{ message_id: 789 }] }
 	)
 	
@@ -197,12 +197,12 @@ async function testSendMessageWithImages() {
 	
 	// Mock notification queries
 	req.client.addQueryMock(
-		'SELECT', // subscriptions
+		"SELECT", // subscriptions
 		{ rows: [] }
 	)
 	
 	req.client.addQueryMock(
-		'INSERT INTO message_notifications',
+		"INSERT INTO message_notifications",
 		{ rows: [] }
 	)
 	
@@ -215,8 +215,8 @@ async function testSendMessageWithImages() {
 	assertEquals(123, responseData.user_id, "Should return user_id")
 	
 	// Verify S3 upload calls were made
-	assertEquals(2, s3SendCalls.length, "Should have made 2 S3 upload calls")
-	s3SendCalls = [] // Reset for next test
+	assertEquals(2, s3_send_calls.length, "Should have made 2 S3 upload calls")
+	s3_send_calls = [] // Reset for next test
 }
 
 async function testSendMessageNoSession() {
@@ -248,7 +248,7 @@ async function testSendMessageConversationNotFound() {
 	
 	// Mock conversation check - no results
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [] }
 	)
 	
@@ -273,13 +273,13 @@ async function testEditMessageWithImageDeletion() {
 	
 	// Mock conversation check
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		'SELECT user_id_blocked',
+		"SELECT user_id_blocked",
 		{ rows: [] }
 	)
 	
@@ -297,7 +297,7 @@ async function testEditMessageWithImageDeletion() {
 	
 	// Mock existing images query - has existing images
 	req.client.addQueryMock(
-		'SELECT image_uuids',
+		"SELECT image_uuids",
 		{ rows: [{ image_uuids: "uuid1,uuid2" }] }
 	)
 	
@@ -315,12 +315,12 @@ async function testEditMessageWithImageDeletion() {
 	
 	// Mock notification queries
 	req.client.addQueryMock(
-		'SELECT', // subscriptions
+		"SELECT", // subscriptions
 		{ rows: [] }
 	)
 	
 	req.client.addQueryMock(
-		'INSERT INTO message_notifications',
+		"INSERT INTO message_notifications",
 		{ rows: [] }
 	)
 	
@@ -332,8 +332,8 @@ async function testEditMessageWithImageDeletion() {
 	assertEquals(true, responseData.success, "Should succeed for message edit with image deletion")
 	
 	// Verify S3 delete calls were made for existing images
-	assertEquals(2, s3SendCalls.length, "Should have made 2 S3 delete calls")
-	s3SendCalls = [] // Reset for next test
+	assertEquals(2, s3_send_calls.length, "Should have made 2 S3 delete calls")
+	s3_send_calls = [] // Reset for next test
 }
 
 runTests("sendMessageEdgeCases.unit.test.js", [

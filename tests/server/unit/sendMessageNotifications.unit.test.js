@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		return { $metadata: { httpStatusCode: 200 } }
 	}
 }
@@ -14,11 +14,11 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -86,25 +86,25 @@ const tests = {
 		
 		// Mock conversation check - user is participant in conversation with user 456
 		req.client.addQueryMock(
-			'SELECT participant_user_ids',
+			"SELECT participant_user_ids",
 			{ rows: [{ participant_user_ids: [123, 456] }] }
 		)
 		
 		// Mock blocked user check - no blocks
 		req.client.addQueryMock(
-			'SELECT user_id_blocked',
+			"SELECT user_id_blocked",
 			{ rows: [] }
 		)
 		
 		// Mock message insertion
 		req.client.addQueryMock(
-			'INSERT INTO messages',
+			"INSERT INTO messages",
 			{ rows: [{ message_id: 'new-message-789' }] }
 		)
 		
 		// Mock message notification creation - this is what we're testing
 		req.client.addQueryMock(
-			'INSERT INTO message_notifications',
+			"INSERT INTO message_notifications",
 			{ rows: [] }
 		)
 		
@@ -116,7 +116,7 @@ const tests = {
 		
 		// Mock push notification queries
 		req.client.addQueryMock(
-			'SELECT firebase_registration_token',
+			"SELECT firebase_registration_token",
 			{ rows: [{ firebase_registration_token: 'mock-token-456', display_name: 'Other User' }] }
 		)
 		
@@ -152,25 +152,25 @@ const tests = {
 		
 		// Mock conversation with multiple participants
 		req.client.addQueryMock(
-			'SELECT participant_user_ids',
+			"SELECT participant_user_ids",
 			{ rows: [{ participant_user_ids: [123, 456, 789] }] }
 		)
 		
 		// Mock no blocks
 		req.client.addQueryMock(
-			'SELECT user_id_blocked',
+			"SELECT user_id_blocked",
 			{ rows: [] }
 		)
 		
 		// Mock message insertion
 		req.client.addQueryMock(
-			'INSERT INTO messages',
+			"INSERT INTO messages",
 			{ rows: [{ message_id: 'group-message-456' }] }
 		)
 		
 		// Mock message notification creation for multiple users
 		req.client.addQueryMock(
-			'INSERT INTO message_notifications',
+			"INSERT INTO message_notifications",
 			{ rows: [] }
 		)
 		
@@ -182,7 +182,7 @@ const tests = {
 		
 		// Mock push notifications for multiple users
 		req.client.addQueryMock(
-			'SELECT firebase_registration_token',
+			"SELECT firebase_registration_token",
 			{ 
 				rows: [
 					{ firebase_registration_token: 'token-456', display_name: 'User Two' },
@@ -216,19 +216,19 @@ const tests = {
 		
 		// Mock conversation with only the sender (edge case)
 		req.client.addQueryMock(
-			'SELECT participant_user_ids',
+			"SELECT participant_user_ids",
 			{ rows: [{ participant_user_ids: [123] }] }
 		)
 		
 		// Mock no blocks
 		req.client.addQueryMock(
-			'SELECT user_id_blocked',
+			"SELECT user_id_blocked",
 			{ rows: [] }
 		)
 		
 		// Mock message insertion
 		req.client.addQueryMock(
-			'INSERT INTO messages',
+			"INSERT INTO messages",
 			{ rows: [{ message_id: 'solo-message-123' }] }
 		)
 		
@@ -240,7 +240,7 @@ const tests = {
 		
 		// Mock push notifications - should return empty since only sender
 		req.client.addQueryMock(
-			'SELECT firebase_registration_token',
+			"SELECT firebase_registration_token",
 			{ rows: [] }
 		)
 		
@@ -269,25 +269,25 @@ const tests = {
 		
 		// Mock conversation with participants including blocked user
 		req.client.addQueryMock(
-			'SELECT participant_user_ids',
+			"SELECT participant_user_ids",
 			{ rows: [{ participant_user_ids: [123, 456, 789] }] }
 		)
 		
 		// Mock blocked user - user 456 has blocked the sender (123)
 		req.client.addQueryMock(
-			'SELECT user_id_blocked',
+			"SELECT user_id_blocked",
 			{ rows: [{ user_id_blocked: 123 }] }
 		)
 		
 		// Mock message insertion
 		req.client.addQueryMock(
-			'INSERT INTO messages',
+			"INSERT INTO messages",
 			{ rows: [{ message_id: 'blocked-message-456' }] }
 		)
 		
 		// Mock message notification creation
 		req.client.addQueryMock(
-			'INSERT INTO message_notifications',
+			"INSERT INTO message_notifications",
 			{ rows: [] }
 		)
 		
@@ -299,7 +299,7 @@ const tests = {
 		
 		// Mock push notifications - should only include non-blocking users
 		req.client.addQueryMock(
-			'SELECT firebase_registration_token',
+			"SELECT firebase_registration_token",
 			{ 
 				rows: [
 					{ firebase_registration_token: 'token-789', display_name: 'User Three' }
@@ -332,23 +332,23 @@ const tests = {
 		
 		// Mock basic conversation setup
 		req.client.addQueryMock(
-			'SELECT participant_user_ids',
+			"SELECT participant_user_ids",
 			{ rows: [{ participant_user_ids: [123, 456] }] }
 		)
 		
 		req.client.addQueryMock(
-			'SELECT user_id_blocked',
+			"SELECT user_id_blocked",
 			{ rows: [] }
 		)
 		
 		req.client.addQueryMock(
-			'INSERT INTO messages',
+			"INSERT INTO messages",
 			{ rows: [{ message_id: 'field-test-message-789' }] }
 		)
 		
 		// Mock message notification creation
 		req.client.addQueryMock(
-			'INSERT INTO message_notifications',
+			"INSERT INTO message_notifications",
 			{ rows: [] }
 		)
 		
@@ -358,7 +358,7 @@ const tests = {
 		)
 		
 		req.client.addQueryMock(
-			'SELECT firebase_registration_token',
+			"SELECT firebase_registration_token",
 			{ rows: [{ firebase_registration_token: 'token-456', display_name: 'Other User' }] }
 		)
 		

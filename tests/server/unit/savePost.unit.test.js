@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate successful S3 operations
 		return { $metadata: { httpStatusCode: 200 } }
 	}
@@ -16,11 +16,11 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -28,15 +28,15 @@ require.cache[awsS3Path] = {
 }
 
 // Mock AI module (internal dependency - use real one but control responses)
-let aiAskCalls = []
+let ai_ask_calls = []
 const mockAI = {
 	ask: async (messages, type, format) => {
-		aiAskCalls.push({ messages, type, format })
+		ai_ask_calls.push({ messages, type, format })
 		
 		// Default responses based on type
-		if (type === 'topics') {
-			return JSON.stringify({ topics: ['general', 'technology'] }) // Match the topics in testSuccessfulPostCreation
-		} else if (type === 'poll_estimate') {
+		if (type === "topics") {
+			return JSON.stringify({ topics: ["general", "technology"] }) // Match the topics in testSuccessfulPostCreation
+		} else if (type === "poll_estimate") {
 			return JSON.stringify({ 
 				response_rate: 0.5, 
 				choice_a: 0.4, 
@@ -61,9 +61,9 @@ require.cache[aiPath] = {
 }
 
 // Mock crypto.randomUUID by replacing the node:crypto module
-let mockUuidResult = 'test-uuid-123'
+let mock_uuid_result = "test-uuid-123"
 const mockCrypto = {
-	randomUUID: () => mockUuidResult
+	randomUUID: () => mock_uuid_result
 }
 
 // Clear and replace node:crypto in require cache
@@ -103,24 +103,24 @@ const prompts = require("../../../server/prompts.js")
 const tests = {
 	testSuccessfulPostCreation: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request for new post
 		const req = createMockRequest(
 			{ 
-				title: 'Test Post Title',
-				body: 'This is a test post body with some content.',
-				path: '/posts',
+				title: "Test Post Title",
+				body: "This is a test post body with some content.",
+				path: "/posts",
 				pngs: [
-					{ url: 'data:image/png;base64,image1data' },
-					{ url: 'data:image/png;base64,image2data' }
+					{ url: "data:image/png;base64,image1data" },
+					{ url: "data:image/png;base64,image2data" }
 				]
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
-				display_name: 'Test User'
+				session_id: "session-123",
+				user_id: "user-456",
+				display_name: "Test User"
 			}
 		)
 		
@@ -132,39 +132,39 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT slug FROM posts WHERE slug',
+			"SELECT slug FROM posts WHERE slug",
 			{ rows: [] } // Slug doesn't exist
 		)
 		req.client.addQueryMock(
-			'INSERT INTO posts',
+			"INSERT INTO posts",
 			{ 
 				rows: [
 					{
-						post_id: 'new-post-789'
+						post_id: "new-post-789"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT topic_id, topic_name FROM topics',
+			"SELECT topic_id, topic_name FROM topics",
 			{ 
 				rows: [
-					{ topic_id: 'topic-1', topic_name: 'general' },
-					{ topic_id: 'topic-2', topic_name: 'technology' },
-					{ topic_id: 'topic-3', topic_name: 'science' }
+					{ topic_id: "topic-1", topic_name: "general" },
+					{ topic_id: "topic-2", topic_name: "technology" },
+					{ topic_id: "topic-3", topic_name: "science" }
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'DELETE FROM post_topics',
+			"DELETE FROM post_topics",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'INSERT INTO post_topics',
+			"INSERT INTO post_topics",
 			{ rows: [] }
 		)
 		
@@ -176,71 +176,71 @@ const tests = {
 		// Verify AI calls were made
 		assertEquals(
 			2,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI twice: content moderation and topics."
 		)
 		
 		// Verify content moderation call
-		const moderationCall = aiAskCalls[0]
+		const moderation_call = ai_ask_calls[0]
 		assertEquals(
-			'common',
-			moderationCall.type,
+			"common",
+			moderation_call.type,
 			"First AI call should be for content moderation."
 		)
 		assertEquals(
 			prompts.common_response_format,
-			moderationCall.format,
+			moderation_call.format,
 			"Should use common response format."
 		)
 		assertEquals(
 			1,
-			moderationCall.messages.length,
+			moderation_call.messages.length,
 			"Should send one message for moderation."
 		)
 		assertEquals(
-			'estser',
-			moderationCall.messages[0].name,
+			"estser",
+			moderation_call.messages[0].name,
 			"Should sanitize display name (removes uppercase and spaces)."
 		)
 		assertEquals(
-			'Test Post Title\n\nThis is a test post body with some content.',
-			moderationCall.messages[0].content[0].text,
+			"Test Post Title\n\nThis is a test post body with some content.",
+			moderation_call.messages[0].content[0].text,
 			"Should combine title and body for moderation."
 		)
 		assertEquals(
 			2,
-			moderationCall.messages[0].content.length - 1, // -1 for text content
+			moderation_call.messages[0].content.length - 1, // -1 for text content
 			"Should include images in moderation."
 		)
 		
 		// Verify topics call
-		const topicsCall = aiAskCalls[1]
+		const topics_call = ai_ask_calls[1]
 		assertEquals(
-			'topics',
-			topicsCall.type,
+			"topics",
+			topics_call.type,
 			"Second AI call should be for topics."
 		)
 		assertEquals(
 			prompts.topics_response_format,
-			topicsCall.format,
+			topics_call.format,
 			"Should use topics response format."
 		)
 		
 		// Verify S3 operations
 		assertEquals(
 			2,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should upload 2 images to S3."
 		)
 		
-		s3SendCalls.forEach((command, index) => {
+		s3_send_calls.forEach((command, index) => {
 			assertEquals(
-				'PutObject',
+				"PutObject",
 				command.commandType,
 				`S3 command ${index} should be upload.`
 			)
 			assertEquals(
-				'truce.net',
+				"truce.net",
 				command.input.Bucket,
 				`S3 command ${index} should target correct bucket.`
 			)
@@ -265,12 +265,12 @@ const tests = {
 			"Should return success."
 		)
 		assertEquals(
-			'Test_Post_Title',
+			"Test_Post_Title",
 			responseData.slug,
 			"Should return generated slug."
 		)
 		assertEquals(
-			'user-456',
+			"user-456",
 			responseData.user_id,
 			"Should return user ID."
 		)
@@ -282,12 +282,12 @@ const tests = {
 			"Should send websocket update."
 		)
 		assertEquals(
-			'UPDATE',
+			"UPDATE",
 			req.wsMessages[0].type,
 			"Should send UPDATE message."
 		)
 		assertEquals(
-			'new-post-789',
+			"new-post-789",
 			req.wsMessages[0].postId,
 			"Should send correct post ID."
 		)
@@ -295,15 +295,15 @@ const tests = {
 
 	testPostCreationWithPoll: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return empty topics (no topics database in this test)
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -313,29 +313,29 @@ const tests = {
 		// Setup mock request for poll post
 		const req = createMockRequest(
 			{ 
-				title: 'Poll Post',
-				body: 'What do you think?',
-				path: '/posts',
+				title: "Poll Post",
+				body: "What do you think?",
+				path: "/posts",
 				pngs: [],
-				poll_1: 'Option A',
-				poll_2: 'Option B',
-				poll_3: 'Option C'
+				poll_1: "Option A",
+				poll_2: "Option B",
+				poll_3: "Option C"
 			},
 			{ 
-				session_id: 'session-poll',
-				user_id: 'user-poll',
-				display_name: 'Poll User'
+				session_id: "session-poll",
+				user_id: "user-poll",
+				display_name: "Poll User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-post-123' }] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("INSERT INTO posts", { rows: [{ post_id: "poll-post-123" }] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT topic_id, topic_name FROM topics", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -345,48 +345,48 @@ const tests = {
 		// Verify AI calls include poll estimation
 		assertEquals(
 			3,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI three times: content moderation, topics, and poll estimation."
 		)
 		
 		// Verify poll moderation includes poll options
-		const moderationCall = aiAskCalls[0]
+		const moderation_call = ai_ask_calls[0]
 		assertEquals(
-			'poll',
-			moderationCall.type,
+			"poll",
+			moderation_call.type,
 			"Should use poll type for moderation."
 		)
 		assertEquals(
 			prompts.poll_response_format,
-			moderationCall.format,
+			moderation_call.format,
 			"Should use poll response format."
 		)
 		assertEquals(
 			true,
-			moderationCall.messages[0].content[0].text.includes('A) Option A'),
+			moderation_call.messages[0].content[0].text.includes('A) Option A'),
 			"Should include poll option A."
 		)
 		assertEquals(
 			true,
-			moderationCall.messages[0].content[0].text.includes('B) Option B'),
+			moderation_call.messages[0].content[0].text.includes('B) Option B'),
 			"Should include poll option B."
 		)
 		assertEquals(
 			true,
-			moderationCall.messages[0].content[0].text.includes('C) Option C'),
+			moderation_call.messages[0].content[0].text.includes('C) Option C'),
 			"Should include poll option C."
 		)
 		
 		// Verify poll estimation call
-		const pollEstimateCall = aiAskCalls[2]
+		const poll_estimate_call = ai_ask_calls[2]
 		assertEquals(
-			'poll_estimate',
-			pollEstimateCall.type,
+			"poll_estimate",
+			poll_estimate_call.type,
 			"Third AI call should be for poll estimation."
 		)
 		assertEquals(
 			prompts.poll_estimate_response_format,
-			pollEstimateCall.format,
+			poll_estimate_call.format,
 			"Should use poll estimate format."
 		)
 		
@@ -401,15 +401,15 @@ const tests = {
 
 	testPostUpdate: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return empty topics (no topics database in this test)
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -419,38 +419,38 @@ const tests = {
 		// Setup mock request for post update
 		const req = createMockRequest(
 			{ 
-				title: 'Updated Post Title',
-				body: 'Updated body content.',
-				path: '/posts',
+				title: "Updated Post Title",
+				body: "Updated body content.",
+				path: "/posts",
 				pngs: [
-					{ url: 'data:image/png;base64,newimage' }
+					{ url: "data:image/png;base64,newimage" }
 				],
-				post_id: 'existing-post-456'
+				post_id: "existing-post-456"
 			},
 			{ 
-				session_id: 'session-update',
-				user_id: 'user-update',
-				display_name: 'Update User'
+				session_id: "session-update",
+				user_id: "user-update",
+				display_name: "Update User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ 
 				rows: [
 					{
-						image_uuids: 'old-image1,old-image2'
+						image_uuids: "old-image1,old-image2"
 					}
 				]
 			}
 		)
-		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock("SELECT topic_id, topic_name FROM topics", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -460,32 +460,32 @@ const tests = {
 		// Verify old images were deleted from S3
 		assertEquals(
 			3,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform 3 S3 operations: delete 2 old + upload 1 new."
 		)
 		assertEquals(
-			'Delete',
-			s3SendCalls[0].commandType,
+			"Delete",
+			s3_send_calls[0].commandType,
 			"First operation should delete old image."
 		)
 		assertEquals(
-			'old-image1.png',
-			s3SendCalls[0].input.Key,
+			"old-image1.png",
+			s3_send_calls[0].input.Key,
 			"Should delete first old image."
 		)
 		assertEquals(
-			'Delete',
-			s3SendCalls[1].commandType,
+			"Delete",
+			s3_send_calls[1].commandType,
 			"Second operation should delete old image."
 		)
 		assertEquals(
-			'old-image2.png',
-			s3SendCalls[1].input.Key,
+			"old-image2.png",
+			s3_send_calls[1].input.Key,
 			"Should delete second old image."
 		)
 		assertEquals(
-			'PutObject',
-			s3SendCalls[2].commandType,
+			"PutObject",
+			s3_send_calls[2].commandType,
 			"Third operation should upload new image."
 		)
 		
@@ -500,13 +500,13 @@ const tests = {
 
 	testSpamPostRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return Spam
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'common' || type === 'poll') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "common" || type === "poll") {
 				return JSON.stringify({ 
 					keyword: "Spam",
 					note: "This appears to be spam content"
@@ -518,15 +518,15 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				title: 'Spam Title',
-				body: 'Spam content here',
-				path: '/posts',
+				title: "Spam Title",
+				body: "Spam content here",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-spam',
-				user_id: 'user-spam',
-				display_name: 'Spam User'
+				session_id: "session-spam",
+				user_id: "user-spam",
+				display_name: "Spam User"
 			}
 		)
 		
@@ -538,14 +538,14 @@ const tests = {
 		// Verify AI was called for moderation
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation only."
 		)
 		
 		// Verify no S3 operations for spam
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations for spam."
 		)
 		
@@ -570,10 +570,10 @@ const tests = {
 		
 		// Reset AI mock for other tests
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: ['general'] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -583,15 +583,15 @@ const tests = {
 
 	testSlugGeneration: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return empty topics (no topics database in this test)
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -601,26 +601,26 @@ const tests = {
 		// Setup mock request with title needing slug processing
 		const req = createMockRequest(
 			{ 
-				title: 'Test Post With Special Characters! @#$%',
-				body: 'Body content',
-				path: '/posts',
+				title: "Test Post With Special Characters! @#$%",
+				body: "Body content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-slug',
-				user_id: 'user-slug',
-				display_name: 'Slug User'
+				session_id: "session-slug",
+				user_id: "user-slug",
+				display_name: "Slug User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'slug-post' }] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("INSERT INTO posts", { rows: [{ post_id: "slug-post" }] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT topic_id, topic_name FROM topics", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -630,7 +630,7 @@ const tests = {
 		// Verify slug generation
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'Test_Post_With_Special_Characters_',
+			"Test_Post_With_Special_Characters_",
 			responseData.slug,
 			"Should generate clean slug from title."
 		)
@@ -638,15 +638,15 @@ const tests = {
 
 	testSlugCollisionHandling: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return empty topics (no topics database in this test)
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -656,15 +656,15 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				title: 'Duplicate Title',
-				body: 'Body content',
-				path: '/posts',
+				title: "Duplicate Title",
+				body: "Body content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-collision',
-				user_id: 'user-collision',
-				display_name: 'Collision User'
+				session_id: "session-collision",
+				user_id: "user-collision",
+				display_name: "Collision User"
 			}
 		)
 		
@@ -672,17 +672,17 @@ const tests = {
 		
 		// Setup mock database responses - slug exists
 		req.client.addQueryMock(
-			'SELECT slug FROM posts WHERE slug',
+			"SELECT slug FROM posts WHERE slug",
 			{ 
 				rows: [
-					{ slug: 'Duplicate_Title' }
+					{ slug: "Duplicate_Title" }
 				]
 			}
 		)
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'collision-post' }] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock("INSERT INTO posts", { rows: [{ post_id: "collision-post" }] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT topic_id, topic_name FROM topics", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -705,14 +705,14 @@ const tests = {
 
 	testTopicProcessing: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return specific topics
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
-				return JSON.stringify({ topics: ['technology', 'science', 'unknown-topic'] })
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
+				return JSON.stringify({ topics: ["technology", "science", "unknown-topic"] })
 			}
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -720,37 +720,37 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				title: 'Tech Post',
-				body: 'Technology content',
-				path: '/posts',
+				title: "Tech Post",
+				body: "Technology content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-topics',
-				user_id: 'user-topics',
-				display_name: 'Topic User'
+				session_id: "session-topics",
+				user_id: "user-topics",
+				display_name: "Topic User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'topic-post' }] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("INSERT INTO posts", { rows: [{ post_id: "topic-post" }] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		req.client.addQueryMock(
-			'SELECT topic_id, topic_name FROM topics',
+			"SELECT topic_id, topic_name FROM topics",
 			{ 
 				rows: [
-					{ topic_id: 'topic-tech', topic_name: 'technology' },
-					{ topic_id: 'topic-sci', topic_name: 'science' },
-					{ topic_id: 'topic-gen', topic_name: 'general' }
-					// Note: 'unknown-topic' is not in the database
+					{ topic_id: "topic-tech", topic_name: "technology" },
+					{ topic_id: "topic-sci", topic_name: "science" },
+					{ topic_id: "topic-gen", topic_name: "general" }
+					// Note: "unknown-topic" is not in the database
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
-		req.client.addQueryMock('INSERT INTO post_topics', { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
+		req.client.addQueryMock("INSERT INTO post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -758,10 +758,10 @@ const tests = {
 		await savePost(req, res)
 		
 		// Verify topics AI call
-		const topicsCall = aiAskCalls.find(call => call.type === 'topics')
+		const topics_call = ai_ask_calls.find(call => call.type === "topics")
 		assertEquals(
 			true,
-			topicsCall !== undefined,
+			topics_call !== undefined,
 			"Should call AI for topics."
 		)
 		
@@ -775,10 +775,10 @@ const tests = {
 		
 		// Reset AI mock
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -788,14 +788,14 @@ const tests = {
 
 	testPollsTopicsFiltering: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return polls and asks topics
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
-				return JSON.stringify({ topics: ['polls', 'asks', 'technology'] })
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
+				return JSON.stringify({ topics: ["polls", "asks", "technology"] })
 			}
 			return JSON.stringify({ keyword: "OK" })
 		}
@@ -803,38 +803,38 @@ const tests = {
 		// Setup mock request for poll
 		const req = createMockRequest(
 			{ 
-				title: 'Poll Post',
-				body: 'Poll question',
-				path: '/posts',
+				title: "Poll Post",
+				body: "Poll question",
+				path: "/posts",
 				pngs: [],
-				poll_1: 'Yes',
-				poll_2: 'No'
+				poll_1: "Yes",
+				poll_2: "No"
 			},
 			{ 
-				session_id: 'session-poll-topics',
-				user_id: 'user-poll-topics',
-				display_name: 'Poll User'
+				session_id: "session-poll-topics",
+				user_id: "user-poll-topics",
+				display_name: "Poll User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('INSERT INTO posts', { rows: [{ post_id: 'poll-filter-post' }] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("INSERT INTO posts", { rows: [{ post_id: "poll-filter-post" }] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		req.client.addQueryMock(
-			'SELECT topic_id, topic_name FROM topics',
+			"SELECT topic_id, topic_name FROM topics",
 			{ 
 				rows: [
-					{ topic_id: 'topic-polls', topic_name: 'polls' },
-					{ topic_id: 'topic-asks', topic_name: 'asks' },
-					{ topic_id: 'topic-tech', topic_name: 'technology' }
+					{ topic_id: "topic-polls", topic_name: "polls" },
+					{ topic_id: "topic-asks", topic_name: "asks" },
+					{ topic_id: "topic-tech", topic_name: "technology" }
 				]
 			}
 		)
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
-		req.client.addQueryMock('INSERT INTO post_topics', { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
+		req.client.addQueryMock("INSERT INTO post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -851,10 +851,10 @@ const tests = {
 		
 		// Reset AI mock
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -864,19 +864,19 @@ const tests = {
 
 	testNoActionWhenMissingTitle: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request without title
 		const req = createMockRequest(
 			{ 
-				body: 'Body content',
-				path: '/posts',
+				body: "Body content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: "session-123",
+				user_id: "user-456"
 			}
 		)
 		
@@ -893,31 +893,31 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when title missing."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when title missing."
 		)
 	},
 
 	testNoActionWhenMissingUserId: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request without user_id
 		const req = createMockRequest(
 			{ 
-				title: 'Test Title',
-				body: 'Body content',
-				path: '/posts',
+				title: "Test Title",
+				body: "Body content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
+				session_id: "session-123",
 				user_id: undefined
 			}
 		)
@@ -935,27 +935,27 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when user_id missing."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				title: 'Test Title',
-				body: 'Body content',
-				path: '/posts',
+				title: "Test Title",
+				body: "Body content",
+				path: "/posts",
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: "session-123",
+				user_id: "user-456"
 			}
 		)
 		
@@ -974,22 +974,22 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when response already ended."
 		)
 	},
 
 	testPollVotesCleanupOnUpdate: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
 		
 		// Mock AI to return empty topics (no topics database in this test)
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
-			if (type === 'topics') {
+			ai_ask_calls.push({ messages, type, format })
+			if (type === "topics") {
 				return JSON.stringify({ topics: [] })
-			} else if (type === 'poll_estimate') {
+			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.4, choice_b: 0.3, choice_c: 0.2, choice_d: 0.1 })
 			} else {
 				return JSON.stringify({ keyword: "OK" })
@@ -999,30 +999,30 @@ const tests = {
 		// Setup mock request for poll post update
 		const req = createMockRequest(
 			{ 
-				title: 'Updated Poll',
-				body: 'Updated poll question',
-				path: '/posts',
+				title: "Updated Poll",
+				body: "Updated poll question",
+				path: "/posts",
 				pngs: [],
-				poll_1: 'New Option A',
-				poll_2: 'New Option B',
-				post_id: 'existing-poll-post'
+				poll_1: "New Option A",
+				poll_2: "New Option B",
+				post_id: "existing-poll-post"
 			},
 			{ 
-				session_id: 'session-poll-update',
-				user_id: 'user-poll-update',
-				display_name: 'Poll Update User'
+				session_id: "session-poll-update",
+				user_id: "user-poll-update",
+				display_name: "Poll Update User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT slug FROM posts WHERE slug', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT image_uuids', { rows: [{ image_uuids: '' }] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('SELECT topic_id, topic_name FROM topics', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_topics', { rows: [] })
+		req.client.addQueryMock("SELECT slug FROM posts WHERE slug", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT image_uuids", { rows: [{ image_uuids: "" }] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("SELECT topic_id, topic_name FROM topics", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_topics", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -1032,14 +1032,14 @@ const tests = {
 		// Verify AI was called for poll estimation
 		assertEquals(
 			3,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation, topics, and poll estimation."
 		)
 		
-		const pollEstimateCall = aiAskCalls.find(call => call.type === 'poll_estimate')
+		const poll_estimate_call = ai_ask_calls.find(call => call.type === "poll_estimate")
 		assertEquals(
 			true,
-			pollEstimateCall !== undefined,
+			poll_estimate_call !== undefined,
 			"Should call AI for poll estimation on poll update."
 		)
 		

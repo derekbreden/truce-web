@@ -6,7 +6,7 @@ const {
 	runTests
 } = require("../shared/serverTestSetup.js")
 
-// Import the handler we're testing
+// Import the handler we are testing
 const getSinglePost = require("../../../server/session/getSinglePost.js")
 
 const tests = {
@@ -14,64 +14,64 @@ const tests = {
 		// Setup mock request for post path
 		const req = createMockRequest(
 			{ path: "/post/sample-post-slug" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		// Setup mock database responses for complete post load
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:00:00Z',
-						post_id: 'post-123',
-						title: 'Sample Post Title',
-						user_id: 'user-789',
-						display_name: 'Post Author',
+						create_date: "2024-01-15T10:00:00Z",
+						post_id: "post-123",
+						title: "Sample Post Title",
+						user_id: "user-789",
+						display_name: "Post Author",
 						display_name_index: 0,
-						user_slug: 'post-author',
-						profile_picture_uuid: 'pic-uuid-1',
+						user_slug: "post-author",
+						profile_picture_uuid: "pic-uuid-1",
 						user_verified: true,
-						slug: 'sample-post-slug',
-						body: 'This is the post body content',
-						poll_1: 'Option A',
-						poll_2: 'Option B',
+						slug: "sample-post-slug",
+						body: "This is the post body content",
+						poll_1: "Option A",
+						poll_2: "Option B",
 						poll_3: null,
 						poll_4: null,
-						poll_counts: '5,3',
+						poll_counts: "5,3",
 						poll_counts_estimated: false,
-						note: 'Post note',
+						note: "Post note",
 						favorite_count: 10,
 						reply_count: 5,
-						counts_max_create_date: '2024-01-15T11:00:00Z',
+						counts_max_create_date: "2024-01-15T11:00:00Z",
 						edit: false,
-						image_uuids: 'img1,img2',
+						image_uuids: "img1,img2",
 						favorited: true,
 						replyed: false,
 						voted: false,
-						topics: 'technology,science'
+						topics: "technology,science"
 					}
 				]
 			}
 		)
 		// Mock for root replies
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:30:00Z',
-						reply_id: 'reply-1',
-						body: 'First root reply',
-						note: 'Reply note',
+						create_date: "2024-01-15T10:30:00Z",
+						reply_id: "reply-1",
+						body: "First root reply",
+						note: "Reply note",
 						parent_reply_id: null,
 						favorite_count: 2,
-						counts_max_create_date: '2024-01-15T10:35:00Z',
-						user_id: 'user-456',
-						display_name: 'Replyer 1',
+						counts_max_create_date: "2024-01-15T10:35:00Z",
+						user_id: "user-456",
+						display_name: "Replyer 1",
 						display_name_index: 0,
-						user_slug: 'replyer1',
+						user_slug: "replyer1",
 						profile_picture_uuid: null,
 						user_verified: false,
 						edit: true,
@@ -83,20 +83,20 @@ const tests = {
 		)
 		// Mock for reply replies
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NOT NULL',
+			"r.parent_reply_id IS NOT NULL",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:45:00Z',
-						reply_id: 'reply-2',
-						body: 'Reply to first reply',
-						note: '',
-						parent_reply_id: 'reply-1',
+						create_date: "2024-01-15T10:45:00Z",
+						reply_id: "reply-2",
+						body: "Reply to first reply",
+						note: "",
+						parent_reply_id: "reply-1",
 						favorite_count: 1,
-						user_id: 'user-999',
-						display_name: 'Replier',
+						user_id: "user-999",
+						display_name: "Replier",
 						display_name_index: 1,
-						user_slug: 'replier',
+						user_slug: "replier",
 						edit: false,
 						favorited: true
 					}
@@ -121,17 +121,17 @@ const tests = {
 			"Should return single post."
 		)
 		assertEquals(
-			'Sample Post Title',
+			"Sample Post Title",
 			req.results.posts[0].title,
 			"Should include post title."
 		)
 		assertEquals(
-			'This is the post body content',
+			"This is the post body content",
 			req.results.posts[0].body,
 			"Should include post body."
 		)
 		assertEquals(
-			'technology,science',
+			"technology,science",
 			req.results.posts[0].topics,
 			"Should include post topics."
 		)
@@ -143,7 +143,7 @@ const tests = {
 			"Should load root and reply replies."
 		)
 		assertEquals(
-			'reply-1',
+			"reply-1",
 			req.results.replies[0].reply_id,
 			"First reply should be root reply."
 		)
@@ -153,12 +153,12 @@ const tests = {
 			"Root reply should have null parent."
 		)
 		assertEquals(
-			'reply-2',
+			"reply-2",
 			req.results.replies[1].reply_id,
 			"Second reply should be reply."
 		)
 		assertEquals(
-			'reply-1',
+			"reply-1",
 			req.results.replies[1].parent_reply_id,
 			"Reply should reference parent reply."
 		)
@@ -169,25 +169,25 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				path: "/post/sample-post-slug",
-				max_reply_create_date: '2024-01-15T12:00:00Z'
+				max_reply_create_date: "2024-01-15T12:00:00Z"
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		// Setup mocks for post_id lookup only
 		req.client.addQueryMock(
-			'SELECT p.post_id as post_id',
+			"SELECT p.post_id as post_id",
 			{ 
-				rows: [{ post_id: 'post-123' }]
+				rows: [{ post_id: "post-123" }]
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -214,20 +214,20 @@ const tests = {
 	},
 
 	testPostNotFound: async () => {
-		// Test when post doesn't exist or is blocked/flagged
+		// Test when post does not exist or is blocked/flagged
 		const req = createMockRequest(
 			{ path: "/post/nonexistent-post" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		// Setup mock responses for no results
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT p.post_id as post_id',
+			"SELECT p.post_id as post_id",
 			{ rows: [] }
 		)
 		
@@ -257,7 +257,7 @@ const tests = {
 		// Setup mock request with wrong path format
 		const req = createMockRequest(
 			{ path: "/reply/123" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
@@ -283,7 +283,7 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ path: "/post/sample-post" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
@@ -304,40 +304,40 @@ const tests = {
 
 	testSlugExtraction: async () => {
 		// Test various post slug formats
-		const testCases = [
+		const test_cases = [
 			{ path: "/post/simple", expectedSlug: "simple" },
 			{ path: "/post/post-with-dashes", expectedSlug: "post-with-dashes" },
 			{ path: "/post/123-numeric-slug", expectedSlug: "123-numeric-slug" }
 		]
 		
-		for (const testCase of testCases) {
+		for (const test_case of test_cases) {
 			const req = createMockRequest(
-				{ path: testCase.path },
-				{ user_id: 'user-456' }
+				{ path: test_case.path },
+				{ user_id: "user-456" }
 			)
 			req.results = { posts: [], replies: [] }
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'FROM posts p',
+				"FROM posts p",
 				{ 
 					rows: [
 						{
-							post_id: 'post-test',
-							title: 'Test Post',
-							slug: testCase.expectedSlug,
-							user_id: 'user-789',
-							display_name: 'Author'
+							post_id: "post-test",
+							title: "Test Post",
+							slug: test_case.expectedSlug,
+							user_id: "user-789",
+							display_name: "Author"
 						}
 					]
 				}
 			)
 			req.client.addQueryMock(
-				'r.parent_reply_id IS NULL',
+				"r.parent_reply_id IS NULL",
 				{ rows: [] }
 			)
 			req.client.addQueryMock(
-				'reply_ancestors',
+				"reply_ancestors",
 				{ rows: [] }
 			)
 			
@@ -346,9 +346,9 @@ const tests = {
 			await getSinglePost(req, res)
 			
 			assertEquals(
-				testCase.expectedSlug,
+				test_case.expectedSlug,
 				req.results.posts[0].slug,
-				`Should extract slug correctly from path: ${testCase.path}.`
+				`Should extract slug correctly from path: ${test_case.path}.`
 			)
 		}
 	},
@@ -357,37 +357,37 @@ const tests = {
 		// Test poll data handling
 		const req = createMockRequest(
 			{ path: "/post/poll-post" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						post_id: 'poll-post-123',
-						title: 'Poll Post',
-						slug: 'poll-post',
-						poll_1: 'Yes',
-						poll_2: 'No',
-						poll_3: 'Maybe',
+						post_id: "poll-post-123",
+						title: "Poll Post",
+						slug: "poll-post",
+						poll_1: "Yes",
+						poll_2: "No",
+						poll_3: "Maybe",
 						poll_4: null,
-						poll_counts: '10,5,2',
+						poll_counts: "10,5,2",
 						poll_counts_estimated: false,
 						voted: true,
-						user_id: 'user-789',
-						display_name: 'Poll Creator'
+						user_id: "user-789",
+						display_name: "Poll Creator"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -398,11 +398,11 @@ const tests = {
 		const post = req.results.posts[0]
 		
 		// Verify poll data
-		assertEquals('Yes', post.poll_1, "Should include poll option 1.")
-		assertEquals('No', post.poll_2, "Should include poll option 2.")
-		assertEquals('Maybe', post.poll_3, "Should include poll option 3.")
+		assertEquals("Yes", post.poll_1, "Should include poll option 1.")
+		assertEquals("No", post.poll_2, "Should include poll option 2.")
+		assertEquals("Maybe", post.poll_3, "Should include poll option 3.")
 		assertEquals(null, post.poll_4, "Should handle null poll option 4.")
-		assertEquals('10,5,2', post.poll_counts, "Should include poll counts.")
+		assertEquals("10,5,2", post.poll_counts, "Should include poll counts.")
 		assertEquals(false, post.poll_counts_estimated, "Should include poll estimation status.")
 		assertEquals(true, post.voted, "Should indicate if user voted.")
 	},
@@ -411,19 +411,19 @@ const tests = {
 		// Test edit permissions and user status
 		const req = createMockRequest(
 			{ path: "/post/user-post" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						post_id: 'user-post-123',
-						title: 'User Post',
-						user_id: 'user-456', // Same as requesting user
-						display_name: 'Current User',
+						post_id: "user-post-123",
+						title: "User Post",
+						user_id: "user-456", // Same as requesting user
+						display_name: "Current User",
 						edit: true,
 						favorited: false,
 						replyed: true,
@@ -433,11 +433,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -463,14 +463,14 @@ const tests = {
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						post_id: 'public-post-123',
-						title: 'Public Post',
-						user_id: 'user-789',
-						display_name: 'Author',
+						post_id: "public-post-123",
+						title: "Public Post",
+						user_id: "user-789",
+						display_name: "Author",
 						edit: false,
 						favorited: false,
 						replyed: false,
@@ -480,11 +480,11 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -510,44 +510,44 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				path: "/post/filtered-post",
-				min_post_create_date: '2024-01-10T00:00:00Z',
-				min_reply_create_date: '2024-01-12T00:00:00Z'
+				min_post_create_date: "2024-01-10T00:00:00Z",
+				min_reply_create_date: "2024-01-12T00:00:00Z"
 				// max_reply_create_date removed so post will be loaded
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						post_id: 'filtered-post-123',
-						title: 'Filtered Post',
-						create_date: '2024-01-15T10:00:00Z',
-						user_id: 'user-789',
-						display_name: 'Author'
+						post_id: "filtered-post-123",
+						title: "Filtered Post",
+						create_date: "2024-01-15T10:00:00Z",
+						user_id: "user-789",
+						display_name: "Author"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ 
 				rows: [
 					{
-						reply_id: 'filtered-reply-1',
-						body: 'Filtered reply',
-						create_date: '2024-01-14T10:00:00Z',
-						user_id: 'user-456',
-						display_name: 'Replyer'
+						reply_id: "filtered-reply-1",
+						body: "Filtered reply",
+						create_date: "2024-01-14T10:00:00Z",
+						user_id: "user-456",
+						display_name: "Replyer"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -572,52 +572,52 @@ const tests = {
 		// Test that all expected post fields are present
 		const req = createMockRequest(
 			{ path: "/post/complete-post" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:00:00Z',
-						post_id: 'complete-post-123',
-						title: 'Complete Post Title',
-						user_id: 'user-789',
-						display_name: 'Complete Author',
+						create_date: "2024-01-15T10:00:00Z",
+						post_id: "complete-post-123",
+						title: "Complete Post Title",
+						user_id: "user-789",
+						display_name: "Complete Author",
 						display_name_index: 2,
-						user_slug: 'complete-author',
-						profile_picture_uuid: 'pic-uuid',
+						user_slug: "complete-author",
+						profile_picture_uuid: "pic-uuid",
 						user_verified: true,
-						slug: 'complete-post',
-						body: 'Complete post body',
-						poll_1: 'Poll Option 1',
-						poll_2: 'Poll Option 2',
+						slug: "complete-post",
+						body: "Complete post body",
+						poll_1: "Poll Option 1",
+						poll_2: "Poll Option 2",
 						poll_3: null,
 						poll_4: null,
-						poll_counts: '8,3',
+						poll_counts: "8,3",
 						poll_counts_estimated: true,
-						note: 'Post note',
+						note: "Post note",
 						favorite_count: 15,
 						reply_count: 8,
-						counts_max_create_date: '2024-01-15T11:00:00Z',
+						counts_max_create_date: "2024-01-15T11:00:00Z",
 						edit: false,
-						image_uuids: 'img1,img2,img3',
+						image_uuids: "img1,img2,img3",
 						favorited: true,
 						replyed: true,
 						voted: false,
-						topics: 'technology,science,innovation'
+						topics: "technology,science,innovation"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'r.parent_reply_id IS NULL',
+			"r.parent_reply_id IS NULL",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'reply_ancestors',
+			"reply_ancestors",
 			{ rows: [] }
 		)
 		
@@ -628,47 +628,47 @@ const tests = {
 		const post = req.results.posts[0]
 		
 		// Verify all fields are present
-		assertEquals('2024-01-15T10:00:00Z', post.create_date, "Should have create_date.")
-		assertEquals('complete-post-123', post.post_id, "Should have post_id.")
-		assertEquals('Complete Post Title', post.title, "Should have title.")
-		assertEquals('user-789', post.user_id, "Should have user_id.")
-		assertEquals('Complete Author', post.display_name, "Should have display_name.")
+		assertEquals("2024-01-15T10:00:00Z", post.create_date, "Should have create_date.")
+		assertEquals("complete-post-123", post.post_id, "Should have post_id.")
+		assertEquals("Complete Post Title", post.title, "Should have title.")
+		assertEquals("user-789", post.user_id, "Should have user_id.")
+		assertEquals("Complete Author", post.display_name, "Should have display_name.")
 		assertEquals(2, post.display_name_index, "Should have display_name_index.")
-		assertEquals('complete-author', post.user_slug, "Should have user_slug.")
-		assertEquals('pic-uuid', post.profile_picture_uuid, "Should have profile_picture_uuid.")
+		assertEquals("complete-author", post.user_slug, "Should have user_slug.")
+		assertEquals("pic-uuid", post.profile_picture_uuid, "Should have profile_picture_uuid.")
 		assertEquals(true, post.user_verified, "Should have user_verified.")
-		assertEquals('complete-post', post.slug, "Should have slug.")
-		assertEquals('Complete post body', post.body, "Should have body.")
-		assertEquals('Poll Option 1', post.poll_1, "Should have poll_1.")
-		assertEquals('Poll Option 2', post.poll_2, "Should have poll_2.")
-		assertEquals('8,3', post.poll_counts, "Should have poll_counts.")
+		assertEquals("complete-post", post.slug, "Should have slug.")
+		assertEquals("Complete post body", post.body, "Should have body.")
+		assertEquals("Poll Option 1", post.poll_1, "Should have poll_1.")
+		assertEquals("Poll Option 2", post.poll_2, "Should have poll_2.")
+		assertEquals("8,3", post.poll_counts, "Should have poll_counts.")
 		assertEquals(true, post.poll_counts_estimated, "Should have poll_counts_estimated.")
-		assertEquals('Post note', post.note, "Should have note.")
+		assertEquals("Post note", post.note, "Should have note.")
 		assertEquals(15, post.favorite_count, "Should have favorite_count.")
 		assertEquals(8, post.reply_count, "Should have reply_count.")
-		assertEquals('2024-01-15T11:00:00Z', post.counts_max_create_date, "Should have counts_max_create_date.")
+		assertEquals("2024-01-15T11:00:00Z", post.counts_max_create_date, "Should have counts_max_create_date.")
 		assertEquals(false, post.edit, "Should have edit permission.")
-		assertEquals('img1,img2,img3', post.image_uuids, "Should have image_uuids.")
+		assertEquals("img1,img2,img3", post.image_uuids, "Should have image_uuids.")
 		assertEquals(true, post.favorited, "Should have favorited status.")
 		assertEquals(true, post.replyed, "Should have replyed status.")
 		assertEquals(false, post.voted, "Should have voted status.")
-		assertEquals('technology,science,innovation', post.topics, "Should have topics.")
+		assertEquals("technology,science,innovation", post.topics, "Should have topics.")
 	},
 
 	testEmptyPostSlug: async () => {
 		// Test edge case with empty post slug
 		const req = createMockRequest(
 			{ path: "/post/" },
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = { posts: [], replies: [] }
 		
 		req.client.addQueryMock(
-			'FROM posts p',
+			"FROM posts p",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT p.post_id as post_id',
+			"SELECT p.post_id as post_id",
 			{ rows: [] }
 		)
 		

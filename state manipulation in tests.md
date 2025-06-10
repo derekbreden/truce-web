@@ -17,4 +17,6 @@ None of this state manipulation or state checking is necessary or desired.
 
 It adds noise to the tests in reading them, and it doesn't help me verify anything the way it will actually happen in the browser for users.
 
+Please keep in mind, as you consider your plan here, that we DO NOT want to have guard assertions that check for the existence of an element before checking some content on that element or some inner element within that parent element. Anytime you are simply checking the existence of an element, it is a bad sign, unless you truly need to and you absolutely do not check anything more precise on it after that (but really, shouldn't you be checking something more precise??)
+
 I don't want you to make any changes yet. I'd like you to read some test files, see if you can find what I'm talking about, and come back to me with a plan. A plan that includes running tests before and after all incremental changes.

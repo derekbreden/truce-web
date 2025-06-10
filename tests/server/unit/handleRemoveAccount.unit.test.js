@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate successful S3 operations
 		return { $metadata: { httpStatusCode: 200 } }
 	}
@@ -16,7 +16,7 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -24,9 +24,9 @@ require.cache[awsS3Path] = {
 }
 
 // Mock crypto.randomUUID by replacing the node:crypto module
-let mockUuidResult = 'test-session-uuid-123'
+let mock_uuid_result = "test-session-uuid-123"
 const mockCrypto = {
-	randomUUID: () => mockUuidResult
+	randomUUID: () => mock_uuid_result
 }
 
 // Clear and replace node:crypto in require cache
@@ -63,7 +63,7 @@ const handleRemoveAccount = require("../../../server/session/handleRemoveAccount
 const tests = {
 	testSuccessfulAccountRemoval: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -71,60 +71,60 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: "session-123",
+				user_id: "user-456"
 			}
 		)
 		
 		// Setup mock database responses for images deletion
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ 
 				rows: [
 					{
-						image_uuids: 'image1-uuid,image2-uuid,image3-uuid'
+						image_uuids: "image1-uuid,image2-uuid,image3-uuid"
 					},
 					{
-						image_uuids: 'image4-uuid'
+						image_uuids: "image4-uuid"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
-						profile_picture_uuid: 'profile-uuid-789'
+						profile_picture_uuid: "profile-uuid-789"
 					}
 				]
 			}
 		)
 		
 		// Setup mocks for all deletion operations
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
 		
 		// Setup mocks for count updates
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		// Setup mock for new session creation
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ 
 				rows: [
 					{
-						session_id: 'new-session-999'
+						session_id: "new-session-999"
 					}
 				]
 			}
@@ -138,19 +138,19 @@ const tests = {
 		// Verify S3 image deletions
 		assertEquals(
 			5,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should delete 5 images (4 from content + 1 profile picture)."
 		)
 		
 		// Verify all S3 commands are delete operations
-		s3SendCalls.forEach((command, index) => {
+		s3_send_calls.forEach((command, index) => {
 			assertEquals(
-				'Delete',
+				"Delete",
 				command.commandType,
 				`S3 command ${index} should be delete operation.`
 			)
 			assertEquals(
-				'truce.net',
+				"truce.net",
 				command.input.Bucket,
 				`S3 command ${index} should target correct bucket.`
 			)
@@ -158,16 +158,16 @@ const tests = {
 		
 		// Verify specific image deletions
 		const expectedImages = [
-			'image1-uuid.png',
-			'image2-uuid.png', 
-			'image3-uuid.png',
-			'image4-uuid.png',
-			'profile-uuid-789.png'
+			"image1-uuid.png",
+			"image2-uuid.png", 
+			"image3-uuid.png",
+			"image4-uuid.png",
+			"profile-uuid-789.png"
 		]
 		expectedImages.forEach((expectedImage, index) => {
 			assertEquals(
 				expectedImage,
-				s3SendCalls[index].input.Key,
+				s3_send_calls[index].input.Key,
 				`Should delete image ${expectedImage}.`
 			)
 		})
@@ -179,7 +179,7 @@ const tests = {
 			"Should update session UUID to proper format."
 		)
 		assertEquals(
-			'new-session-999',
+			"new-session-999",
 			req.session.session_id,
 			"Should update session ID."
 		)
@@ -224,7 +224,7 @@ const tests = {
 
 	testAccountRemovalWithNoImages: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -239,11 +239,11 @@ const tests = {
 		
 		// Setup mock database responses with no images
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ rows: [] } // No content images
 		)
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -254,22 +254,22 @@ const tests = {
 		)
 		
 		// Setup mocks for all deletion operations
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ 
 				rows: [
 					{
@@ -287,7 +287,7 @@ const tests = {
 		// Verify no S3 operations when no images
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when no images."
 		)
 		
@@ -302,7 +302,7 @@ const tests = {
 
 	testAccountRemovalWithProfilePictureOnly: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -317,11 +317,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ rows: [] } // No content images
 		)
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -332,22 +332,22 @@ const tests = {
 		)
 		
 		// Setup mocks for deletion operations
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ 
 				rows: [
 					{
@@ -365,12 +365,12 @@ const tests = {
 		// Verify only profile picture deletion
 		assertEquals(
 			1,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should delete only profile picture."
 		)
 		assertEquals(
 			'only-profile-uuid.png',
-			s3SendCalls[0].input.Key,
+			s3_send_calls[0].input.Key,
 			"Should delete profile picture."
 		)
 		
@@ -385,7 +385,7 @@ const tests = {
 
 	testImageProcessingWithEmptyUuids: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -400,7 +400,7 @@ const tests = {
 		
 		// Setup mock database responses with empty image_uuids strings
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ 
 				rows: [
 					{
@@ -413,7 +413,7 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT profile_picture_uuid',
+			"SELECT profile_picture_uuid",
 			{ 
 				rows: [
 					{
@@ -424,22 +424,22 @@ const tests = {
 		)
 		
 		// Setup mocks for deletion operations
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ 
 				rows: [
 					{
@@ -457,24 +457,24 @@ const tests = {
 		// Should delete both: empty string becomes ".png" and valid UUID becomes "valid-uuid.png"
 		assertEquals(
 			2,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should attempt to delete both empty and valid UUID images."
 		)
 		assertEquals(
 			'.png',
-			s3SendCalls[0].input.Key,
+			s3_send_calls[0].input.Key,
 			"Should attempt to delete empty string as .png."
 		)
 		assertEquals(
 			'valid-uuid.png',
-			s3SendCalls[1].input.Key,
+			s3_send_calls[1].input.Key,
 			"Should delete the valid UUID."
 		)
 	},
 
 	testDatabaseDeletionSequence: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -496,35 +496,35 @@ const tests = {
 				dbOperations.push('SELECT_IMAGES')
 			} else if (sql.includes('SELECT profile_picture_uuid')) {
 				dbOperations.push('SELECT_PROFILE')
-			} else if (sql.includes('DELETE FROM reply_ancestors')) {
+			} else if (sql.includes("DELETE FROM reply_ancestors")) {
 				dbOperations.push('DELETE_REPLY_ANCESTORS')
-			} else if (sql.includes('DELETE FROM favorite_posts')) {
+			} else if (sql.includes("DELETE FROM favorite_posts")) {
 				dbOperations.push('DELETE_FAVORITE_POSTS')
-			} else if (sql.includes('DELETE FROM favorite_replies')) {
+			} else if (sql.includes("DELETE FROM favorite_replies")) {
 				dbOperations.push('DELETE_FAVORITE_REPLIES')
-			} else if (sql.includes('DELETE FROM blocked_users')) {
+			} else if (sql.includes("DELETE FROM blocked_users")) {
 				dbOperations.push('DELETE_BLOCKED_USERS')
-			} else if (sql.includes('DELETE FROM post_poll_votes') && sql.includes('post_id IN')) {
+			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes('post_id IN')) {
 				dbOperations.push('DELETE_POLL_VOTES_BY_TOPIC')
-			} else if (sql.includes('DELETE FROM post_poll_votes') && sql.includes('user_id = $1')) {
+			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes('user_id = $1')) {
 				dbOperations.push('DELETE_POLL_VOTES_BY_USER')
-			} else if (sql.includes('DELETE FROM subscribers')) {
+			} else if (sql.includes("DELETE FROM subscribers")) {
 				dbOperations.push('DELETE_SUBSCRIBERS')
-			} else if (sql.includes('DELETE FROM sessions')) {
+			} else if (sql.includes("DELETE FROM sessions")) {
 				dbOperations.push('DELETE_SESSIONS')
-			} else if (sql.includes('DELETE FROM user_sessions')) {
+			} else if (sql.includes("DELETE FROM user_sessions")) {
 				dbOperations.push('DELETE_USER_SESSIONS')
-			} else if (sql.includes('DELETE FROM replies')) {
+			} else if (sql.includes("DELETE FROM replies")) {
 				dbOperations.push('DELETE_REPLIES')
-			} else if (sql.includes('DELETE FROM posts')) {
+			} else if (sql.includes("DELETE FROM posts")) {
 				dbOperations.push('DELETE_POSTS')
-			} else if (sql.includes('DELETE FROM users')) {
+			} else if (sql.includes("DELETE FROM users")) {
 				dbOperations.push('DELETE_USERS')
-			} else if (sql.includes('UPDATE replies')) {
+			} else if (sql.includes("UPDATE replies")) {
 				dbOperations.push('UPDATE_REPLIES')
-			} else if (sql.includes('UPDATE posts') && sql.includes('favorite_count')) {
+			} else if (sql.includes("UPDATE posts") && sql.includes('favorite_count')) {
 				dbOperations.push('UPDATE_POSTS_FAVORITES')
-			} else if (sql.includes('UPDATE posts') && sql.includes('reply_count')) {
+			} else if (sql.includes("UPDATE posts") && sql.includes('reply_count')) {
 				dbOperations.push('UPDATE_POSTS_COMMENTS')
 			} else if (sql.includes('INSERT INTO sessions')) {
 				dbOperations.push('INSERT_SESSION')
@@ -535,22 +535,22 @@ const tests = {
 		}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT image_uuids', { rows: [] })
-		req.client.addQueryMock('SELECT profile_picture_uuid', { rows: [{ profile_picture_uuid: null }] })
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('INSERT INTO sessions', { rows: [{ session_id: 'new-session' }] })
+		req.client.addQueryMock("SELECT image_uuids", { rows: [] })
+		req.client.addQueryMock("SELECT profile_picture_uuid", { rows: [{ profile_picture_uuid: null }] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("INSERT INTO sessions", { rows: [{ session_id: 'new-session' }] })
 		
 		const res = createMockResponse()
 		
@@ -604,14 +604,14 @@ const tests = {
 
 	testNoActionWhenMissingRemoveAccount: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request without remove_account flag
 		const req = createMockRequest(
 			{}, // No remove_account
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: "session-123",
+				user_id: "user-456"
 			}
 		)
 		
@@ -628,14 +628,14 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when remove_account missing."
 		)
 	},
 
 	testNoActionWhenMissingUserId: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request without user_id
 		const req = createMockRequest(
@@ -643,7 +643,7 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-123',
+				session_id: "session-123",
 				user_id: undefined // No user_id
 			}
 		)
@@ -661,14 +661,14 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when user_id missing."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -676,8 +676,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: "session-123",
+				user_id: "user-456"
 			}
 		)
 		
@@ -696,14 +696,14 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when response already ended."
 		)
 	},
 
 	testSessionCreationAndCookie: async () => {
 		// Reset all calls
-		s3SendCalls = []
+		s3_send_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
@@ -717,23 +717,23 @@ const tests = {
 		)
 		
 		// Setup minimal mocks
-		req.client.addQueryMock('SELECT image_uuids', { rows: [] })
-		req.client.addQueryMock('SELECT profile_picture_uuid', { rows: [{ profile_picture_uuid: null }] })
-		req.client.addQueryMock('DELETE FROM reply_ancestors', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM favorite_replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM blocked_users', { rows: [] })
-		req.client.addQueryMock('DELETE FROM post_poll_votes', { rows: [] })
-		req.client.addQueryMock('DELETE FROM subscribers', { rows: [] })
-		req.client.addQueryMock('DELETE FROM sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM user_sessions', { rows: [] })
-		req.client.addQueryMock('DELETE FROM replies', { rows: [] })
-		req.client.addQueryMock('DELETE FROM posts', { rows: [] })
-		req.client.addQueryMock('DELETE FROM users', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("SELECT image_uuids", { rows: [] })
+		req.client.addQueryMock("SELECT profile_picture_uuid", { rows: [{ profile_picture_uuid: null }] })
+		req.client.addQueryMock("DELETE FROM reply_ancestors", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM favorite_replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM blocked_users", { rows: [] })
+		req.client.addQueryMock("DELETE FROM post_poll_votes", { rows: [] })
+		req.client.addQueryMock("DELETE FROM subscribers", { rows: [] })
+		req.client.addQueryMock("DELETE FROM sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM user_sessions", { rows: [] })
+		req.client.addQueryMock("DELETE FROM replies", { rows: [] })
+		req.client.addQueryMock("DELETE FROM posts", { rows: [] })
+		req.client.addQueryMock("DELETE FROM users", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ 
 				rows: [
 					{

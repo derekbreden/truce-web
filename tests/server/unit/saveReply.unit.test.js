@@ -15,15 +15,15 @@ process.env.VAPID_PUBLIC_KEY = "test-vapid-public-key"
 process.env.VAPID_PRIVATE_KEY = "test-vapid-private-key"
 
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate different S3 responses based on command type
-		if (command.commandType === 'GetObject') {
+		if (command.commandType === "GetObject") {
 			return {
 				Body: {
-					transformToString: async () => 'data:image/png;base64,mockImageData'
+					transformToString: async () => "data:image/png;base64,mockImageData"
 				}
 			}
 		}
@@ -40,15 +40,15 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		GetObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'GetObject'
+			this.commandType = "GetObject"
 		},
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -56,10 +56,10 @@ require.cache[awsS3Path] = {
 }
 
 // Mock AI module (internal dependency - use real one but control responses)
-let aiAskCalls = []
+let ai_ask_calls = []
 const mockAI = {
 	ask: async (messages, type, format) => {
-		aiAskCalls.push({ messages, type, format })
+		ai_ask_calls.push({ messages, type, format })
 		// Default to OK for content moderation
 		return JSON.stringify({ keyword: "OK" })
 	}
@@ -75,9 +75,9 @@ require.cache[aiPath] = {
 }
 
 // Mock crypto.randomUUID
-let mockUuidResult = 'test-uuid-123'
+let mock_uuid_result = "test-uuid-123"
 const mockCrypto = {
-	randomUUID: () => mockUuidResult
+	randomUUID: () => mock_uuid_result
 }
 
 // Clear and replace node:crypto in require cache
@@ -97,11 +97,11 @@ require.cache[cryptoPath] = {
 }
 
 // Mock web-push (external dependency)
-let webPushCalls = []
+let web_push_calls = []
 const mockWebPush = {
 	setVapidDetails: () => {},
 	sendNotification: async (subscription, payload) => {
-		webPushCalls.push({ subscription, payload })
+		web_push_calls.push({ subscription, payload })
 		return Promise.resolve()
 	}
 }
@@ -116,11 +116,11 @@ require.cache[webPushPath] = {
 }
 
 // Mock Firebase Admin (external dependency)
-let fcmSendCalls = []
+let fcm_send_calls = []
 const mockFCMMessaging = {
 	send: async (message) => {
-		fcmSendCalls.push(message)
-		return 'fcm-message-id-123'
+		fcm_send_calls.push(message)
+		return "fcm-message-id-123"
 	}
 }
 
@@ -161,7 +161,7 @@ require.cache[firebaseMessagingPath] = {
 }
 
 // Track updateDisplayName calls by monitoring for its specific database query
-let updateDisplayNameCalls = []
+let update_display_name_calls = []
 
 const path = require("path")
 const {
@@ -175,7 +175,7 @@ const {
 const saveReplyPath = require.resolve("../../../server/session/saveReply.js")
 delete require.cache[saveReplyPath]
 
-// Import the handler we're testing (after mocking everything)
+// Import the handler we"re testing (after mocking everything)
 const saveReply = require("../../../server/session/saveReply.js")
 
 // Import prompts for verification
@@ -184,26 +184,26 @@ const prompts = require("../../../server/prompts.js")
 const tests = {
 	testSuccessfulPostReply: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request for new reply on post
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test User',
-				body: 'This is a test reply on a post.',
-				path: '/post/456',
+				display_name: "Test User",
+				body: "This is a test reply on a post.",
+				path: "/post/456",
 				pngs: [
-					{ url: 'data:image/png;base64,image1data' }
+					{ url: "data:image/png;base64,image1data" }
 				]
 			},
 			{ 
-				session_id: '123',
-				user_id: '456',
-				display_name: 'Test User'
+				session_id: "123",
+				user_id: "456",
+				display_name: "Test User"
 			}
 		)
 		
@@ -215,7 +215,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT post_id as post_id',
+			"SELECT post_id as post_id",
 			{ 
 				rows: [
 					{ post_id: 789 }
@@ -223,43 +223,43 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT\n        t.title,',
+			"SELECT\n        t.title,",
 			{ 
 				rows: [
 					{
-						title: 'Test Post Title',
-						body: 'Test post body content',
+						title: "Test Post Title",
+						body: "Test post body content",
 						note: null,
-						display_name: 'Post Author',
-						image_uuids: 'post-image-uuid'
+						display_name: "Post Author",
+						image_uuids: "post-image-uuid"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO replies',
+			"INSERT INTO replies",
 			{ 
 				rows: [
 					{ reply_id: 123 }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] }) // subscriptions
-		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] }) // notifications
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] }) // updateDisplayName
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT\n        user_id,", { rows: [] }) // subscriptions
+		req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [] }) // notifications
 		
 		const res = createMockResponse()
 		
 		// Track updateDisplayName calls by monitoring for its specific database query
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
 			// Check if this is the updateDisplayName query
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
 		// Execute the handler
@@ -271,60 +271,60 @@ const tests = {
 		// Verify AI moderation was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for content moderation."
 		)
 		
-		const moderationCall = aiAskCalls[0]
+		const moderation_call = ai_ask_calls[0]
 		assertEquals(
-			'common',
-			moderationCall.type,
+			"common",
+			moderation_call.type,
 			"Should use common type for moderation."
 		)
 		assertEquals(
 			prompts.common_response_format,
-			moderationCall.format,
+			moderation_call.format,
 			"Should use common response format."
 		)
 		
 		// Verify moderation includes post context
 		assertEquals(
 			true,
-			moderationCall.messages.length >= 3,
+			moderation_call.messages.length >= 3,
 			"Should include post, system response, and reply in messages."
 		)
 		assertEquals(
-			'Test Post Title\n\nTest post body content',
-			moderationCall.messages[0].content[0].text,
+			"Test Post Title\n\nTest post body content",
+			moderation_call.messages[0].content[0].text,
 			"Should include post title and body."
 		)
 		assertEquals(
-			'Test User:\nThis is a test reply on a post.',
-			moderationCall.messages[2].content[0].text,
+			"Test User:\nThis is a test reply on a post.",
+			moderation_call.messages[2].content[0].text,
 			"Should include reply with display name (original in content)."
 		)
 		
 		// Verify S3 operations
 		assertEquals(
 			2,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform 2 S3 operations: get post image + upload reply image."
 		)
 		assertEquals(
-			'GetObject',
-			s3SendCalls[0].commandType,
+			"GetObject",
+			s3_send_calls[0].commandType,
 			"First S3 operation should get post image."
 		)
 		assertEquals(
-			'PutObject',
-			s3SendCalls[1].commandType,
+			"PutObject",
+			s3_send_calls[1].commandType,
 			"Second S3 operation should upload reply image."
 		)
 		
 		// Verify updateDisplayName was called
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName."
 		)
 		
@@ -335,15 +335,15 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should return success."
 		)
 		assertEquals(
-			'456',
-			responseData.user_id,
+			"456",
+			response_data.user_id,
 			"Should return user ID."
 		)
 		
@@ -354,7 +354,7 @@ const tests = {
 			"Should send websocket update."
 		)
 		assertEquals(
-			'UPDATE',
+			"UPDATE",
 			req.wsMessages[0].type,
 			"Should send UPDATE message."
 		)
@@ -367,25 +367,25 @@ const tests = {
 
 	testSuccessfulReplyReply: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request for reply to reply
 		const req = createMockRequest(
 			{ 
-				display_name: 'Reply User',
-				body: 'This is a reply to another reply.',
-				path: '/reply/parent-reply-456',
+				display_name: "Reply User",
+				body: "This is a reply to another reply.",
+				path: "/reply/parent-reply-456",
 				pngs: [],
 				parent_reply_id: 456
 			},
 			{ 
-				session_id: '789',
-				user_id: '101',
-				display_name: 'Reply User'
+				session_id: "789",
+				user_id: "101",
+				display_name: "Reply User"
 			}
 		)
 		
@@ -393,7 +393,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT parent_post_id',
+			"SELECT parent_post_id",
 			{ 
 				rows: [
 					{ parent_post_id: 234 }
@@ -401,26 +401,26 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT\n        t.title,',
+			"SELECT\n        t.title,",
 			{ 
 				rows: [
 					{
-						title: 'Parent Post',
-						body: 'Parent post content',
+						title: "Parent Post",
+						body: "Parent post content",
 						note: null,
-						display_name: 'Post Creator',
+						display_name: "Post Creator",
 						image_uuids: null
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'SELECT\n          u.display_name,',
+			"SELECT\n          u.display_name,",
 			{ 
 				rows: [
 					{
-						display_name: 'Parent Reply Author',
-						body: 'Parent reply content',
+						display_name: "Parent Reply Author",
+						body: "Parent reply content",
 						note: null,
 						reply_id: 456,
 						image_uuids: null
@@ -429,18 +429,18 @@ const tests = {
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO replies',
+			"INSERT INTO replies",
 			{ 
 				rows: [
 					{ reply_id: 789 }
 				]
 			}
 		)
-		req.client.addQueryMock('INSERT INTO reply_ancestors', { rows: [] })
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
+		req.client.addQueryMock("INSERT INTO reply_ancestors", { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT\n        user_id,", { rows: [] })
+		req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -450,87 +450,87 @@ const tests = {
 		// Verify AI moderation includes ancestor context
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation."
 		)
 		
-		const moderationCall = aiAskCalls[0]
+		const moderation_call = ai_ask_calls[0]
 		assertEquals(
 			true,
-			moderationCall.messages.length >= 5,
+			moderation_call.messages.length >= 5,
 			"Should include post, system, replies header, parent reply, system, and reply."
 		)
 		assertEquals(
-			'Replies:',
-			moderationCall.messages[2].content,
+			"Replies:",
+			moderation_call.messages[2].content,
 			"Should include replies header."
 		)
 		assertEquals(
-			'Parent Reply Author:\nParent reply content',
-			moderationCall.messages[3].content[0].text,
+			"Parent Reply Author:\nParent reply content",
+			moderation_call.messages[3].content[0].text,
 			"Should include parent reply context."
 		)
 		
 		// Verify successful response
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should succeed with reply reply."
 		)
 	},
 
 	testReplyUpdate: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request for reply update
 		const req = createMockRequest(
 			{ 
-				display_name: 'Update User',
-				body: 'Updated reply content.',
-				path: '/post/test-slug',
+				display_name: "Update User",
+				body: "Updated reply content.",
+				path: "/post/test-slug",
 				pngs: [
-					{ url: 'data:image/png;base64,newimage' }
+					{ url: "data:image/png;base64,newimage" }
 				],
 				reply_id: 123
 			},
 			{ 
-				session_id: '234',
-				user_id: '345',
-				display_name: 'Update User'
+				session_id: "234",
+				user_id: "345",
+				display_name: "Update User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 567 }] })
-		req.client.addQueryMock('SELECT\n        t.title,', { 
+		req.client.addQueryMock("SELECT post_id as post_id", { rows: [{ post_id: 567 }] })
+		req.client.addQueryMock("SELECT\n        t.title,", { 
 			rows: [{
-				title: 'Post Title',
-				body: 'Post body',
+				title: "Post Title",
+				body: "Post body",
 				note: null,
-				display_name: 'Post Author',
+				display_name: "Post Author",
 				image_uuids: null // No post images
 			}]
 		})
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
 		req.client.addQueryMock(
-			'SELECT image_uuids',
+			"SELECT image_uuids",
 			{ 
 				rows: [
-					{ image_uuids: 'old-image1,old-image2' }
+					{ image_uuids: "old-image1,old-image2" }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT\n        user_id,", { rows: [] })
+		req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -543,55 +543,55 @@ const tests = {
 		// Verify old images were deleted from S3 (no post image since image_uuids is null)
 		assertEquals(
 			3,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should perform 3 S3 operations: delete 2 old + upload 1 new."
 		)
 		assertEquals(
-			'Delete',
-			s3SendCalls[0].commandType,
+			"Delete",
+			s3_send_calls[0].commandType,
 			"First operation should delete old image."
 		)
 		assertEquals(
-			'old-image1.png',
-			s3SendCalls[0].input.Key,
+			"old-image1.png",
+			s3_send_calls[0].input.Key,
 			"Should delete first old image."
 		)
 		assertEquals(
-			'Delete',
-			s3SendCalls[1].commandType,
+			"Delete",
+			s3_send_calls[1].commandType,
 			"Second operation should delete old image."
 		)
 		assertEquals(
-			'old-image2.png',
-			s3SendCalls[1].input.Key,
+			"old-image2.png",
+			s3_send_calls[1].input.Key,
 			"Should delete second old image."
 		)
 		assertEquals(
-			'PutObject',
-			s3SendCalls[2].commandType,
+			"PutObject",
+			s3_send_calls[2].commandType,
 			"Third operation should upload new image."
 		)
 		
 		// Verify successful response
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should succeed with reply update."
 		)
 	},
 
 	testSpamReplyRejected: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Mock AI to return Spam
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Spam",
 				note: "This appears to be spam content"
@@ -601,26 +601,26 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Spam User',
-				body: 'Spam reply content',
-				path: '/post/test-slug',
+				display_name: "Spam User",
+				body: "Spam reply content",
+				path: "/post/test-slug",
 				pngs: []
 			},
 			{ 
-				session_id: '456',
-				user_id: '567',
-				display_name: 'Spam User'
+				session_id: "456",
+				user_id: "567",
+				display_name: "Spam User"
 			}
 		)
 		
 		// Setup minimal database mocks
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 890 }] })
-		req.client.addQueryMock('SELECT\n        t.title,', { 
+		req.client.addQueryMock("SELECT post_id as post_id", { rows: [{ post_id: 890 }] })
+		req.client.addQueryMock("SELECT\n        t.title,", { 
 			rows: [{
-				title: 'Post Title',
-				body: 'Post body',
+				title: "Post Title",
+				body: "Post body",
 				note: null,
-				display_name: 'Post Author',
+				display_name: "Post Author",
 				image_uuids: null // No post images
 			}]
 		})
@@ -633,19 +633,19 @@ const tests = {
 		// Verify AI was called for moderation
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation."
 		)
 		
 		// Verify no S3 operations for spam (no post images to get)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations for spam."
 		)
 		assertEquals(
 			0,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should not call updateDisplayName for spam."
 		)
 		
@@ -656,36 +656,36 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Spam",
-			responseData.error,
+			response_data.error,
 			"Should return spam error."
 		)
 		assertEquals(
 			undefined,
-			responseData.success,
+			response_data.success,
 			"Should not return success for spam."
 		)
 		
 		// Reset AI mock for other tests
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 	},
 
 	testFlaggedReplyCreated: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Mock AI to return flagged content
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Inappropriate",
 				note: "Contains inappropriate language"
@@ -695,55 +695,55 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Flag User',
-				body: 'Inappropriate reply content',
-				path: '/post/test-slug',
+				display_name: "Flag User",
+				body: "Inappropriate reply content",
+				path: "/post/test-slug",
 				pngs: []
 			},
 			{ 
-				session_id: '678',
-				user_id: '789',
-				display_name: 'Flag User'
+				session_id: "678",
+				user_id: "789",
+				display_name: "Flag User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 321 }] })
-		req.client.addQueryMock('SELECT\n        t.title,', { 
+		req.client.addQueryMock("SELECT post_id as post_id", { rows: [{ post_id: 321 }] })
+		req.client.addQueryMock("SELECT\n        t.title,", { 
 			rows: [{
-				title: 'Post Title',
-				body: 'Post body',
+				title: "Post Title",
+				body: "Post body",
 				note: null,
-				display_name: 'Post Author',
+				display_name: "Post Author",
 				image_uuids: null // No post images
 			}]
 		})
 		req.client.addQueryMock(
-			'INSERT INTO replies',
+			"INSERT INTO replies",
 			{ 
 				rows: [
 					{ reply_id: 456 }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE users', { rows: [] }) // updateDisplayName
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
-		req.client.addQueryMock('SELECT\n        user_id,', { rows: [] })
-		req.client.addQueryMock('SELECT user_id\n      FROM posts', { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] }) // updateDisplayName
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
+		req.client.addQueryMock("SELECT\n        user_id,", { rows: [] })
+		req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [] })
 		
 		const res = createMockResponse()
 		
 		// Track updateDisplayName calls by monitoring for its specific database query
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
 			// Check if this is the updateDisplayName query
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
 		// Execute the handler
@@ -755,98 +755,98 @@ const tests = {
 		// Verify AI moderation was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for moderation."
 		)
 		
 		// Verify reply was still created but flagged (no post images, no reply images)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations (no images)."
 		)
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName even for flagged content."
 		)
 		
 		// Verify successful response (flagged content still creates reply)
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should succeed even with flagged content."
 		)
 		
 		// Reset AI mock
 		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 	},
 
 	testPushNotifications: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Notification User',
-				body: 'This reply should trigger notifications',
-				path: '/post/notify-post',
+				display_name: "Notification User",
+				body: "This reply should trigger notifications",
+				path: "/post/notify-post",
 				pngs: []
 			},
 			{ 
-				session_id: '890',
-				user_id: '901',
-				display_name: 'Notification User'
+				session_id: "890",
+				user_id: "901",
+				display_name: "Notification User"
 			}
 		)
 		
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 654 }] })
-		req.client.addQueryMock('SELECT\n        t.title,', { 
+		req.client.addQueryMock("SELECT post_id as post_id", { rows: [{ post_id: 654 }] })
+		req.client.addQueryMock("SELECT\n        t.title,", { 
 			rows: [{
-				title: 'Notify Post',
-				body: 'Post body',
+				title: "Notify Post",
+				body: "Post body",
 				note: null,
-				display_name: 'Post Author',
+				display_name: "Post Author",
 				image_uuids: null
 			}]
 		})
 		req.client.addQueryMock(
-			'INSERT INTO replies',
+			"INSERT INTO replies",
 			{ 
 				rows: [
 					{ reply_id: 789 }
 				]
 			}
 		)
-		req.client.addQueryMock('UPDATE replies', { rows: [] })
-		req.client.addQueryMock('UPDATE posts', { rows: [] })
+		req.client.addQueryMock("UPDATE replies", { rows: [] })
+		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		// Mock subscriptions for notifications
 		req.client.addQueryMock(
-			'SELECT\n        user_id,',
+			"SELECT\n        user_id,",
 			{ 
 				rows: [
 					{
 						user_id: "789",
-						subscription_json: '{"endpoint":"https://fcm.googleapis.com/fcm/send/test"}',
+						subscription_json: `{"endpoint":"https://fcm.googleapis.com/fcm/send/test"}`,
 						fcm_token: null
 					},
 					{
-						user_id: '111',
+						user_id: "111",
 						subscription_json: null,
-						fcm_token: '"fcm-token-123"'
+						fcm_token: `"fcm-token-123"`
 					}
 				]
 			}
@@ -854,21 +854,21 @@ const tests = {
 		
 		// Mock users to notify
 		req.client.addQueryMock(
-			'SELECT user_id\n      FROM posts',
+			"SELECT user_id\n      FROM posts",
 			{ 
 				rows: [
 					{ user_id: "789" },
-					{ user_id: '111' }
+					{ user_id: "111" }
 				]
 			}
 		)
 		
 		// Mock notification insertions
-		req.client.addQueryMock('INSERT INTO reply_notifications', { rows: [] })
+		req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [] })
 		
 		// Mock unread counts for badge
 		req.client.addQueryMock(
-			'SELECT \n          COUNT(*)',
+			"SELECT \n          COUNT(*)",
 			{ 
 				rows: [
 					{ unread_count: 3 }
@@ -887,86 +887,86 @@ const tests = {
 		// Verify push notifications were sent
 		assertEquals(
 			1,
-			webPushCalls.length,
+			web_push_calls.length,
 			"Should send web push notification."
 		)
 		assertEquals(
 			1,
-			fcmSendCalls.length,
+			fcm_send_calls.length,
 			"Should send FCM notification."
 		)
 		
 		// Verify web push content
-		const webPushPayload = JSON.parse(webPushCalls[0].payload)
+		const web_push_payload = JSON.parse(web_push_calls[0].payload)
 		assertEquals(
-			'Notification User replied',
-			webPushPayload.title,
+			"Notification User replied",
+			web_push_payload.title,
 			"Web push should have correct title."
 		)
 		assertEquals(
-			'This reply should trigger notifications',
-			webPushPayload.body,
+			"This reply should trigger notifications",
+			web_push_payload.body,
 			"Web push should have reply body."
 		)
 		assertEquals(
 			3,
-			webPushPayload.unread_count,
+			web_push_payload.unread_count,
 			"Web push should include unread count."
 		)
 		
 		// Verify FCM message content
-		const fcmMessage = fcmSendCalls[0]
+		const fcm_message = fcm_send_calls[0]
 		assertEquals(
-			'Notification User replied',
-			fcmMessage.notification.title,
+			"Notification User replied",
+			fcm_message.notification.title,
 			"FCM should have correct title."
 		)
 		assertEquals(
-			'This reply should trigger notifications',
-			fcmMessage.notification.body,
+			"This reply should trigger notifications",
+			fcm_message.notification.body,
 			"FCM should have reply body."
 		)
 		assertEquals(
 			3,
-			fcmMessage.apns.payload.aps.badge,
+			fcm_message.apns.payload.aps.badge,
 			"FCM should include badge count."
 		)
 		
 		// Verify successful response
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should succeed with notifications."
 		)
 	},
 
 	testPostNotFound: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request with non-existent post
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test User',
-				body: 'Reply on non-existent post',
-				path: '/post/non-existent-slug',
+				display_name: "Test User",
+				body: "Reply on non-existent post",
+				path: "/post/non-existent-slug",
 				pngs: []
 			},
 			{ 
-				session_id: '123',
-				user_id: '456',
-				display_name: 'Test User'
+				session_id: "123",
+				user_id: "456",
+				display_name: "Test User"
 			}
 		)
 		
 		// Setup database response for non-existent post
 		req.client.addQueryMock(
-			'SELECT post_id as post_id',
+			"SELECT post_id as post_id",
 			{ rows: [] } // No post found
 		)
 		
@@ -978,12 +978,12 @@ const tests = {
 		// Verify no AI or S3 operations
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when post not found."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when post not found."
 		)
 		
@@ -994,40 +994,40 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Path not found",
-			responseData.error,
+			response_data.error,
 			"Should return path not found error."
 		)
 	},
 
 	testReplyNotFound: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request with non-existent parent reply
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test User',
-				body: 'Reply to non-existent reply',
-				path: '/reply/non-existent-reply',
+				display_name: "Test User",
+				body: "Reply to non-existent reply",
+				path: "/reply/non-existent-reply",
 				pngs: []
 			},
 			{ 
-				session_id: '123',
-				user_id: '456',
-				display_name: 'Test User'
+				session_id: "123",
+				user_id: "456",
+				display_name: "Test User"
 			}
 		)
 		
 		// Setup database response for non-existent reply
 		req.client.addQueryMock(
-			'SELECT parent_post_id',
+			"SELECT parent_post_id",
 			{ rows: [] } // No reply found
 		)
 		
@@ -1037,32 +1037,32 @@ const tests = {
 		await saveReply(req, res)
 		
 		// Verify error response
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Path not found",
-			responseData.error,
+			response_data.error,
 			"Should return path not found error for non-existent reply."
 		)
 	},
 
 	testNoActionWhenMissingFields: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request without required fields
 		const req = createMockRequest(
 			{ 
 				// Missing display_name, body, path, or pngs
-				display_name: 'Test User'
+				display_name: "Test User"
 				// body missing
 			},
 			{ 
-				session_id: '123',
-				user_id: '456'
+				session_id: "123",
+				user_id: "456"
 			}
 		)
 		
@@ -1079,35 +1079,35 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when required fields missing."
 		)
 		assertEquals(
 			0,
-			s3SendCalls.length,
+			s3_send_calls.length,
 			"Should not perform S3 operations when required fields missing."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Reset all calls
-		s3SendCalls = []
-		aiAskCalls = []
-		webPushCalls = []
-		fcmSendCalls = []
-		updateDisplayNameCalls = []
+		s3_send_calls = []
+		ai_ask_calls = []
+		web_push_calls = []
+		fcm_send_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test User',
-				body: 'Test reply',
-				path: '/post/test-slug',
+				display_name: "Test User",
+				body: "Test reply",
+				path: "/post/test-slug",
 				pngs: []
 			},
 			{ 
-				session_id: '123',
-				user_id: '456'
+				session_id: "123",
+				user_id: "456"
 			}
 		)
 		
@@ -1126,7 +1126,7 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when response already ended."
 		)
 	}

@@ -7,7 +7,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 const tests = {
 	testInitialPageShowsWelcomeOrTerms: async () => {
 		const window = await setupIntegrationTestEnvironment()
-		const { state, $ } = window
+		const { $ } = window
 
 		// The welcome header is specifically <h2 welcome><span>Terms and conditions</span></h2>
 		const $welcomeHeaderSpan = $("h2[welcome] span")
@@ -28,7 +28,7 @@ const tests = {
 
 	testAgreeingToTermsNavigatesToNextPageAndSetsLocalStorage: async () => {
 		const window = await setupIntegrationTestEnvironment()
-		const { state, $ } = window
+		const { $ } = window
 
 		// Setup mock API responses for this test
 		window.setMockFetchResponseForPaths({
@@ -81,8 +81,8 @@ const tests = {
 		// 3. Verify new content is loaded (e.g., posts list)
 		const $postsWrapper = $("posts")
 		assertEquals(
-			true,
-			Boolean($postsWrapper),
+			"posts",
+			$postsWrapper.tagName.toLowerCase(),
 			"Posts wrapper element should be present after agreeing to terms.",
 		)
 

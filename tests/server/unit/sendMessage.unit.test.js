@@ -1,8 +1,8 @@
 // Mock S3 client (external dependency)
-let s3SendCalls = []
+let s3_send_calls = []
 const mockS3Client = {
 	send: async (command) => {
-		s3SendCalls.push(command)
+		s3_send_calls.push(command)
 		// Simulate successful S3 operations
 		return { $metadata: { httpStatusCode: 200 } }
 	}
@@ -16,11 +16,11 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		},
 		DeleteObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'Delete'
+			this.commandType = "Delete"
 		}
 	},
 	loaded: true,
@@ -86,19 +86,19 @@ async function testSendNewMessage() {
 	
 	// Mock conversation check - user is participant
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		'SELECT user_id_blocked',
+		"SELECT user_id_blocked",
 		{ rows: [] }
 	)
 	
 	// Mock message insertion
 	req.client.addQueryMock(
-		'INSERT INTO messages',
+		"INSERT INTO messages",
 		{ rows: [{ message_id: 789 }] }
 	)
 	
@@ -127,7 +127,7 @@ async function testSendNewMessage() {
 	)
 	
 	req.client.addQueryMock(
-		'INSERT INTO message_notifications',
+		"INSERT INTO message_notifications",
 		{ rows: [] }
 	)
 	
@@ -152,13 +152,13 @@ async function testSendMessageBlockedUser() {
 	
 	// Mock conversation check
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock blocked user check - user is blocked
 	req.client.addQueryMock(
-		'SELECT user_id_blocked',
+		"SELECT user_id_blocked",
 		{ rows: [{ user_id_blocked: 456 }] }
 	)
 	
@@ -182,7 +182,7 @@ async function testSendMessageNotParticipant() {
 	
 	// Mock conversation check - user not in participants
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
@@ -207,13 +207,13 @@ async function testEditExistingMessage() {
 	
 	// Mock conversation check
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		'SELECT user_id_blocked',
+		"SELECT user_id_blocked",
 		{ rows: [] }
 	)
 	
@@ -254,7 +254,7 @@ async function testEditExistingMessage() {
 	)
 	
 	req.client.addQueryMock(
-		'INSERT INTO message_notifications',
+		"INSERT INTO message_notifications",
 		{ rows: [] }
 	)
 	

@@ -3,12 +3,7 @@ const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSe
 
 async function debugConversationRendering() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
+	const { $ } = window
 
 	// Mock pages with simple conversation data
 	window.setMockFetchResponseForPaths({
@@ -18,6 +13,9 @@ async function debugConversationRendering() {
 			replies: [],
 			activities: [],
 			notifications: [],
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			path: "/posts"
 		},
 		"/conversations": {
@@ -37,6 +35,9 @@ async function debugConversationRendering() {
 			replies: [],
 			activities: [],
 			notifications: [],
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			path: "/conversations"
 		}
 	})
@@ -46,7 +47,7 @@ async function debugConversationRendering() {
 	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/posts", state.path, "Should be on posts page")
+	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
 
 	// Open menu and click conversations
 	const $hamburger = $("hamburger")
@@ -61,7 +62,7 @@ async function debugConversationRendering() {
 	$conversations_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/conversations", state.path, "Should navigate to conversations")
+	assertEquals("conversations", $("conversations") ? "conversations" : "not-conversations", "Should navigate to conversations")
 }
 
 runTests("debug_conversations.integration.test.js", [

@@ -6,7 +6,7 @@ const {
 	runTests
 } = require("../shared/serverTestSetup.js")
 
-// Import the handler we're testing
+// Import the handler we are testing
 const getPagePosts = require("../../../server/session/getPagePosts.js")
 
 const tests = {
@@ -14,11 +14,11 @@ const tests = {
 		// Setup mock request for /posts page
 		const req = createMockRequest(
 			{ 
-				path: '/posts'
+				path: "/posts"
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
+				session_id: "session-123",
+				user_id: "user-456",
 				subscribed_to_users: 3
 			}
 		)
@@ -28,21 +28,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:30:00Z',
-						post_id: 'post-1',
-						title: 'First Post',
-						user_id: 'author-1',
-						display_name: 'John Doe',
-						display_name_index: 'johndoe',
-						user_slug: 'john-doe',
-						profile_picture_uuid: 'profile-uuid-1',
+						create_date: "2024-01-15T10:30:00Z",
+						post_id: "post-1",
+						title: "First Post",
+						user_id: "author-1",
+						display_name: "John Doe",
+						display_name_index: "johndoe",
+						user_slug: "john-doe",
+						profile_picture_uuid: "profile-uuid-1",
 						user_verified: true,
-						slug: 'first-post',
-						body: 'This is the first post content...',
+						slug: "first-post",
+						body: "This is the first post content...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -52,42 +52,42 @@ const tests = {
 						note: null,
 						favorite_count: 5,
 						reply_count: 3,
-						counts_max_create_date: '2024-01-15T11:00:00Z',
+						counts_max_create_date: "2024-01-15T11:00:00Z",
 						edit: false,
-						image_uuids: 'image-uuid-1,image-uuid-2',
+						image_uuids: "image-uuid-1,image-uuid-2",
 						favorited: true,
 						replyed: false,
 						voted: false,
-						topics: 'general,technology'
+						topics: "general,technology"
 					},
 					{
-						create_date: '2024-01-14T15:20:00Z',
-						post_id: 'post-2',
-						title: 'Poll Post',
-						user_id: 'user-456',
-						display_name: 'Test User',
-						display_name_index: 'testuser',
-						user_slug: 'test-user',
+						create_date: "2024-01-14T15:20:00Z",
+						post_id: "post-2",
+						title: "Poll Post",
+						user_id: "user-456",
+						display_name: "Test User",
+						display_name_index: "testuser",
+						user_slug: "test-user",
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'poll-post',
-						body: 'What do you think about this?',
-						poll_1: 'Option A',
-						poll_2: 'Option B',
-						poll_3: 'Option C',
+						slug: "poll-post",
+						body: "What do you think about this?",
+						poll_1: "Option A",
+						poll_2: "Option B",
+						poll_3: "Option C",
 						poll_4: null,
-						poll_counts: '10,5,3,0',
-						poll_counts_estimated: '100,50,30,0',
+						poll_counts: "10,5,3,0",
+						poll_counts_estimated: "100,50,30,0",
 						note: null,
 						favorite_count: 2,
 						reply_count: 8,
-						counts_max_create_date: '2024-01-14T16:00:00Z',
+						counts_max_create_date: "2024-01-14T16:00:00Z",
 						edit: true,
 						image_uuids: null,
 						favorited: false,
 						replyed: true,
 						voted: true,
-						topics: 'polls,asks'
+						topics: "polls,asks"
 					}
 				]
 			}
@@ -100,7 +100,7 @@ const tests = {
 		
 		// Verify results are populated
 		assertEquals(
-			'/posts',
+			"/posts",
 			req.results.path,
 			"Should set results path."
 		)
@@ -111,102 +111,102 @@ const tests = {
 		)
 		
 		// Verify first post data
-		const firstPost = req.results.posts[0]
+		const first_post = req.results.posts[0]
 		assertEquals(
-			'post-1',
-			firstPost.post_id,
+			"post-1",
+			first_post.post_id,
 			"Should include post ID."
 		)
 		assertEquals(
-			'First Post',
-			firstPost.title,
+			"First Post",
+			first_post.title,
 			"Should include post title."
 		)
 		assertEquals(
-			'author-1',
-			firstPost.user_id,
+			"author-1",
+			first_post.user_id,
 			"Should include author user ID."
 		)
 		assertEquals(
-			'John Doe',
-			firstPost.display_name,
+			"John Doe",
+			first_post.display_name,
 			"Should include author display name."
 		)
 		assertEquals(
-			'first-post',
-			firstPost.slug,
+			"first-post",
+			first_post.slug,
 			"Should include post slug."
 		)
 		assertEquals(
 			5,
-			firstPost.favorite_count,
+			first_post.favorite_count,
 			"Should include favorite count."
 		)
 		assertEquals(
 			3,
-			firstPost.reply_count,
+			first_post.reply_count,
 			"Should include reply count."
 		)
 		assertEquals(
 			true,
-			firstPost.favorited,
+			first_post.favorited,
 			"Should include favorited status."
 		)
 		assertEquals(
 			false,
-			firstPost.replyed,
+			first_post.replyed,
 			"Should include replyed status."
 		)
 		assertEquals(
 			false,
-			firstPost.edit,
+			first_post.edit,
 			"Should include edit permission (false for other users)."
 		)
 		assertEquals(
-			'general,technology',
-			firstPost.topics,
+			"general,technology",
+			first_post.topics,
 			"Should include post topics."
 		)
 		
 		// Verify second post (poll) data
-		const secondPost = req.results.posts[1]
+		const second_post = req.results.posts[1]
 		assertEquals(
-			'Poll Post',
-			secondPost.title,
+			"Poll Post",
+			second_post.title,
 			"Should include poll post title."
 		)
 		assertEquals(
-			'Option A',
-			secondPost.poll_1,
+			"Option A",
+			second_post.poll_1,
 			"Should include poll option A."
 		)
 		assertEquals(
-			'Option B',
-			secondPost.poll_2,
+			"Option B",
+			second_post.poll_2,
 			"Should include poll option B."
 		)
 		assertEquals(
-			'Option C',
-			secondPost.poll_3,
+			"Option C",
+			second_post.poll_3,
 			"Should include poll option C."
 		)
 		assertEquals(
-			'10,5,3,0',
-			secondPost.poll_counts,
+			"10,5,3,0",
+			second_post.poll_counts,
 			"Should include poll vote counts."
 		)
 		assertEquals(
 			true,
-			secondPost.edit,
+			second_post.edit,
 			"Should include edit permission (true for own posts)."
 		)
 		assertEquals(
 			true,
-			secondPost.voted,
+			second_post.voted,
 			"Should include voted status."
 		)
 		
-		// Verify response is not ended (handler doesn't end response)
+		// Verify response is not ended (handler does not end response)
 		assertEquals(
 			false,
 			res.isEnded(),
@@ -218,11 +218,11 @@ const tests = {
 		// Setup mock request for /posts/all page
 		const req = createMockRequest(
 			{ 
-				path: '/posts/all'
+				path: "/posts/all"
 			},
 			{ 
-				session_id: 'session-all',
-				user_id: 'user-all'
+				session_id: "session-all",
+				user_id: "user-all"
 			}
 		)
 		
@@ -230,21 +230,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:30:00Z',
-						post_id: 'post-all-1',
-						title: 'All Posts Test',
-						user_id: 'author-all',
-						display_name: 'All Author',
-						display_name_index: 'allauthor',
-						user_slug: 'all-author',
+						create_date: "2024-01-15T10:30:00Z",
+						post_id: "post-all-1",
+						title: "All Posts Test",
+						user_id: "author-all",
+						display_name: "All Author",
+						display_name_index: "allauthor",
+						user_slug: "all-author",
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'all-posts-test',
-						body: 'This is in all posts...',
+						slug: "all-posts-test",
+						body: "This is in all posts...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -254,13 +254,13 @@ const tests = {
 						note: null,
 						favorite_count: 1,
 						reply_count: 0,
-						counts_max_create_date: '2024-01-15T10:35:00Z',
+						counts_max_create_date: "2024-01-15T10:35:00Z",
 						edit: false,
 						image_uuids: null,
 						favorited: false,
 						replyed: false,
 						voted: false,
-						topics: 'general'
+						topics: "general"
 					}
 				]
 			}
@@ -273,7 +273,7 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/posts/all',
+			"/posts/all",
 			req.results.path,
 			"Should set correct path for all posts."
 		)
@@ -283,7 +283,7 @@ const tests = {
 			"Should add posts to results."
 		)
 		assertEquals(
-			'All Posts Test',
+			"All Posts Test",
 			req.results.posts[0].title,
 			"Should include post from all posts query."
 		)
@@ -293,11 +293,11 @@ const tests = {
 		// Setup mock request for topic page
 		const req = createMockRequest(
 			{ 
-				path: '/topic/technology'
+				path: "/topic/technology"
 			},
 			{ 
-				session_id: 'session-topic',
-				user_id: 'user-topic'
+				session_id: "session-topic",
+				user_id: "user-topic"
 			}
 		)
 		
@@ -305,21 +305,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T09:00:00Z',
-						post_id: 'post-tech-1',
-						title: 'Technology Post',
-						user_id: 'tech-author',
-						display_name: 'Tech Expert',
-						display_name_index: 'techexpert',
-						user_slug: 'tech-expert',
-						profile_picture_uuid: 'tech-profile',
+						create_date: "2024-01-15T09:00:00Z",
+						post_id: "post-tech-1",
+						title: "Technology Post",
+						user_id: "tech-author",
+						display_name: "Tech Expert",
+						display_name_index: "techexpert",
+						user_slug: "tech-expert",
+						profile_picture_uuid: "tech-profile",
 						user_verified: true,
-						slug: 'technology-post',
-						body: 'This is about technology...',
+						slug: "technology-post",
+						body: "This is about technology...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -329,13 +329,13 @@ const tests = {
 						note: null,
 						favorite_count: 10,
 						reply_count: 5,
-						counts_max_create_date: '2024-01-15T09:30:00Z',
+						counts_max_create_date: "2024-01-15T09:30:00Z",
 						edit: false,
-						image_uuids: 'tech-image-1',
+						image_uuids: "tech-image-1",
 						favorited: false,
 						replyed: false,
 						voted: false,
-						topics: 'technology,science'
+						topics: "technology,science"
 					}
 				]
 			}
@@ -348,7 +348,7 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/topic/technology',
+			"/topic/technology",
 			req.results.path,
 			"Should set correct path for topic page."
 		)
@@ -358,12 +358,12 @@ const tests = {
 			"Should add posts to results."
 		)
 		assertEquals(
-			'Technology Post',
+			"Technology Post",
 			req.results.posts[0].title,
 			"Should include post from topic query."
 		)
 		assertEquals(
-			'technology,science',
+			"technology,science",
 			req.results.posts[0].topics,
 			"Should include technology topic."
 		)
@@ -373,11 +373,11 @@ const tests = {
 		// Setup mock request for user page with numeric user ID
 		const req = createMockRequest(
 			{ 
-				path: '/user/123'
+				path: "/user/123"
 			},
 			{ 
-				session_id: 'session-userid',
-				user_id: 'user-userid'
+				session_id: "session-userid",
+				user_id: "user-userid"
 			}
 		)
 		
@@ -385,21 +385,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-14T14:00:00Z',
-						post_id: 'user-post-1',
-						title: 'User Post',
-						user_id: '123',
-						display_name: 'User 123',
-						display_name_index: 'user123',
-						user_slug: 'user-123',
+						create_date: "2024-01-14T14:00:00Z",
+						post_id: "user-post-1",
+						title: "User Post",
+						user_id: "123",
+						display_name: "User 123",
+						display_name_index: "user123",
+						user_slug: "user-123",
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'user-post',
-						body: 'This is from user 123...',
+						slug: "user-post",
+						body: "This is from user 123...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -409,13 +409,13 @@ const tests = {
 						note: null,
 						favorite_count: 2,
 						reply_count: 1,
-						counts_max_create_date: '2024-01-14T14:15:00Z',
+						counts_max_create_date: "2024-01-14T14:15:00Z",
 						edit: false,
 						image_uuids: null,
 						favorited: false,
 						replyed: false,
 						voted: false,
-						topics: 'general'
+						topics: "general"
 					}
 				]
 			}
@@ -428,7 +428,7 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/user/123',
+			"/user/123",
 			req.results.path,
 			"Should set correct path for user page."
 		)
@@ -438,12 +438,12 @@ const tests = {
 			"Should add posts to results."
 		)
 		assertEquals(
-			'User Post',
+			"User Post",
 			req.results.posts[0].title,
 			"Should include post from user query."
 		)
 		assertEquals(
-			'123',
+			"123",
 			req.results.posts[0].user_id,
 			"Should include correct user ID."
 		)
@@ -453,11 +453,11 @@ const tests = {
 		// Setup mock request for user page with slug
 		const req = createMockRequest(
 			{ 
-				path: '/user/john-doe'
+				path: "/user/john-doe"
 			},
 			{ 
-				session_id: 'session-userslug',
-				user_id: 'user-userslug'
+				session_id: "session-userslug",
+				user_id: "user-userslug"
 			}
 		)
 		
@@ -465,21 +465,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-13T12:00:00Z',
-						post_id: 'slug-post-1',
-						title: 'Slug User Post',
-						user_id: 'slug-user-456',
-						display_name: 'John Doe',
-						display_name_index: 'johndoe',
-						user_slug: 'john-doe',
-						profile_picture_uuid: 'john-profile',
+						create_date: "2024-01-13T12:00:00Z",
+						post_id: "slug-post-1",
+						title: "Slug User Post",
+						user_id: "slug-user-456",
+						display_name: "John Doe",
+						display_name_index: "johndoe",
+						user_slug: "john-doe",
+						profile_picture_uuid: "john-profile",
 						user_verified: true,
-						slug: 'slug-user-post',
-						body: 'This is from john-doe slug...',
+						slug: "slug-user-post",
+						body: "This is from john-doe slug...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -489,13 +489,13 @@ const tests = {
 						note: null,
 						favorite_count: 7,
 						reply_count: 4,
-						counts_max_create_date: '2024-01-13T12:30:00Z',
+						counts_max_create_date: "2024-01-13T12:30:00Z",
 						edit: false,
-						image_uuids: 'john-image-1,john-image-2',
+						image_uuids: "john-image-1,john-image-2",
 						favorited: true,
 						replyed: false,
 						voted: false,
-						topics: 'general,personal'
+						topics: "general,personal"
 					}
 				]
 			}
@@ -508,7 +508,7 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/user/john-doe',
+			"/user/john-doe",
 			req.results.path,
 			"Should set correct path for user slug page."
 		)
@@ -518,12 +518,12 @@ const tests = {
 			"Should add posts to results."
 		)
 		assertEquals(
-			'Slug User Post',
+			"Slug User Post",
 			req.results.posts[0].title,
 			"Should include post from user slug query."
 		)
 		assertEquals(
-			'john-doe',
+			"john-doe",
 			req.results.posts[0].user_slug,
 			"Should include correct user slug."
 		)
@@ -533,13 +533,13 @@ const tests = {
 		// Setup mock request with date filters
 		const req = createMockRequest(
 			{ 
-				path: '/posts/all',
-				min_post_create_date: '2024-01-01T00:00:00Z',
-				max_post_create_date: '2024-01-31T23:59:59Z'
+				path: "/posts/all",
+				min_post_create_date: "2024-01-01T00:00:00Z",
+				max_post_create_date: "2024-01-31T23:59:59Z"
 			},
 			{ 
-				session_id: 'session-dates',
-				user_id: 'user-dates'
+				session_id: "session-dates",
+				user_id: "user-dates"
 			}
 		)
 		
@@ -547,21 +547,21 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT\n          p.create_date,',
+			"SELECT\n          p.create_date,",
 			{ 
 				rows: [
 					{
-						create_date: '2024-01-15T10:00:00Z',
-						post_id: 'date-post-1',
-						title: 'Date Filtered Post',
-						user_id: 'date-author',
-						display_name: 'Date Author',
-						display_name_index: 'dateauthor',
-						user_slug: 'date-author',
+						create_date: "2024-01-15T10:00:00Z",
+						post_id: "date-post-1",
+						title: "Date Filtered Post",
+						user_id: "date-author",
+						display_name: "Date Author",
+						display_name_index: "dateauthor",
+						user_slug: "date-author",
 						profile_picture_uuid: null,
 						user_verified: false,
-						slug: 'date-filtered-post',
-						body: 'This post is within date range...',
+						slug: "date-filtered-post",
+						body: "This post is within date range...",
 						poll_1: null,
 						poll_2: null,
 						poll_3: null,
@@ -571,13 +571,13 @@ const tests = {
 						note: null,
 						favorite_count: 3,
 						reply_count: 2,
-						counts_max_create_date: '2024-01-15T10:15:00Z',
+						counts_max_create_date: "2024-01-15T10:15:00Z",
 						edit: false,
 						image_uuids: null,
 						favorited: false,
 						replyed: false,
 						voted: false,
-						topics: 'general'
+						topics: "general"
 					}
 				]
 			}
@@ -590,7 +590,7 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'/posts/all',
+			"/posts/all",
 			req.results.path,
 			"Should set correct path with date filters."
 		)
@@ -600,7 +600,7 @@ const tests = {
 			"Should add posts to results with date filtering."
 		)
 		assertEquals(
-			'Date Filtered Post',
+			"Date Filtered Post",
 			req.results.posts[0].title,
 			"Should include post within date range."
 		)
@@ -610,12 +610,12 @@ const tests = {
 		// Setup mock request with max_reply_create_date (disables post loading)
 		const req = createMockRequest(
 			{ 
-				path: '/posts',
-				max_reply_create_date: '2024-01-15T10:00:00Z'
+				path: "/posts",
+				max_reply_create_date: "2024-01-15T10:00:00Z"
 			},
 			{ 
-				session_id: 'session-maxreply',
-				user_id: 'user-maxreply'
+				session_id: "session-maxreply",
+				user_id: "user-maxreply"
 			}
 		)
 		
@@ -643,11 +643,11 @@ const tests = {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
 			{ 
-				path: '/wrong-path'
+				path: "/wrong-path"
 			},
 			{ 
-				session_id: 'session-wrong',
-				user_id: 'user-wrong'
+				session_id: "session-wrong",
+				user_id: "user-wrong"
 			}
 		)
 		
@@ -675,11 +675,11 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				path: '/posts'
+				path: "/posts"
 			},
 			{ 
-				session_id: 'session-ended',
-				user_id: 'user-ended'
+				session_id: "session-ended",
+				user_id: "user-ended"
 			}
 		)
 		
