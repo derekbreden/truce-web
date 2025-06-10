@@ -54,12 +54,11 @@ const renderImages = () => {
 							),
 						)
 					} else {
-						debug("A", data)
+						console.error("Unexpected response:", data)
 					}
 				})
 				.catch(function (error) {
-					debug("B")
-					debug(error)
+					console.error("Image processing error:", error)
 				})
 		})
 		$("posts").appendChild($image_prompt)

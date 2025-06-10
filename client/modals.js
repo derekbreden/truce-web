@@ -110,7 +110,7 @@ const alertError = (message) => {
 	clearTimeout(alert_timeout)
 	$alert.on("click", () => {
 		if (state.most_recent_error) {
-			debug(state.most_recent_error)
+			console.error("Recent error:", state.most_recent_error)
 		}
 	})
 	if ($("alert-wrapper")) {
