@@ -95,19 +95,15 @@ const renderMessages = (messages, conversation) => {
 				messages-container
 					conversation-header
 						participants
-						compose-button
-							icon[add]
-								$1
 					messages
 					message-input-area
 						message-form
 							textarea[placeholder="Type a message..."]
 							send-button
 								icon[forward]
-									$2
+									$1
 				`,
 				[
-					$("icons icon[add] svg").cloneNode(true),
 					$("icons icon[forward] svg").cloneNode(true)
 				]
 			)

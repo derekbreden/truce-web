@@ -2168,6 +2168,11 @@ footer dot[index="4"] {
 }
 
 footer dot[index="5"] {
+  right: calc(3 * 100% / 8 - 2px);
+  background: #fff;
+}
+
+footer dot[index="6"] {
   right: calc(1 * 100% / 8 - 2px);
   background: #fff;
 }
@@ -2410,13 +2415,12 @@ p[right] {
 messages-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 44px - 60px); /* Account for header and footer */
-  margin: -20px -20px 0 -20px; /* Counteract main-content padding */
+  height: calc(100vh - 44px - 64px - env(safe-area-inset-bottom)); /* Account for header and footer */
+  margin: 0 -20px -20px -20px; /* Counteract main-content padding */
 }
 
 conversation-header {
   flex-shrink: 0;
-  padding: 20px;
   border-bottom: 1px solid light-dark(#ddd, #333);
   display: flex;
   justify-content: space-between;
@@ -2425,6 +2429,7 @@ conversation-header {
 
 conversation-header participants {
   flex: 1;
+  margin: 20px;
 }
 
 conversation-header participants h2 {
@@ -2433,37 +2438,24 @@ conversation-header participants h2 {
   margin: 0;
 }
 
-conversation-header compose-button {
-  padding: 8px;
-  cursor: pointer;
-}
-
-conversation-header compose-button svg {
-  width: 20px;
-  height: 20px;
-  opacity: 0.6;
-}
-
-conversation-header compose-button:hover svg {
-  opacity: 1;
-}
-
 messages {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   min-height: 0; /* Allow flex child to shrink */
 }
 
 message {
+  margin: 20px;
   display: flex;
   flex-direction: column;
   border: 1px solid light-dark(#ddd, #333);
   border-radius: 2px;
   padding: 10px;
+}
+message + message {
+  margin-top: 0;
 }
 
 message-header {
@@ -2652,6 +2644,7 @@ conversations {
 }
 
 conversation {
+  position: relative;
   border: 1px solid light-dark(#ddd, #333);
   border-radius: 2px;
   padding: 10px;

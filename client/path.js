@@ -9,6 +9,7 @@ const path_sequence = [
 	"/messages",
 	"/notifications",
 	"/settings",
+	"/favorites"
 ]
 
 // Read URL into path
