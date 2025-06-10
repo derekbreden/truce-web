@@ -17,20 +17,15 @@ const parsePath = () => {
 	const new_paths = window.location.pathname.split("/").filter((x) => x)
 	if (new_paths[0] === "reset") {
 		state.reset_token_uuid = new_paths[1] || ""
-	} else if (new_paths[0] === "post" && new_paths[1]) {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "reply" && new_paths[1]) {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "topic" && new_paths[1]) {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "user" && new_paths[1]) {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "messages" && new_paths[1]) {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0] === "posts" && new_paths[1] === "all") {
-		new_path = "/" + new_paths[0] + "/" + new_paths[1]
-	} else if (new_paths[0]) {
-		new_path = "/" + new_paths[0]
+	} else {
+		const two_part_paths = ["post", "reply", "topic", "user", "messages"]
+		if (two_part_paths.includes(new_paths[0]) && new_paths[1]) {
+			new_path = "/" + new_paths[0] + "/" + new_paths[1]
+		} else if (new_paths[0] === "posts" && new_paths[1] === "all") {
+			new_path = "/" + new_paths[0] + "/" + new_paths[1]
+		} else if (new_paths[0]) {
+			new_path = "/" + new_paths[0]
+		}
 	}
 	return new_path
 }
