@@ -319,9 +319,6 @@ const getMoreRecent = () => {
 
 			// Render messages if appropriate
 			if (data.messages?.length) {
-				if (!current_cache.messages) {
-					current_cache.messages = []
-				}
 				const new_ids = data.messages.map((message) => message.message_id)
 				current_cache.messages = current_cache.messages.filter(
 					(m) => !new_ids.includes(m.message_id),
@@ -335,9 +332,6 @@ const getMoreRecent = () => {
 
 			// Render conversations if appropriate
 			if (data.conversations?.length) {
-				if (!current_cache.conversations) {
-					current_cache.conversations = []
-				}
 				const new_ids = data.conversations.map((conversation) => conversation.conversation_id)
 				current_cache.conversations = current_cache.conversations.filter(
 					(c) => !new_ids.includes(c.conversation_id),

@@ -27,14 +27,10 @@ const renderPage = (data) => {
 	renderNotifications(data.notifications)
 
 	// Render Conversations
-	if (data.conversations) {
-		renderConversations(data.conversations)
-	}
+	renderConversations(data.conversations)
 
 	// Render Messages
-	if (data.messages) {
-		renderMessages(data.messages, data.conversation)
-	}
+	renderMessages(data.messages, data.conversation)
 
 	// Render Images
 	renderImages()

@@ -13,7 +13,7 @@ const startConversationWithUser = (user_id) => {
 			return
 		}
 
-		if (data.success && data.conversation_id) {
+		if (data.conversation_id) {
 			goToPath(`/messages/${data.conversation_id}`)
 		} else {
 			alertError("Unable to start conversation")

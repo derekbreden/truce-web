@@ -112,8 +112,8 @@ const showMessageModal = (participant_user_ids, existing_conversation_id = null)
 			})
 			.then(response => response.json())
 			.then(conversation_data => {
-				if (conversation_data.error || !conversation_data.success) {
-					modalError(conversation_data.error || "Failed to create conversation")
+				if (conversation_data.error) {
+					modalError(conversation_data.error)
 					$submitButton.disabled = false
 					$submitButton.textContent = "Send"
 					return
@@ -130,8 +130,8 @@ const showMessageModal = (participant_user_ids, existing_conversation_id = null)
 				})
 				.then(response => response.json())
 				.then(message_data => {
-					if (message_data.error || !message_data.success) {
-						modalError(message_data.error || "Failed to send message")
+					if (message_data.error) {
+						modalError(message_data.error)
 						$submitButton.disabled = false
 						$submitButton.textContent = "Send"
 						return
@@ -162,8 +162,8 @@ const showMessageModal = (participant_user_ids, existing_conversation_id = null)
 			})
 			.then(response => response.json())
 			.then(data => {
-				if (data.error || !data.success) {
-					modalError(data.error || "Failed to send message")
+				if (data.error) {
+					modalError(data.error)
 					$submitButton.disabled = false
 					$submitButton.textContent = "Send"
 					return
@@ -329,8 +329,8 @@ const showEditMessageModal = (message) => {
 		})
 		.then(response => response.json())
 		.then(data => {
-			if (data.error || !data.success) {
-				modalError(data.error || "Failed to update message")
+			if (data.error) {
+				modalError(data.error)
 				$submitButton.disabled = false
 				$submitButton.textContent = "Save Changes"
 				return

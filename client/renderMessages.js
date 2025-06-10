@@ -171,12 +171,12 @@ const renderMessages = (messages, conversation) => {
 				})
 				.then(response => response.json())
 				.then(data => {
-					if (data.success) {
+					if (data.error) {
+						alertError(data.error)
+					} else {
 						$textarea.value = ""
 						// Refresh messages
 						startSession()
-					} else {
-						alertError(data.error || "Failed to send message")
 					}
 				})
 				.catch(error => {
