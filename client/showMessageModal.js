@@ -1,5 +1,5 @@
-const showMessageModal = (participantUserIds, existingConversationId = null) => {
-	const is_new_conversation = !existingConversationId
+const showMessageModal = (participant_user_ids, existing_conversation_id = null) => {
+	const is_new_conversation = !existing_conversation_id
 	const title = is_new_conversation ? "New Message" : "Reply"
 
 	const $modal = $(
@@ -34,10 +34,10 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 	)
 
 	// Handle new conversation participant display
-	if (is_new_conversation && participantUserIds) {
+	if (is_new_conversation && participant_user_ids) {
 		// For now, we'll just show the user IDs
 		// In a full implementation, you'd fetch user details
-		$modal.$("participants-display").textContent = `Users: ${participantUserIds.join(", ")}`
+		$modal.$("participants-display").textContent = `Users: ${participant_user_ids.join(", ")}`
 	}
 
 	// Handle image uploads
@@ -93,8 +93,8 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 	const $textarea = $modal.$("textarea[body]")
 	
 	$submitButton.on("click", () => {
-		const messageBody = $textarea.value.trim()
-		if (!messageBody) {
+		const message_body = $textarea.value.trim()
+		if (!message_body) {
 			modalError("Please enter a message")
 			return
 		}
@@ -107,13 +107,13 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 			fetch("/session", {
 				method: "POST",
 				body: JSON.stringify({
-					participant_user_ids: participantUserIds
+					participant_user_ids: participant_user_ids
 				})
 			})
 			.then(response => response.json())
-			.then(conversationData => {
-				if (conversationData.error || !conversationData.success) {
-					modalError(conversationData.error || "Failed to create conversation")
+			.then(conversation_data => {
+				if (conversation_data.error || !conversation_data.success) {
+					modalError(conversation_data.error || "Failed to create conversation")
 					$submitButton.disabled = false
 					$submitButton.textContent = "Send"
 					return
@@ -123,21 +123,21 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 				fetch("/session", {
 					method: "POST", 
 					body: JSON.stringify({
-						conversation_id: conversationData.conversation_id,
-						body: messageBody,
+						conversation_id: conversation_data.conversation_id,
+						body: message_body,
 						pngs: selectedImages
 					})
 				})
 				.then(response => response.json())
-				.then(messageData => {
-					if (messageData.error || !messageData.success) {
-						modalError(messageData.error || "Failed to send message")
+				.then(message_data => {
+					if (message_data.error || !message_data.success) {
+						modalError(message_data.error || "Failed to send message")
 						$submitButton.disabled = false
 						$submitButton.textContent = "Send"
 						return
 					}
 					modalCancel()
-					goToPath(`/messages/${conversationData.conversation_id}`)
+					goToPath(`/messages/${conversation_data.conversation_id}`)
 				})
 				.catch(error => {
 					modalError("Network error")
@@ -155,8 +155,8 @@ const showMessageModal = (participantUserIds, existingConversationId = null) => 
 			fetch("/session", {
 				method: "POST",
 				body: JSON.stringify({
-					conversation_id: existingConversationId,
-					body: messageBody,
+					conversation_id: existing_conversation_id,
+					body: message_body,
 					pngs: selectedImages
 				})
 			})
@@ -309,8 +309,8 @@ const showEditMessageModal = (message) => {
 	const $textarea = $modal.$("textarea[body]")
 	
 	$submitButton.on("click", () => {
-		const messageBody = $textarea.value.trim()
-		if (!messageBody) {
+		const message_body = $textarea.value.trim()
+		if (!message_body) {
 			modalError("Please enter a message")
 			return
 		}
@@ -323,7 +323,7 @@ const showEditMessageModal = (message) => {
 			body: JSON.stringify({
 				message_id: message.message_id,
 				conversation_id: message.conversation_id || state.active_conversation_id,
-				body: messageBody,
+				body: message_body,
 				pngs: selectedImages
 			})
 		})
