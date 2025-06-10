@@ -58,7 +58,7 @@ const tests = {
 		// Check for existing subscription (found)
 		req.client.addQueryMock(
 			'SELECT subscription_id FROM subscriptions',
-			{ rows: [{ subscription_id: 'sub-123' }] }
+			{ rows: [{ subscription_id: 123 }] }
 		)
 		// No INSERT should happen
 		
@@ -146,7 +146,7 @@ const tests = {
 		// Check for existing FCM subscription (found and active)
 		req.client.addQueryMock(
 			'SELECT',
-			{ rows: [{ subscription_id: 'fcm-123', active: true }] }
+			{ rows: [{ subscription_id: 123, active: true }] }
 		)
 		
 		const res = createMockResponse()
@@ -178,7 +178,7 @@ const tests = {
 		// Check for existing FCM subscription (found but inactive)
 		req.client.addQueryMock(
 			'SELECT',
-			{ rows: [{ subscription_id: 'fcm-456', active: false }] }
+			{ rows: [{ subscription_id: 456, active: false }] }
 		)
 		
 		const res = createMockResponse()
@@ -211,7 +211,7 @@ const tests = {
 		// Update existing subscription to inactive (found)
 		req.client.addQueryMock(
 			'UPDATE subscriptions',
-			{ rows: [{ subscription_id: 'fcm-789' }] }
+			{ rows: [{ subscription_id: 789 }] }
 		)
 		
 		const res = createMockResponse()
@@ -272,7 +272,7 @@ const tests = {
 		// Update existing subscription to active (found)
 		req.client.addQueryMock(
 			'UPDATE subscriptions',
-			{ rows: [{ subscription_id: 'fcm-999' }] }
+			{ rows: [{ subscription_id: 999 }] }
 		)
 		
 		const res = createMockResponse()

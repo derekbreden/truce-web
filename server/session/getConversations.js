@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
 		)
 
 		req.results.conversations.push(...conversations_result.rows)
-		req.results.total_unread = parseInt(total_unread_result.rows[0].total_unread)
+		req.results.total_unread = Number(total_unread_result.rows[0].total_unread)
 		req.results.path = "/conversations"
 	}
 }

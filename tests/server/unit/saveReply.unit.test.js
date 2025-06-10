@@ -195,14 +195,14 @@ const tests = {
 			{ 
 				display_name: 'Test User',
 				body: 'This is a test reply on a post.',
-				path: '/post/test-post-slug',
+				path: '/post/456',
 				pngs: [
 					{ url: 'data:image/png;base64,image1data' }
 				]
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
+				session_id: '123',
+				user_id: '456',
 				display_name: 'Test User'
 			}
 		)
@@ -218,7 +218,7 @@ const tests = {
 			'SELECT post_id as post_id',
 			{ 
 				rows: [
-					{ post_id: 'post-789' }
+					{ post_id: 789 }
 				]
 			}
 		)
@@ -240,7 +240,7 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ reply_id: 'new-reply-123' }
+					{ reply_id: 123 }
 				]
 			}
 		)
@@ -342,7 +342,7 @@ const tests = {
 			"Should return success."
 		)
 		assertEquals(
-			'user-456',
+			'456',
 			responseData.user_id,
 			"Should return user ID."
 		)
@@ -359,7 +359,7 @@ const tests = {
 			"Should send UPDATE message."
 		)
 		assertEquals(
-			'post-789',
+			789,
 			req.wsMessages[0].postId,
 			"Should send correct post ID."
 		)
@@ -380,11 +380,11 @@ const tests = {
 				body: 'This is a reply to another reply.',
 				path: '/reply/parent-reply-456',
 				pngs: [],
-				parent_reply_id: 'parent-reply-456'
+				parent_reply_id: 456
 			},
 			{ 
-				session_id: 'session-reply',
-				user_id: 'user-reply',
+				session_id: '789',
+				user_id: '101',
 				display_name: 'Reply User'
 			}
 		)
@@ -396,7 +396,7 @@ const tests = {
 			'SELECT parent_post_id',
 			{ 
 				rows: [
-					{ parent_post_id: 'post-for-reply' }
+					{ parent_post_id: 234 }
 				]
 			}
 		)
@@ -422,7 +422,7 @@ const tests = {
 						display_name: 'Parent Reply Author',
 						body: 'Parent reply content',
 						note: null,
-						reply_id: 'parent-reply-456',
+						reply_id: 456,
 						image_uuids: null
 					}
 				]
@@ -432,7 +432,7 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ reply_id: 'reply-reply-789' }
+					{ reply_id: 789 }
 				]
 			}
 		)
@@ -497,11 +497,11 @@ const tests = {
 				pngs: [
 					{ url: 'data:image/png;base64,newimage' }
 				],
-				reply_id: 'existing-reply-123'
+				reply_id: 123
 			},
 			{ 
-				session_id: 'session-update',
-				user_id: 'user-update',
+				session_id: '234',
+				user_id: '345',
 				display_name: 'Update User'
 			}
 		)
@@ -509,7 +509,7 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-update' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 567 }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
@@ -607,14 +607,14 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-spam',
-				user_id: 'user-spam',
+				session_id: '456',
+				user_id: '567',
 				display_name: 'Spam User'
 			}
 		)
 		
 		// Setup minimal database mocks
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-spam' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 890 }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
@@ -701,8 +701,8 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-flag',
-				user_id: 'user-flag',
+				session_id: '678',
+				user_id: '789',
 				display_name: 'Flag User'
 			}
 		)
@@ -710,7 +710,7 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-flag' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 321 }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Post Title',
@@ -724,7 +724,7 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ reply_id: 'flagged-reply-456' }
+					{ reply_id: 456 }
 				]
 			}
 		)
@@ -803,8 +803,8 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-notify',
-				user_id: 'user-notify',
+				session_id: '890',
+				user_id: '901',
 				display_name: 'Notification User'
 			}
 		)
@@ -812,7 +812,7 @@ const tests = {
 		req.sendWsMessage = () => {}
 		
 		// Setup mock database responses
-		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 'post-notify' }] })
+		req.client.addQueryMock('SELECT post_id as post_id', { rows: [{ post_id: 654 }] })
 		req.client.addQueryMock('SELECT\n        t.title,', { 
 			rows: [{
 				title: 'Notify Post',
@@ -826,7 +826,7 @@ const tests = {
 			'INSERT INTO replies',
 			{ 
 				rows: [
-					{ reply_id: 'notify-reply-789' }
+					{ reply_id: 789 }
 				]
 			}
 		)
@@ -839,12 +839,12 @@ const tests = {
 			{ 
 				rows: [
 					{
-						user_id: 'post-author-user',
+						user_id: "789",
 						subscription_json: '{"endpoint":"https://fcm.googleapis.com/fcm/send/test"}',
 						fcm_token: null
 					},
 					{
-						user_id: 'other-replyer',
+						user_id: '111',
 						subscription_json: null,
 						fcm_token: '"fcm-token-123"'
 					}
@@ -857,8 +857,8 @@ const tests = {
 			'SELECT user_id\n      FROM posts',
 			{ 
 				rows: [
-					{ user_id: 'post-author-user' },
-					{ user_id: 'other-replyer' }
+					{ user_id: "789" },
+					{ user_id: '111' }
 				]
 			}
 		)
@@ -958,8 +958,8 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
+				session_id: '123',
+				user_id: '456',
 				display_name: 'Test User'
 			}
 		)
@@ -1019,8 +1019,8 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
+				session_id: '123',
+				user_id: '456',
 				display_name: 'Test User'
 			}
 		)
@@ -1061,8 +1061,8 @@ const tests = {
 				// body missing
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: '123',
+				user_id: '456'
 			}
 		)
 		
@@ -1106,8 +1106,8 @@ const tests = {
 				pngs: []
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456'
+				session_id: '123',
+				user_id: '456'
 			}
 		)
 		

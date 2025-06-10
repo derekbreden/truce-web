@@ -13,7 +13,7 @@ const tests = {
 	testSavePollChoiceWithSingleVote: async () => {
 		// Setup mock request with poll choice data
 		const req = createMockRequest({
-			post_id: 'post-123',
+			post_id: 123,
 			poll_choice: '2'
 		})
 		
@@ -57,7 +57,7 @@ const tests = {
 			"Response should indicate success."
 		)
 		assertEquals(
-			'test-user-123',
+			'123',
 			responseData.user_id,
 			"Response should include user_id."
 		)
@@ -71,7 +71,7 @@ const tests = {
 	testSavePollChoiceWithMultipleVotes: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			post_id: 'post-456',
+			post_id: 456,
 			poll_choice: '1'
 		})
 		
@@ -113,7 +113,7 @@ const tests = {
 	testSavePollChoiceWithNoExistingVotes: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			post_id: 'new-post-789',
+			post_id: 789,
 			poll_choice: '3'
 		})
 		
@@ -149,7 +149,7 @@ const tests = {
 	testSavePollChoiceEdgeCases: async () => {
 		// Test with poll choice 4 (highest valid choice)
 		const req = createMockRequest({
-			post_id: 'post-edge',
+			post_id: 101,
 			poll_choice: '4'
 		})
 		
@@ -192,7 +192,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			post_id: 'post-123',
+			post_id: 123,
 			poll_choice: '1'
 		})
 		
@@ -214,7 +214,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			post_id: 'post-123',
+			post_id: 123,
 			poll_choice: '1'
 		}, { user_id: null })
 		
@@ -254,7 +254,7 @@ const tests = {
 	testNoActionWhenMissingPollChoice: async () => {
 		// Setup mock request without poll_choice
 		const req = createMockRequest({
-			post_id: 'post-123'
+			post_id: 123
 			// No poll_choice
 		})
 		
@@ -274,7 +274,7 @@ const tests = {
 	testSavePollChoiceWithStringNumbers: async () => {
 		// Test that handler works with string numbers (typical from web forms)
 		const req = createMockRequest({
-			post_id: 'post-string',
+			post_id: 202,
 			poll_choice: '1' // String, not number
 		})
 		
@@ -313,7 +313,7 @@ const tests = {
 	testPollCountArrayFormatting: async () => {
 		// Test that poll counts are formatted correctly as comma-separated string
 		const req = createMockRequest({
-			post_id: 'post-format',
+			post_id: 303,
 			poll_choice: '2'
 		})
 		

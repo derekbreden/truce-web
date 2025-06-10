@@ -40,12 +40,12 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 			const attributes = (node.text.match(/\[[^\]]*\]/g) || []).map((attr) => {
 				let [key, value] = attr.slice(1, -1).split("=")
 				if (key.startsWith("$")) {
-					const arg_index = parseInt(key.slice(1)) - 1
+					const arg_index = Number(key.slice(1)) - 1
 					key = flint_args[arg_index]
 				}
 				if (value) {
 					if (value.startsWith("$")) {
-						const arg_index = parseInt(value.slice(1)) - 1
+						const arg_index = Number(value.slice(1)) - 1
 						value = flint_args[arg_index]
 					} else if (value.startsWith(`"`) && value.endsWith(`"`)) {
 						value = value.slice(1, -1)
@@ -69,7 +69,7 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 			let element = null
 
 			if (tag.startsWith("$")) {
-				const arg_index = parseInt(tag.slice(1)) - 1
+				const arg_index = Number(tag.slice(1)) - 1
 				const arg = flint_args[arg_index]
 
 				if (typeof arg === "string") {
@@ -95,7 +95,7 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 
 				if (rest.includes("$")) {
 					const content = rest.replace(/\$\d+/g, (match) => {
-						const arg_index = parseInt(match.slice(1)) - 1
+						const arg_index = Number(match.slice(1)) - 1
 						return flint_args[arg_index] !== undefined
 							? flint_args[arg_index]
 							: match

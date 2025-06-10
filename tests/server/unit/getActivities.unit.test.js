@@ -14,7 +14,7 @@ const tests = {
 		// Setup mock request for favorites path
 		const req = createMockRequest(
 			{ path: "/favorites" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -24,13 +24,13 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'post-1',
+						id: 1,
 						type: 'post',
 						title: 'Favorite Post',
 						body: 'This is a favorite post',
 						favorited: true,
 						favorite_create_date: '2024-01-15T10:00:00Z',
-						user_id: 'user-456',
+						user_id: '456',
 						display_name: 'Post Author',
 						topics: 'technology,science'
 					},
@@ -40,7 +40,7 @@ const tests = {
 						body: 'This is a favorite reply',
 						favorited: true,
 						favorite_create_date: '2024-01-14T09:00:00Z',
-						user_id: 'user-789',
+						user_id: '789',
 						display_name: 'Reply Author',
 						parent_post_title: 'Parent Post'
 					}
@@ -85,7 +85,7 @@ const tests = {
 		// Setup mock request for user replies path
 		const req = createMockRequest(
 			{ path: "/user/user-456/replies" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -99,7 +99,7 @@ const tests = {
 						type: 'reply',
 						body: 'User reply 1',
 						create_date: '2024-01-15T10:00:00Z',
-						user_id: 'user-456',
+						user_id: '456',
 						display_name: 'The User',
 						favorited: false,
 						parent_post_title: 'Discussion Post',
@@ -110,7 +110,7 @@ const tests = {
 						type: 'reply',
 						body: 'User reply 2',
 						create_date: '2024-01-14T09:00:00Z',
-						user_id: 'user-456',
+						user_id: '456',
 						display_name: 'The User',
 						favorited: true
 					}
@@ -140,7 +140,7 @@ const tests = {
 			"All activities should be replies."
 		)
 		assertEquals(
-			'user-456',
+			'456',
 			req.results.activities[0].user_id,
 			"Should return replies from specified user."
 		)
@@ -150,7 +150,7 @@ const tests = {
 		// Setup mock request for user replies by slug
 		const req = createMockRequest(
 			{ path: "/user/johndoe/replies" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -162,7 +162,7 @@ const tests = {
 						id: 'reply-slug-1',
 						type: 'reply',
 						body: 'Reply by slug user',
-						user_id: 'user-slug-789',
+						user_id: '789',
 						display_name: 'John Doe'
 					}
 				]
@@ -216,7 +216,7 @@ const tests = {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
 			{ path: "/posts" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -242,7 +242,7 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ path: "/favorites" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -269,7 +269,7 @@ const tests = {
 				max_create_date: '2024-01-15T12:00:00Z',
 				min_create_date: '2024-01-10T00:00:00Z'
 			},
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -278,7 +278,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						id: 'filtered-post-1',
+						id: 2,
 						type: 'post',
 						title: 'Filtered Post',
 						favorited: true,
@@ -309,7 +309,7 @@ const tests = {
 		// Test that all expected activity fields are present
 		const req = createMockRequest(
 			{ path: "/favorites" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -333,7 +333,7 @@ const tests = {
 						replyed: true,
 						voted: false,
 						image_uuids: 'uuid1,uuid2',
-						user_id: 'author-123',
+						user_id: '123',
 						display_name: 'Post Author',
 						display_name_index: 0,
 						user_slug: 'post-author',
@@ -360,7 +360,7 @@ const tests = {
 		assertEquals(12, activity.reply_count, "Should have reply_count.")
 		assertEquals(true, activity.favorited, "Should have favorited status.")
 		assertEquals(false, activity.edit, "Should have edit permission.")
-		assertEquals('author-123', activity.user_id, "Should have user_id.")
+		assertEquals('123', activity.user_id, "Should have user_id.")
 		assertEquals('Post Author', activity.display_name, "Should have display_name.")
 		assertEquals('topic1,topic2', activity.topics, "Should have topics.")
 	},
@@ -369,7 +369,7 @@ const tests = {
 		// Test when no activities are found
 		const req = createMockRequest(
 			{ path: "/favorites" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		
@@ -406,7 +406,7 @@ const tests = {
 		for (const testPath of validPaths) {
 			const req = createMockRequest(
 				{ path: testPath },
-				{ user_id: 'user-123' }
+				{ user_id: '123' }
 			)
 			req.results = { activities: [] }
 			
@@ -439,7 +439,7 @@ const tests = {
 		for (const testPath of invalidPaths) {
 			const req = createMockRequest(
 				{ path: testPath },
-				{ user_id: 'user-123' }
+				{ user_id: '123' }
 			)
 			req.results = { activities: [] }
 			
@@ -459,7 +459,7 @@ const tests = {
 		// Test that empty user in path is handled (current implementation allows it)
 		const req = createMockRequest(
 			{ path: "/user//replies" },
-			{ user_id: 'user-123' }
+			{ user_id: '123' }
 		)
 		req.results = { activities: [] }
 		

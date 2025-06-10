@@ -6,7 +6,7 @@ async function testNavigateToMessagesViaMenu() {
 	const { state, $ } = window
 
 	// Mock user session
-	state.user_id = "test-user-123"
+	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
@@ -23,11 +23,11 @@ async function testNavigateToMessagesViaMenu() {
 		"/conversations": {
 			success: true,
 			conversations: [{
-				conversation_id: "conv-123",
+				conversation_id: 123,
 				create_date: "2024-01-01T09:00:00Z",
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-456", display_name: "Other User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "456", display_name: "Other User", display_name_index: 0 }
 				],
 				last_message_body: "Hello there",
 				last_message_date: "2024-01-01T10:00:00Z",
@@ -74,7 +74,7 @@ async function testNavigateToSpecificMessage() {
 	const { state, $ } = window
 
 	// Mock user session
-	state.user_id = "test-user-123"
+	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
@@ -91,11 +91,11 @@ async function testNavigateToSpecificMessage() {
 		"/conversations": {
 			success: true,
 			conversations: [{
-				conversation_id: "conv-456",
+				conversation_id: 456,
 				create_date: "2024-01-01T09:30:00Z",
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-789", display_name: "Chat User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "789", display_name: "Chat User", display_name_index: 0 }
 				],
 				last_message_body: "Hey how are you?",
 				last_message_date: "2024-01-01T10:00:00Z",
@@ -107,21 +107,21 @@ async function testNavigateToSpecificMessage() {
 			notifications: [],
 			path: "/conversations"
 		},
-		"/messages/conv-456": {
+		"/messages/456": {
 			success: true,
 			messages: [],
 			conversation: {
-				conversation_id: "conv-456",
+				conversation_id: 456,
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-789", display_name: "Chat User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "789", display_name: "Chat User", display_name_index: 0 }
 				]
 			},
 			posts: [],
 			replies: [],
 			activities: [],
 			notifications: [],
-			path: "/messages/conv-456"
+			path: "/messages/456"
 		}
 	})
 
@@ -147,7 +147,7 @@ async function testNavigateToSpecificMessage() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we're now on the message thread page
-	assertEquals("/messages/conv-456", state.path, "Should navigate to specific message thread")
+	assertEquals("/messages/456", state.path, "Should navigate to specific message thread")
 
 	// Verify empty state is displayed (tests our replaceChildren fix)
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed for empty conversation")
@@ -162,7 +162,7 @@ async function testMessageSendingFlow() {
 	const { state, $ } = window
 
 	// Mock user session
-	state.user_id = "test-user-123"
+	state.user_id = "123"
 	state.display_name = "Test User"
 	state.email = "test@example.com"
 
@@ -179,11 +179,11 @@ async function testMessageSendingFlow() {
 		"/conversations": {
 			success: true,
 			conversations: [{
-				conversation_id: "conv-send",
+				conversation_id: 101,
 				create_date: "2024-01-01T08:00:00Z",
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "202", display_name: "Send User", display_name_index: 0 }
 				],
 				last_message_body: "Previous message",
 				last_message_date: "2024-01-01T09:00:00Z",
@@ -195,21 +195,21 @@ async function testMessageSendingFlow() {
 			notifications: [],
 			path: "/conversations"
 		},
-		"/messages/conv-send": {
+		"/messages/101": {
 			success: true,
 			messages: [],
 			conversation: {
-				conversation_id: "conv-send",
+				conversation_id: 101,
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "202", display_name: "Send User", display_name_index: 0 }
 				]
 			},
 			posts: [],
 			replies: [],
 			activities: [],
 			notifications: [],
-			path: "/messages/conv-send"
+			path: "/messages/101"
 		}
 	})
 
@@ -219,13 +219,13 @@ async function testMessageSendingFlow() {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
 				return body.action === "sendMessage" && 
-					   body.conversation_id === "conv-send" &&
+					   body.conversation_id === 101 &&
 					   body.pngs !== undefined && // This validates our fix
 					   Array.isArray(body.pngs)
 			}
 			return false
 		},
-		response: { success: true, user_id: "test-user-123", display_name: "Test User" }
+		response: { success: true, user_id: "123", display_name: "Test User" }
 	})
 
 	// Mock the refresh call - this tests our getMoreRecent fix
@@ -233,7 +233,7 @@ async function testMessageSendingFlow() {
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
-				return body.path === "/messages/conv-send" && 
+				return body.path === "/messages/101" && 
 					   body.min_message_create_date !== undefined // This validates our fix
 			}
 			return false
@@ -241,26 +241,26 @@ async function testMessageSendingFlow() {
 		response: {
 			success: true,
 			messages: [{
-				message_id: "msg-test-sent",
-				conversation_id: "conv-send",
-				sender_user_id: "test-user-123",
+				message_id: 301,
+				conversation_id: 101,
+				sender_user_id: "123",
 				body: "Hello world test message!",
 				create_date: new Date().toISOString(),
 				display_name: "Test User",
 				display_name_index: 0,
-				user_slug: "test-user-123",
+				user_slug: "123",
 				profile_picture_uuid: null,
 				user_verified: false,
 				edit: true
 			}],
 			conversation: {
-				conversation_id: "conv-send",
+				conversation_id: 101,
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
-					{ user_id: "other-user-send", display_name: "Send User", display_name_index: 0 }
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "202", display_name: "Send User", display_name_index: 0 }
 				]
 			},
-			path: "/messages/conv-send"
+			path: "/messages/101"
 		}
 	})
 
@@ -283,7 +283,7 @@ async function testMessageSendingFlow() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we're on the right page
-	assertEquals("/messages/conv-send", state.path, "Should be on message thread page")
+	assertEquals("/messages/101", state.path, "Should be on message thread page")
 
 	// Verify empty state shows initially  
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed initially")

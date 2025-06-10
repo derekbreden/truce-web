@@ -47,7 +47,7 @@ const tests = {
 			"Response should indicate success."
 		)
 		assertEquals(
-			'test-user-123',
+			'123',
 			responseData.user_id,
 			"Response should include user_id."
 		)

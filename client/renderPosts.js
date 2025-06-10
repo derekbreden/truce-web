@@ -210,7 +210,7 @@ const renderPosts = (posts, topic, user) => {
 		bindSubscribeUser($("post[user] button[subscribe]"), user)
 		$("post[user] button[message]")?.on("click", ($event) => {
 			$event.preventDefault()
-			const user_id = parseInt($("post[user] button[message]").getAttribute("userid"))
+			const user_id = Number($("post[user] button[message]").getAttribute("userid"))
 			startConversationWithUser(user_id)
 		})
 		$("button[edit][small]")?.on("click", ($event) => {

@@ -48,7 +48,7 @@ function createMockRequest(body = {}, session = {}, options = {}) {
 	return {
 		body,
 		session: {
-			user_id: 'test-user-123',
+			user_id: '123',
 			display_name: 'Test User',
 			user_slug: 'test-user',
 			display_name_index: 0,

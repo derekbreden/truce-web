@@ -86,7 +86,7 @@ module.exports = {
 									)
 									if (conversation.rows.length && 
 											conversation.rows[0].participant_user_ids.includes(this.ws_active[ws_uuid].user_id)) {
-										this.ws_active[ws_uuid].active_conversation_id = parseInt(conversation_id)
+										this.ws_active[ws_uuid].active_conversation_id = Number(conversation_id)
 									}
 								}
 								if (this.ws_active[ws_uuid]) {

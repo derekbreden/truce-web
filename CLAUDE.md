@@ -160,6 +160,7 @@ runTests("handler.unit.test.js", [testHandler])
 **Flint.js NodeLists**: Access first element when needed: `$("selector")[0]`
 **URL attributes**: Use `.endsWith()` for image src comparisons in tests
 **Test data**: Use minimal, focused test cases rather than complex scenarios
+**Data flow tracing**: When tests fail, trace data from mock → DOM attributes → JS parsing (e.g. Number()) → API calls
 
 ### Integration Test Complex Flows
 **Pre-populate state**: Pass `mockFetchResponseForPaths` to `setupIntegrationTestEnvironment()`

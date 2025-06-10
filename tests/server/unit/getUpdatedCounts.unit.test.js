@@ -28,13 +28,13 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'post-1',
+						post_id: 1,
 						favorite_count: 15,
 						poll_counts: '8,5,2',
 						reply_count: 12
 					},
 					{
-						post_id: 'post-2',
+						post_id: 2,
 						favorite_count: 7,
 						poll_counts: null,
 						reply_count: 3
@@ -55,7 +55,7 @@ const tests = {
 			"Should return array of post counts."
 		)
 		assertEquals(
-			'post-1',
+			1,
 			req.results.post_counts[0].post_id,
 			"First post should have correct ID."
 		)
@@ -75,7 +75,7 @@ const tests = {
 			"First post should have reply count."
 		)
 		assertEquals(
-			'post-2',
+			2,
 			req.results.post_counts[1].post_id,
 			"Second post should have correct ID."
 		)
@@ -176,7 +176,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'post-1',
+						post_id: 1,
 						favorite_count: 10,
 						poll_counts: '5,3',
 						reply_count: 8
@@ -213,7 +213,7 @@ const tests = {
 			"Should return reply counts."
 		)
 		assertEquals(
-			'post-1',
+			1,
 			req.results.post_counts[0].post_id,
 			"Post count should be correct."
 		)
@@ -355,7 +355,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						post_id: 'post-1',
+						post_id: 1,
 						favorite_count: 10,
 						poll_counts: '5,3',
 						reply_count: 8

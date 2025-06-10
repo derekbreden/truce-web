@@ -3,7 +3,7 @@ module.exports = async (req, res) => {
 	let conversation_id = req.body.conversation_id
 	
 	if (!conversation_id && req.body.path && req.body.path.startsWith("/messages/")) {
-		conversation_id = parseInt(req.body.path.split("/")[2])
+		conversation_id = Number(req.body.path.split("/")[2])
 	}
 	
 	if (
