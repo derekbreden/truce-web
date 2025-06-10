@@ -58,11 +58,15 @@ async function testGetMessagesSuccess() {
 	
 	await getMessages(req, res)
 	
-	const responseData = JSON.parse(res.getResponseData())
-	assertEquals(true, responseData.success, "Should succeed")
-	assertEquals(1, responseData.messages.length, "Should return messages")
-	assertEquals("/messages/1", responseData.path, "Should set correct path")
-	assertEquals(1, responseData.conversation.conversation_id, "Should return conversation metadata")
+	assertEquals(1, req.results.messages.length, "Should return messages")
+	assertEquals("/messages/1", req.results.path, "Should set correct path")
+	assertEquals(1, req.results.conversation.conversation_id, "Should return conversation metadata")
+	assertEquals(0, req.results.posts.length, "Should have empty posts array")
+	assertEquals(0, req.results.replies.length, "Should have empty replies array")
+	assertEquals(0, req.results.activities.length, "Should have empty activities array")
+	assertEquals(0, req.results.notifications.length, "Should have empty notifications array")
+	assertEquals(0, req.results.conversations.length, "Should have empty conversations array")
+	assertEquals(null, res.getResponseData(), "Should not send immediate response")
 }
 
 async function testGetMessagesNotParticipant() {
@@ -146,9 +150,7 @@ async function testGetMessagesWithDateFilter() {
 	
 	await getMessages(req, res)
 	
-	const responseData = JSON.parse(res.getResponseData())
-	assertEquals(true, responseData.success, "Should succeed with date filter")
-	assertEquals(0, responseData.messages.length, "Should return filtered results")
+	assertEquals(0, req.results.messages.length, "Should return filtered results")
 }
 
 runTests("getMessages.unit.test.js", [

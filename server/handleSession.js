@@ -22,6 +22,8 @@ module.exports = async (req, res) => {
 			replies: [],
 			activities: [],
 			notifications: [],
+			conversations: [],
+			messages: [],
 			path: req.body.path,
 		}
 

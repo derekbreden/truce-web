@@ -213,7 +213,7 @@ When working on tasks:
 - **Subtract complexity, don't add it** - Remove layers to isolate problems  
 - **One variable at a time** - Change only what you're testing
 - **Hypothesis-driven** - Form specific theories and test them
-- **Avoid cargo cult debugging** - Don't add logging everywhere before understanding
+- **Understand before judging** - Surface patterns != root causes. Dig deeper than "guards bad" or "comments bad"
 
 ## 10x Developer Principles
 

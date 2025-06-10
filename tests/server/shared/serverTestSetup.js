@@ -54,6 +54,15 @@ function createMockRequest(body = {}, session = {}, options = {}) {
 			display_name_index: 0,
 			...session
 		},
+		results: {
+			posts: [],
+			replies: [],
+			activities: [],
+			notifications: [],
+			conversations: [],
+			messages: [],
+			path: body.path,
+		},
 		client: mockClient,
 		sendWsMessage: (type, id) => {
 			// Mock WebSocket message sending

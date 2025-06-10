@@ -45,11 +45,15 @@ async function testGetConversationsSuccess() {
 	
 	await getConversations(req, res)
 	
-	const responseData = JSON.parse(res.getResponseData())
-	assertEquals(true, responseData.success, "Should succeed")
-	assertEquals(1, responseData.conversations.length, "Should return conversations")
-	assertEquals(5, responseData.total_unread, "Should return total unread count")
-	assertEquals("/conversations", responseData.path, "Should set correct path")
+	assertEquals(1, req.results.conversations.length, "Should return conversations")
+	assertEquals(5, req.results.total_unread, "Should return total unread count")
+	assertEquals("/conversations", req.results.path, "Should set correct path")
+	assertEquals(0, req.results.posts.length, "Should have empty posts array")
+	assertEquals(0, req.results.replies.length, "Should have empty replies array")
+	assertEquals(0, req.results.activities.length, "Should have empty activities array")
+	assertEquals(0, req.results.notifications.length, "Should have empty notifications array")
+	assertEquals(0, req.results.messages.length, "Should have empty messages array")
+	assertEquals(null, res.getResponseData(), "Should not send immediate response")
 }
 
 async function testGetConversationsEmpty() {
@@ -75,10 +79,8 @@ async function testGetConversationsEmpty() {
 	
 	await getConversations(req, res)
 	
-	const responseData = JSON.parse(res.getResponseData())
-	assertEquals(true, responseData.success, "Should succeed")
-	assertEquals(0, responseData.conversations.length, "Should return empty conversations")
-	assertEquals(0, responseData.total_unread, "Should return zero unread count")
+	assertEquals(0, req.results.conversations.length, "Should return empty conversations")
+	assertEquals(0, req.results.total_unread, "Should return zero unread count")
 }
 
 async function testGetConversationsWithDateFilter() {
@@ -105,9 +107,7 @@ async function testGetConversationsWithDateFilter() {
 	
 	await getConversations(req, res)
 	
-	const responseData = JSON.parse(res.getResponseData())
-	assertEquals(true, responseData.success, "Should succeed with date filter")
-	assertEquals(0, responseData.conversations.length, "Should return filtered results")
+	assertEquals(0, req.results.conversations.length, "Should return filtered results")
 }
 
 async function testGetConversationsInvalidPath() {

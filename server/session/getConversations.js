@@ -86,17 +86,8 @@ module.exports = async (req, res) => {
 			[req.session.user_id],
 		)
 
-		res.end(
-			JSON.stringify({
-				success: true,
-				conversations: conversations_result.rows,
-				total_unread: parseInt(total_unread_result.rows[0].total_unread),
-				posts: [],
-				replies: [],
-				activities: [],
-				notifications: [],
-				path: "/conversations",
-			}),
-		)
+		req.results.conversations.push(...conversations_result.rows)
+		req.results.total_unread = parseInt(total_unread_result.rows[0].total_unread)
+		req.results.path = "/conversations"
 	}
 }

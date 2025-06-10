@@ -97,17 +97,8 @@ module.exports = async (req, res) => {
 			[conversation_id, req.session.user_id],
 		)
 
-		res.end(
-			JSON.stringify({
-				success: true,
-				conversation: conversation_result.rows[0] || null,
-				messages: messages_result.rows,
-				posts: [],
-				replies: [],
-				activities: [],
-				notifications: [],
-				path: `/messages/${conversation_id}`,
-			}),
-		)
+		req.results.messages.push(...messages_result.rows)
+		req.results.conversation = conversation_result.rows[0] || null
+		req.results.path = `/messages/${conversation_id}`
 	}
 }
