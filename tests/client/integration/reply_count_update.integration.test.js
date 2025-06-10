@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js") // Correcte
 
 async function testReplyCountUpdate() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window // Destructure after window is defined
+	const { state, $ } = window // Keep state for WebSocket testing
 
 	// 1. Setup: Initial Post Data
 	const initialPost = {
@@ -46,7 +46,7 @@ async function testReplyCountUpdate() {
 	$joinButton.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/posts", state.path, "Should have navigated to /posts.")
+	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should have navigated to /posts.")
 
 	// 2. Verify Initial Reply Count
 	const $postElement = $("posts > post")

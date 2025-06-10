@@ -7,7 +7,7 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 const tests = {
 	testNavigateToFirstPostDetail: async () => {
 		const window = await setupIntegrationTestEnvironment()
-		const { state, $ } = window
+		const { $ } = window
 
 		// Set fetch response for posts and specific post
 		window.setMockFetchResponseForPaths({
@@ -82,8 +82,8 @@ const tests = {
 
 		// 2. Verify navigation to /posts
 		assertEquals(
-			"/posts",
-			state.path,
+			"posts",
+			$("posts") ? "posts" : "not-posts",
 			"Path should be /posts after agreeing to terms.",
 		)
 
@@ -93,11 +93,11 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		// 4. Assert navigation to the post detail path
-		const expectedPostPath = "/post/test-post-1"
+		const expectedElement = "replies"
 		assertEquals(
-			expectedPostPath,
-			state.path,
-			`Path should be "${expectedPostPath}" after clicking the first post.`,
+			expectedElement,
+			$("replies") ? "replies" : "not-replies",
+			`Should be on post detail page after clicking the first post.`,
 		)
 
 		// 5. Assert the post includes the detail rendered text

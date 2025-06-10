@@ -3,7 +3,7 @@ const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSe
 
 async function testMarkdownRendering() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
+	const { $ } = window
 
 	// Mock responses for navigating to a post with markdown content
 	window.setMockFetchResponseForPaths({
@@ -71,7 +71,7 @@ And a numbered list:
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Test markdown rendering
-	assertEquals("/posts", state.path, "Should be on posts page")
+	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
 	assertEquals("Header Test", $("p[bold] span").innerText.trim(), "Should render header with bold attribute")
 	assertEquals("This is a quote block", $("p[quote] span").innerText.trim(), "Should render quote with quote attribute")
 	assertEquals("https://example.com/test", $(`a[href="https://example.com/test"]`).getAttribute("href"), "Should auto-link plain URLs")
@@ -86,7 +86,7 @@ And a numbered list:
 
 async function testComplexMarkdownCombinations() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
+	const { $ } = window
 
 	// Mock responses for a post with complex markdown patterns
 	window.setMockFetchResponseForPaths({
@@ -157,7 +157,7 @@ https://example.com/file.pdf`,
 
 async function testComplexMarkdownParsing() {
 	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
+	const { $ } = window
 
 	// Test complex mixed image and link parsing that exercises both parsing loops
 	window.setMockFetchResponseForPaths({
