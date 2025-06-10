@@ -160,7 +160,7 @@ async function setupIntegrationTestEnvironment(options) {
 							})
 						}
 					}
-					console.error("Unmocked fetch path", body.path)
+					console.error("Unmocked fetch path", body.path, body)
 				}
 				return Promise.resolve({
 					status: 500,

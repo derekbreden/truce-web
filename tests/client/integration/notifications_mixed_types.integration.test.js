@@ -293,6 +293,139 @@ const tests = {
 			typeof $notificationElements.length === "number",
 			"Should handle notification counting without error."
 		)
+	},
+
+	testMessageNotificationMarkAsReadAPICall: async () => {
+		const window = await setupIntegrationTestEnvironment({
+			mockFetchResponseForPaths: {
+				"/unread_count_unseen_count": {
+					unread_count: "2",
+				},
+			},
+		})
+		const { state, $ } = window
+
+		// Mock notifications with a message notification
+		window.setMockFetchResponseForPaths({
+			"/posts": {
+				path: "/posts",
+				posts: [],
+				replies: [],
+				activities: [],
+				notifications: [],
+				user_slug: "testuser",
+				user_id: "user-123",
+				email: "test@example.com",
+				display_name: "Test User",
+				display_name_index: 0
+			},
+			"/notifications": {
+				path: "/notifications", 
+				notifications: [
+					{
+						notification_id: "msg-notif-1",
+						notification_type: "message",
+						read: false,
+						seen: false,
+						create_date: "2024-01-15T10:00:00Z",
+						display_name: "Alice Smith",
+						display_name_index: 0,
+						body: "Hey there! How are you doing?",
+						conversation_id: "conv-123",
+						message_id: "msg-456",
+						reply_id: null,
+						note: null,
+						title: null,
+						reply_type: null
+					},
+					{
+						notification_id: "msg-notif-2",
+						notification_type: "message",
+						read: false,
+						seen: false,
+						create_date: "2024-01-15T10:00:00Z",
+						display_name: "Alice Smith",
+						display_name_index: 0,
+						body: "Hey there! How are you doing?",
+						conversation_id: "conv-123",
+						message_id: "msg-456",
+						reply_id: null,
+						note: null,
+						title: null,
+						reply_type: null
+					},
+				],
+				posts: [],
+				replies: [],
+				activities: []
+			},
+			"/messages/conv-123": {
+				path: "/messages/conv-123",
+				messages: [],
+				conversation: { conversation_id: "conv-123", participants: [] },
+				posts: [],
+				replies: [],
+				activities: [],
+				notifications: []
+			},
+		})
+
+		// Mock mark unread submission
+		let markAsReadBody = {}
+		window.addMockFetchMatcher({
+			match: (url, options) => {
+				if (url === "/session") {
+					const body = JSON.parse(options.body)
+					if (body.mark_as_read) {
+						markAsReadBody = body
+						return true
+					}
+				}
+			},
+			response: {
+				success: true,
+			}
+		})
+
+		// Navigate to notifications page
+		$(`a[href="/posts"][big]`).click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		$("footer icon[notifications]").click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		
+		assertEquals("Unread (2)", $("main-content notifications h3").innerText, "Unread count should be (2)")
+
+		// Mock the new unread_count response
+		window.setMockFetchResponseForPaths({
+			"/unread_count_unseen_count": {
+				unread_count: "1",
+			}
+		})
+
+		// Click the message notification
+		$("notification[unread] + notification[unread]").click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		// Verify mark as read was called
+		assertEquals(
+			"msg-notif-2",
+			markAsReadBody.mark_as_read[0],
+			"Should call mark as read API with correct notification ID."
+		)
+		
+		// Click back to the notifications screen, mocking a new response first
+		window.setMockFetchResponseForPaths({
+			"/unread_count_unseen_count": {
+				unread_count: "1",
+			}
+		})
+
+		$("footer icon[notifications]").click()
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		assertEquals("Unread (1)", $("main-content notifications h3").innerText, "Unread count should be (1)")
 	}
 }
 

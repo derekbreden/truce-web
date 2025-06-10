@@ -161,6 +161,13 @@ runTests("handler.unit.test.js", [testHandler])
 **URL attributes**: Use `.endsWith()` for image src comparisons in tests
 **Test data**: Use minimal, focused test cases rather than complex scenarios
 
+### Integration Test Complex Flows
+**Pre-populate state**: Pass `mockFetchResponseForPaths` to `setupIntegrationTestEnvironment()`
+**Target elements**: Use specific CSS selectors like `notification[unread] + notification[unread]`
+**Update mocks mid-test**: Call `window.setMockFetchResponseForPaths()` between actions
+**Mock POST actions**: Use `window.addMockFetchMatcher()` for requests with specific body keys (not path-based)
+**Test full flow**: Check DOM content before/after, update mocks, navigate to trigger re-render
+
 ## Common Patterns
 
 ### Database Queries
