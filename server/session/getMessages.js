@@ -97,23 +97,6 @@ module.exports = async (req, res) => {
 			[conversation_id, req.session.user_id],
 		)
 
-		// Mark all unread message notifications as read for this conversation
-		await req.client.query(
-			`
-			UPDATE message_notifications
-			SET read = TRUE
-			WHERE
-				user_id = $1
-				AND message_id IN (
-					SELECT message_id
-					FROM messages
-					WHERE conversation_id = $2
-				)
-				AND read = FALSE
-			`,
-			[req.session.user_id, conversation_id],
-		)
-
 		req.results.messages.push(...messages_result.rows)
 		req.results.conversation = conversation_result.rows[0] || null
 		req.results.path = `/messages/${conversation_id}`
