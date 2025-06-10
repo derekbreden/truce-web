@@ -1,24 +1,24 @@
 // Mock AI module (internal dependency - use real one but control responses)
-let aiAskCalls = []
-const mockAI = {
+let ai_ask_calls = []
+const mock_ai = {
 	ask: async (messages, type, format) => {
-		aiAskCalls.push({ messages, type, format })
+		ai_ask_calls.push({ messages, type, format })
 		// Default to OK
 		return JSON.stringify({ keyword: "OK" })
 	}
 }
 
 // Replace AI module in require cache
-const aiPath = require.resolve("../../../server/ai")
-delete require.cache[aiPath]
-require.cache[aiPath] = {
-	exports: mockAI,
+const ai_path = require.resolve("../../../server/ai")
+delete require.cache[ai_path]
+require.cache[ai_path] = {
+	exports: mock_ai,
 	loaded: true,
-	id: aiPath
+	id: ai_path
 }
 
 // Track updateDisplayName calls by monitoring for its specific database query
-let updateDisplayNameCalls = []
+let update_display_name_calls = []
 
 const path = require("path")
 const {
@@ -29,8 +29,8 @@ const {
 } = require("../shared/serverTestSetup.js")
 
 // Clear the handler cache and import it after setting up mocks
-const saveDisplayNamePath = require.resolve("../../../server/session/saveDisplayName.js")
-delete require.cache[saveDisplayNamePath]
+const save_display_name_path = require.resolve("../../../server/session/saveDisplayName.js")
+delete require.cache[save_display_name_path]
 
 // Import the handler we're testing (after mocking everything)
 const saveDisplayName = require("../../../server/session/saveDisplayName.js")
@@ -41,35 +41,35 @@ const prompts = require("../../../server/prompts.js")
 const tests = {
 	testSuccessfulDisplayNameSave: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'John Doe'
+				display_name: "John Doe"
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
-				display_name: 'Old Name',
-				user_slug: 'john-doe-slug',
-				display_name_index: 'johndoe'
+				session_id: "session-123",
+				user_id: "user-456",
+				display_name: "Old Name",
+				user_slug: "john-doe-slug",
+				display_name_index: "johndoe"
 			}
 		)
 		
 		// Track updateDisplayName calls by monitoring for its specific database query
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
 			// Check if this is the updateDisplayName query
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
 		// Setup database mocks for updateDisplayName
-		req.client.addQueryMock('UPDATE users', { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -79,13 +79,13 @@ const tests = {
 		// Verify AI validation was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for display name validation."
 		)
 		
-		const aiCall = aiAskCalls[0]
+		const aiCall = ai_ask_calls[0]
 		assertEquals(
-			'display_name',
+			"display_name",
 			aiCall.type,
 			"Should use display_name type for validation."
 		)
@@ -100,7 +100,7 @@ const tests = {
 			"Should send one message for validation."
 		)
 		assertEquals(
-			'John Doe',
+			"John Doe",
 			aiCall.messages[0].content,
 			"Should validate sanitized display name."
 		)
@@ -108,12 +108,12 @@ const tests = {
 		// Verify updateDisplayName was called
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName."
 		)
 		assertEquals(
-			'John Doe',
-			updateDisplayNameCalls[0].display_name,
+			"John Doe",
+			update_display_name_calls[0].display_name,
 			"Should update with sanitized display name."
 		)
 		
@@ -124,60 +124,60 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.success,
+			response_data.success,
 			"Should return success."
 		)
 		assertEquals(
-			'user-456',
-			responseData.user_id,
+			"user-456",
+			response_data.user_id,
 			"Should return user ID."
 		)
 		assertEquals(
-			'Old Name',
-			responseData.display_name,
+			"Old Name",
+			response_data.display_name,
 			"Should return session display name."
 		)
 		assertEquals(
-			'johndoe',
-			responseData.display_name_index,
+			"johndoe",
+			response_data.display_name_index,
 			"Should return display name index."
 		)
 		assertEquals(
-			'john-doe-slug',
-			responseData.user_slug,
+			"john-doe-slug",
+			response_data.user_slug,
 			"Should return user slug."
 		)
 	},
 
 	testDisplayNameSanitization: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request with special characters
 		const req = createMockRequest(
 			{ 
-				display_name: 'John123@#$%^&*()Doe!!!'
+				display_name: "John123@#$%^&*()Doe!!!"
 			},
 			{ 
-				session_id: 'session-sanitize',
-				user_id: 'user-sanitize',
-				user_slug: 'some-slug'
+				session_id: "session-sanitize",
+				user_id: "user-sanitize",
+				user_slug: "some-slug"
 			}
 		)
 		
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
-		req.client.addQueryMock('UPDATE users', { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -187,41 +187,41 @@ const tests = {
 		// Verify display name was sanitized
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for validation."
 		)
 		assertEquals(
-			'John Doe',
-			aiAskCalls[0].messages[0].content,
+			"John Doe",
+			ai_ask_calls[0].messages[0].content,
 			"Should sanitize display name by removing non-letters and extra spaces."
 		)
 		
 		// Verify updateDisplayName was called with sanitized name
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName with sanitized name."
 		)
 		assertEquals(
-			'John Doe',
-			updateDisplayNameCalls[0].display_name,
+			"John Doe",
+			update_display_name_calls[0].display_name,
 			"Should update with sanitized display name."
 		)
 	},
 
 	testEmptyDisplayNameAfterSanitization: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request with only special characters
 		const req = createMockRequest(
 			{ 
-				display_name: '123@#$%^&*()'
+				display_name: "123@#$%^&*()"
 			},
 			{ 
-				session_id: 'session-empty',
-				user_id: 'user-empty'
+				session_id: "session-empty",
+				user_id: "user-empty"
 			}
 		)
 		
@@ -233,12 +233,12 @@ const tests = {
 		// Verify no AI call since name becomes empty
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI for empty display name."
 		)
 		assertEquals(
 			0,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should not call updateDisplayName for empty display name."
 		)
 		
@@ -249,27 +249,27 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Empty",
-			responseData.error,
+			response_data.error,
 			"Should return empty error."
 		)
 		assertEquals(
 			undefined,
-			responseData.success,
+			response_data.success,
 			"Should not return success for empty name."
 		)
 	},
 
 	testRejectedDisplayName: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Mock AI to reject display name
-		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+		mock_ai.ask = async (messages, type, format) => {
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ 
 				keyword: "Inappropriate",
 				note: "Contains inappropriate content"
@@ -279,11 +279,11 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'BadName'
+				display_name: "BadName"
 			},
 			{ 
-				session_id: 'session-bad',
-				user_id: 'user-bad'
+				session_id: "session-bad",
+				user_id: "user-bad"
 			}
 		)
 		
@@ -295,14 +295,14 @@ const tests = {
 		// Verify AI was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for validation."
 		)
 		
 		// Verify updateDisplayName was not called
 		assertEquals(
 			0,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should not call updateDisplayName for rejected name."
 		)
 		
@@ -313,51 +313,51 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Inappropriate",
-			responseData.error,
+			response_data.error,
 			"Should return AI rejection reason."
 		)
 		assertEquals(
 			undefined,
-			responseData.success,
+			response_data.success,
 			"Should not return success for rejected name."
 		)
 		
 		// Reset AI mock for other tests
-		mockAI.ask = async (messages, type, format) => {
-			aiAskCalls.push({ messages, type, format })
+		mock_ai.ask = async (messages, type, format) => {
+			ai_ask_calls.push({ messages, type, format })
 			return JSON.stringify({ keyword: "OK" })
 		}
 	},
 
 	testDisplayNameNotChanged: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Valid Name'
+				display_name: "Valid Name"
 			},
 			{ 
-				session_id: 'session-nochange',
-				user_id: 'user-nochange',
+				session_id: "session-nochange",
+				user_id: "user-nochange",
 				user_slug: null // No user_slug indicates name wasn't changed
 			}
 		)
 		
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
-		req.client.addQueryMock('UPDATE users', { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -367,14 +367,14 @@ const tests = {
 		// Verify AI was called
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for validation."
 		)
 		
 		// Verify updateDisplayName was called
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName."
 		)
 		
@@ -385,45 +385,45 @@ const tests = {
 			"Response should be ended."
 		)
 		
-		const responseData = JSON.parse(res.getResponseData())
+		const response_data = JSON.parse(res.getResponseData())
 		assertEquals(
 			"Display name was not changed",
-			responseData.error,
+			response_data.error,
 			"Should return not changed error when user_slug is missing."
 		)
 		assertEquals(
 			undefined,
-			responseData.success,
+			response_data.success,
 			"Should not return success when display name wasn't changed."
 		)
 	},
 
 	testWhitespaceHandling: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request with extra whitespace
 		const req = createMockRequest(
 			{ 
-				display_name: '   John    Doe   Smith   '
+				display_name: "   John    Doe   Smith   "
 			},
 			{ 
-				session_id: 'session-whitespace',
-				user_id: 'user-whitespace',
-				user_slug: 'john-doe-smith'
+				session_id: "session-whitespace",
+				user_id: "user-whitespace",
+				user_slug: "john-doe-smith"
 			}
 		)
 		
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
-			if (sql.includes('UPDATE users') && sql.includes('display_name = $1')) {
-				updateDisplayNameCalls.push({ display_name: params[0], user_id: params[1] })
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				update_display_name_calls.push({ display_name: params[0], user_id: params[1] })
 			}
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
-		req.client.addQueryMock('UPDATE users', { rows: [] })
+		req.client.addQueryMock("UPDATE users", { rows: [] })
 		
 		const res = createMockResponse()
 		
@@ -433,32 +433,32 @@ const tests = {
 		// Verify whitespace was normalized
 		assertEquals(
 			1,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should call AI for validation."
 		)
 		assertEquals(
-			'John Doe Smith',
-			aiAskCalls[0].messages[0].content,
+			"John Doe Smith",
+			ai_ask_calls[0].messages[0].content,
 			"Should normalize whitespace to single spaces and trim."
 		)
 		
 		// Verify updateDisplayName was called with normalized name
 		assertEquals(
 			1,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should call updateDisplayName."
 		)
 		assertEquals(
-			'John Doe Smith',
-			updateDisplayNameCalls[0].display_name,
+			"John Doe Smith",
+			update_display_name_calls[0].display_name,
 			"Should update with normalized display name."
 		)
 	},
 
 	testNoActionWhenMissingDisplayName: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request without display_name
 		const req = createMockRequest(
@@ -466,8 +466,8 @@ const tests = {
 				// display_name missing
 			},
 			{ 
-				session_id: 'session-missing',
-				user_id: 'user-missing'
+				session_id: "session-missing",
+				user_id: "user-missing"
 			}
 		)
 		
@@ -484,28 +484,28 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when display_name missing."
 		)
 		assertEquals(
 			0,
-			updateDisplayNameCalls.length,
+			update_display_name_calls.length,
 			"Should not call updateDisplayName when display_name missing."
 		)
 	},
 
 	testNoActionWhenMissingUserId: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request without user_id
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test Name'
+				display_name: "Test Name"
 			},
 			{ 
-				session_id: 'session-nouser',
+				session_id: "session-nouser",
 				user_id: undefined // No user_id
 			}
 		)
@@ -523,24 +523,24 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when user_id missing."
 		)
 	},
 
 	testNoActionWhenAlreadyEnded: async () => {
 		// Reset all calls
-		aiAskCalls = []
-		updateDisplayNameCalls = []
+		ai_ask_calls = []
+		update_display_name_calls = []
 		
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				display_name: 'Test Name'
+				display_name: "Test Name"
 			},
 			{ 
-				session_id: 'session-ended',
-				user_id: 'user-ended'
+				session_id: "session-ended",
+				user_id: "user-ended"
 			}
 		)
 		
@@ -559,7 +559,7 @@ const tests = {
 		)
 		assertEquals(
 			0,
-			aiAskCalls.length,
+			ai_ask_calls.length,
 			"Should not call AI when response already ended."
 		)
 	}
@@ -568,8 +568,8 @@ const tests = {
 // Restore original functions after tests
 const cleanup = () => {
 	// Restore original modules
-	delete require.cache[aiPath]
-	delete require.cache[saveDisplayNamePath]
+	delete require.cache[ai_path]
+	delete require.cache[save_display_name_path]
 }
 
 runTests(path.basename(__filename), Object.values(tests))

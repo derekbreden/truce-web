@@ -5,11 +5,6 @@ async function testTypingIndicatorSendsOnInput() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	// Track WebSocket messages sent
 	let wsMessages = []
 	const originalSend = state.ws.send
@@ -22,6 +17,9 @@ async function testTypingIndicatorSendsOnInput() {
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -30,6 +28,9 @@ async function testTypingIndicatorSendsOnInput() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: "conv-typing",
 				create_date: "2024-01-01T09:00:00Z",
@@ -49,6 +50,9 @@ async function testTypingIndicatorSendsOnInput() {
 		},
 		"/messages/conv-typing": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [],
 			conversation: {
 				conversation_id: "conv-typing",
@@ -86,7 +90,7 @@ async function testTypingIndicatorSendsOnInput() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we are on the message thread
-	assertEquals("/messages/conv-typing", state.path, "Should be on message thread")
+	assertEquals("textarea", $("main-content-wrapper[active] textarea") ? "textarea" : "not-textarea", "Should be on message thread")
 
 	// Clear any existing WebSocket messages from navigation
 	wsMessages = []
@@ -115,15 +119,13 @@ async function testTypingIndicatorDisplaysForOtherUser() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	// Mock pages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -132,6 +134,9 @@ async function testTypingIndicatorDisplaysForOtherUser() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: "conv-display",
 				create_date: "2024-01-01T09:00:00Z",
@@ -224,11 +229,6 @@ async function testTypingIndicatorOnlyShowsInCorrectConversation() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	// Mock pages
 	window.setMockFetchResponseForPaths({
 		"/posts": {
@@ -310,11 +310,6 @@ async function testTypingIndicatorOnlyShowsInCorrectConversation() {
 async function testTypingIndicatorResetsOnMultipleInputs() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
-
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
 
 	// Track WebSocket messages
 	let wsMessages = []

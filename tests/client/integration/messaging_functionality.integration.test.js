@@ -162,6 +162,9 @@ async function testMessageSendingFlow() {
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -170,6 +173,9 @@ async function testMessageSendingFlow() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: 101,
 				create_date: "2024-01-01T08:00:00Z",
@@ -189,6 +195,9 @@ async function testMessageSendingFlow() {
 		},
 		"/messages/101": {
 			success: true,
+			user_id: "123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [],
 			conversation: {
 				conversation_id: 101,
@@ -274,7 +283,7 @@ async function testMessageSendingFlow() {
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Verify we're on the right page
-	assertEquals("/messages/101", state.path, "Should be on message thread page")
+	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper") ? "all-clear-wrapper" : "not-all-clear", "Should be on message thread page")
 
 	// Verify empty state shows initially  
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed initially")

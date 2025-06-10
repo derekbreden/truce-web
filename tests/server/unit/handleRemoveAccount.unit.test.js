@@ -489,7 +489,7 @@ const tests = {
 		
 		// Track database operations in order by intercepting the original client
 		let dbOperations = []
-		const originalQuery = req.client.query
+		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
 			// Track the type of operation
 			if (sql.includes('SELECT image_uuids')) {
@@ -531,7 +531,7 @@ const tests = {
 			}
 			
 			// Call the original query method
-			return await originalQuery.call(req.client, sql, params)
+			return await original_query.call(req.client, sql, params)
 		}
 		
 		// Setup mock database responses

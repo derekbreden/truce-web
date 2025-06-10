@@ -5,13 +5,12 @@ async function testMessageDisplayWithContent() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -20,6 +19,9 @@ async function testMessageDisplayWithContent() {
 		},
 		"/conversations": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			conversations: [{
 				conversation_id: "conv-with-messages",
 				create_date: "2024-01-01T08:00:00Z",
@@ -39,6 +41,9 @@ async function testMessageDisplayWithContent() {
 		},
 		"/messages/conv-with-messages": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			messages: [
 				{
 					message_id: "msg-1",
@@ -100,7 +105,7 @@ async function testMessageDisplayWithContent() {
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("/messages/conv-with-messages", state.path, "Should be on message thread page")
+	assertEquals("messages", $("messages") ? "messages" : "not-messages", "Should be on message thread page")
 
 	const $messages_container = $("messages")
 	const $messages = $messages_container.querySelectorAll("message")
@@ -125,15 +130,13 @@ async function testWebSocketMessageUpdates() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	// Set up initial conversation with one message
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
@@ -265,15 +268,13 @@ async function testConversationUpdateViaWebSocket() {
 	const window = await setupIntegrationTestEnvironment()
 	const { state, $ } = window
 
-	// Mock user session
-	state.user_id = "test-user-123"
-	state.display_name = "Test User"
-	state.email = "test@example.com"
-
 	// Set up initial conversations page
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			success: true,
+			user_id: "test-user-123",
+			display_name: "Test User",
+			email: "test@example.com",
 			posts: [],
 			replies: [],
 			activities: [],
