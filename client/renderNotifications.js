@@ -3,66 +3,104 @@ const renderNotification = (notification) => {
 		notification.body.length > 50
 			? notification.body.slice(0, 50) + "..."
 			: notification.body
-	const short_title =
-		notification.title.length > 20
-			? notification.title.slice(0, 20) + "..."
-			: notification.title
 
-	const reply_text =
-		notification.reply_type === "reply"
-			? "to your reply on"
-			: notification.reply_type === "post_reply"
-				? "to a reply on your post"
-				: "to your post"
+	// Handle different notification types
+	const is_message = notification.notification_type === "message"
+	
+	if (is_message) {
+		// Message notification rendering
+		const $notification = $(
+			`
+	    notification[unread=$1]
+	      first-column
+	        summary
+	          b $2
+	          span messaged you
+	          i $3
+	      read-more-wrapper
+	        button[expand-right]
+	    `,
+			[
+				!notification.read,
+				renderName(notification.display_name, notification.display_name_index),
+				`"${short_body}"`
+			],
+		)
+		$notification.on("click", () => {
+			goToPath("/messages/" + notification.conversation_id)
 
-	const note = notification.note || ""
-	const note_keyword = note.split(" ")[0]
-	const note_title = (note_keywords[note_keyword] || note_keyword).replace(
-		/[^a-z\-]/gi,
-		"",
-	)
-	const $notification = $(
-		`
-    notification[unread=$1]
-      first-column
-        summary
-          b $2
-          span $3
-          i $4
-          span $5
-          b $6
-        $7
-      read-more-wrapper
-        button[expand-right]
-    `,
-		[
-			!notification.read,
-			renderName(notification.display_name, notification.display_name_index),
-			"replied",
-			`"${short_body}"`,
-			reply_text,
-			short_title,
-			notification.note
-				? $(
-						`
-          info[tiny][$1]
-            b $2
-          `,
-						[note_keyword, note_title],
-					)
-				: [],
-		],
-	)
-	$notification.on("click", () => {
-		goToPath("/reply/" + notification.reply_id)
+			// Mark as read
+			if (!notification.read) {
+				fetch("/session", {
+					method: "POST",
+					body: JSON.stringify({
+						mark_as_read: [notification.notification_id],
+					}),
+				})
+			}
+		})
+		return $notification
+	} else {
+		// Reply notification rendering (existing logic)
+		const short_title =
+			notification.title.length > 20
+				? notification.title.slice(0, 20) + "..."
+				: notification.title
 
-		// Mark as read
-		if (!notification.read) {
-			markAsRead(notification.notification_id)
+		const reply_text =
+			notification.reply_type === "reply"
+				? "to your reply on"
+				: notification.reply_type === "post_reply"
+					? "to a reply on your post"
+					: "to your post"
+
+		const note = notification.note || ""
+		const note_keyword = note.split(" ")[0]
+		const note_title = (note_keywords[note_keyword] || note_keyword).replace(
+			/[^a-z\-]/gi,
+			"",
+		)
+		const $notification = $(
+			`
+	    notification[unread=$1]
+	      first-column
+	        summary
+	          b $2
+	          span replied
+	          i $3
+	          span $4
+	          b $5
+	        $6
+	      read-more-wrapper
+	        button[expand-right]
+	    `,
+			[
+				!notification.read,
+				renderName(notification.display_name, notification.display_name_index),
+				`"${short_body}"`,
+				reply_text,
+				short_title,
+				notification.note
+					? $(
+							`
+	          info[tiny][$1]
+	            b $2
+	          `,
+							[note_keyword, note_title],
+						)
+					: [],
+			],
+		)
+			$notification.on("click", () => {
+				goToPath("/reply/" + notification.reply_id)
+
+				// Mark as read
+				if (!notification.read) {
+					markAsRead(notification.notification_id)
+				}
+			})
+			return $notification
 		}
-	})
-	notification.$notification = $notification
-	return $notification
 }
 
 const renderNotifications = (notifications) => {
