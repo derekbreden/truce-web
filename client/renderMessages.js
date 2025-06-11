@@ -271,7 +271,25 @@ const markMessagesAsRead = (messages) => {
 		}
 	}
 
-	// Refresh unread counts
+	// Update state.unread_count immediately to reflect the reduced count
+	const unreadNotifications = state.cache["/notifications"]?.notifications?.filter(n => !n.read) || []
+	state.unread_count = unreadNotifications.length
+
+	// Update UI indicators immediately
+	if (state.unread_count === 0) {
+		$("hamburger")?.removeAttribute("unread")
+		$("footer a[notifications]")?.removeAttribute("unread")
+	}
+
+	// Update notifications page header if currently on notifications page
+	if (state.path === "/notifications") {
+		const $unreadHeader = $("main-content h3")
+		if ($unreadHeader) {
+			$unreadHeader.innerText = state.unread_count > 0 ? `Unread (${state.unread_count})` : "Unread"
+		}
+	}
+
+	// Refresh unread counts from server to ensure accuracy
 	getUnreadCountUnseenCount()
 }
 
