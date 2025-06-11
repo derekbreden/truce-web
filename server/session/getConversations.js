@@ -47,6 +47,9 @@ module.exports = async (req, res) => {
 				AND (
 					c.create_date > $2 OR $2 IS NULL
 				)
+				AND (
+					COALESCE(lm.create_date, c.create_date) < $3 OR $3 IS NULL
+				)
 			GROUP BY 
 				c.conversation_id, 
 				c.create_date, 
@@ -67,6 +70,7 @@ module.exports = async (req, res) => {
 			[
 				req.session.user_id,
 				req.body.min_conversation_create_date ? new Date(req.body.min_conversation_create_date) : null,
+				req.body.max_conversation_create_date ? new Date(req.body.max_conversation_create_date) : null,
 			],
 		)
 

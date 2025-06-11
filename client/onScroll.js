@@ -232,5 +232,118 @@ const bindScrollEvent = () => {
 					})
 			}
 		}
+
+		// Conversations load older
+		if (
+			state.path === "/conversations"
+			&& state.cache["/conversations"]
+			&& !state.cache["/conversations"].finished
+		) {
+			// A threshold based on how much is left to scroll
+			const threshold =
+				$("main-content-wrapper[active]").scrollHeight
+				- $("main-content-wrapper[active]").clientHeight * 3
+
+			// When we pass the threshold
+			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+				// Find the oldest (min) create_date of what we have so far
+				const max_conversation_create_date = state.cache["/conversations"].conversations.reduce(
+					(min, conversation) => {
+						const conversation_date = conversation.last_message_date || conversation.create_date
+						return min < conversation_date ? min : conversation_date
+					},
+					new Date().toISOString(),
+				)
+
+				// Use that to load anything older than that (our min is the max of what we want returned)
+				state.loading_path = true
+				fetch("/session", {
+					method: "POST",
+					body: JSON.stringify({
+						path: "/conversations",
+						max_conversation_create_date,
+					}),
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						// Stop when we reach the end (no more results returned)
+						if (data.conversations && !data.conversations.length) {
+							state.cache["/conversations"].finished = true
+						}
+
+						// Append what we found to the existing cache
+						state.cache["/conversations"].conversations.push(...data.conversations)
+
+						// And re-render if any conversations added
+						if (data.conversations.length) {
+							renderConversations(state.cache["/conversations"].conversations)
+						}
+
+						state.loading_path = false
+					})
+					.catch((error) => {
+						state.loading_path = false
+						console.error(error)
+						state.most_recent_error = error
+						alertError("Network error loading more")
+					})
+			}
+		}
+
+		// Messages load older
+		if (
+			state.path.startsWith("/messages/")
+			&& state.cache[state.path]
+			&& !state.cache[state.path].messages_finished
+		) {
+			// A threshold based on how much is left to scroll
+			const threshold =
+				$("main-content-wrapper[active]").scrollHeight
+				- $("main-content-wrapper[active]").clientHeight * 3
+
+			// When we pass the threshold
+			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+				// Find the oldest (min) create_date of what we have so far
+				const max_message_create_date = state.cache[state.path].messages.reduce(
+					(min, message) => {
+						return min < message.create_date ? min : message.create_date
+					},
+					new Date().toISOString(),
+				)
+
+				// Use that to load anything older than that (our min is the max of what we want returned)
+				state.loading_path = true
+				fetch("/session", {
+					method: "POST",
+					body: JSON.stringify({
+						path: state.path,
+						max_message_create_date,
+					}),
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						// Stop when we reach the end (no more results returned)
+						if (data.messages && !data.messages.length) {
+							state.cache[state.path].messages_finished = true
+						}
+
+						// Prepend what we found to the existing cache (older messages go first)
+						state.cache[state.path].messages.unshift(...data.messages)
+
+						// And re-render if any messages added
+						if (data.messages.length) {
+							renderMessages(state.cache[state.path].messages, state.cache[state.path].conversation)
+						}
+
+						state.loading_path = false
+					})
+					.catch((error) => {
+						state.loading_path = false
+						console.error(error)
+						state.most_recent_error = error
+						alertError("Network error loading more")
+					})
+			}
+		}
 	})
 }

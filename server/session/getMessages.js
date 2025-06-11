@@ -59,6 +59,9 @@ module.exports = async (req, res) => {
 				AND (
 					m.create_date > $3 OR $3 IS NULL
 				)
+				AND (
+					m.create_date < $4 OR $4 IS NULL
+				)
 				AND b.user_id_blocked IS NULL
 			ORDER BY m.create_date ASC
 			`,
@@ -66,6 +69,7 @@ module.exports = async (req, res) => {
 				conversation_id,
 				req.session.user_id,
 				req.body.min_message_create_date ? new Date(req.body.min_message_create_date) : null,
+				req.body.max_message_create_date ? new Date(req.body.max_message_create_date) : null,
 			],
 		)
 

@@ -125,9 +125,38 @@ async function testGetConversationsInvalidPath() {
 	assertEquals(null, res.getResponseData(), "Should not respond to invalid path")
 }
 
+async function testGetConversationsWithMaxDateFilter() {
+	const req = createMockRequest({
+		path: "/conversations",
+		max_conversation_create_date: "2024-01-15T00:00:00.000Z"
+	}, {
+		user_id: 123
+	})
+	
+	// Mock conversations query with max date filter
+	req.client.addQueryMock(
+		(sql) => sql.includes("FROM conversations c") && sql.includes("COALESCE(lm.create_date, c.create_date) < $3"),
+		{ rows: [] }
+	)
+	
+	// Mock total unread count query
+	req.client.addQueryMock(
+		(sql) => sql.includes("COUNT(*) as total_unread"),
+		{ rows: [{ total_unread: 0 }] }
+	)
+	
+	const res = createMockResponse()
+	
+	await getConversations(req, res)
+	
+	assertEquals(0, req.results.conversations.length, "Should handle max date filter")
+	assertEquals("/conversations", req.results.path, "Should set correct path")
+}
+
 runTests("getConversations.unit.test.js", [
 	testGetConversationsSuccess,
 	testGetConversationsEmpty,
 	testGetConversationsWithDateFilter,
-	testGetConversationsInvalidPath
+	testGetConversationsInvalidPath,
+	testGetConversationsWithMaxDateFilter
 ])

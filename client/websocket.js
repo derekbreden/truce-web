@@ -16,6 +16,8 @@ const reconnectWs = () => {
 			const data = JSON.parse(event.data)
 			if (data.type === "TYPING_INDICATOR") {
 				handleTypingIndicator(data)
+			} else if (data.type === "READ_STATUS_UPDATE") {
+				handleReadStatusUpdate(data)
 			}
 		}
 	})
@@ -74,6 +76,30 @@ const handleTypingIndicator = (data) => {
 			typingIndicator?.remove()
 		}
 	}
+}
+
+// Handle read status updates
+const handleReadStatusUpdate = (data) => {
+	// Only handle read status updates when viewing conversations page
+	if (state.path === "/conversations" && state.cache["/conversations"]?.conversations) {
+		// Find the conversation in the cache
+		const conversation = state.cache["/conversations"].conversations.find(
+			conv => conv.conversation_id === data.conversation_id
+		)
+		
+		if (conversation) {
+			// Update the unread count
+			conversation.unread_count = data.new_unread_count
+			
+			// Re-render conversations to reflect the updated read status
+			renderConversations(state.cache["/conversations"].conversations)
+		}
+	}
+}
+
+// Expose for testing
+if (typeof window !== "undefined") {
+	window.handleReadStatusUpdate = handleReadStatusUpdate
 }
 
 // Send typing indicator

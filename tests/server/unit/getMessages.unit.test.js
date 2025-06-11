@@ -153,9 +153,44 @@ async function testGetMessagesWithDateFilter() {
 	assertEquals(0, req.results.messages.length, "Should return filtered results")
 }
 
+async function testGetMessagesWithMaxDateFilter() {
+	const req = createMockRequest({
+		conversation_id: 1,
+		max_message_create_date: "2024-01-15T00:00:00.000Z"
+	}, {
+		user_id: 123
+	})
+	
+	// Mock conversation check
+	req.client.addQueryMock(
+		"SELECT participant_user_ids",
+		{ rows: [{ participant_user_ids: [123, 456] }] }
+	)
+	
+	// Mock messages query with max date filter
+	req.client.addQueryMock(
+		(sql) => sql.includes("FROM messages m") && sql.includes("m.create_date < $4"),
+		{ rows: [] }
+	)
+	
+	// Mock conversation metadata query
+	req.client.addQueryMock(
+		(sql) => sql.includes("FROM conversations c") && sql.includes("array_agg"),
+		{ rows: [{ conversation_id: 1, participants: [] }] }
+	)
+	
+	const res = createMockResponse()
+	
+	await getMessages(req, res)
+	
+	assertEquals(0, req.results.messages.length, "Should handle max date filter")
+	assertEquals("/messages/1", req.results.path, "Should set correct path")
+}
+
 runTests("getMessages.unit.test.js", [
 	testGetMessagesSuccess,
 	testGetMessagesNotParticipant,
 	testGetMessagesConversationNotFound,
-	testGetMessagesWithDateFilter
+	testGetMessagesWithDateFilter,
+	testGetMessagesWithMaxDateFilter
 ])
