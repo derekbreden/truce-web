@@ -9,7 +9,7 @@ async function testStartConversationViaMessageButton() {
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			path: "/posts",
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			posts: [{
@@ -37,7 +37,7 @@ async function testStartConversationViaMessageButton() {
 		},
 		"/user/target-user": {
 			success: true,
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			user: {
@@ -75,14 +75,14 @@ async function testStartConversationViaMessageButton() {
 	window.setMockFetchResponseForPaths({
 		"/messages/conv-789": {
 			success: true,
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			messages: [],
 			conversation: {
 				conversation_id: "conv-789",
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
 					{ user_id: "456", display_name: "Target User", display_name_index: 0 }
 				]
 			},
@@ -119,7 +119,7 @@ async function testStartConversationWithExistingConversation() {
 	window.setMockFetchResponseForPaths({
 		"/posts": {
 			path: "/posts",
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			posts: [{
@@ -147,7 +147,7 @@ async function testStartConversationWithExistingConversation() {
 		},
 		"/user/existing-user": {
 			success: true,
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			user: {
@@ -184,7 +184,7 @@ async function testStartConversationWithExistingConversation() {
 	window.setMockFetchResponseForPaths({
 		"/messages/123": {
 			success: true,
-			user_id: "test-user-123",
+			user_id: "123",
 			display_name: "Test User",
 			email: "test@example.com",
 			messages: [{
@@ -203,7 +203,7 @@ async function testStartConversationWithExistingConversation() {
 			conversation: {
 				conversation_id: "123",
 				participants: [
-					{ user_id: "test-user-123", display_name: "Test User", display_name_index: 0 },
+					{ user_id: "123", display_name: "Test User", display_name_index: 0 },
 					{ user_id: "456", display_name: "Existing User", display_name_index: 0 }
 				]
 			},
