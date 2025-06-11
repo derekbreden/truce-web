@@ -21,6 +21,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "eslint": "^9.28.0",
+    "globals": "^16.2.0",
     "jsdom": "^26.1.0"
   }
 }
