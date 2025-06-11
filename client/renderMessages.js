@@ -227,6 +227,10 @@ const markMessagesAsRead = (messages) => {
 		message.sender_user_id !== state.user_id
 	)
 
+	if (unreadMessages.length === 0) {
+		return // Nothing to mark as read
+	}
+
 	// Mark each message as read
 	unreadMessages.forEach(message => {
 		fetch("/session", {
@@ -236,9 +240,38 @@ const markMessagesAsRead = (messages) => {
 				message_id: message.message_id
 			})
 		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				// Update notifications cache to mark message notifications as read
+				const notifications = state.cache["/notifications"]?.notifications
+				if (notifications) {
+					notifications.forEach(notification => {
+						if (notification.notification_type === "message" && notification.message_id === message.message_id) {
+							notification.read = true
+							notification.seen = true
+						}
+					})
+				}
+			}
+		})
 		.catch(error => {
 			console.error("Error marking message as read:", error)
 		})
 	})
+
+	// Update conversations cache to set unread_count = 0 for current conversation
+	const conversation_id = state.active_conversation_id
+	if (conversation_id && state.cache["/conversations"]?.conversations) {
+		const conversation = state.cache["/conversations"].conversations.find(
+			conv => conv.conversation_id === conversation_id
+		)
+		if (conversation) {
+			conversation.unread_count = 0
+		}
+	}
+
+	// Refresh unread counts
+	getUnreadCountUnseenCount()
 }
 
