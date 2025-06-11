@@ -2731,3 +2731,19 @@ conversation unread-indicator {
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+conversation unread-count {
+  background: light-dark(#007AFF, #0056b3);
+  color: light-dark(#fff, #fff);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  min-width: 16px;
+  text-align: center;
+  display: inline-block;
+  line-height: 1.2;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
