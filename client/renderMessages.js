@@ -109,6 +109,67 @@ const renderMessages = (messages, conversation) => {
 					]
 				)
 			)
+
+			// Set up message sending
+			const $textarea = $("main-content-wrapper[active] textarea")
+			const $sendButton = $("main-content-wrapper[active] send-button")
+			
+			const send_message = () => {
+				const message_body = $textarea.value.trim()
+				if (message_body && conversation) {
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							action: "sendMessage",
+							conversation_id: conversation.conversation_id,
+							body: message_body,
+							pngs: []
+						})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.error) {
+							alertError(data.error)
+						} else {
+							$textarea.value = ""
+							// Refresh messages
+							startSession()
+						}
+					})
+					.catch(error => {
+						console.error("Error sending message:", error)
+						alertError("Network error sending message")
+					})
+				}
+			}
+
+			$sendButton.on("click", send_message)
+			$textarea.on("keydown", (e) => {
+				if (e.key === "Enter" && !e.shiftKey) {
+					e.preventDefault()
+					send_message()
+				}
+			})
+
+			// Add typing indicators
+			let last_typing_time = 0
+			$textarea.on("input", () => {
+				if (conversation && conversation.conversation_id) {
+					const now = Date.now()
+					last_typing_time = now
+					
+					// Start typing indicator
+					sendTypingIndicator(true, conversation.conversation_id)
+					
+					// Stop typing after 1 second of no input
+					setTimeout(() => {
+						if (Date.now() - last_typing_time >= 1000) {
+							sendTypingIndicator(false, conversation.conversation_id)
+						}
+					}, 1000)
+				}
+			})
+
 		}
 
 		// Update conversation header with participants
@@ -148,72 +209,36 @@ const renderMessages = (messages, conversation) => {
 			$("main-content-wrapper[active] messages").scrollTop = $("main-content-wrapper[active] messages").scrollHeight
 		}
 
-		// Set up message sending
-		const $textarea = $("main-content-wrapper[active] textarea")
-		const $sendButton = $("main-content-wrapper[active] send-button")
-		
-		const send_message = () => {
-			const message_body = $textarea.value.trim()
-			if (message_body && conversation) {
-				fetch("/session", {
-					method: "POST",
-					body: JSON.stringify({
-						action: "sendMessage",
-						conversation_id: conversation.conversation_id,
-						body: message_body,
-						pngs: []
-					})
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.error) {
-						alertError(data.error)
-					} else {
-						$textarea.value = ""
-						// Refresh messages
-						startSession()
-					}
-				})
-				.catch(error => {
-					console.error("Error sending message:", error)
-					alertError("Network error sending message")
-				})
-			}
-		}
-
-		$sendButton.on("click", send_message)
-		$textarea.on("keydown", (e) => {
-			if (e.key === "Enter" && !e.shiftKey) {
-				e.preventDefault()
-				send_message()
-			}
-		})
-
-		// Add typing indicators
-		let last_typing_time = 0
-		$textarea.on("input", () => {
-			if (conversation && conversation.conversation_id) {
-				const now = Date.now()
-				last_typing_time = now
-				
-				// Start typing indicator
-				sendTypingIndicator(true, conversation.conversation_id)
-				
-				// Stop typing after 1 second of no input
-				setTimeout(() => {
-					if (Date.now() - last_typing_time >= 1000) {
-						sendTypingIndicator(false, conversation.conversation_id)
-					}
-				}, 1000)
-			}
-		})
-
 		// Store conversation ID for WebSocket updates
 		if (conversation) {
 			state.active_conversation_id = conversation.conversation_id
 		}
+
+		// Mark messages from other users as read
+		markMessagesAsRead(messages)
 		
 		$("main-content-wrapper[active] messages").scrollTop = $("main-content-wrapper[active] messages").scrollHeight
 	}
+}
+
+const markMessagesAsRead = (messages) => {
+	// Only mark messages from other users as read
+	const unreadMessages = messages.filter(message => 
+		message.sender_user_id !== state.user_id
+	)
+
+	// Mark each message as read
+	unreadMessages.forEach(message => {
+		fetch("/session", {
+			method: "POST",
+			body: JSON.stringify({
+				action: "markMessageAsRead",
+				message_id: message.message_id
+			})
+		})
+		.catch(error => {
+			console.error("Error marking message as read:", error)
+		})
+	})
 }
 
