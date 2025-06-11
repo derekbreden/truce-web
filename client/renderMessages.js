@@ -87,30 +87,31 @@ const renderMessage = (message) => {
 const renderMessages = (messages, conversation) => {
 	const skip_messages = !state.path.startsWith("/messages/")
 
-	beforeDomUpdate()
-	if (!$("main-content-wrapper[active] messages-container")) {
-		$("main-content-wrapper[active] main-content").appendChild(
-			$(
-				`
-				messages-container
-					conversation-header
-						participants
-					messages
-					message-input-area
-						message-form
-							textarea[placeholder="Type a message..."]
-							send-button
-								icon[forward]
-									$1
-				`,
-				[
-					$("icons icon[forward] svg").cloneNode(true)
-				]
-			)
-		)
-	}
 
 	if (!skip_messages) {
+		beforeDomUpdate()
+		if (!$("main-content-wrapper[active] messages-container")) {
+			$("main-content-wrapper[active] main-content").appendChild(
+				$(
+					`
+					messages-container
+						conversation-header
+							participants
+						messages
+						message-input-area
+							message-form
+								textarea[placeholder="Type a message..."]
+								send-button
+									icon[forward]
+										$1
+					`,
+					[
+						$("icons icon[forward] svg").cloneNode(true)
+					]
+				)
+			)
+		}
+
 		// Update conversation header with participants
 		if (conversation && conversation.participants) {
 			const other_participants = conversation.participants.filter(participant => participant.user_id !== state.user_id)
