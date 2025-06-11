@@ -10,18 +10,18 @@ const bindScrollEvent = () => {
 		// Topics load older
 		// User load older
 		if (
-			(state.path === "/posts" ||
-				state.path === "/posts/all" ||
-				state.path === "/favorites" ||
-				state.path.startsWith("/topic/") ||
-				state.path.startsWith("/user/")) &&
-			state.cache[state.path] &&
-			!state.cache[state.path].finished
+			(state.path === "/posts"
+				|| state.path === "/posts/all"
+				|| state.path === "/favorites"
+				|| state.path.startsWith("/topic/")
+				|| state.path.startsWith("/user/"))
+			&& state.cache[state.path]
+			&& !state.cache[state.path].finished
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight -
-				$("main-content-wrapper[active]").clientHeight * 3
+				$("main-content-wrapper[active]").scrollHeight
+				- $("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
@@ -60,12 +60,12 @@ const bindScrollEvent = () => {
 					}),
 				})
 					.then((response) => response.json())
-					.then(function (data) {
+					.then((data) => {
 						// Stop when we reach the end (no more results returned)
 						if (
-							state.path === "/favorites" ||
-							(state.path.startsWith("/user") &&
-								state.path.split("/")[3] === "replies")
+							state.path === "/favorites"
+							|| (state.path.startsWith("/user")
+								&& state.path.split("/")[3] === "replies")
 						) {
 							if (data.activities && !data.activities.length) {
 								state.cache[state.path].finished = true
@@ -95,7 +95,7 @@ const bindScrollEvent = () => {
 
 						state.loading_path = false
 					})
-					.catch(function (error) {
+					.catch((error) => {
 						state.loading_path = false
 						console.error(error)
 						state.most_recent_error = error
@@ -106,14 +106,14 @@ const bindScrollEvent = () => {
 
 		// Replies load older
 		if (
-			state.path.startsWith("/post/") &&
-			state.cache[state.path] &&
-			!state.cache[state.path].replies_finished
+			state.path.startsWith("/post/")
+			&& state.cache[state.path]
+			&& !state.cache[state.path].replies_finished
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight -
-				$("main-content-wrapper[active]").clientHeight * 3
+				$("main-content-wrapper[active]").scrollHeight
+				- $("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
@@ -135,7 +135,7 @@ const bindScrollEvent = () => {
 					}),
 				})
 					.then((response) => response.json())
-					.then(function (data) {
+					.then((data) => {
 						// Stop when we reach the end (no more results returned)
 						if (data.replies && !data.replies.length) {
 							state.cache[state.path].replies_finished = true
@@ -150,7 +150,7 @@ const bindScrollEvent = () => {
 						}
 						state.loading_path = false
 					})
-					.catch(function (error) {
+					.catch((error) => {
 						state.loading_path = false
 						console.error(error)
 						state.most_recent_error = error
@@ -161,14 +161,14 @@ const bindScrollEvent = () => {
 
 		// Notifications load older
 		if (
-			state.path === "/notifications" &&
-			state.cache["/notifications"] &&
-			!state.cache["/notifications"].finished
+			state.path === "/notifications"
+			&& state.cache["/notifications"]
+			&& !state.cache["/notifications"].finished
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight -
-				$("main-content-wrapper[active]").clientHeight * 3
+				$("main-content-wrapper[active]").scrollHeight
+				- $("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
 			if ($("main-content-wrapper[active]").scrollTop > threshold) {
@@ -207,7 +207,7 @@ const bindScrollEvent = () => {
 					}),
 				})
 					.then((response) => response.json())
-					.then(function (data) {
+					.then((data) => {
 						// Stop when we reach the end (no more results returned)
 						if (data.notifications && !data.notifications.length) {
 							state.cache["/notifications"].finished = true
@@ -224,7 +224,7 @@ const bindScrollEvent = () => {
 						}
 						state.loading_path = false
 					})
-					.catch(function (error) {
+					.catch((error) => {
 						state.loading_path = false
 						console.error(error)
 						state.most_recent_error = error

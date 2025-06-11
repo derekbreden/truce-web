@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.path === "/conversations"
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.path === "/conversations"
 	) {
 		// Get all conversations where user is a participant
 		const conversations_result = await req.client.query(

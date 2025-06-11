@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.body.path &&
-		req.body.path.startsWith("/user/")
+		!res.writableEnded
+		&& req.body.path
+		&& req.body.path.startsWith("/user/")
 	) {
 		const user = await req.client.query(
 			`

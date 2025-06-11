@@ -14,27 +14,27 @@ const tests = {
 		// Setup mock request with poll choice data
 		const req = createMockRequest({
 			post_id: 123,
-			poll_choice: '2'
+			poll_choice: "2"
 		})
 		
 		// Setup mock database responses
 		// First query: Insert poll vote
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		// Second query: Get poll counts (only choice 2 has 1 vote)
 		req.client.addQueryMock(
-			'SELECT', // Matches the GROUP BY query
+			"SELECT", // Matches the GROUP BY query
 			{ 
 				rows: [
-					{ poll_choice: '2', count: '1' }
+					{ poll_choice: "2", count: "1" }
 				] 
 			}
 		)
 		// Third query: Update post with counts
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -57,12 +57,12 @@ const tests = {
 			"Response should indicate success."
 		)
 		assertEquals(
-			'123',
+			"123",
 			responseData.user_id,
 			"Response should include user_id."
 		)
 		assertEquals(
-			'Test User',
+			"Test User",
 			responseData.display_name,
 			"Response should include display_name."
 		)
@@ -72,27 +72,27 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest({
 			post_id: 456,
-			poll_choice: '1'
+			poll_choice: "1"
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		// Multiple votes across different choices
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ poll_choice: '1', count: '3' },
-					{ poll_choice: '2', count: '1' },
-					{ poll_choice: '4', count: '2' }
+					{ poll_choice: "1", count: "3" },
+					{ poll_choice: "2", count: "1" },
+					{ poll_choice: "4", count: "2" }
 				] 
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -114,21 +114,21 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest({
 			post_id: 789,
-			poll_choice: '3'
+			poll_choice: "3"
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		// No existing votes
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -150,28 +150,28 @@ const tests = {
 		// Test with poll choice 4 (highest valid choice)
 		const req = createMockRequest({
 			post_id: 101,
-			poll_choice: '4'
+			poll_choice: "4"
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		// All four choices have votes
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ poll_choice: '1', count: '5' },
-					{ poll_choice: '2', count: '3' },
-					{ poll_choice: '3', count: '8' },
-					{ poll_choice: '4', count: '2' }
+					{ poll_choice: "1", count: "5" },
+					{ poll_choice: "2", count: "3" },
+					{ poll_choice: "3", count: "8" },
+					{ poll_choice: "4", count: "2" }
 				] 
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -193,7 +193,7 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest({
 			post_id: 123,
-			poll_choice: '1'
+			poll_choice: "1"
 		})
 		
 		const res = createMockResponse()
@@ -215,7 +215,7 @@ const tests = {
 		// Setup mock request without user_id
 		const req = createMockRequest({
 			post_id: 123,
-			poll_choice: '1'
+			poll_choice: "1"
 		}, { user_id: null })
 		
 		const res = createMockResponse()
@@ -234,7 +234,7 @@ const tests = {
 	testNoActionWhenMissingPostId: async () => {
 		// Setup mock request without post_id
 		const req = createMockRequest({
-			poll_choice: '1'
+			poll_choice: "1"
 			// No post_id
 		})
 		
@@ -275,24 +275,24 @@ const tests = {
 		// Test that handler works with string numbers (typical from web forms)
 		const req = createMockRequest({
 			post_id: 202,
-			poll_choice: '1' // String, not number
+			poll_choice: "1" // String, not number
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ poll_choice: '1', count: '1' }
+					{ poll_choice: "1", count: "1" }
 				] 
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -314,28 +314,28 @@ const tests = {
 		// Test that poll counts are formatted correctly as comma-separated string
 		const req = createMockRequest({
 			post_id: 303,
-			poll_choice: '2'
+			poll_choice: "2"
 		})
 		
 		// Setup mock database responses  
 		req.client.addQueryMock(
-			'INSERT INTO poll_votes',
+			"INSERT INTO poll_votes",
 			{ rows: [] }
 		)
 		// Mix of choices with gaps (choice 3 has no votes)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ poll_choice: '1', count: '2' },
-					{ poll_choice: '2', count: '4' },
-					{ poll_choice: '4', count: '1' }
+					{ poll_choice: "1", count: "2" },
+					{ poll_choice: "2", count: "4" },
+					{ poll_choice: "4", count: "1" }
 					// Note: choice 3 is missing (0 votes)
 				] 
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		

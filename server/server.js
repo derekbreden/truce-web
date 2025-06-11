@@ -83,8 +83,8 @@ module.exports = {
 					const parseData = async (data) => {
 						const lines = data.split("\n")
 						for (const line of lines) {
-							if (line.includes('<!--#include file="')) {
-								const file = line.split('"')[1]
+							if (line.includes("<!--#include file=\"")) {
+								const file = line.split("\"")[1]
 
 								// Tests are skipped when not on the test path
 								const dir = file.split("/")[0]

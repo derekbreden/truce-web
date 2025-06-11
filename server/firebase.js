@@ -18,7 +18,7 @@ module.exports = {
 				fcm_messaging = getMessaging(fcm_app)
 			} catch (error) {
 				// App already exists, get the default app
-				if (error.code === 'app/duplicate-app') {
+				if (error.code === "app/duplicate-app") {
 					fcm_app = fcm_admin.app()
 					fcm_messaging = getMessaging(fcm_app)
 				} else {

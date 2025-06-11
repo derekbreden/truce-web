@@ -30,7 +30,7 @@ const renderImages = () => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					$image_prompt.$("info")?.remove()
 					$image_prompt.$("textarea").removeAttribute("disabled")
 					if (data.image) {
@@ -57,7 +57,7 @@ const renderImages = () => {
 						console.error("Unexpected response:", data)
 					}
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					console.error("Image processing error:", error)
 				})
 		})

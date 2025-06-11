@@ -207,17 +207,17 @@ const tests = {
 		const headers = res.getHeaders()
 		assertEquals(
 			true,
-			headers['Set-Cookie'].includes(`session_uuid=${req.session.session_uuid}`),
+			headers["Set-Cookie"].includes(`session_uuid=${req.session.session_uuid}`),
 			"Should set session cookie."
 		)
 		assertEquals(
 			true,
-			headers['Set-Cookie'].includes('HttpOnly'),
+			headers["Set-Cookie"].includes("HttpOnly"),
 			"Cookie should be HttpOnly."
 		)
 		assertEquals(
 			true,
-			headers['Set-Cookie'].includes('Secure'),
+			headers["Set-Cookie"].includes("Secure"),
 			"Cookie should be Secure."
 		)
 	},
@@ -232,8 +232,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-no-images',
-				user_id: 'user-no-images'
+				session_id: "session-no-images",
+				user_id: "user-no-images"
 			}
 		)
 		
@@ -273,7 +273,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						session_id: 'new-session-no-images'
+						session_id: "new-session-no-images"
 					}
 				]
 			}
@@ -310,8 +310,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-profile-only',
-				user_id: 'user-profile-only'
+				session_id: "session-profile-only",
+				user_id: "user-profile-only"
 			}
 		)
 		
@@ -325,7 +325,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						profile_picture_uuid: 'only-profile-uuid'
+						profile_picture_uuid: "only-profile-uuid"
 					}
 				]
 			}
@@ -351,7 +351,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						session_id: 'new-session-profile-only'
+						session_id: "new-session-profile-only"
 					}
 				]
 			}
@@ -369,7 +369,7 @@ const tests = {
 			"Should delete only profile picture."
 		)
 		assertEquals(
-			'only-profile-uuid.png',
+			"only-profile-uuid.png",
 			s3_send_calls[0].input.Key,
 			"Should delete profile picture."
 		)
@@ -393,8 +393,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-empty-uuids',
-				user_id: 'user-empty-uuids'
+				session_id: "session-empty-uuids",
+				user_id: "user-empty-uuids"
 			}
 		)
 		
@@ -404,10 +404,10 @@ const tests = {
 			{ 
 				rows: [
 					{
-						image_uuids: '' // Empty string
+						image_uuids: "" // Empty string
 					},
 					{
-						image_uuids: 'valid-uuid'
+						image_uuids: "valid-uuid"
 					}
 				]
 			}
@@ -443,7 +443,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						session_id: 'new-session-empty-uuids'
+						session_id: "new-session-empty-uuids"
 					}
 				]
 			}
@@ -461,12 +461,12 @@ const tests = {
 			"Should attempt to delete both empty and valid UUID images."
 		)
 		assertEquals(
-			'.png',
+			".png",
 			s3_send_calls[0].input.Key,
 			"Should attempt to delete empty string as .png."
 		)
 		assertEquals(
-			'valid-uuid.png',
+			"valid-uuid.png",
 			s3_send_calls[1].input.Key,
 			"Should delete the valid UUID."
 		)
@@ -482,8 +482,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'session-db-sequence',
-				user_id: 'user-db-sequence'
+				session_id: "session-db-sequence",
+				user_id: "user-db-sequence"
 			}
 		)
 		
@@ -492,42 +492,42 @@ const tests = {
 		const original_query = req.client.query
 		req.client.query = async (sql, params) => {
 			// Track the type of operation
-			if (sql.includes('SELECT image_uuids')) {
-				dbOperations.push('SELECT_IMAGES')
-			} else if (sql.includes('SELECT profile_picture_uuid')) {
-				dbOperations.push('SELECT_PROFILE')
+			if (sql.includes("SELECT image_uuids")) {
+				dbOperations.push("SELECT_IMAGES")
+			} else if (sql.includes("SELECT profile_picture_uuid")) {
+				dbOperations.push("SELECT_PROFILE")
 			} else if (sql.includes("DELETE FROM reply_ancestors")) {
-				dbOperations.push('DELETE_REPLY_ANCESTORS')
+				dbOperations.push("DELETE_REPLY_ANCESTORS")
 			} else if (sql.includes("DELETE FROM favorite_posts")) {
-				dbOperations.push('DELETE_FAVORITE_POSTS')
+				dbOperations.push("DELETE_FAVORITE_POSTS")
 			} else if (sql.includes("DELETE FROM favorite_replies")) {
-				dbOperations.push('DELETE_FAVORITE_REPLIES')
+				dbOperations.push("DELETE_FAVORITE_REPLIES")
 			} else if (sql.includes("DELETE FROM blocked_users")) {
-				dbOperations.push('DELETE_BLOCKED_USERS')
-			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes('post_id IN')) {
-				dbOperations.push('DELETE_POLL_VOTES_BY_TOPIC')
-			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes('user_id = $1')) {
-				dbOperations.push('DELETE_POLL_VOTES_BY_USER')
+				dbOperations.push("DELETE_BLOCKED_USERS")
+			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes("post_id IN")) {
+				dbOperations.push("DELETE_POLL_VOTES_BY_TOPIC")
+			} else if (sql.includes("DELETE FROM post_poll_votes") && sql.includes("user_id = $1")) {
+				dbOperations.push("DELETE_POLL_VOTES_BY_USER")
 			} else if (sql.includes("DELETE FROM subscribers")) {
-				dbOperations.push('DELETE_SUBSCRIBERS')
+				dbOperations.push("DELETE_SUBSCRIBERS")
 			} else if (sql.includes("DELETE FROM sessions")) {
-				dbOperations.push('DELETE_SESSIONS')
+				dbOperations.push("DELETE_SESSIONS")
 			} else if (sql.includes("DELETE FROM user_sessions")) {
-				dbOperations.push('DELETE_USER_SESSIONS')
+				dbOperations.push("DELETE_USER_SESSIONS")
 			} else if (sql.includes("DELETE FROM replies")) {
-				dbOperations.push('DELETE_REPLIES')
+				dbOperations.push("DELETE_REPLIES")
 			} else if (sql.includes("DELETE FROM posts")) {
-				dbOperations.push('DELETE_POSTS')
+				dbOperations.push("DELETE_POSTS")
 			} else if (sql.includes("DELETE FROM users")) {
-				dbOperations.push('DELETE_USERS')
+				dbOperations.push("DELETE_USERS")
 			} else if (sql.includes("UPDATE replies")) {
-				dbOperations.push('UPDATE_REPLIES')
-			} else if (sql.includes("UPDATE posts") && sql.includes('favorite_count')) {
-				dbOperations.push('UPDATE_POSTS_FAVORITES')
-			} else if (sql.includes("UPDATE posts") && sql.includes('reply_count')) {
-				dbOperations.push('UPDATE_POSTS_COMMENTS')
-			} else if (sql.includes('INSERT INTO sessions')) {
-				dbOperations.push('INSERT_SESSION')
+				dbOperations.push("UPDATE_REPLIES")
+			} else if (sql.includes("UPDATE posts") && sql.includes("favorite_count")) {
+				dbOperations.push("UPDATE_POSTS_FAVORITES")
+			} else if (sql.includes("UPDATE posts") && sql.includes("reply_count")) {
+				dbOperations.push("UPDATE_POSTS_COMMENTS")
+			} else if (sql.includes("INSERT INTO sessions")) {
+				dbOperations.push("INSERT_SESSION")
 			}
 			
 			// Call the original query method
@@ -550,7 +550,7 @@ const tests = {
 		req.client.addQueryMock("DELETE FROM users", { rows: [] })
 		req.client.addQueryMock("UPDATE replies", { rows: [] })
 		req.client.addQueryMock("UPDATE posts", { rows: [] })
-		req.client.addQueryMock("INSERT INTO sessions", { rows: [{ session_id: 'new-session' }] })
+		req.client.addQueryMock("INSERT INTO sessions", { rows: [{ session_id: "new-session" }] })
 		
 		const res = createMockResponse()
 		
@@ -559,24 +559,24 @@ const tests = {
 		
 		// Verify operation sequence follows logical order
 		const expectedSequence = [
-			'SELECT_IMAGES',
-			'SELECT_PROFILE',
-			'DELETE_REPLY_ANCESTORS',
-			'DELETE_FAVORITE_POSTS',
-			'DELETE_FAVORITE_REPLIES',
-			'DELETE_BLOCKED_USERS',
-			'DELETE_POLL_VOTES_BY_TOPIC',
-			'DELETE_POLL_VOTES_BY_USER',
-			'DELETE_SUBSCRIBERS',
-			'DELETE_SESSIONS',
-			'DELETE_USER_SESSIONS',
-			'DELETE_REPLIES',
-			'DELETE_POSTS',
-			'DELETE_USERS',
-			'UPDATE_REPLIES',
-			'UPDATE_POSTS_FAVORITES',
-			'UPDATE_POSTS_COMMENTS',
-			'INSERT_SESSION'
+			"SELECT_IMAGES",
+			"SELECT_PROFILE",
+			"DELETE_REPLY_ANCESTORS",
+			"DELETE_FAVORITE_POSTS",
+			"DELETE_FAVORITE_REPLIES",
+			"DELETE_BLOCKED_USERS",
+			"DELETE_POLL_VOTES_BY_TOPIC",
+			"DELETE_POLL_VOTES_BY_USER",
+			"DELETE_SUBSCRIBERS",
+			"DELETE_SESSIONS",
+			"DELETE_USER_SESSIONS",
+			"DELETE_REPLIES",
+			"DELETE_POSTS",
+			"DELETE_USERS",
+			"UPDATE_REPLIES",
+			"UPDATE_POSTS_FAVORITES",
+			"UPDATE_POSTS_COMMENTS",
+			"INSERT_SESSION"
 		]
 		
 		assertEquals(
@@ -711,8 +711,8 @@ const tests = {
 				remove_account: true
 			},
 			{ 
-				session_id: 'old-session-123',
-				user_id: 'user-session-test'
+				session_id: "old-session-123",
+				user_id: "user-session-test"
 			}
 		)
 		
@@ -737,7 +737,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						session_id: 'generated-session-456'
+						session_id: "generated-session-456"
 					}
 				]
 			}
@@ -755,14 +755,14 @@ const tests = {
 			"Should use generated UUID for session."
 		)
 		assertEquals(
-			'generated-session-456',
+			"generated-session-456",
 			req.session.session_id,
 			"Should use database-generated session ID."
 		)
 		
 		// Verify cookie header format
 		const headers = res.getHeaders()
-		const cookie = headers['Set-Cookie']
+		const cookie = headers["Set-Cookie"]
 		assertEquals(
 			true,
 			cookie.includes(`session_uuid=${req.session.session_uuid}`),
@@ -770,22 +770,22 @@ const tests = {
 		)
 		assertEquals(
 			true,
-			cookie.includes('HttpOnly'),
+			cookie.includes("HttpOnly"),
 			"Cookie should be HttpOnly."
 		)
 		assertEquals(
 			true,
-			cookie.includes('Secure'),
+			cookie.includes("Secure"),
 			"Cookie should be Secure."
 		)
 		assertEquals(
 			true,
-			cookie.includes('Path=/session'),
+			cookie.includes("Path=/session"),
 			"Cookie should have correct path."
 		)
 		assertEquals(
 			true,
-			cookie.includes('Max-Age=315360000'),
+			cookie.includes("Max-Age=315360000"),
 			"Cookie should have 10-year max age."
 		)
 		

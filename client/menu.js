@@ -104,7 +104,7 @@ const showMenu = () => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					// Workaround for replit Webview not supporting Set-Cookie
 					if (data.session_uuid) {
 						localStorage.setItem(
@@ -196,7 +196,7 @@ const showMenu = () => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					$sign_in.$("info")?.remove()
 					if (data.error || !data.success) {
 						$sign_in.$("[type=email]").removeAttribute("disabled")
@@ -222,7 +222,7 @@ const showMenu = () => {
 						modalInfo("You have created a new account")
 					}
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					$sign_in.$("info")?.remove()
 					signInError("Network error")
 				})

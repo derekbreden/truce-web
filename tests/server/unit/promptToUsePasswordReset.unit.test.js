@@ -13,26 +13,26 @@ const tests = {
 	testValidResetTokenWithoutSession: async () => {
 		// Setup mock request with valid reset token, user not yet linked to session
 		const req = createMockRequest(
-			{ reset_token_uuid: 'valid-token-123' },
-			{ session_uuid: 'session-uuid-456', session_id: 'session-id-789' }
+			{ reset_token_uuid: "valid-token-123" },
+			{ session_uuid: "session-uuid-456", session_id: "session-id-789" }
 		)
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-123',
-						email: 'user@example.com',
+						user_id: "user-123",
+						email: "user@example.com",
 						session_id: null // User not yet linked to this session
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO user_sessions',
+			"INSERT INTO user_sessions",
 			{ rows: [] }
 		)
 		
@@ -50,7 +50,7 @@ const tests = {
 		
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'user@example.com',
+			"user@example.com",
 			responseData.email,
 			"Should return user email."
 		)
@@ -64,20 +64,20 @@ const tests = {
 	testValidResetTokenWithExistingSession: async () => {
 		// Setup mock request with valid reset token, user already linked to session
 		const req = createMockRequest(
-			{ reset_token_uuid: 'valid-token-456' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "valid-token-456" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-456',
-						email: 'existing@example.com',
-						session_id: 'session-id-456' // User already linked to this session
+						user_id: "user-456",
+						email: "existing@example.com",
+						session_id: "session-id-456" // User already linked to this session
 					}
 				]
 			}
@@ -97,7 +97,7 @@ const tests = {
 		
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'existing@example.com',
+			"existing@example.com",
 			responseData.email,
 			"Should return user email."
 		)
@@ -111,14 +111,14 @@ const tests = {
 	testInvalidResetToken: async () => {
 		// Setup mock request with invalid/expired reset token
 		const req = createMockRequest(
-			{ reset_token_uuid: 'invalid-token-999' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "invalid-token-999" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ rows: [] }
 		)
 		
@@ -150,14 +150,14 @@ const tests = {
 	testExpiredResetToken: async () => {
 		// Setup mock request with expired reset token (handled by database query)
 		const req = createMockRequest(
-			{ reset_token_uuid: 'expired-token-789' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "expired-token-789" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response (expired tokens excluded by query)
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ rows: [] }
 		)
 		
@@ -185,7 +185,7 @@ const tests = {
 		// Setup mock request without reset_token_uuid
 		const req = createMockRequest(
 			{}, // no reset_token_uuid
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
@@ -215,8 +215,8 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest(
-			{ reset_token_uuid: 'valid-token-123' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "valid-token-123" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
@@ -238,26 +238,26 @@ const tests = {
 	testUserSessionLinking: async () => {
 		// Test that user is properly linked to session when not already linked
 		const req = createMockRequest(
-			{ reset_token_uuid: 'linking-token-123' },
-			{ session_uuid: 'session-uuid-abc', session_id: 'session-id-def' }
+			{ reset_token_uuid: "linking-token-123" },
+			{ session_uuid: "session-uuid-abc", session_id: "session-id-def" }
 		)
 		req.results = {}
 		
 		// Setup sequential mock responses
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-to-link',
-						email: 'link@example.com',
+						user_id: "user-to-link",
+						email: "link@example.com",
 						session_id: null // User not linked to session
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO user_sessions',
+			"INSERT INTO user_sessions",
 			{ rows: [] }
 		)
 		
@@ -275,7 +275,7 @@ const tests = {
 		
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'link@example.com',
+			"link@example.com",
 			responseData.email,
 			"Should return email after linking user to session."
 		)
@@ -284,19 +284,19 @@ const tests = {
 	testSessionUuidHandling: async () => {
 		// Test that session_uuid is properly used in the query
 		const req = createMockRequest(
-			{ reset_token_uuid: 'session-test-token' },
-			{ session_uuid: 'specific-session-uuid', session_id: 'specific-session-id' }
+			{ reset_token_uuid: "session-test-token" },
+			{ session_uuid: "specific-session-uuid", session_id: "specific-session-id" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'session-user',
-						email: 'session@example.com',
-						session_id: 'specific-session-id'
+						user_id: "session-user",
+						email: "session@example.com",
+						session_id: "specific-session-id"
 					}
 				]
 			}
@@ -309,7 +309,7 @@ const tests = {
 		// Should successfully use session_uuid to find user
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'session@example.com',
+			"session@example.com",
 			responseData.email,
 			"Should handle session_uuid correctly."
 		)
@@ -318,25 +318,25 @@ const tests = {
 	testEmptyEmailHandling: async () => {
 		// Test handling of user with empty email
 		const req = createMockRequest(
-			{ reset_token_uuid: 'empty-email-token' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "empty-email-token" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-no-email',
-						email: '', // Empty email
+						user_id: "user-no-email",
+						email: "", // Empty email
 						session_id: null
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO user_sessions',
+			"INSERT INTO user_sessions",
 			{ rows: [] }
 		)
 		
@@ -347,7 +347,7 @@ const tests = {
 		// Should handle empty email
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'',
+			"",
 			responseData.email,
 			"Should handle empty email."
 		)
@@ -356,19 +356,19 @@ const tests = {
 	testNullEmailHandling: async () => {
 		// Test handling of user with null email
 		const req = createMockRequest(
-			{ reset_token_uuid: 'null-email-token' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "null-email-token" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-null-email',
+						user_id: "user-null-email",
 						email: null, // Null email
-						session_id: 'session-id-456'
+						session_id: "session-id-456"
 					}
 				]
 			}
@@ -390,30 +390,30 @@ const tests = {
 	testMultipleValidTokenRows: async () => {
 		// Test edge case where query returns multiple rows (shouldn't happen in normal operation)
 		const req = createMockRequest(
-			{ reset_token_uuid: 'multi-row-token' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "multi-row-token" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-first',
-						email: 'first@example.com',
+						user_id: "user-first",
+						email: "first@example.com",
 						session_id: null
 					},
 					{
-						user_id: 'user-second',
-						email: 'second@example.com',
+						user_id: "user-second",
+						email: "second@example.com",
 						session_id: null
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO user_sessions',
+			"INSERT INTO user_sessions",
 			{ rows: [] }
 		)
 		
@@ -424,7 +424,7 @@ const tests = {
 		// Should use first row
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'first@example.com',
+			"first@example.com",
 			responseData.email,
 			"Should use first row when multiple rows returned."
 		)
@@ -433,26 +433,26 @@ const tests = {
 	testResetTokenTimeValidation: async () => {
 		// Test that the time validation is part of the query (60 minutes)
 		const req = createMockRequest(
-			{ reset_token_uuid: 'time-validated-token' },
-			{ session_uuid: 'session-uuid-123', session_id: 'session-id-456' }
+			{ reset_token_uuid: "time-validated-token" },
+			{ session_uuid: "session-uuid-123", session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Mock database response (time validation handled by query)
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'time-valid-user',
-						email: 'timevalid@example.com',
+						user_id: "time-valid-user",
+						email: "timevalid@example.com",
 						session_id: null
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO user_sessions',
+			"INSERT INTO user_sessions",
 			{ rows: [] }
 		)
 		
@@ -463,7 +463,7 @@ const tests = {
 		// Should return email for time-valid token
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
-			'timevalid@example.com',
+			"timevalid@example.com",
 			responseData.email,
 			"Should handle time-validated token."
 		)

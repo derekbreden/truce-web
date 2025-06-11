@@ -1,9 +1,9 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		((req.body.path === "/favorites" && req.session.user_id) ||
-			(req.body.path?.startsWith("/user/") &&
-				(req.body.path?.split("/")[3] === "replies" || req.body.path?.split("/")[3] === "replies")))
+		!res.writableEnded
+		&& ((req.body.path === "/favorites" && req.session.user_id)
+			|| (req.body.path?.startsWith("/user/")
+				&& (req.body.path?.split("/")[3] === "replies" || req.body.path?.split("/")[3] === "replies")))
 	) {
 		req.results.path = req.body.path
 		const activity_results = await req.client.query(
@@ -154,8 +154,8 @@ module.exports = async (req, res) => {
 						: ``
 				}
         ${
-					req.body.path.startsWith("/user/") &&
-					req.body.path.split("/")[3] === "replies"
+					req.body.path.startsWith("/user/")
+					&& req.body.path.split("/")[3] === "replies"
 						? `
               AND combined.type = 'reply'
               AND (combined.create_date < $2 OR $2 IS NULL)

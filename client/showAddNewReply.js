@@ -178,7 +178,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				$add_new.$("[display-name]")?.removeAttribute("disabled")
 				$add_new.$("info")?.remove()
 				if (data.error || !data.success) {
@@ -190,7 +190,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				}
 				hideDisplayNameInput()
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				$add_new.$("[display-name]")?.removeAttribute("disabled")
 				$add_new.$("info")?.remove()
 				addReplyError("Network error")
@@ -240,7 +240,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				if (data.error || !data.success) {
 					$add_new.$("info")?.remove()
 					$add_new.$("[body]").removeAttribute("disabled")
@@ -254,7 +254,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				updateDisplayName(data)
 				getMoreRecent()
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				$add_new.$("info")?.remove()
 				$add_new.$("[body]").removeAttribute("disabled")
 				$add_new.$("[display-name]")?.removeAttribute("disabled")

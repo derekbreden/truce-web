@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		(req.body.post_id_to_block || req.body.reply_id_to_block)
+		!res.writableEnded
+		&& req.session.user_id
+		&& (req.body.post_id_to_block || req.body.reply_id_to_block)
 	) {
 		let user_id_blocked = 0
 		// For post_id

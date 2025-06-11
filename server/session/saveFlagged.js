@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		(req.body.post_id_to_flag || req.body.reply_id_to_flag)
+		!res.writableEnded
+		&& req.session.user_id
+		&& (req.body.post_id_to_flag || req.body.reply_id_to_flag)
 	) {
 		// For post_id
 		if (req.body.post_id_to_flag) {

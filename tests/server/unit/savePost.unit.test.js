@@ -246,7 +246,7 @@ const tests = {
 			)
 			assertEquals(
 				true,
-				command.input.Key.endsWith('.png'),
+				command.input.Key.endsWith(".png"),
 				`S3 command ${index} should have .png extension.`
 			)
 		})
@@ -363,17 +363,17 @@ const tests = {
 		)
 		assertEquals(
 			true,
-			moderation_call.messages[0].content[0].text.includes('A) Option A'),
+			moderation_call.messages[0].content[0].text.includes("A) Option A"),
 			"Should include poll option A."
 		)
 		assertEquals(
 			true,
-			moderation_call.messages[0].content[0].text.includes('B) Option B'),
+			moderation_call.messages[0].content[0].text.includes("B) Option B"),
 			"Should include poll option B."
 		)
 		assertEquals(
 			true,
-			moderation_call.messages[0].content[0].text.includes('C) Option C'),
+			moderation_call.messages[0].content[0].text.includes("C) Option C"),
 			"Should include poll option C."
 		)
 		
@@ -572,7 +572,7 @@ const tests = {
 		mockAI.ask = async (messages, type, format) => {
 			ai_ask_calls.push({ messages, type, format })
 			if (type === "topics") {
-				return JSON.stringify({ topics: ['general'] })
+				return JSON.stringify({ topics: ["general"] })
 			} else if (type === "poll_estimate") {
 				return JSON.stringify({ response_rate: 0.5, choice_a: 0.5, choice_b: 0.5, choice_c: 0, choice_d: 0 })
 			} else {
@@ -693,12 +693,12 @@ const tests = {
 		const responseData = JSON.parse(res.getResponseData())
 		assertEquals(
 			true,
-			responseData.slug.startsWith('Duplicate_Title_'),
+			responseData.slug.startsWith("Duplicate_Title_"),
 			"Should append UUID to duplicate slug."
 		)
 		assertEquals(
 			true,
-			responseData.slug.length > 'Duplicate_Title_'.length,
+			responseData.slug.length > "Duplicate_Title_".length,
 			"Should have UUID appended to slug."
 		)
 	},

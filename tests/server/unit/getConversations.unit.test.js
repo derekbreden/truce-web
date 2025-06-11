@@ -10,7 +10,7 @@ async function testGetConversationsSuccess() {
 	
 	// Mock conversations query (first SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations c') && sql.includes('LEFT JOIN messages lm'),
+		(sql) => sql.includes("FROM conversations c") && sql.includes("LEFT JOIN messages lm"),
 		{ 
 			rows: [
 				{
@@ -37,7 +37,7 @@ async function testGetConversationsSuccess() {
 	
 	// Mock total unread count query (second SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('COUNT(*) as total_unread') && sql.includes('FROM message_notifications mn'),
+		(sql) => sql.includes("COUNT(*) as total_unread") && sql.includes("FROM message_notifications mn"),
 		{ rows: [{ total_unread: 5 }] }
 	)
 	
@@ -65,13 +65,13 @@ async function testGetConversationsEmpty() {
 	
 	// Mock empty conversations query (first SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations c') && sql.includes('LEFT JOIN messages lm'),
+		(sql) => sql.includes("FROM conversations c") && sql.includes("LEFT JOIN messages lm"),
 		{ rows: [] }
 	)
 	
 	// Mock total unread count query (second SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('COUNT(*) as total_unread') && sql.includes('FROM message_notifications mn'),
+		(sql) => sql.includes("COUNT(*) as total_unread") && sql.includes("FROM message_notifications mn"),
 		{ rows: [{ total_unread: 0 }] }
 	)
 	
@@ -93,13 +93,13 @@ async function testGetConversationsWithDateFilter() {
 	
 	// Mock conversations query with date filter (first SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations c') && sql.includes('LEFT JOIN messages lm'),
+		(sql) => sql.includes("FROM conversations c") && sql.includes("LEFT JOIN messages lm"),
 		{ rows: [] }
 	)
 	
 	// Mock total unread count query (second SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('COUNT(*) as total_unread') && sql.includes('FROM message_notifications mn'),
+		(sql) => sql.includes("COUNT(*) as total_unread") && sql.includes("FROM message_notifications mn"),
 		{ rows: [{ total_unread: 0 }] }
 	)
 	

@@ -1,8 +1,8 @@
 const goToPath = (new_path, skip_state, clicked_back) => {
 	if (
-		new_path !== "/" &&
-		new_path !== "/privacy" &&
-		!localStorage.getItem(`${window.local_storage_key}:agreed`)
+		new_path !== "/"
+		&& new_path !== "/privacy"
+		&& !localStorage.getItem(`${window.local_storage_key}:agreed`)
 	) {
 		modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
 		return
@@ -10,8 +10,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 	let was_same_path = true
 
 	if (
-		new_path === "/posts" &&
-		localStorage.getItem(`${window.local_storage_key}:posts_preference`)
+		new_path === "/posts"
+		&& localStorage.getItem(`${window.local_storage_key}:posts_preference`)
 	) {
 		new_path = localStorage.getItem(
 			`${window.local_storage_key}:posts_preference`,
@@ -44,8 +44,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		// Slide left and right on user profile sub-pages
 		let sequence_is_user = false
 		if (
-			state.path.startsWith("/user/") &&
-			new_path_parsed.startsWith("/user/")
+			state.path.startsWith("/user/")
+			&& new_path_parsed.startsWith("/user/")
 		) {
 			const this_user_slug = state.path.split("/")[2]
 			const user_path_sequence = [
@@ -61,9 +61,9 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 		// From one main page to another
 		if (
-			next_sequence !== -1 &&
-			previous_sequence !== -1 &&
-			next_sequence < previous_sequence
+			next_sequence !== -1
+			&& previous_sequence !== -1
+			&& next_sequence < previous_sequence
 		) {
 			clicked_back = true
 
@@ -76,8 +76,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 			// If they are going to that same one, or one further back in the sequence, animate back
 			if (
-				most_recent_sequence_page &&
-				path_sequence.indexOf(most_recent_sequence_page) >= next_sequence
+				most_recent_sequence_page
+				&& path_sequence.indexOf(most_recent_sequence_page) >= next_sequence
 			) {
 				clicked_back = true
 			}
@@ -109,10 +109,10 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			localStorage.removeItem(`${window.local_storage_key}:has_visited_posts`)
 		}
 		if (
-			state.path === "/" ||
-			state.path === "/posts" ||
-			state.path === "/posts/all" ||
-			state.path.startsWith("/topic/")
+			state.path === "/"
+			|| state.path === "/posts"
+			|| state.path === "/posts/all"
+			|| state.path.startsWith("/topic/")
 		) {
 			localStorage.setItem(
 				`${window.local_storage_key}:last_root_path`,

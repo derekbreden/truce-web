@@ -85,9 +85,9 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 
 				attributes.forEach((attr) => {
 					if (
-						attr.value !== false &&
-						attr.value !== null &&
-						attr.value !== undefined
+						attr.value !== false
+						&& attr.value !== null
+						&& attr.value !== undefined
 					) {
 						element.setAttribute(attr.key, attr.value)
 					}

@@ -84,8 +84,8 @@ module.exports = {
                     `,
 										[conversation_id],
 									)
-									if (conversation.rows.length && 
-											conversation.rows[0].participant_user_ids.includes(this.ws_active[ws_uuid].user_id)) {
+									if (conversation.rows.length 
+											&& conversation.rows[0].participant_user_ids.includes(this.ws_active[ws_uuid].user_id)) {
 										this.ws_active[ws_uuid].active_conversation_id = Number(conversation_id)
 									}
 								}
@@ -116,8 +116,8 @@ module.exports = {
 	sendMessage(message, post_id) {
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (
-				!this.ws_active[ws_uuid].active_post_id ||
-				this.ws_active[ws_uuid].active_post_id === post_id
+				!this.ws_active[ws_uuid].active_post_id
+				|| this.ws_active[ws_uuid].active_post_id === post_id
 			) {
 				this.ws_active[ws_uuid].send(message)
 			}
@@ -147,8 +147,8 @@ module.exports = {
 	sendTypingIndicator(isTyping, conversation_id, from_user_id) {
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			// Send to users viewing this conversation, but not the sender
-			if (this.ws_active[ws_uuid].active_conversation_id === conversation_id && 
-					this.ws_active[ws_uuid].user_id !== from_user_id) {
+			if (this.ws_active[ws_uuid].active_conversation_id === conversation_id 
+					&& this.ws_active[ws_uuid].user_id !== from_user_id) {
 				const typingMessage = JSON.stringify({
 					type: "TYPING_INDICATOR",
 					conversation_id,

@@ -13,17 +13,17 @@ const tests = {
 	testAddPostFavorite: async () => {
 		// Setup mock request with post favorite data
 		const req = createMockRequest({
-			post_id_to_favorite: 'post-123',
+			post_id_to_favorite: "post-123",
 			was_favorited: false // Adding a favorite
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO favorite_posts',
+			"INSERT INTO favorite_posts",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -46,12 +46,12 @@ const tests = {
 			"Response should indicate success."
 		)
 		assertEquals(
-			'123',
+			"123",
 			responseData.user_id,
 			"Response should include user_id."
 		)
 		assertEquals(
-			'Test User',
+			"Test User",
 			responseData.display_name,
 			"Response should include display_name."
 		)
@@ -60,17 +60,17 @@ const tests = {
 	testRemovePostFavorite: async () => {
 		// Setup mock request with post unfavorite data
 		const req = createMockRequest({
-			post_id_to_favorite: 'post-123',
+			post_id_to_favorite: "post-123",
 			was_favorited: true // Removing a favorite
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'DELETE FROM favorite_posts',
+			"DELETE FROM favorite_posts",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE posts',
+			"UPDATE posts",
 			{ rows: [] }
 		)
 		
@@ -97,17 +97,17 @@ const tests = {
 	testAddReplyFavorite: async () => {
 		// Setup mock request with reply favorite data
 		const req = createMockRequest({
-			reply_id_to_favorite: 'reply-456',
+			reply_id_to_favorite: "reply-456",
 			was_favorited: false // Adding a favorite
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO favorite_replies',
+			"INSERT INTO favorite_replies",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'UPDATE replies',
+			"UPDATE replies",
 			{ rows: [] }
 		)
 		
@@ -134,7 +134,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			post_id_to_favorite: 'post-123',
+			post_id_to_favorite: "post-123",
 			was_favorited: false
 		})
 		
@@ -156,7 +156,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			post_id_to_favorite: 'post-123',
+			post_id_to_favorite: "post-123",
 			was_favorited: false
 		}, { user_id: null })
 		

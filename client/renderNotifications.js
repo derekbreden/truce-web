@@ -230,7 +230,7 @@ const renderNotifications = (notifications) => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				if (!data || !data.success) {
 					alertError("Server error")
 					console.error(data)
@@ -239,7 +239,7 @@ const renderNotifications = (notifications) => {
 					getUnreadCountUnseenCount()
 				}
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				state.most_recent_error = error
 				alertError("Network error")
 				console.error(error)
@@ -266,7 +266,7 @@ const renderMarkAllAsRead = () => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					if (!data || !data.success) {
 						alertError("Server error")
 						console.error(data)
@@ -280,14 +280,14 @@ const renderMarkAllAsRead = () => {
 						getUnreadCountUnseenCount()
 					}
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					alertError("Network error")
 					console.error(error)
 				})
 		})
 		if (
-			(state.push_active || state.fcm_push_active) &&
-			Boolean(state.unread_count)
+			(state.push_active || state.fcm_push_active)
+			&& Boolean(state.unread_count)
 		) {
 			$("main-content-wrapper[active] main-content notifications").append(
 				$mark_all_as_read,
@@ -470,7 +470,7 @@ const getUnreadCountUnseenCount = () => {
 		}),
 	})
 		.then((response) => response.json())
-		.then(function (data) {
+		.then((data) => {
 			if (!data) {
 				alertError("Server error")
 				console.error(data)
@@ -482,10 +482,10 @@ const getUnreadCountUnseenCount = () => {
 				}
 
 				if (
-					window.webkit &&
-					window.webkit.messageHandlers &&
-					window.webkit.messageHandlers["set-badge"] &&
-					state.fcm_push_active
+					window.webkit
+					&& window.webkit.messageHandlers
+					&& window.webkit.messageHandlers["set-badge"]
+					&& state.fcm_push_active
 				) {
 					window.webkit.messageHandlers["set-badge"].postMessage(
 						JSON.stringify({
@@ -501,15 +501,15 @@ const getUnreadCountUnseenCount = () => {
 					$("footer a[notifications]").removeAttribute("unread")
 				}
 				if (
-					state.unseen_count &&
-					(state.window_recently_focused || state.window_recently_loaded) &&
-					(state.push_active || state.fcm_push_active)
+					state.unseen_count
+					&& (state.window_recently_focused || state.window_recently_loaded)
+					&& (state.push_active || state.fcm_push_active)
 				) {
 					// When exactly one, just go to the reply
 					if (
-						state.unseen_count === 1 &&
-						data.reply_id &&
-						data.notification_id
+						state.unseen_count === 1
+						&& data.reply_id
+						&& data.notification_id
 					) {
 						goToPath("/reply/" + data.reply_id)
 						markAsRead(data.notification_id)
@@ -521,7 +521,7 @@ const getUnreadCountUnseenCount = () => {
 				}
 			}
 		})
-		.catch(function (error) {
+		.catch((error) => {
 			state.most_recent_error = error
 			alertError("Network error loading unread count")
 			console.error(error)
@@ -536,7 +536,7 @@ const markAsRead = (notification_id) => {
 		}),
 	})
 		.then((response) => response.json())
-		.then(function (data) {
+		.then((data) => {
 			if (!data || !data.success) {
 				alertError("Server error")
 				console.error(data)
@@ -554,7 +554,7 @@ const markAsRead = (notification_id) => {
 				getUnreadCountUnseenCount()
 			}
 		})
-		.catch(function (error) {
+		.catch((error) => {
 			state.most_recent_error = error
 			alertError("Network error marking as read")
 			console.error(error)
@@ -577,26 +577,26 @@ window.addEventListener("load", () => {
 	getUnreadCountUnseenCount()
 })
 if (
-	window.webkit ||
-	window.matchMedia("(display-mode: standalone)").matches ||
-	window.is_android ||
-	1
+	window.webkit
+	|| window.matchMedia("(display-mode: standalone)").matches
+	|| window.is_android
+	|| 1
 ) {
 	$("body").setAttribute("app", "")
 	state.is_app = true
 }
 const focusChange = () => {
 	if (
-		document.activeElement?.tagName === "INPUT" ||
-		document.activeElement?.tagName === "TEXTAREA"
+		document.activeElement?.tagName === "INPUT"
+		|| document.activeElement?.tagName === "TEXTAREA"
 	) {
 		$("body").removeAttribute("app")
 	} else if (state.is_app) {
 		$("body").setAttribute("app", "")
 	}
 	if (
-		document.activeElement?.tagName === "INPUT" ||
-		document.activeElement?.tagName === "TEXTAREA"
+		document.activeElement?.tagName === "INPUT"
+		|| document.activeElement?.tagName === "TEXTAREA"
 	) {
 		$("body").setAttribute("textarea-focused", "")
 	} else {

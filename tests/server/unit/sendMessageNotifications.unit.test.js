@@ -99,7 +99,7 @@ const tests = {
 		// Mock message insertion
 		req.client.addQueryMock(
 			"INSERT INTO messages",
-			{ rows: [{ message_id: 'new-message-789' }] }
+			{ rows: [{ message_id: "new-message-789" }] }
 		)
 		
 		// Mock message notification creation - this is what we're testing
@@ -110,14 +110,14 @@ const tests = {
 		
 		// Mock conversation update
 		req.client.addQueryMock(
-			'UPDATE conversations',
+			"UPDATE conversations",
 			{ rows: [] }
 		)
 		
 		// Mock push notification queries
 		req.client.addQueryMock(
 			"SELECT firebase_registration_token",
-			{ rows: [{ firebase_registration_token: 'mock-token-456', display_name: 'Other User' }] }
+			{ rows: [{ firebase_registration_token: "mock-token-456", display_name: "Other User" }] }
 		)
 		
 		const res = createMockResponse()
@@ -165,7 +165,7 @@ const tests = {
 		// Mock message insertion
 		req.client.addQueryMock(
 			"INSERT INTO messages",
-			{ rows: [{ message_id: 'group-message-456' }] }
+			{ rows: [{ message_id: "group-message-456" }] }
 		)
 		
 		// Mock message notification creation for multiple users
@@ -176,7 +176,7 @@ const tests = {
 		
 		// Mock conversation update
 		req.client.addQueryMock(
-			'UPDATE conversations',
+			"UPDATE conversations",
 			{ rows: [] }
 		)
 		
@@ -185,8 +185,8 @@ const tests = {
 			"SELECT firebase_registration_token",
 			{ 
 				rows: [
-					{ firebase_registration_token: 'token-456', display_name: 'User Two' },
-					{ firebase_registration_token: 'token-789', display_name: 'User Three' }
+					{ firebase_registration_token: "token-456", display_name: "User Two" },
+					{ firebase_registration_token: "token-789", display_name: "User Three" }
 				]
 			}
 		)
@@ -229,12 +229,12 @@ const tests = {
 		// Mock message insertion
 		req.client.addQueryMock(
 			"INSERT INTO messages",
-			{ rows: [{ message_id: 'solo-message-123' }] }
+			{ rows: [{ message_id: "solo-message-123" }] }
 		)
 		
 		// Mock conversation update
 		req.client.addQueryMock(
-			'UPDATE conversations',
+			"UPDATE conversations",
 			{ rows: [] }
 		)
 		
@@ -282,7 +282,7 @@ const tests = {
 		// Mock message insertion
 		req.client.addQueryMock(
 			"INSERT INTO messages",
-			{ rows: [{ message_id: 'blocked-message-456' }] }
+			{ rows: [{ message_id: "blocked-message-456" }] }
 		)
 		
 		// Mock message notification creation
@@ -293,7 +293,7 @@ const tests = {
 		
 		// Mock conversation update
 		req.client.addQueryMock(
-			'UPDATE conversations',
+			"UPDATE conversations",
 			{ rows: [] }
 		)
 		
@@ -302,7 +302,7 @@ const tests = {
 			"SELECT firebase_registration_token",
 			{ 
 				rows: [
-					{ firebase_registration_token: 'token-789', display_name: 'User Three' }
+					{ firebase_registration_token: "token-789", display_name: "User Three" }
 					// User 456 excluded because they blocked the sender
 				]
 			}
@@ -343,7 +343,7 @@ const tests = {
 		
 		req.client.addQueryMock(
 			"INSERT INTO messages",
-			{ rows: [{ message_id: 'field-test-message-789' }] }
+			{ rows: [{ message_id: "field-test-message-789" }] }
 		)
 		
 		// Mock message notification creation
@@ -353,13 +353,13 @@ const tests = {
 		)
 		
 		req.client.addQueryMock(
-			'UPDATE conversations',
+			"UPDATE conversations",
 			{ rows: [] }
 		)
 		
 		req.client.addQueryMock(
 			"SELECT firebase_registration_token",
-			{ rows: [{ firebase_registration_token: 'token-456', display_name: 'Other User' }] }
+			{ rows: [{ firebase_registration_token: "token-456", display_name: "Other User" }] }
 		)
 		
 		const res = createMockResponse()

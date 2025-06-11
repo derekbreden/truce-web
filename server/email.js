@@ -15,7 +15,7 @@ module.exports = {
 	send(to, subject, text, html) {
 		this.transporter.sendMail(
 			{
-				from: '"Derek Bredensteiner" <derek@truce.net>',
+				from: "\"Derek Bredensteiner\" <derek@truce.net>",
 				to,
 				subject,
 				text,

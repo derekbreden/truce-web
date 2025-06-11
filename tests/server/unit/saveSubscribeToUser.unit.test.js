@@ -13,7 +13,7 @@ const tests = {
 	testSubscribeToUser: async () => {
 		// Setup mock request to subscribe to a user
 		const req = createMockRequest({
-			subscribe_to_user_id: '456'
+			subscribe_to_user_id: "456"
 		})
 		
 		// Mock response tracker to handle sequential queries
@@ -59,7 +59,7 @@ const tests = {
 	testUnsubscribeFromUser: async () => {
 		// Setup mock request to unsubscribe from a user
 		const req = createMockRequest({
-			subscribe_to_user_id: '789',
+			subscribe_to_user_id: "789",
 			remove: true
 		})
 		
@@ -97,7 +97,7 @@ const tests = {
 		// Test subscribing to a user you were already subscribed to
 		// (Should work fine due to DELETE-then-INSERT pattern)
 		const req = createMockRequest({
-			subscribe_to_user_id: '101'
+			subscribe_to_user_id: "101"
 		})
 		
 		let queryCount = 0
@@ -135,7 +135,7 @@ const tests = {
 	testSubscribeToSelf: async () => {
 		// Test subscribing to yourself (edge case)
 		const req = createMockRequest({
-			subscribe_to_user_id: '123' // Same as session user_id
+			subscribe_to_user_id: "123" // Same as session user_id
 		})
 		
 		let queryCount = 0
@@ -180,7 +180,7 @@ const tests = {
 		
 		for (const testCase of testCases) {
 			const req = createMockRequest({
-				subscribe_to_user_id: '999',
+				subscribe_to_user_id: "999",
 				...(testCase.remove ? { remove: true } : {})
 			})
 			
@@ -234,7 +234,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			subscribe_to_user_id: '123'
+			subscribe_to_user_id: "123"
 		})
 		
 		const res = createMockResponse()
@@ -255,7 +255,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			subscribe_to_user_id: '123'
+			subscribe_to_user_id: "123"
 		}, { user_id: null })
 		
 		const res = createMockResponse()
@@ -293,7 +293,7 @@ const tests = {
 	testQuerySequenceForSubscribe: async () => {
 		// Test the exact sequence: DELETE -> INSERT -> UPDATE
 		const req = createMockRequest({
-			subscribe_to_user_id: '111'
+			subscribe_to_user_id: "111"
 		})
 		
 		const queryTypes = []
@@ -302,8 +302,8 @@ const tests = {
 		req.client.addQueryMock(
 			(sql) => {
 				queryCount++
-				if (sql.includes('DELETE FROM subscribers')) {
-					queryTypes.push('DELETE')
+				if (sql.includes("DELETE FROM subscribers")) {
+					queryTypes.push("DELETE")
 				}
 				return queryCount === 1
 			},
@@ -311,8 +311,8 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			(sql) => {
-				if (sql.includes('INSERT INTO subscribers')) {
-					queryTypes.push('INSERT')
+				if (sql.includes("INSERT INTO subscribers")) {
+					queryTypes.push("INSERT")
 				}
 				return queryCount === 2
 			},
@@ -320,8 +320,8 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			(sql) => {
-				if (sql.includes('UPDATE users')) {
-					queryTypes.push('UPDATE')
+				if (sql.includes("UPDATE users")) {
+					queryTypes.push("UPDATE")
 				}
 				return queryCount === 3
 			},
@@ -335,17 +335,17 @@ const tests = {
 		
 		// Verify query sequence
 		assertEquals(
-			'DELETE',
+			"DELETE",
 			queryTypes[0],
 			"First query should be DELETE."
 		)
 		assertEquals(
-			'INSERT',
+			"INSERT",
 			queryTypes[1],
 			"Second query should be INSERT."
 		)
 		assertEquals(
-			'UPDATE',
+			"UPDATE",
 			queryTypes[2],
 			"Third query should be UPDATE."
 		)
@@ -354,7 +354,7 @@ const tests = {
 	testQuerySequenceForUnsubscribe: async () => {
 		// Test the sequence for unsubscribe: DELETE -> UPDATE (no INSERT)
 		const req = createMockRequest({
-			subscribe_to_user_id: '222',
+			subscribe_to_user_id: "222",
 			remove: true
 		})
 		
@@ -364,8 +364,8 @@ const tests = {
 		req.client.addQueryMock(
 			(sql) => {
 				queryCount++
-				if (sql.includes('DELETE FROM subscribers')) {
-					queryTypes.push('DELETE')
+				if (sql.includes("DELETE FROM subscribers")) {
+					queryTypes.push("DELETE")
 				}
 				return queryCount === 1
 			},
@@ -373,8 +373,8 @@ const tests = {
 		)
 		req.client.addQueryMock(
 			(sql) => {
-				if (sql.includes('UPDATE users')) {
-					queryTypes.push('UPDATE')
+				if (sql.includes("UPDATE users")) {
+					queryTypes.push("UPDATE")
 				}
 				return queryCount === 2
 			},
@@ -393,12 +393,12 @@ const tests = {
 			"Should make exactly 2 queries for unsubscribe."
 		)
 		assertEquals(
-			'DELETE',
+			"DELETE",
 			queryTypes[0],
 			"First query should be DELETE."
 		)
 		assertEquals(
-			'UPDATE',
+			"UPDATE",
 			queryTypes[1],
 			"Second query should be UPDATE (no INSERT for remove=true)."
 		)

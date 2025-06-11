@@ -16,7 +16,7 @@ require.cache[awsS3Path] = {
 		S3Client: function() { return mockS3Client },
 		PutObjectCommand: function(params) {
 			this.input = params
-			this.commandType = 'PutObject'
+			this.commandType = "PutObject"
 		}
 	},
 	loaded: true,
@@ -27,12 +27,12 @@ require.cache[awsS3Path] = {
 let aiGenerateCalls = []
 const mockAI = {
 	generateImage: async (prompt, model) => {
-		aiGenerateCalls.push({ type: 'image', prompt, model })
-		return 'data:image/png;base64,mockGeneratedImageData'
+		aiGenerateCalls.push({ type: "image", prompt, model })
+		return "data:image/png;base64,mockGeneratedImageData"
 	},
 	generateSpeech: async (prompt, model) => {
-		aiGenerateCalls.push({ type: 'speech', prompt, model })
-		return Buffer.from('mock-mp3-data')
+		aiGenerateCalls.push({ type: "speech", prompt, model })
+		return Buffer.from("mock-mp3-data")
 	}
 }
 
@@ -46,8 +46,8 @@ require.cache[aiPath] = {
 }
 
 // Mock crypto.randomUUID by replacing the global crypto
-let mockUuidResult = 'test-mp3-uuid-123'
-const originalCrypto = require('crypto')
+let mockUuidResult = "test-mp3-uuid-123"
+const originalCrypto = require("crypto")
 
 // Override the global crypto for testing
 global.crypto = {
@@ -101,13 +101,13 @@ const tests = {
 		// Setup mock request for image generation
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'A beautiful sunset over mountains',
-				model: 'dall-e-3'
+				path: "/image",
+				prompt: "A beautiful sunset over mountains",
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
+				session_id: "session-123",
+				user_id: "user-456",
 				admin: true
 			}
 		)
@@ -129,17 +129,17 @@ const tests = {
 		
 		const imageCall = aiGenerateCalls[0]
 		assertEquals(
-			'image',
+			"image",
 			imageCall.type,
 			"Should call image generation."
 		)
 		assertEquals(
-			'A beautiful sunset over mountains',
+			"A beautiful sunset over mountains",
 			imageCall.prompt,
 			"Should use provided prompt."
 		)
 		assertEquals(
-			'dall-e-3',
+			"dall-e-3",
 			imageCall.model,
 			"Should use specified model."
 		)
@@ -153,12 +153,12 @@ const tests = {
 		
 		// Verify results are populated
 		assertEquals(
-			'/image',
+			"/image",
 			req.results.path,
 			"Should set results path."
 		)
 		assertEquals(
-			'data:image/png;base64,mockGeneratedImageData',
+			"data:image/png;base64,mockGeneratedImageData",
 			req.results.image,
 			"Should set generated image in results."
 		)
@@ -179,13 +179,13 @@ const tests = {
 		// Setup mock request for speech generation
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'Hello, this is a test speech message.',
-				model: 'tts-1'
+				path: "/image",
+				prompt: "Hello, this is a test speech message.",
+				model: "tts-1"
 			},
 			{ 
-				session_id: 'session-speech',
-				user_id: 'user-speech',
+				session_id: "session-speech",
+				user_id: "user-speech",
 				admin: true
 			}
 		)
@@ -206,17 +206,17 @@ const tests = {
 		
 		const speechCall = aiGenerateCalls[0]
 		assertEquals(
-			'speech',
+			"speech",
 			speechCall.type,
 			"Should call speech generation."
 		)
 		assertEquals(
-			'Hello, this is a test speech message.',
+			"Hello, this is a test speech message.",
 			speechCall.prompt,
 			"Should use provided prompt."
 		)
 		assertEquals(
-			'tts-1',
+			"tts-1",
 			speechCall.model,
 			"Should use specified model."
 		)
@@ -230,18 +230,18 @@ const tests = {
 		
 		const s3Command = s3SendCalls[0]
 		assertEquals(
-			'PutObject',
+			"PutObject",
 			s3Command.commandType,
 			"Should be PUT operation."
 		)
 		assertEquals(
-			'truce.net',
+			"truce.net",
 			s3Command.input.Bucket,
 			"Should target correct bucket."
 		)
 		assertEquals(
 			true,
-			s3Command.input.Key.endsWith('.mp3'),
+			s3Command.input.Key.endsWith(".mp3"),
 			"Should use .mp3 extension for filename."
 		)
 		assertEquals(
@@ -257,13 +257,13 @@ const tests = {
 		
 		// Verify results are populated
 		assertEquals(
-			'/image',
+			"/image",
 			req.results.path,
 			"Should set results path."
 		)
 		assertEquals(
 			true,
-			req.results.mp3.startsWith('/mp3/'),
+			req.results.mp3.startsWith("/mp3/"),
 			"Should set MP3 URL with correct prefix."
 		)
 		assertEquals(
@@ -286,13 +286,13 @@ const tests = {
 		// Setup mock request for DALL-E 2
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'A cat wearing a hat',
-				model: 'dall-e-2'
+				path: "/image",
+				prompt: "A cat wearing a hat",
+				model: "dall-e-2"
 			},
 			{ 
-				session_id: 'session-dalle2',
-				user_id: 'user-dalle2',
+				session_id: "session-dalle2",
+				user_id: "user-dalle2",
 				admin: true
 			}
 		)
@@ -311,14 +311,14 @@ const tests = {
 			"Should call AI for image generation."
 		)
 		assertEquals(
-			'dall-e-2',
+			"dall-e-2",
 			aiGenerateCalls[0].model,
 			"Should use DALL-E 2 model."
 		)
 		
 		// Verify results
 		assertEquals(
-			'data:image/png;base64,mockGeneratedImageData',
+			"data:image/png;base64,mockGeneratedImageData",
 			req.results.image,
 			"Should generate image with DALL-E 2."
 		)
@@ -332,13 +332,13 @@ const tests = {
 		// Setup mock request for TTS-1-HD
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'High quality speech test',
-				model: 'tts-1-hd'
+				path: "/image",
+				prompt: "High quality speech test",
+				model: "tts-1-hd"
 			},
 			{ 
-				session_id: 'session-ttshd',
-				user_id: 'user-ttshd',
+				session_id: "session-ttshd",
+				user_id: "user-ttshd",
 				admin: true
 			}
 		)
@@ -357,7 +357,7 @@ const tests = {
 			"Should call AI for speech generation."
 		)
 		assertEquals(
-			'tts-1-hd',
+			"tts-1-hd",
 			aiGenerateCalls[0].model,
 			"Should use TTS-1-HD model."
 		)
@@ -378,13 +378,13 @@ const tests = {
 		// Setup mock request without admin privileges
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'Unauthorized request',
-				model: 'dall-e-3'
+				path: "/image",
+				prompt: "Unauthorized request",
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-nonadmin',
-				user_id: 'user-nonadmin',
+				session_id: "session-nonadmin",
+				user_id: "user-nonadmin",
 				admin: false // Not admin
 			}
 		)
@@ -429,13 +429,13 @@ const tests = {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
 			{ 
-				path: '/wrong-path',
-				prompt: 'Test prompt',
-				model: 'dall-e-3'
+				path: "/wrong-path",
+				prompt: "Test prompt",
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-wrongpath',
-				user_id: 'user-wrongpath',
+				session_id: "session-wrongpath",
+				user_id: "user-wrongpath",
 				admin: true
 			}
 		)
@@ -468,13 +468,13 @@ const tests = {
 		// Setup mock request without prompt
 		const req = createMockRequest(
 			{ 
-				path: '/image',
+				path: "/image",
 				// prompt missing
-				model: 'dall-e-3'
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-noprompt',
-				user_id: 'user-noprompt',
+				session_id: "session-noprompt",
+				user_id: "user-noprompt",
 				admin: true
 			}
 		)
@@ -488,7 +488,7 @@ const tests = {
 		
 		// Verify path is set but no generation occurs
 		assertEquals(
-			'/image',
+			"/image",
 			req.results.path,
 			"Should set path even without prompt."
 		)
@@ -512,13 +512,13 @@ const tests = {
 		// Setup mock request with invalid model
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'Test prompt',
-				model: 'invalid-model'
+				path: "/image",
+				prompt: "Test prompt",
+				model: "invalid-model"
 			},
 			{ 
-				session_id: 'session-invalidmodel',
-				user_id: 'user-invalidmodel',
+				session_id: "session-invalidmodel",
+				user_id: "user-invalidmodel",
 				admin: true
 			}
 		)
@@ -532,7 +532,7 @@ const tests = {
 		
 		// Verify path is set but no generation occurs
 		assertEquals(
-			'/image',
+			"/image",
 			req.results.path,
 			"Should set path even with invalid model."
 		)
@@ -561,13 +561,13 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'Test prompt',
-				model: 'dall-e-3'
+				path: "/image",
+				prompt: "Test prompt",
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-ended',
-				user_id: 'user-ended',
+				session_id: "session-ended",
+				user_id: "user-ended",
 				admin: true
 			}
 		)
@@ -602,12 +602,12 @@ const tests = {
 		// Setup mock request without user_id
 		const req = createMockRequest(
 			{ 
-				path: '/image',
-				prompt: 'Test prompt',
-				model: 'dall-e-3'
+				path: "/image",
+				prompt: "Test prompt",
+				model: "dall-e-3"
 			},
 			{ 
-				session_id: 'session-nouser',
+				session_id: "session-nouser",
 				user_id: undefined, // No user_id
 				admin: true
 			}

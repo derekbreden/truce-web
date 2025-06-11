@@ -1,10 +1,10 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		(req.body.path === "/posts" ||
-			req.body.path === "/posts/all" ||
-			req.body.path?.startsWith("/topic/") ||
-			req.body.path?.startsWith("/user/"))
+		!res.writableEnded
+		&& (req.body.path === "/posts"
+			|| req.body.path === "/posts/all"
+			|| req.body.path?.startsWith("/topic/")
+			|| req.body.path?.startsWith("/user/"))
 	) {
 		if (!req.body.max_reply_create_date) {
 			const post_results = await req.client.query(
@@ -90,8 +90,8 @@ module.exports = async (req, res) => {
 							: ""
 					}
           ${
-						(req.body.path === "/posts" || req.body.path === "/posts") &&
-						Number(req.session.subscribed_to_users) > 0
+						(req.body.path === "/posts" || req.body.path === "/posts")
+						&& Number(req.session.subscribed_to_users) > 0
 							? `
                 AND p.user_id IN (
                   SELECT subscribed_to_user_id

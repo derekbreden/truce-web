@@ -10,13 +10,13 @@ async function testGetMessagesSuccess() {
 	
 	// Mock conversation check - user is participant
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock messages query (first SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM messages m') && sql.includes('INNER JOIN users u'),
+		(sql) => sql.includes("FROM messages m") && sql.includes("INNER JOIN users u"),
 		{ 
 			rows: [
 				{
@@ -38,7 +38,7 @@ async function testGetMessagesSuccess() {
 	
 	// Mock conversation metadata query (second SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations c') && sql.includes('CROSS JOIN unnest'),
+		(sql) => sql.includes("FROM conversations c") && sql.includes("CROSS JOIN unnest"),
 		{ 
 			rows: [
 				{
@@ -78,7 +78,7 @@ async function testGetMessagesNotParticipant() {
 	
 	// Mock conversation check - user not in participants
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
@@ -99,7 +99,7 @@ async function testGetMessagesConversationNotFound() {
 	
 	// Mock conversation check - conversation doesn't exist
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [] }
 	)
 	
@@ -121,19 +121,19 @@ async function testGetMessagesWithDateFilter() {
 	
 	// Mock conversation check
 	req.client.addQueryMock(
-		'SELECT participant_user_ids',
+		"SELECT participant_user_ids",
 		{ rows: [{ participant_user_ids: [123, 456] }] }
 	)
 	
 	// Mock messages query with date filter (first SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM messages m') && sql.includes('INNER JOIN users u'),
+		(sql) => sql.includes("FROM messages m") && sql.includes("INNER JOIN users u"),
 		{ rows: [] }
 	)
 	
 	// Mock conversation metadata query (second SELECT)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations c') && sql.includes('CROSS JOIN unnest'),
+		(sql) => sql.includes("FROM conversations c") && sql.includes("CROSS JOIN unnest"),
 		{ 
 			rows: [
 				{

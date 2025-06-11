@@ -57,9 +57,9 @@ async function setupIntegrationTestEnvironment(options) {
 		.split("\n")
 		.map((line) => {
 			if (
-				line.trim().startsWith("//") &&
-				line.includes("<!--#include") &&
-				line.includes('.js"')
+				line.trim().startsWith("//")
+				&& line.includes("<!--#include")
+				&& line.includes(".js\"")
 			) {
 				return line.replace("//", "")
 			}
@@ -176,42 +176,42 @@ async function setupIntegrationTestEnvironment(options) {
 			//
 			// Mock WebSocket to prevent JSDOM errors and allow state.ws.send to be called
 			window.WebSocket = function (url) {
-				this.url = url;
-				this.isMockWebSocket = true; // Identify mock
+				this.url = url
+				this.isMockWebSocket = true // Identify mock
 				this.send = function (data) {
 					// console.log(`Mock WebSocket sent: ${data}`);
-				};
+				}
 				this.close = function () {
 					// console.log("Mock WebSocket closed");
-				};
-				this.messageCallback = null;
+				}
+				this.messageCallback = null
 				this.addEventListener = function (event, callback) {
 					if (event === "message") {
-						this.messageCallback = callback;
+						this.messageCallback = callback
 					}
 					// Add stubs for other events if necessary, e.g., open, close, error
 					if (event === "open" && this.onopen) {
-						this.onopen();
+						this.onopen()
 					}
 					if (event === "close" && this.onclose) {
-						this.onclose();
+						this.onclose()
 					}
-				};
+				}
 				this.triggerMessage = function (data) {
 					if (this.messageCallback) {
 						// Simulate a MessageEvent object
-						this.messageCallback({ data: data });
+						this.messageCallback({ data: data })
 					} else {
 						// console.log("Mock WebSocket: No message callback registered to trigger.");
 					}
-				};
+				}
 				// Helper to simulate 'open' event if client code expects it
 				// and if addEventListener isn't used for open
 				this.simulateOpen = function() {
 					if (this.onopen) {
-						this.onopen();
+						this.onopen()
 					}
-				};
+				}
 			}
 			//
 			// Mock setTimeout to be instant, to avoid delays

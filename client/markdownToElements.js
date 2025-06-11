@@ -55,8 +55,8 @@ const markdownToElements = (text) => {
 		if (p_content.startsWith("- ")) {
 			const li_contents = p_content.split("\n")
 			if (
-				li_contents.length > 1 ||
-				(li_contents.length === 1 && li_contents[0].startsWith("- "))
+				li_contents.length > 1
+				|| (li_contents.length === 1 && li_contents[0].startsWith("- "))
 			) {
 				const $ul = document.createElement("ul")
 				li_contents.forEach((li_content) => {

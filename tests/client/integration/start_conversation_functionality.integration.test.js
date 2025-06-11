@@ -61,10 +61,10 @@ async function testStartConversationViaMessageButton() {
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
-				return body.action === "createConversation" && 
-					   body.participant_user_ids && 
-					   Array.isArray(body.participant_user_ids) &&
-					   body.participant_user_ids.includes(456)
+				return body.action === "createConversation" 
+					   && body.participant_user_ids 
+					   && Array.isArray(body.participant_user_ids)
+					   && body.participant_user_ids.includes(456)
 			}
 			return false
 		},
@@ -171,9 +171,9 @@ async function testStartConversationWithExistingConversation() {
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
-				return body.action === "createConversation" && 
-					   body.participant_user_ids && 
-					   body.participant_user_ids.includes(456)
+				return body.action === "createConversation" 
+					   && body.participant_user_ids 
+					   && body.participant_user_ids.includes(456)
 			}
 			return false
 		},

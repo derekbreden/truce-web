@@ -18,8 +18,8 @@ const renderReplies = (replies) => {
 			while (!found_siblings && ancestor.parent_reply_id) {
 				const siblings = replies.filter(
 					(c) =>
-						c.parent_reply_id === ancestor.parent_reply_id &&
-						c.reply_id !== ancestor.reply_id,
+						c.parent_reply_id === ancestor.parent_reply_id
+						&& c.reply_id !== ancestor.reply_id,
 				)
 				if (siblings.length === 0) {
 					ancestor = replies.find(
@@ -145,8 +145,8 @@ const renderReplies = (replies) => {
 				if ($event.target?.hasAttribute("expand-down")) {
 					const final_rect = $last_reply.getBoundingClientRect()
 					$("main-content-wrapper[active]").scrollTop =
-						$("main-content-wrapper[active]").scrollTop +
-						(final_rect.y - original_rect.y)
+						$("main-content-wrapper[active]").scrollTop
+						+ (final_rect.y - original_rect.y)
 				}
 			})
 			if (state.expanded_reply_ids.includes($root_reply.reply_id)) {
@@ -188,8 +188,8 @@ const renderReplies = (replies) => {
 								p $1
 							`,
 							[
-								replies.length +
-									(replies.length === 1 ? " reply" : " replies"),
+								replies.length
+									+ (replies.length === 1 ? " reply" : " replies"),
 							],
 						),
 					]

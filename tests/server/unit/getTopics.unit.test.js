@@ -19,23 +19,23 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						topic_name: 'technology',
-						subtitle: 'Technology discussions',
-						posts: '5'
+						topic_name: "technology",
+						subtitle: "Technology discussions",
+						posts: "5"
 					},
 					{
-						topic_name: 'general',
-						subtitle: 'General posts',
-						posts: '12'
+						topic_name: "general",
+						subtitle: "General posts",
+						posts: "12"
 					},
 					{
-						topic_name: 'science',
-						subtitle: 'Science and research',
-						posts: '3'
+						topic_name: "science",
+						subtitle: "Science and research",
+						posts: "3"
 					}
 				]
 			}
@@ -58,12 +58,12 @@ const tests = {
 			"Should return array of topics."
 		)
 		assertEquals(
-			'technology',
+			"technology",
 			req.results.topics[0].topic_name,
 			"First topic should have correct name."
 		)
 		assertEquals(
-			'5',
+			"5",
 			req.results.topics[0].posts,
 			"First topic should have post count."
 		)
@@ -78,11 +78,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [{
-					topic_name: 'technology',
-					subtitle: 'Technology discussions'
+					topic_name: "technology",
+					subtitle: "Technology discussions"
 				}]
 			}
 		)
@@ -94,12 +94,12 @@ const tests = {
 		
 		// Verify single topic result
 		assertEquals(
-			'technology',
+			"technology",
 			req.results.topic.topic_name,
 			"Should return correct topic name."
 		)
 		assertEquals(
-			'Technology discussions',
+			"Technology discussions",
 			req.results.topic.subtitle,
 			"Should return correct topic subtitle."
 		)
@@ -114,7 +114,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -125,7 +125,7 @@ const tests = {
 		
 		// Should return empty object for nonexistent topic
 		assertEquals(
-			'object',
+			"object",
 			typeof req.results.topic,
 			"Should return empty object for nonexistent topic."
 		)
@@ -144,10 +144,10 @@ const tests = {
 		req1.results = {}
 		
 		req1.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ topic_name: 'general', subtitle: 'General', posts: '10' }
+					{ topic_name: "general", subtitle: "General", posts: "10" }
 				]
 			}
 		)
@@ -160,10 +160,10 @@ const tests = {
 		req2.results = {}
 		
 		req2.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
-					{ topic_name: 'general', subtitle: 'General posts' }
+					{ topic_name: "general", subtitle: "General posts" }
 				]
 			}
 		)
@@ -178,7 +178,7 @@ const tests = {
 			"First call should return topics array."
 		)
 		assertEquals(
-			'general',
+			"general",
 			req2.results.topic.topic_name,
 			"Second call should return specific topic."
 		)
@@ -268,7 +268,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT',
+				"SELECT",
 				{ 
 					rows: [{
 						topic_name: testCase.expectedTopic,
@@ -299,7 +299,7 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -329,13 +329,13 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						topic_name: 'unused-topic',
-						subtitle: 'Unused topic',
-						posts: '0'
+						topic_name: "unused-topic",
+						subtitle: "Unused topic",
+						posts: "0"
 					}
 				]
 			}
@@ -353,7 +353,7 @@ const tests = {
 			"Should include topics with zero posts."
 		)
 		assertEquals(
-			'0',
+			"0",
 			req.results.topics[0].posts,
 			"Should show correct post count of zero."
 		)

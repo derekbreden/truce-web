@@ -7,9 +7,9 @@ module.exports = async (req, res) => {
 	}
 	
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		conversation_id
+		!res.writableEnded
+		&& req.session.user_id
+		&& conversation_id
 	) {
 		// Verify user is participant in this conversation
 		const conversation_check = await req.client.query(
@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
 		)
 
 		if (
-			!conversation_check.rows.length ||
-			!conversation_check.rows[0].participant_user_ids.includes(req.session.user_id)
+			!conversation_check.rows.length
+			|| !conversation_check.rows[0].participant_user_ids.includes(req.session.user_id)
 		) {
 			res.end(
 				JSON.stringify({

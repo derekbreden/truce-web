@@ -1,13 +1,13 @@
 const renderPosts = (posts, topic, user) => {
 	let skip_posts = false
 	if (
-		state.path === "/settings" ||
-		(state.path.startsWith("/user/") && state.path.split("/")[3]) ||
-		state.path === "/favorites" ||
-		state.path === "/notifications" ||
-		state.path.startsWith("/reply/") ||
-		state.path.startsWith("/messages/") ||
-		state.path === "/conversations"
+		state.path === "/settings"
+		|| (state.path.startsWith("/user/") && state.path.split("/")[3])
+		|| state.path === "/favorites"
+		|| state.path === "/notifications"
+		|| state.path.startsWith("/reply/")
+		|| state.path.startsWith("/messages/")
+		|| state.path === "/conversations"
 	) {
 		skip_posts = true
 	}

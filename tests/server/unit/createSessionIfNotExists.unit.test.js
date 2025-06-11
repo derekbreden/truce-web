@@ -17,8 +17,8 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
-			{ rows: [{ session_id: 'new-session-123' }] }
+			"INSERT INTO sessions",
+			{ rows: [{ session_id: "new-session-123" }] }
 		)
 		
 		const res = createMockResponse()
@@ -27,10 +27,10 @@ const tests = {
 		await createSessionIfNotExists(req, res)
 		
 		// Verify session was created
-		assertEquals('string', typeof req.session.session_uuid, "Session UUID should be generated")
+		assertEquals("string", typeof req.session.session_uuid, "Session UUID should be generated")
 		assertEquals(true, req.session.session_uuid.length > 0, "Session UUID should not be empty")
 		assertEquals(
-			'new-session-123',
+			"new-session-123",
 			req.session.session_id,
 			"Session ID should be set from database result."
 		)
@@ -43,13 +43,13 @@ const tests = {
 
 	testCreateSessionOnLogout: async () => {
 		// Setup mock request with logout flag (creates new session even if one exists)
-		const req = createMockRequest({ logout: true }, { session_uuid: 'existing-uuid' })
+		const req = createMockRequest({ logout: true }, { session_uuid: "existing-uuid" })
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
-			{ rows: [{ session_id: 'logout-session-456' }] }
+			"INSERT INTO sessions",
+			{ rows: [{ session_id: "logout-session-456" }] }
 		)
 		
 		const res = createMockResponse()
@@ -61,10 +61,10 @@ const tests = {
 		await createSessionIfNotExists(req, res)
 		
 		// Verify new session was created despite existing one
-		assertEquals('string', typeof req.session.session_uuid, "New session UUID should be generated")
+		assertEquals("string", typeof req.session.session_uuid, "New session UUID should be generated")
 		assertEquals(false, req.session.session_uuid === originalUuid, "Session UUID should be different from original")
 		assertEquals(
-			'logout-session-456',
+			"logout-session-456",
 			req.session.session_id,
 			"New session ID should be set."
 		)
@@ -72,7 +72,7 @@ const tests = {
 
 	testNoActionWhenSessionExists: async () => {
 		// Setup mock request with existing session (no logout)
-		const req = createMockRequest({}, { session_uuid: 'existing-valid-uuid' })
+		const req = createMockRequest({}, { session_uuid: "existing-valid-uuid" })
 		req.results = {}
 		
 		const res = createMockResponse()
@@ -133,8 +133,8 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
-			{ rows: [{ session_id: 'cookie-session-789' }] }
+			"INSERT INTO sessions",
+			{ rows: [{ session_id: "cookie-session-789" }] }
 		)
 		
 		const res = createMockResponse()
@@ -142,11 +142,11 @@ const tests = {
 		// Execute the handler
 		await createSessionIfNotExists(req, res)
 		
-		const cookie = res.getHeaders()['Set-Cookie']
+		const cookie = res.getHeaders()["Set-Cookie"]
 		assertEquals(true, cookie.includes(req.session.session_uuid), "Should contain session UUID")
-		assertEquals(true, cookie.includes('HttpOnly'), "Should be HttpOnly")
-		assertEquals(true, cookie.includes('Secure'), "Should be Secure")
-		assertEquals(true, cookie.includes('Path=/session'), "Should have correct path")
+		assertEquals(true, cookie.includes("HttpOnly"), "Should be HttpOnly")
+		assertEquals(true, cookie.includes("Secure"), "Should be Secure")
+		assertEquals(true, cookie.includes("Path=/session"), "Should have correct path")
 	},
 
 	testUuidFormat: async () => {
@@ -155,8 +155,8 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
-			{ rows: [{ session_id: 'uuid-test-session' }] }
+			"INSERT INTO sessions",
+			{ rows: [{ session_id: "uuid-test-session" }] }
 		)
 		
 		const res = createMockResponse()
@@ -178,7 +178,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'INSERT INTO sessions',
+				"INSERT INTO sessions",
 				{ rows: [{ session_id: `multi-session-${i}` }] }
 			)
 			
@@ -201,18 +201,18 @@ const tests = {
 
 	testLogoutWithVariousInputs: async () => {
 		// Test logout behavior with different input values
-		const logoutValues = [true, 'true', 1, 'logout']
+		const logoutValues = [true, "true", 1, "logout"]
 		
 		for (const logoutValue of logoutValues) {
 			const req = createMockRequest(
 				{ logout: logoutValue }, 
-				{ session_uuid: 'existing-uuid-for-logout' }
+				{ session_uuid: "existing-uuid-for-logout" }
 			)
 			req.results = {}
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'INSERT INTO sessions',
+				"INSERT INTO sessions",
 				{ rows: [{ session_id: `logout-test-${logoutValue}` }] }
 			)
 			
@@ -221,7 +221,7 @@ const tests = {
 			// Execute the handler
 			await createSessionIfNotExists(req, res)
 			
-			assertEquals(false, req.session.session_uuid === 'existing-uuid-for-logout', `Should create new session when logout=${logoutValue}`)
+			assertEquals(false, req.session.session_uuid === "existing-uuid-for-logout", `Should create new session when logout=${logoutValue}`)
 		}
 	},
 
@@ -230,9 +230,9 @@ const tests = {
 		const req = createMockRequest({}, { session_uuid: null })
 		req.results = {}
 		
-		const testSessionId = 'db-integration-session-999'
+		const testSessionId = "db-integration-session-999"
 		req.client.addQueryMock(
-			'INSERT INTO sessions',
+			"INSERT INTO sessions",
 			{ rows: [{ session_id: testSessionId }] }
 		)
 		
@@ -242,7 +242,7 @@ const tests = {
 		await createSessionIfNotExists(req, res)
 		
 		assertEquals(testSessionId, req.session.session_id, "Session ID should be extracted from database result")
-		assertEquals('string', typeof req.session.session_uuid, "Session UUID should be a string")
+		assertEquals("string", typeof req.session.session_uuid, "Session UUID should be a string")
 		assertEquals(36, req.session.session_uuid.length, "Should be 36 characters")
 	}
 }

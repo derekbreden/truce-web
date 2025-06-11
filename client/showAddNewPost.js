@@ -3,8 +3,8 @@ const showAddNewPost = (post) => {
 	let content_placeholder = `Content`
 	if (!post) {
 		let post_prompts_index =
-			localStorage.getItem(`${window.local_storage_key}:post_prompts_index`) ||
-			-1
+			localStorage.getItem(`${window.local_storage_key}:post_prompts_index`)
+			|| -1
 		post_prompts_index++
 		if (post_prompts_index >= post_prompts.length) {
 			post_prompts_index = 0
@@ -230,8 +230,8 @@ e.g. ${post_prompts[post_prompts_index]}`
 			return
 		}
 		if (
-			(poll_1.length && !poll_2.length) ||
-			(poll_2.length && !poll_1.length)
+			(poll_1.length && !poll_2.length)
+			|| (poll_2.length && !poll_1.length)
 		) {
 			addPostError("Please fill in 2 choices for a poll")
 			return
@@ -266,7 +266,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				if (data.error || !data.success) {
 					$add_new.$("info")?.remove()
 					$add_new.$("[title]").removeAttribute("disabled")
@@ -307,7 +307,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 					getMoreRecent()
 				}
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				$add_new.$("info")?.remove()
 				$add_new.$("[title]").removeAttribute("disabled")
 				$add_new.$("[body]").removeAttribute("disabled")

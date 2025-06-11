@@ -12,12 +12,12 @@ const object_client = new S3Client({
 
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.title &&
-		req.body.pngs &&
-		(req.body.body || req.body.pngs.length) &&
-		req.body.path
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.title
+		&& req.body.pngs
+		&& (req.body.body || req.body.pngs.length)
+		&& req.body.path
 	) {
 		const messages = []
 

@@ -32,9 +32,9 @@ const parsePath = () => {
 }
 state.path = parsePath()
 if (
-	state.path !== "/" &&
-	state.path !== "/privacy" &&
-	!localStorage.getItem(`${window.local_storage_key}:agreed`)
+	state.path !== "/"
+	&& state.path !== "/privacy"
+	&& !localStorage.getItem(`${window.local_storage_key}:agreed`)
 ) {
 	state.next_path = state.path
 	state.path = "/"

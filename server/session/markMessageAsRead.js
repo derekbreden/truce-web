@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.message_id
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.message_id
 	) {
 		// Mark the specific message notification as read
 		await req.client.query(

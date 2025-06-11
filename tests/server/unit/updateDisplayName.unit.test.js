@@ -25,7 +25,7 @@ const tests = {
 				queryCount++
 				return queryCount === 1 // First UPDATE query
 			},
-			{ rows: [{ user_id: 'test-user-123' }] } // Name was changed
+			{ rows: [{ user_id: "test-user-123" }] } // Name was changed
 		)
 		req.client.addQueryMock(
 			() => queryCount === 2, // Second UPDATE query (set index)
@@ -43,7 +43,7 @@ const tests = {
 		
 		// Verify session was updated
 		assertEquals(
-			'John Doe',
+			"John Doe",
 			req.session.display_name,
 			"Session display_name should be updated."
 		)
@@ -53,7 +53,7 @@ const tests = {
 			"Session display_name_index should be set to 0 for first occurrence."
 		)
 		assertEquals(
-			'john_doe',
+			"john_doe",
 			req.session.user_slug,
 			"Session user_slug should be generated from display name."
 		)
@@ -72,7 +72,7 @@ const tests = {
 				queryCount++
 				return queryCount === 1
 			},
-			{ rows: [{ user_id: 'test-user-123' }] }
+			{ rows: [{ user_id: "test-user-123" }] }
 		)
 		req.client.addQueryMock(
 			() => queryCount === 2,
@@ -90,7 +90,7 @@ const tests = {
 		
 		// Verify session with index
 		assertEquals(
-			'Popular Name',
+			"Popular Name",
 			req.session.display_name,
 			"Session display_name should be updated."
 		)
@@ -100,7 +100,7 @@ const tests = {
 			"Session display_name_index should reflect duplicate count."
 		)
 		assertEquals(
-			'popular_name_3',
+			"popular_name_3",
 			req.session.user_slug,
 			"Session user_slug should include index when display_name_index > 0."
 		)
@@ -119,7 +119,7 @@ const tests = {
 				queryCount++
 				return queryCount === 1
 			},
-			{ rows: [{ user_id: 'test-user-123' }] }
+			{ rows: [{ user_id: "test-user-123" }] }
 		)
 		req.client.addQueryMock(
 			() => queryCount === 2,
@@ -137,7 +137,7 @@ const tests = {
 		
 		// Verify slug generation
 		assertEquals(
-			'multiple_word_name',
+			"multiple_word_name",
 			req.session.user_slug,
 			"Should convert spaces to underscores and lowercase."
 		)
@@ -151,7 +151,7 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] } // No rows returned = name wasn't changed
 		)
 		
@@ -221,7 +221,7 @@ const tests = {
 					queryCount++
 					return queryCount === 1
 				},
-				{ rows: [{ user_id: 'test-user-123' }] }
+				{ rows: [{ user_id: "test-user-123" }] }
 			)
 			req.client.addQueryMock(
 				() => queryCount === 2,
@@ -262,7 +262,7 @@ const tests = {
 				queryCount++
 				return queryCount === 1
 			},
-			{ rows: [{ user_id: 'test-user-123' }] }
+			{ rows: [{ user_id: "test-user-123" }] }
 		)
 		req.client.addQueryMock(
 			() => queryCount === 2,
@@ -277,7 +277,7 @@ const tests = {
 		
 		// Verify initial session state
 		assertEquals(
-			'Test User',
+			"Test User",
 			req.session.display_name,
 			"Initial session display_name should be from mock."
 		)
@@ -287,7 +287,7 @@ const tests = {
 		
 		// Verify all session fields were updated
 		assertEquals(
-			'Session Test User',
+			"Session Test User",
 			req.session.display_name,
 			"Session display_name should be updated to new value."
 		)
@@ -297,7 +297,7 @@ const tests = {
 			"Session display_name_index should be set from database result."
 		)
 		assertEquals(
-			'session_test_user_1',
+			"session_test_user_1",
 			req.session.user_slug,
 			"Session user_slug should be generated with index."
 		)
@@ -316,7 +316,7 @@ const tests = {
 				queryCount++
 				return queryCount === 1
 			},
-			{ rows: [{ user_id: 'test-user-123' }] }
+			{ rows: [{ user_id: "test-user-123" }] }
 		)
 		req.client.addQueryMock(
 			() => queryCount === 2,
@@ -334,7 +334,7 @@ const tests = {
 		
 		// Verify all session updates occurred (indicating all queries ran)
 		assertEquals(
-			'Query Test',
+			"Query Test",
 			req.session.display_name,
 			"Session display_name should be updated."
 		)
@@ -344,7 +344,7 @@ const tests = {
 			"Session display_name_index should be set."
 		)
 		assertEquals(
-			'query_test',
+			"query_test",
 			req.session.user_slug,
 			"Session user_slug should be generated."
 		)

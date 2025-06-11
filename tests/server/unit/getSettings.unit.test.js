@@ -14,30 +14,30 @@ const tests = {
 		// Setup mock request for settings path with logged in user
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		// Setup mock database response with subscribed users
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'subscribed-user-1',
-						display_name: 'John Doe',
+						user_id: "subscribed-user-1",
+						display_name: "John Doe",
 						display_name_index: 0,
-						user_slug: 'johndoe',
-						profile_picture_uuid: 'pic-uuid-1',
+						user_slug: "johndoe",
+						profile_picture_uuid: "pic-uuid-1",
 						user_verified: true,
 						subscribed: true
 					},
 					{
-						user_id: 'subscribed-user-2',
-						display_name: 'Jane Smith',
+						user_id: "subscribed-user-2",
+						display_name: "Jane Smith",
 						display_name_index: 1,
-						user_slug: 'janesmith',
-						profile_picture_uuid: 'pic-uuid-2',
+						user_slug: "janesmith",
+						profile_picture_uuid: "pic-uuid-2",
 						user_verified: false,
 						subscribed: true
 					}
@@ -57,17 +57,17 @@ const tests = {
 			"Should return array of subscribed users."
 		)
 		assertEquals(
-			'subscribed-user-1',
+			"subscribed-user-1",
 			req.results.users[0].user_id,
 			"First user should have correct user_id."
 		)
 		assertEquals(
-			'John Doe',
+			"John Doe",
 			req.results.users[0].display_name,
 			"First user should have correct display_name."
 		)
 		assertEquals(
-			'johndoe',
+			"johndoe",
 			req.results.users[0].user_slug,
 			"First user should have correct user_slug."
 		)
@@ -93,7 +93,7 @@ const tests = {
 		
 		// Setup mock database response (query uses 0 for guest users)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -114,7 +114,7 @@ const tests = {
 		// Setup mock request with wrong path
 		const req = createMockRequest(
 			{ path: "/posts" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
@@ -135,7 +135,7 @@ const tests = {
 		// Setup mock request without path
 		const req = createMockRequest(
 			{}, // no path
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
@@ -156,7 +156,7 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
@@ -179,25 +179,25 @@ const tests = {
 		// Test that user_slug defaults to user_id when slug is empty/null
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'user-with-slug',
-						display_name: 'User With Slug',
-						user_slug: 'custom-slug',
+						user_id: "user-with-slug",
+						display_name: "User With Slug",
+						user_slug: "custom-slug",
 						user_verified: true,
 						subscribed: true
 					},
 					{
-						user_id: 'user-without-slug',
-						display_name: 'User Without Slug',
-						user_slug: 'user-without-slug', // This will be the user_id converted to VARCHAR
+						user_id: "user-without-slug",
+						display_name: "User Without Slug",
+						user_slug: "user-without-slug", // This will be the user_id converted to VARCHAR
 						user_verified: false,
 						subscribed: true
 					}
@@ -211,12 +211,12 @@ const tests = {
 		
 		// Verify slug handling
 		assertEquals(
-			'custom-slug',
+			"custom-slug",
 			req.results.users[0].user_slug,
 			"Should use custom slug when available."
 		)
 		assertEquals(
-			'user-without-slug',
+			"user-without-slug",
 			req.results.users[1].user_slug,
 			"Should default to user_id when no custom slug."
 		)
@@ -226,23 +226,23 @@ const tests = {
 		// Test user verification status based on email
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'verified-user',
-						display_name: 'Verified User',
+						user_id: "verified-user",
+						display_name: "Verified User",
 						user_verified: true,
 						subscribed: true
 					},
 					{
-						user_id: 'unverified-user',
-						display_name: 'Unverified User',
+						user_id: "unverified-user",
+						display_name: "Unverified User",
 						user_verified: false,
 						subscribed: true
 					}
@@ -271,26 +271,26 @@ const tests = {
 		// Test display_name_index field handling
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'user-1',
-						display_name: 'Alice',
+						user_id: "user-1",
+						display_name: "Alice",
 						display_name_index: 0,
-						user_slug: 'alice',
+						user_slug: "alice",
 						subscribed: true
 					},
 					{
-						user_id: 'user-2',
-						display_name: 'Bob',
+						user_id: "user-2",
+						display_name: "Bob",
 						display_name_index: 1,
-						user_slug: 'bob',
+						user_slug: "bob",
 						subscribed: true
 					}
 				]
@@ -318,23 +318,23 @@ const tests = {
 		// Test profile_picture_uuid field handling
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'user-with-pic',
-						display_name: 'User With Picture',
-						profile_picture_uuid: 'pic-uuid-123',
+						user_id: "user-with-pic",
+						display_name: "User With Picture",
+						profile_picture_uuid: "pic-uuid-123",
 						subscribed: true
 					},
 					{
-						user_id: 'user-without-pic',
-						display_name: 'User Without Picture',
+						user_id: "user-without-pic",
+						display_name: "User Without Picture",
 						profile_picture_uuid: null,
 						subscribed: true
 					}
@@ -348,7 +348,7 @@ const tests = {
 		
 		// Verify profile picture handling
 		assertEquals(
-			'pic-uuid-123',
+			"pic-uuid-123",
 			req.results.users[0].profile_picture_uuid,
 			"Should include profile picture UUID when available."
 		)
@@ -363,12 +363,12 @@ const tests = {
 		// Test when user has no subscriptions
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -393,7 +393,7 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -413,20 +413,20 @@ const tests = {
 		// Test that all expected fields are present in results
 		const req = createMockRequest(
 			{ path: "/settings" },
-			{ user_id: 'user-123' }
+			{ user_id: "user-123" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						user_id: 'complete-user',
-						display_name: 'Complete User',
+						user_id: "complete-user",
+						display_name: "Complete User",
 						display_name_index: 2,
-						user_slug: 'complete-user-slug',
-						profile_picture_uuid: 'complete-pic-uuid',
+						user_slug: "complete-user-slug",
+						profile_picture_uuid: "complete-pic-uuid",
 						user_verified: true,
 						subscribed: true
 					}
@@ -441,11 +441,11 @@ const tests = {
 		const user = req.results.users[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-user', user.user_id, "Should have user_id.")
-		assertEquals('Complete User', user.display_name, "Should have display_name.")
+		assertEquals("complete-user", user.user_id, "Should have user_id.")
+		assertEquals("Complete User", user.display_name, "Should have display_name.")
 		assertEquals(2, user.display_name_index, "Should have display_name_index.")
-		assertEquals('complete-user-slug', user.user_slug, "Should have user_slug.")
-		assertEquals('complete-pic-uuid', user.profile_picture_uuid, "Should have profile_picture_uuid.")
+		assertEquals("complete-user-slug", user.user_slug, "Should have user_slug.")
+		assertEquals("complete-pic-uuid", user.profile_picture_uuid, "Should have profile_picture_uuid.")
 		assertEquals(true, user.user_verified, "Should have user_verified.")
 		assertEquals(true, user.subscribed, "Should have subscribed flag.")
 	}

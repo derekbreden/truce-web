@@ -20,12 +20,12 @@ const prompts = require("../prompts")
 
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.display_name &&
-		req.body.body &&
-		req.body.path &&
-		req.body.pngs
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.display_name
+		&& req.body.body
+		&& req.body.path
+		&& req.body.pngs
 	) {
 		let post_id = 0
 		if (req.body.path.startsWith("/post/")) {

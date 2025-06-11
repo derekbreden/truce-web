@@ -32,7 +32,7 @@ const editProfilePicture = () => {
 						}),
 					})
 						.then((response) => response.json())
-						.then(function (data) {
+						.then((data) => {
 							if (data.error || !data.success) {
 								modalError(data.error || "Server error")
 								if ($imagePreviewContainerById && $original) {
@@ -47,7 +47,7 @@ const editProfilePicture = () => {
 								startSession()
 							}
 						})
-						.catch(function () {
+						.catch(() => {
 							modalError("Network error")
 							if ($imagePreviewContainerById && $original) {
 								$imagePreviewContainerById.replaceChildren($original)

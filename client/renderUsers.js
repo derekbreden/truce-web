@@ -115,7 +115,7 @@ const bindSubscribeUser = ($button, user) => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					if (data.error || !data.success) {
 						alertError("Server error removing subscription")
 						$button.$("span").textContent = "Unsubscribe"
@@ -125,8 +125,8 @@ const bindSubscribeUser = ($button, user) => {
 						$button.setAttribute("alt", "")
 						$button.$("span").textContent = "Subscribe"
 						alertInfo(
-							"Unsubscribed from " +
-								renderName(user.display_name, user.display_name_index),
+							"Unsubscribed from "
+								+ renderName(user.display_name, user.display_name_index),
 						)
 						delete state.cache["/posts"]
 						delete state.cache["/settings"]
@@ -138,7 +138,7 @@ const bindSubscribeUser = ($button, user) => {
 						startSession()
 					}
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					console.error(error)
 					alertError("Network error removing subscription")
 					$button.$("span").textContent = "Unsubscribe"
@@ -152,7 +152,7 @@ const bindSubscribeUser = ($button, user) => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					if (data.error || !data.success) {
 						alertError("Server error saving subscription")
 						$button.$("span").textContent = "Subscribe"
@@ -162,8 +162,8 @@ const bindSubscribeUser = ($button, user) => {
 						$button.removeAttribute("alt")
 						$button.$("span").textContent = "Unsubscribe"
 						alertInfo(
-							"Subscribed to " +
-								renderName(user.display_name, user.display_name_index),
+							"Subscribed to "
+								+ renderName(user.display_name, user.display_name_index),
 						)
 						delete state.cache["/posts"]
 						delete state.cache["/settings"]
@@ -175,7 +175,7 @@ const bindSubscribeUser = ($button, user) => {
 						startSession()
 					}
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					console.error(error)
 					alertError("Network error saving subscription")
 					$button.$("span").textContent = "Subscribe"

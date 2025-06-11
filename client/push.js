@@ -55,10 +55,10 @@ if (navigator.serviceWorker) {
 }
 
 if (
-	window.webkit &&
-	window.webkit.messageHandlers &&
-	window.webkit.messageHandlers["push-permission-request"] &&
-	window.webkit.messageHandlers["push-permission-state"]
+	window.webkit
+	&& window.webkit.messageHandlers
+	&& window.webkit.messageHandlers["push-permission-request"]
+	&& window.webkit.messageHandlers["push-permission-state"]
 ) {
 	state.fcm_push_available = true
 	window.addEventListener("push-permission-state", ($event) => {
@@ -121,9 +121,9 @@ if (
 					// window.webkit.messageHandlers["push-token"].postMessage("push-token")
 					// getUnreadCountUnseenCount()
 					if (
-						state.fcm_token &&
-						(state.email || state.session_uuid) &&
-						state.fcm_push_active
+						state.fcm_token
+						&& (state.email || state.session_uuid)
+						&& state.fcm_push_active
 					) {
 						fetch("/session", {
 							method: "POST",

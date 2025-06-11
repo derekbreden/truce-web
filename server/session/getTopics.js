@@ -21,9 +21,9 @@ module.exports = async (req, res) => {
 	}
 
 	if (
-		!res.writableEnded &&
-		req.body.path &&
-		req.body.path.startsWith("/topic/")
+		!res.writableEnded
+		&& req.body.path
+		&& req.body.path.startsWith("/topic/")
 	) {
 		const topic = await req.client.query(
 			`

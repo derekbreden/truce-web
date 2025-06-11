@@ -270,13 +270,13 @@ const tests = {
 		
 		// Set ROOT_EMAIL environment variable for this test
 		const originalRootEmail = process.env.ROOT_EMAIL
-		process.env.ROOT_EMAIL = 'admin@example.com'
+		process.env.ROOT_EMAIL = "admin@example.com"
 		
 		// Setup mock request for admin signup (no existing user_id in session)
 		const req = createMockRequest(
 			{ 
 				email: "admin@example.com",
-				password: 'adminPassword'
+				password: "adminPassword"
 			},
 			{ 
 				session_id: "session-admin",
@@ -335,7 +335,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				email: "existing@example.com",
-				password: 'existingPassword'
+				password: "existingPassword"
 			},
 			{ 
 				session_id: "session-existing",
@@ -443,7 +443,7 @@ const tests = {
 		// Setup mock request without email
 		const req = createMockRequest(
 			{ 
-				password: 'somePassword'
+				password: "somePassword"
 			},
 			{ session_id: "session-123" }
 		)
@@ -511,7 +511,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				email: "user@example.com",
-				password: 'somePassword'
+				password: "somePassword"
 			},
 			{ session_id: undefined }
 		)
@@ -543,7 +543,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				email: "user@example.com",
-				password: 'somePassword'
+				password: "somePassword"
 			},
 			{ session_id: "session-123" }
 		)
@@ -577,7 +577,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				email: "", // Empty string
-				password: 'somePassword'
+				password: "somePassword"
 			},
 			{ session_id: "session-123" }
 		)
@@ -609,7 +609,7 @@ const tests = {
 		const req = createMockRequest(
 			{ 
 				email: "user@example.com",
-				password: '' // Empty string
+				password: "" // Empty string
 			},
 			{ session_id: "session-123" }
 		)
@@ -652,7 +652,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						password_hash: Buffer.from('buffer_hash_data'), // Test toString() conversion
+						password_hash: Buffer.from("buffer_hash_data"), // Test toString() conversion
 						user_id: "buffer-user",
 						display_name: "Buffer User"
 					}

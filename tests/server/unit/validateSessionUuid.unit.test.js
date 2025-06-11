@@ -20,20 +20,20 @@ const tests = {
 		
 		// Setup mock database response with user data
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'valid-session-uuid-123',
-						session_id: 'session-id-456',
-						email: 'user@example.com',
-						display_name: 'John Doe',
+						session_uuid: "valid-session-uuid-123",
+						session_id: "session-id-456",
+						email: "user@example.com",
+						display_name: "John Doe",
 						display_name_index: 0,
-						profile_picture_uuid: 'pic-uuid-789',
+						profile_picture_uuid: "pic-uuid-789",
 						admin: true,
-						user_id: 'user-123',
-						slug: 'johndoe',
-						subscribed_to_users: '5'
+						user_id: "user-123",
+						slug: "johndoe",
+						subscribed_to_users: "5"
 					}
 				]
 			}
@@ -46,22 +46,22 @@ const tests = {
 		
 		// Verify session was populated
 		assertEquals(
-			'valid-session-uuid-123',
+			"valid-session-uuid-123",
 			req.session.session_uuid,
 			"Should set session_uuid."
 		)
 		assertEquals(
-			'session-id-456',
+			"session-id-456",
 			req.session.session_id,
 			"Should set session_id."
 		)
 		assertEquals(
-			'user@example.com',
+			"user@example.com",
 			req.session.email,
 			"Should set email."
 		)
 		assertEquals(
-			'John Doe',
+			"John Doe",
 			req.session.display_name,
 			"Should set display_name."
 		)
@@ -71,7 +71,7 @@ const tests = {
 			"Should set display_name_index."
 		)
 		assertEquals(
-			'pic-uuid-789',
+			"pic-uuid-789",
 			req.session.profile_picture_uuid,
 			"Should set profile_picture_uuid."
 		)
@@ -81,17 +81,17 @@ const tests = {
 			"Should set admin status."
 		)
 		assertEquals(
-			'user-123',
+			"user-123",
 			req.session.user_id,
 			"Should set user_id."
 		)
 		assertEquals(
-			'johndoe',
+			"johndoe",
 			req.session.user_slug,
 			"Should set user_slug."
 		)
 		assertEquals(
-			'5',
+			"5",
 			req.session.subscribed_to_users,
 			"Should set subscribed_to_users."
 		)
@@ -107,12 +107,12 @@ const tests = {
 		
 		// Setup mock database response with session but no user
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'valid-session-no-user',
-						session_id: 'session-id-789',
+						session_uuid: "valid-session-no-user",
+						session_id: "session-id-789",
 						email: null,
 						display_name: null,
 						display_name_index: null,
@@ -133,12 +133,12 @@ const tests = {
 		
 		// Verify session was populated with defaults
 		assertEquals(
-			'valid-session-no-user',
+			"valid-session-no-user",
 			req.session.session_uuid,
 			"Should set session_uuid."
 		)
 		assertEquals(
-			'session-id-789',
+			"session-id-789",
 			req.session.session_id,
 			"Should set session_id."
 		)
@@ -179,7 +179,7 @@ const tests = {
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -251,16 +251,16 @@ const tests = {
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'auth-session-uuid-123',
-						session_id: 'auth-session-id',
-						email: 'auth@example.com',
-						display_name: 'Auth User',
-						user_id: 'auth-user-123',
-						slug: 'authuser'
+						session_uuid: "auth-session-uuid-123",
+						session_id: "auth-session-id",
+						email: "auth@example.com",
+						display_name: "Auth User",
+						user_id: "auth-user-123",
+						slug: "authuser"
 					}
 				]
 			}
@@ -273,12 +273,12 @@ const tests = {
 		
 		// Verify session was populated from authorization header
 		assertEquals(
-			'auth-session-uuid-123',
+			"auth-session-uuid-123",
 			req.session.session_uuid,
 			"Should set session from Authorization header."
 		)
 		assertEquals(
-			'auth@example.com',
+			"auth@example.com",
 			req.session.email,
 			"Should set user data from Authorization header session."
 		)
@@ -295,13 +295,13 @@ const tests = {
 		
 		// Setup mock database response for auth header session
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'auth-session-uuid-456',
-						session_id: 'auth-session-id-456',
-						user_id: 'auth-user-456'
+						session_uuid: "auth-session-uuid-456",
+						session_id: "auth-session-id-456",
+						user_id: "auth-user-456"
 					}
 				]
 			}
@@ -314,7 +314,7 @@ const tests = {
 		
 		// Verify authorization header session was used
 		assertEquals(
-			'auth-session-uuid-456',
+			"auth-session-uuid-456",
 			req.session.session_uuid,
 			"Should use Authorization header over cookie."
 		)
@@ -331,13 +331,13 @@ const tests = {
 		
 		// Setup mock database response for cookie session
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'cookie-session-uuid',
-						session_id: 'cookie-session-id',
-						user_id: 'cookie-user'
+						session_uuid: "cookie-session-uuid",
+						session_id: "cookie-session-id",
+						user_id: "cookie-user"
 					}
 				]
 			}
@@ -350,7 +350,7 @@ const tests = {
 		
 		// Should fall back to cookie when authorization header is invalid format
 		assertEquals(
-			'cookie-session-uuid',
+			"cookie-session-uuid",
 			req.session.session_uuid,
 			"Should fall back to cookie when authorization header invalid."
 		)
@@ -373,11 +373,11 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT',
+				"SELECT",
 				{ 
 					rows: [
 						{
-							session_uuid: i === 2 ? 'first-occurrence' : (i === 0 ? 'single-cookie' : 'with-other-cookies'),
+							session_uuid: i === 2 ? "first-occurrence" : (i === 0 ? "single-cookie" : "with-other-cookies"),
 							session_id: `session-id-${i}`,
 							user_id: `user-${i}`
 						}
@@ -392,19 +392,19 @@ const tests = {
 			// Should correctly parse session_uuid
 			if (i === 2) {
 				assertEquals(
-					'first-occurrence',
+					"first-occurrence",
 					req.session.session_uuid,
 					"Should use first occurrence when duplicate cookies."
 				)
 			} else if (i === 0) {
 				assertEquals(
-					'single-cookie',
+					"single-cookie",
 					req.session.session_uuid,
 					"Should parse single cookie correctly."
 				)
 			} else {
 				assertEquals(
-					'with-other-cookies',
+					"with-other-cookies",
 					req.session.session_uuid,
 					"Should parse session_uuid from multiple cookies."
 				)
@@ -415,10 +415,10 @@ const tests = {
 	testUserSlugDefaulting: async () => {
 		// Test user_slug defaulting logic
 		const testCases = [
-			{ slug: 'custom-slug', user_id: 'user-123', expected: 'custom-slug' },
-			{ slug: null, user_id: 'user-456', expected: 'user-456' },
-			{ slug: '', user_id: 'user-789', expected: 'user-789' },
-			{ slug: null, user_id: null, expected: '' }
+			{ slug: "custom-slug", user_id: "user-123", expected: "custom-slug" },
+			{ slug: null, user_id: "user-456", expected: "user-456" },
+			{ slug: "", user_id: "user-789", expected: "user-789" },
+			{ slug: null, user_id: null, expected: "" }
 		]
 		
 		for (const testCase of testCases) {
@@ -430,12 +430,12 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT',
+				"SELECT",
 				{ 
 					rows: [
 						{
-							session_uuid: 'slug-test-session',
-							session_id: 'session-id',
+							session_uuid: "slug-test-session",
+							session_id: "session-id",
 							user_id: testCase.user_id,
 							slug: testCase.slug
 						}
@@ -468,12 +468,12 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT',
+				"SELECT",
 				{ 
 					rows: [
 						{
-							session_uuid: 'admin-test-session',
-							session_id: 'session-id',
+							session_uuid: "admin-test-session",
+							session_id: "session-id",
 							admin: adminValue
 						}
 					]
@@ -495,7 +495,7 @@ const tests = {
 
 	testSubscribedToUsersDefaulting: async () => {
 		// Test subscribed_to_users defaulting
-		const subscribedValues = ['5', '0', '', null, undefined]
+		const subscribedValues = ["5", "0", "", null, undefined]
 		
 		for (const subscribedValue of subscribedValues) {
 			const req = createMockRequest({})
@@ -506,12 +506,12 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT',
+				"SELECT",
 				{ 
 					rows: [
 						{
-							session_uuid: 'subscribed-test-session',
-							session_id: 'session-id',
+							session_uuid: "subscribed-test-session",
+							session_id: "session-id",
 							subscribed_to_users: subscribedValue
 						}
 					]
@@ -540,20 +540,20 @@ const tests = {
 		req.session = {}
 		
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [
 					{
-						session_uuid: 'complete-profile-session',
-						session_id: 'complete-session-id',
-						email: 'complete@example.com',
-						display_name: 'Complete User',
+						session_uuid: "complete-profile-session",
+						session_id: "complete-session-id",
+						email: "complete@example.com",
+						display_name: "Complete User",
 						display_name_index: 5,
-						profile_picture_uuid: 'complete-pic-uuid',
+						profile_picture_uuid: "complete-pic-uuid",
 						admin: false,
-						user_id: 'complete-user-id',
-						slug: 'complete-user-slug',
-						subscribed_to_users: '10'
+						user_id: "complete-user-id",
+						slug: "complete-user-slug",
+						subscribed_to_users: "10"
 					}
 				]
 			}
@@ -564,16 +564,16 @@ const tests = {
 		await validateSessionUuid(req, res)
 		
 		// Verify all fields are set correctly
-		assertEquals('complete-profile-session', req.session.session_uuid, "Should set session_uuid.")
-		assertEquals('complete-session-id', req.session.session_id, "Should set session_id.")
-		assertEquals('complete@example.com', req.session.email, "Should set email.")
-		assertEquals('Complete User', req.session.display_name, "Should set display_name.")
+		assertEquals("complete-profile-session", req.session.session_uuid, "Should set session_uuid.")
+		assertEquals("complete-session-id", req.session.session_id, "Should set session_id.")
+		assertEquals("complete@example.com", req.session.email, "Should set email.")
+		assertEquals("Complete User", req.session.display_name, "Should set display_name.")
 		assertEquals(5, req.session.display_name_index, "Should set display_name_index.")
-		assertEquals('complete-pic-uuid', req.session.profile_picture_uuid, "Should set profile_picture_uuid.")
+		assertEquals("complete-pic-uuid", req.session.profile_picture_uuid, "Should set profile_picture_uuid.")
 		assertEquals(false, req.session.admin, "Should set admin status.")
-		assertEquals('complete-user-id', req.session.user_id, "Should set user_id.")
-		assertEquals('complete-user-slug', req.session.user_slug, "Should set user_slug.")
-		assertEquals('10', req.session.subscribed_to_users, "Should set subscribed_to_users.")
+		assertEquals("complete-user-id", req.session.user_id, "Should set user_id.")
+		assertEquals("complete-user-slug", req.session.user_slug, "Should set user_slug.")
+		assertEquals("10", req.session.subscribed_to_users, "Should set subscribed_to_users.")
 	}
 }
 

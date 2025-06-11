@@ -1,9 +1,9 @@
 const getPostDisplayMode = () => {
-	return state.path === "/posts" ||
-		state.path === "/posts/all" ||
-		state.path === "/favorites" ||
-		state.path.startsWith("/topic/") ||
-		state.path.startsWith("/user/")
+	return state.path === "/posts"
+		|| state.path === "/posts/all"
+		|| state.path === "/favorites"
+		|| state.path.startsWith("/topic/")
+		|| state.path.startsWith("/user/")
 }
 
 const cloneIcon = (iconName) => $(`icons icon[${iconName}] svg`).cloneNode(true)
@@ -264,7 +264,7 @@ const renderPost = (post) => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					if (data.error || !data.success) {
 						alertError("Server error saving choice")
 					} else {
@@ -273,7 +273,7 @@ const renderPost = (post) => {
 					}
 					getMoreRecent()
 				})
-				.catch(function (error) {
+				.catch((error) => {
 					console.error(error)
 					alertError("Network error saving choice")
 					getMoreRecent()
@@ -399,9 +399,9 @@ const renderPost = (post) => {
 			$event.preventDefault()
 			moreModalCancel()
 			if (
-				window.webkit &&
-				window.webkit.messageHandlers &&
-				window.webkit.messageHandlers["share-link"]
+				window.webkit
+				&& window.webkit.messageHandlers
+				&& window.webkit.messageHandlers["share-link"]
 			) {
 				window.webkit.messageHandlers["share-link"].postMessage(
 					JSON.stringify({

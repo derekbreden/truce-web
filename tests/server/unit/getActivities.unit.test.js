@@ -339,7 +339,7 @@ const tests = {
 						user_slug: "post-author",
 						profile_picture_uuid: "profile-uuid",
 						user_verified: true,
-						topics: 'topic1,topic2'
+						topics: "topic1,topic2"
 					}
 				]
 			}

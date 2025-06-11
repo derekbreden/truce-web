@@ -75,8 +75,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				`,
 				[
 					$("icons icon[welcome] svg").cloneNode(true),
-					!window.webkit &&
-					document.referrer !== "android-app://net.truce.twa/"
+					!window.webkit
+					&& document.referrer !== "android-app://net.truce.twa/"
 						? $(
 								`
 								post
@@ -288,7 +288,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				}),
 			})
 				.then((response) => response.json())
-				.then(function (data) {
+				.then((data) => {
 					if (data.error || !data.success) {
 						modalError(data.error || "Server error")
 					} else {
@@ -296,7 +296,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						alertInfo("Display name saved.")
 					}
 				})
-				.catch(function () {
+				.catch(() => {
 					modalError("Network error")
 				})
 		})

@@ -10,7 +10,7 @@ async function testMarkMessageAsReadSuccess() {
 	
 	// Mock message notification update
 	req.client.addQueryMock(
-		'UPDATE message_notifications',
+		"UPDATE message_notifications",
 		{ rows: [] }
 	)
 	

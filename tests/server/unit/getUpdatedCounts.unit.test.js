@@ -14,23 +14,23 @@ const tests = {
 		// Setup mock request to get post counts
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response for post counts
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
 						post_id: 1,
 						favorite_count: 15,
-						poll_counts: '8,5,2',
+						poll_counts: "8,5,2",
 						reply_count: 12
 					},
 					{
@@ -65,7 +65,7 @@ const tests = {
 			"First post should have correct favorite count."
 		)
 		assertEquals(
-			'8,5,2',
+			"8,5,2",
 			req.results.post_counts[0].poll_counts,
 			"First post should have poll counts."
 		)
@@ -90,29 +90,29 @@ const tests = {
 		// Setup mock request to get reply counts
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response for reply counts
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ 
 				rows: [
 					{
-						reply_id: 'reply-1',
+						reply_id: "reply-1",
 						favorite_count: 5
 					},
 					{
-						reply_id: 'reply-2',
+						reply_id: "reply-2",
 						favorite_count: 0
 					},
 					{
-						reply_id: 'reply-3',
+						reply_id: "reply-3",
 						favorite_count: 23
 					}
 				]
@@ -131,7 +131,7 @@ const tests = {
 			"Should return array of reply counts."
 		)
 		assertEquals(
-			'reply-1',
+			"reply-1",
 			req.results.reply_counts[0].reply_id,
 			"First reply should have correct ID."
 		)
@@ -141,7 +141,7 @@ const tests = {
 			"First reply should have correct favorite count."
 		)
 		assertEquals(
-			'reply-2',
+			"reply-2",
 			req.results.reply_counts[1].reply_id,
 			"Second reply should have correct ID."
 		)
@@ -161,35 +161,35 @@ const tests = {
 		// Setup mock request to get both post and reply counts
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true,
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
 						post_id: 1,
 						favorite_count: 10,
-						poll_counts: '5,3',
+						poll_counts: "5,3",
 						reply_count: 8
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ 
 				rows: [
 					{
-						reply_id: 'reply-1',
+						reply_id: "reply-1",
 						favorite_count: 2
 					}
 				]
@@ -218,7 +218,7 @@ const tests = {
 			"Post count should be correct."
 		)
 		assertEquals(
-			'reply-1',
+			"reply-1",
 			req.results.reply_counts[0].reply_id,
 			"Reply count should be correct."
 		)
@@ -229,12 +229,12 @@ const tests = {
 		const missingFieldTests = [
 			{ 
 				// Missing min_counts_create_date
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
 				has_posts: true
 			},
 			{ 
 				// Missing min_create_date_for_counts
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true
 			},
 			{ 
@@ -244,7 +244,7 @@ const tests = {
 		]
 		
 		for (const testData of missingFieldTests) {
-			const req = createMockRequest(testData, { user_id: 'user-456' })
+			const req = createMockRequest(testData, { user_id: "user-456" })
 			req.results = {}
 			
 			const res = createMockResponse()
@@ -269,11 +269,11 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
@@ -296,22 +296,22 @@ const tests = {
 		// Setup mock request without has_posts flag
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: false,
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response only for replies
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ 
 				rows: [
 					{
-						reply_id: 'reply-1',
+						reply_id: "reply-1",
 						favorite_count: 5
 					}
 				]
@@ -340,24 +340,24 @@ const tests = {
 		// Setup mock request without has_replies flag
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true,
 				has_replies: false
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response only for posts
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
 						post_id: 1,
 						favorite_count: 10,
-						poll_counts: '5,3',
+						poll_counts: "5,3",
 						reply_count: 8
 					}
 				]
@@ -386,8 +386,8 @@ const tests = {
 		// Test access without logged in user (uses 0 for user_id)
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true
 			},
 			{ user_id: undefined }
@@ -395,11 +395,11 @@ const tests = {
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
-						post_id: 'public-post-1',
+						post_id: "public-post-1",
 						favorite_count: 5,
 						poll_counts: null,
 						reply_count: 2
@@ -419,7 +419,7 @@ const tests = {
 			"Guest user should be able to get post counts."
 		)
 		assertEquals(
-			'public-post-1',
+			"public-post-1",
 			req.results.post_counts[0].post_id,
 			"Should return correct post data for guest user."
 		)
@@ -429,22 +429,22 @@ const tests = {
 		// Test when no updated counts are found
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true,
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock responses with no results
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ rows: [] }
 		)
 		
@@ -469,35 +469,35 @@ const tests = {
 		// Test that date filtering works correctly
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-15T00:00:00Z',
-				min_counts_create_date: '2024-01-16T00:00:00Z',
+				min_create_date_for_counts: "2024-01-15T00:00:00Z",
+				min_counts_create_date: "2024-01-16T00:00:00Z",
 				has_posts: true,
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		// Setup mock responses with date-filtered results
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
-						post_id: 'recent-post',
+						post_id: "recent-post",
 						favorite_count: 3,
-						poll_counts: '2,1',
+						poll_counts: "2,1",
 						reply_count: 1
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ 
 				rows: [
 					{
-						reply_id: 'recent-reply',
+						reply_id: "recent-reply",
 						favorite_count: 1
 					}
 				]
@@ -520,12 +520,12 @@ const tests = {
 			"Should return date-filtered reply counts."
 		)
 		assertEquals(
-			'recent-post',
+			"recent-post",
 			req.results.post_counts[0].post_id,
 			"Should return recent post."
 		)
 		assertEquals(
-			'recent-reply',
+			"recent-reply",
 			req.results.reply_counts[0].reply_id,
 			"Should return recent reply."
 		)
@@ -535,22 +535,22 @@ const tests = {
 		// Test that all expected post count fields are present
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_posts: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM posts t',
+			"FROM posts t",
 			{ 
 				rows: [
 					{
-						post_id: 'complete-post',
+						post_id: "complete-post",
 						favorite_count: 25,
-						poll_counts: '15,8,2',
+						poll_counts: "15,8,2",
 						reply_count: 42
 					}
 				]
@@ -564,9 +564,9 @@ const tests = {
 		const postCount = req.results.post_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-post', postCount.post_id, "Should have post_id.")
+		assertEquals("complete-post", postCount.post_id, "Should have post_id.")
 		assertEquals(25, postCount.favorite_count, "Should have favorite_count.")
-		assertEquals('15,8,2', postCount.poll_counts, "Should have poll_counts.")
+		assertEquals("15,8,2", postCount.poll_counts, "Should have poll_counts.")
 		assertEquals(42, postCount.reply_count, "Should have reply_count.")
 	},
 
@@ -574,20 +574,20 @@ const tests = {
 		// Test that all expected reply count fields are present
 		const req = createMockRequest(
 			{ 
-				min_create_date_for_counts: '2024-01-10T00:00:00Z',
-				min_counts_create_date: '2024-01-12T00:00:00Z',
+				min_create_date_for_counts: "2024-01-10T00:00:00Z",
+				min_counts_create_date: "2024-01-12T00:00:00Z",
 				has_replies: true
 			},
-			{ user_id: 'user-456' }
+			{ user_id: "user-456" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'FROM replies c',
+			"FROM replies c",
 			{ 
 				rows: [
 					{
-						reply_id: 'complete-reply',
+						reply_id: "complete-reply",
 						favorite_count: 18
 					}
 				]
@@ -601,7 +601,7 @@ const tests = {
 		const replyCount = req.results.reply_counts[0]
 		
 		// Verify all fields are present
-		assertEquals('complete-reply', replyCount.reply_id, "Should have reply_id.")
+		assertEquals("complete-reply", replyCount.reply_id, "Should have reply_id.")
 		assertEquals(18, replyCount.favorite_count, "Should have favorite_count.")
 	}
 }

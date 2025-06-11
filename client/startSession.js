@@ -57,7 +57,7 @@ const startSession = (was_same_path) => {
 		body: JSON.stringify(postBody),
 	})
 		.then((response) => response.json())
-		.then(function (data) {
+		.then((data) => {
 			// Workaround for replit Webview not supporting Set-Cookie
 			if (data.session_uuid) {
 				localStorage.setItem(
@@ -103,7 +103,7 @@ const startSession = (was_same_path) => {
 			}
 			state.loading_path = false
 		})
-		.catch(function (error) {
+		.catch((error) => {
 			state.loading_path = false
 			console.error(error)
 			state.most_recent_error = error
@@ -120,10 +120,10 @@ const findMaxDate = (items, date_field = "create_date") => {
 const getMoreRecent = () => {
 	// Skip for introduction
 	if (
-		state.path === "/" ||
-		state.path === "/privacy" ||
-		state.path === "/settings" ||
-		state.path === "/topics"
+		state.path === "/"
+		|| state.path === "/privacy"
+		|| state.path === "/settings"
+		|| state.path === "/topics"
 	) {
 		return
 	}
@@ -221,12 +221,12 @@ const getMoreRecent = () => {
 	}
 	// Indicate if there are replies or posts cached on page
 	const has_replies = Boolean(
-		current_cache.replies.length ||
-			current_cache.activities.filter((a) => a.type === "reply").length,
+		current_cache.replies.length
+			|| current_cache.activities.filter((a) => a.type === "reply").length,
 	)
 	const has_posts = Boolean(
-		current_cache.posts.length ||
-			current_cache.activities.filter((a) => a.type === "post").length,
+		current_cache.posts.length
+			|| current_cache.activities.filter((a) => a.type === "post").length,
 	)
 
 	// Use that to load anything newer than that (our max is the min of what we want returned)
@@ -248,7 +248,7 @@ const getMoreRecent = () => {
 		}),
 	})
 		.then((response) => response.json())
-		.then(function (data) {
+		.then((data) => {
 			// Stop if the path changed while we were loading
 			if (state.path !== current_path) {
 				return
@@ -342,12 +342,12 @@ const getMoreRecent = () => {
 
 			// Restore scroll position if we re-rendered anything
 			if (
-				data.activities?.length ||
-				data.replies?.length ||
-				data.posts?.length ||
-				data.notifications?.length ||
-				data.messages?.length ||
-				data.conversations?.length
+				data.activities?.length
+				|| data.replies?.length
+				|| data.posts?.length
+				|| data.notifications?.length
+				|| data.messages?.length
+				|| data.conversations?.length
 			) {
 				// Set a min threshold of scroll to do anything
 				let min_threshold = 0
@@ -363,8 +363,8 @@ const getMoreRecent = () => {
 				// If we are past the threshold, then maintain our position
 				if (scroll_top > min_threshold) {
 					$("main-content-wrapper[active]").scrollTop =
-						scroll_top +
-						($("main-content-wrapper[active]").scrollHeight - scroll_height)
+						scroll_top
+						+ ($("main-content-wrapper[active]").scrollHeight - scroll_height)
 				}
 			}
 
@@ -402,8 +402,8 @@ const getMoreRecent = () => {
 
 						// Poll requires a complete re-render
 						if (
-							(found_post || found_activity).poll_1 &&
-							post_count.poll_counts
+							(found_post || found_activity).poll_1
+							&& post_count.poll_counts
 						) {
 							;(found_post || found_activity).poll_counts =
 								post_count.poll_counts
@@ -423,8 +423,8 @@ const getMoreRecent = () => {
 					)
 					const found_activity = current_cache.activities.find(
 						(activity) =>
-							activity.id === reply_count.reply_id &&
-							activity.type === "reply",
+							activity.id === reply_count.reply_id
+							&& activity.type === "reply",
 					)
 					const favorite_text = reply_count.favorite_count
 					if (found_reply?.$reply?.$("[favorites] p")?.innerText) {
@@ -444,7 +444,7 @@ const getMoreRecent = () => {
 			// Emit rendered event
 			$("body").dispatchEvent(new CustomEvent("page-updated"))
 		})
-		.catch(function (error) {
+		.catch((error) => {
 			state.loading_path = false
 			console.error(error)
 			state.most_recent_error = error

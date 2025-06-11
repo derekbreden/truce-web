@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.body.path &&
-		req.body.path.startsWith("/post/")
+		!res.writableEnded
+		&& req.body.path
+		&& req.body.path.startsWith("/post/")
 	) {
 		const slug = req.body.path.split("/")[2]
 		let post_id = ""

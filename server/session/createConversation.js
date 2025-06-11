@@ -1,9 +1,9 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.participant_user_ids &&
-		Array.isArray(req.body.participant_user_ids)
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.participant_user_ids
+		&& Array.isArray(req.body.participant_user_ids)
 	) {
 		// Ensure current user is included in participants
 		const all_participant_ids = [...new Set([req.session.user_id, ...req.body.participant_user_ids])]

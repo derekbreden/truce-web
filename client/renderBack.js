@@ -4,9 +4,9 @@ const renderBack = () => {
 
 	// Sometimes add new wrapper
 	if (
-		state.path.startsWith("/post/") ||
-		state.path.startsWith("/reply") ||
-		state.path.startsWith("/user/")
+		state.path.startsWith("/post/")
+		|| state.path.startsWith("/reply")
+		|| state.path.startsWith("/user/")
 	) {
 		let previous_path = state.path_history[state.path_history.length - 1]
 		if (previous_path === state.path) {
@@ -37,8 +37,8 @@ const renderBack = () => {
 									: previous_path === "/favorites"
 										? "Favorites"
 										: previous_path?.startsWith("/topic/")
-											? previous_path.split("/")[2][0].toUpperCase() +
-												previous_path.split("/")[2].slice(1)
+											? previous_path.split("/")[2][0].toUpperCase()
+												+ previous_path.split("/")[2].slice(1)
 											: previous_path?.startsWith("/user/")
 												? renderName(
 														state.cache[previous_path].user.display_name,

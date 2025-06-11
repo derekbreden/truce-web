@@ -131,8 +131,8 @@ const tests = {
 			match: (url, options) => {
 				if (url === "/session" && options?.method === "POST") {
 					const body = JSON.parse(options.body)
-					if (body.path === "/post/test-post-for-reply" && 
-						(body.min_create_date !== undefined || body.min_reply_create_date !== undefined)) {
+					if (body.path === "/post/test-post-for-reply" 
+						&& (body.min_create_date !== undefined || body.min_reply_create_date !== undefined)) {
 						// This is getMoreRecent fetching updates
 						getMoreRecentCalled = true
 						return true

@@ -21,13 +21,13 @@ const tests = {
 		// Setup mock database responses
 		// User query with numeric ID
 		req.client.addQueryMock(
-			'SELECT', // Will match the complex user SELECT query
+			"SELECT", // Will match the complex user SELECT query
 			{ 
 				rows: [{
-					user_id: '123',
-					display_name: 'Test User',
+					user_id: "123",
+					display_name: "Test User",
 					display_name_index: 0,
-					user_slug: '123',
+					user_slug: "123",
 					profile_picture_uuid: null,
 					user_verified: true,
 					subscribed: false
@@ -42,12 +42,12 @@ const tests = {
 		
 		// Verify results were set (middleware pattern - no direct response)
 		assertEquals(
-			'123',
+			"123",
 			req.results.user.user_id,
 			"Should set user_id in results."
 		)
 		assertEquals(
-			'Test User',
+			"Test User",
 			req.results.user.display_name,
 			"Should set display_name in results."
 		)
@@ -73,14 +73,14 @@ const tests = {
 		// Setup mock database responses
 		// User query with slug
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [{
-					user_id: '456',
-					display_name: 'Slug User',
+					user_id: "456",
+					display_name: "Slug User",
 					display_name_index: 1,
-					user_slug: 'test-user-slug',
-					profile_picture_uuid: 'pic-uuid-123',
+					user_slug: "test-user-slug",
+					profile_picture_uuid: "pic-uuid-123",
 					user_verified: false,
 					subscribed: true
 				}]
@@ -94,17 +94,17 @@ const tests = {
 		
 		// Verify results
 		assertEquals(
-			'456',
+			"456",
 			req.results.user.user_id,
 			"Should find user by slug."
 		)
 		assertEquals(
-			'test-user-slug',
+			"test-user-slug",
 			req.results.user.user_slug,
 			"Should return correct slug."
 		)
 		assertEquals(
-			'pic-uuid-123',
+			"pic-uuid-123",
 			req.results.user.profile_picture_uuid,
 			"Should return profile picture UUID."
 		)
@@ -125,7 +125,7 @@ const tests = {
 		// Setup mock database responses
 		// User query returns no results
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		
@@ -136,7 +136,7 @@ const tests = {
 		
 		// Should set empty object when user not found
 		assertEquals(
-			'object',
+			"object",
 			typeof req.results.user,
 			"Should set user as empty object when not found."
 		)
@@ -165,10 +165,10 @@ const tests = {
 			},
 			{ 
 				rows: [{
-					user_id: '789',
-					display_name: 'Popular User',
+					user_id: "789",
+					display_name: "Popular User",
 					display_name_index: 0,
-					user_slug: '789',
+					user_slug: "789",
 					profile_picture_uuid: null,
 					user_verified: true,
 					subscribed: false
@@ -180,20 +180,20 @@ const tests = {
 			{
 				rows: [
 					{
-						user_id: '100',
-						display_name: 'Subscriber One',
+						user_id: "100",
+						display_name: "Subscriber One",
 						display_name_index: 0,
-						user_slug: '100',
+						user_slug: "100",
 						profile_picture_uuid: null,
 						user_verified: true,
 						subscribed: false
 					},
 					{
-						user_id: '101',
-						display_name: 'Subscriber Two',
+						user_id: "101",
+						display_name: "Subscriber Two",
 						display_name_index: 1,
-						user_slug: 'sub-two',
-						profile_picture_uuid: 'pic-456',
+						user_slug: "sub-two",
+						profile_picture_uuid: "pic-456",
 						user_verified: false,
 						subscribed: true
 					}
@@ -208,7 +208,7 @@ const tests = {
 		
 		// Verify main user and subscribers
 		assertEquals(
-			'789',
+			"789",
 			req.results.user.user_id,
 			"Should set main user."
 		)
@@ -218,12 +218,12 @@ const tests = {
 			"Should return array of subscribers."
 		)
 		assertEquals(
-			'Subscriber One',
+			"Subscriber One",
 			req.results.users[0].display_name,
 			"Should include first subscriber."
 		)
 		assertEquals(
-			'Subscriber Two',
+			"Subscriber Two",
 			req.results.users[1].display_name,
 			"Should include second subscriber."
 		)
@@ -247,11 +247,11 @@ const tests = {
 			},
 			{ 
 				rows: [{
-					user_id: '555',
-					display_name: 'Following User',
+					user_id: "555",
+					display_name: "Following User",
 					display_name_index: 2,
-					user_slug: 'following-user',
-					profile_picture_uuid: 'pic-789',
+					user_slug: "following-user",
+					profile_picture_uuid: "pic-789",
 					user_verified: false,
 					subscribed: true
 				}]
@@ -262,10 +262,10 @@ const tests = {
 			{
 				rows: [
 					{
-						user_id: '200',
-						display_name: 'Followed One',
+						user_id: "200",
+						display_name: "Followed One",
 						display_name_index: 0,
-						user_slug: '200',
+						user_slug: "200",
 						profile_picture_uuid: null,
 						user_verified: true,
 						subscribed: false
@@ -281,7 +281,7 @@ const tests = {
 		
 		// Verify main user and followed users
 		assertEquals(
-			'555',
+			"555",
 			req.results.user.user_id,
 			"Should set main user."
 		)
@@ -291,7 +291,7 @@ const tests = {
 			"Should return array of followed users."
 		)
 		assertEquals(
-			'Followed One',
+			"Followed One",
 			req.results.users[0].display_name,
 			"Should include followed user."
 		)
@@ -306,13 +306,13 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [{
-					user_id: '666',
-					display_name: 'Public User',
+					user_id: "666",
+					display_name: "Public User",
 					display_name_index: 0,
-					user_slug: '666',
+					user_slug: "666",
 					profile_picture_uuid: null,
 					user_verified: true,
 					subscribed: false // Will be false since no session user
@@ -327,7 +327,7 @@ const tests = {
 		
 		// Should still work but subscription status will be based on user_id = 0
 		assertEquals(
-			'666',
+			"666",
 			req.results.user.user_id,
 			"Should work without session user_id."
 		)
@@ -409,13 +409,13 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ 
 				rows: [{
-					user_id: '999',
-					display_name: 'Mixed User',
+					user_id: "999",
+					display_name: "Mixed User",
 					display_name_index: 0,
-					user_slug: '123abc',
+					user_slug: "123abc",
 					profile_picture_uuid: null,
 					user_verified: true,
 					subscribed: false
@@ -430,12 +430,12 @@ const tests = {
 		
 		// Should treat as slug since it's not pure numeric
 		assertEquals(
-			'999',
+			"999",
 			req.results.user.user_id,
 			"Should handle mixed alphanumeric slug correctly."
 		)
 		assertEquals(
-			'123abc',
+			"123abc",
 			req.results.user.user_slug,
 			"Should return the slug correctly."
 		)
@@ -459,10 +459,10 @@ const tests = {
 			},
 			{ 
 				rows: [{
-					user_id: 'lonely-id',
-					display_name: 'Lonely User',
+					user_id: "lonely-id",
+					display_name: "Lonely User",
 					display_name_index: 0,
-					user_slug: 'lonely',
+					user_slug: "lonely",
 					profile_picture_uuid: null,
 					user_verified: true,
 					subscribed: false
@@ -481,7 +481,7 @@ const tests = {
 		
 		// Should set empty users array
 		assertEquals(
-			'lonely-id',
+			"lonely-id",
 			req.results.user.user_id,
 			"Should set main user."
 		)

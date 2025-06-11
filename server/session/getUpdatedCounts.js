@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.body.min_create_date_for_counts &&
-		req.body.min_counts_create_date
+		!res.writableEnded
+		&& req.body.min_create_date_for_counts
+		&& req.body.min_counts_create_date
 	) {
 		if (req.body.has_posts) {
 			const post_counts = await req.client.query(

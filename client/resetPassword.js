@@ -56,7 +56,7 @@ const showForgotPassword = () => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				$modal.$("info")?.remove()
 				if (data.error || !data.success) {
 					$modal.$("[type=email]").removeAttribute("disabled")
@@ -68,7 +68,7 @@ const showForgotPassword = () => {
 				modalCancel()
 				modalInfo("An email was sent with password reset instructions.")
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				$modal.$("info")?.remove()
 				passwordError("Network error")
 			})
@@ -136,7 +136,7 @@ const showResetPassword = () => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				$modal.$("info")?.remove()
 				if (data.error || !data.success) {
 					$modal.$("[type=password]").removeAttribute("disabled")
@@ -148,7 +148,7 @@ const showResetPassword = () => {
 				passwordResetCancel()
 				modalInfo("Your password has been set")
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				$modal.$("info")?.remove()
 				passwordError("Network error")
 			})

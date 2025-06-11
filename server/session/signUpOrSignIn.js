@@ -2,10 +2,10 @@ const bcrypt = require("bcrypt")
 
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.session_id &&
-		req.body.email &&
-		req.body.password
+		!res.writableEnded
+		&& req.session.session_id
+		&& req.body.email
+		&& req.body.password
 	) {
 		const user_found = await req.client.query(
 			`

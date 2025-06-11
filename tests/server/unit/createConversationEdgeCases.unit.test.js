@@ -70,25 +70,25 @@ async function testCreateConversationSelfOnly() {
 	
 	// Mock participants existence check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [{ user_id: 123 }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM blocked_users'),
+		(sql) => sql.includes("FROM blocked_users"),
 		{ rows: [] }
 	)
 	
 	// Mock existing conversation check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations') && sql.includes('participant_user_ids @>'),
+		(sql) => sql.includes("FROM conversations") && sql.includes("participant_user_ids @>"),
 		{ rows: [] }
 	)
 	
 	// Mock conversation creation
 	req.client.addQueryMock(
-		(sql) => sql.includes('INSERT INTO conversations'),
+		(sql) => sql.includes("INSERT INTO conversations"),
 		{ rows: [{ conversation_id: 999 }] }
 	)
 	
@@ -110,25 +110,25 @@ async function testCreateConversationDuplicateParticipants() {
 	
 	// Mock participants existence check (should only need to check unique IDs)
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [{ user_id: 123 }, { user_id: 456 }] }
 	)
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM blocked_users'),
+		(sql) => sql.includes("FROM blocked_users"),
 		{ rows: [] }
 	)
 	
 	// Mock existing conversation check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations') && sql.includes('participant_user_ids @>'),
+		(sql) => sql.includes("FROM conversations") && sql.includes("participant_user_ids @>"),
 		{ rows: [] }
 	)
 	
 	// Mock conversation creation
 	req.client.addQueryMock(
-		(sql) => sql.includes('INSERT INTO conversations'),
+		(sql) => sql.includes("INSERT INTO conversations"),
 		{ rows: [{ conversation_id: 888 }] }
 	)
 	
@@ -150,13 +150,13 @@ async function testCreateConversationMixedBlockedUsers() {
 	
 	// Mock participants existence check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [{ user_id: 123 }, { user_id: 456 }, { user_id: 789 }] }
 	)
 	
 	// Mock blocked user check - one user is blocked
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM blocked_users'),
+		(sql) => sql.includes("FROM blocked_users"),
 		{ rows: [{ user_id_blocked: 456 }] }
 	)
 	
@@ -177,7 +177,7 @@ async function testCreateConversationInvalidUserIds() {
 	
 	// Mock participants existence check - missing one user
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [{ user_id: 123 }, { user_id: 456 }] } // Missing user 999
 	)
 	
@@ -198,13 +198,13 @@ async function testCreateConversationCurrentUserBlocked() {
 	
 	// Mock participants existence check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [{ user_id: 123 }, { user_id: 456 }] }
 	)
 	
 	// Mock blocked user check - current user is blocked by other user
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM blocked_users'),
+		(sql) => sql.includes("FROM blocked_users"),
 		{ rows: [{ user_id_blocked: 123 }] }
 	)
 	
@@ -225,7 +225,7 @@ async function testCreateConversationLargeGroup() {
 	
 	// Mock participants existence check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM users') && sql.includes('WHERE user_id = ANY'),
+		(sql) => sql.includes("FROM users") && sql.includes("WHERE user_id = ANY"),
 		{ rows: [
 			{ user_id: 123 }, 
 			{ user_id: 456 }, 
@@ -238,19 +238,19 @@ async function testCreateConversationLargeGroup() {
 	
 	// Mock blocked user check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM blocked_users'),
+		(sql) => sql.includes("FROM blocked_users"),
 		{ rows: [] }
 	)
 	
 	// Mock existing conversation check
 	req.client.addQueryMock(
-		(sql) => sql.includes('FROM conversations') && sql.includes('participant_user_ids @>'),
+		(sql) => sql.includes("FROM conversations") && sql.includes("participant_user_ids @>"),
 		{ rows: [] }
 	)
 	
 	// Mock conversation creation
 	req.client.addQueryMock(
-		(sql) => sql.includes('INSERT INTO conversations'),
+		(sql) => sql.includes("INSERT INTO conversations"),
 		{ rows: [{ conversation_id: 777 }] }
 	)
 	

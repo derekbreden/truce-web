@@ -101,12 +101,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
+				profile_picture: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
-				display_name: 'Test User'
+				session_id: "session-123",
+				user_id: "user-456",
+				display_name: "Test User"
 			}
 		)
 		
@@ -116,7 +116,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						profile_picture_uuid: 'old-picture-uuid'
+						profile_picture_uuid: "old-picture-uuid"
 					}
 				]
 			}
@@ -143,7 +143,7 @@ const tests = {
 		
 		const ai_call = ai_ask_calls[0]
 		assertEquals(
-			'profile_picture',
+			"profile_picture",
 			ai_call.type,
 			"Should use profile_picture AI type."
 		)
@@ -158,12 +158,12 @@ const tests = {
 			"Should send one message to AI."
 		)
 		assertEquals(
-			'TestUser',
+			"TestUser",
 			ai_call.messages[0].name,
 			"Should sanitize display name for AI."
 		)
 		assertEquals(
-			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+			"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
 			ai_call.messages[0].content[0].image_url.url,
 			"Should pass profile picture to AI."
 		)
@@ -178,18 +178,18 @@ const tests = {
 		// Check upload command
 		const upload_command = s3_send_calls[0]
 		assertEquals(
-			'PutObject',
+			"PutObject",
 			upload_command.commandType,
 			"First command should be upload."
 		)
 		assertEquals(
-			'truce.net',
+			"truce.net",
 			upload_command.input.Bucket,
 			"Should upload to correct bucket."
 		)
 		assertEquals(
 			true,
-			upload_command.input.Key.endsWith('.png'),
+			upload_command.input.Key.endsWith(".png"),
 			"Should use .png extension for upload key."
 		)
 		assertEquals(
@@ -198,7 +198,7 @@ const tests = {
 			"Should use UUID format for upload key."
 		)
 		assertEquals(
-			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+			"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
 			upload_command.input.Body,
 			"Should upload the profile picture data."
 		)
@@ -206,17 +206,17 @@ const tests = {
 		// Check delete command
 		const delete_command = s3_send_calls[1]
 		assertEquals(
-			'Delete',
+			"Delete",
 			delete_command.commandType,
 			"Second command should be delete."
 		)
 		assertEquals(
-			'truce.net',
+			"truce.net",
 			delete_command.input.Bucket,
 			"Should delete from correct bucket."
 		)
 		assertEquals(
-			'old-picture-uuid.png',
+			"old-picture-uuid.png",
 			delete_command.input.Key,
 			"Should delete old picture."
 		)
@@ -258,12 +258,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,spamimage'
+				profile_picture: "data:image/png;base64,spamimage"
 			},
 			{ 
-				session_id: 'session-spam',
-				user_id: 'user-spam',
-				display_name: 'Spam User'
+				session_id: "session-spam",
+				user_id: "user-spam",
+				display_name: "Spam User"
 			}
 		)
 		
@@ -323,12 +323,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,violentimage'
+				profile_picture: "data:image/png;base64,violentimage"
 			},
 			{ 
-				session_id: 'session-violent',
-				user_id: 'user-violent',
-				display_name: 'Test User'
+				session_id: "session-violent",
+				user_id: "user-violent",
+				display_name: "Test User"
 			}
 		)
 		
@@ -370,12 +370,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,hatefulimage'
+				profile_picture: "data:image/png;base64,hatefulimage"
 			},
 			{ 
-				session_id: 'session-hateful',
-				user_id: 'user-hateful',
-				display_name: 'Test User'
+				session_id: "session-hateful",
+				user_id: "user-hateful",
+				display_name: "Test User"
 			}
 		)
 		
@@ -410,12 +410,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,sexualimage'
+				profile_picture: "data:image/png;base64,sexualimage"
 			},
 			{ 
-				session_id: 'session-sexual',
-				user_id: 'user-sexual',
-				display_name: 'Test User'
+				session_id: "session-sexual",
+				user_id: "user-sexual",
+				display_name: "Test User"
 			}
 		)
 		
@@ -447,12 +447,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,newpicture'
+				profile_picture: "data:image/png;base64,newpicture"
 			},
 			{ 
-				session_id: 'session-new',
-				user_id: 'user-new',
-				display_name: 'New User'
+				session_id: "session-new",
+				user_id: "user-new",
+				display_name: "New User"
 			}
 		)
 		
@@ -488,13 +488,13 @@ const tests = {
 		
 		const upload_command = s3_send_calls[0]
 		assertEquals(
-			'PutObject',
+			"PutObject",
 			upload_command.commandType,
 			"Should be upload command."
 		)
 		assertEquals(
 			true,
-			upload_command.input.Key.endsWith('.png'),
+			upload_command.input.Key.endsWith(".png"),
 			"Should use .png extension for upload."
 		)
 		assertEquals(
@@ -532,12 +532,12 @@ const tests = {
 		// Setup mock request with special characters in display name
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,sanitizetest'
+				profile_picture: "data:image/png;base64,sanitizetest"
 			},
 			{ 
-				session_id: 'session-sanitize',
-				user_id: 'user-sanitize',
-				display_name: 'User@#$%^&*()!Name123' // Contains special characters
+				session_id: "session-sanitize",
+				user_id: "user-sanitize",
+				display_name: "User@#$%^&*()!Name123" // Contains special characters
 			}
 		)
 		
@@ -569,7 +569,7 @@ const tests = {
 			"Should call AI once."
 		)
 		assertEquals(
-			'UserName123',
+			"UserName123",
 			ai_ask_calls[0].messages[0].name,
 			"Should sanitize display name removing special characters."
 		)
@@ -589,11 +589,11 @@ const tests = {
 		// Setup mock request with no display name
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,anontest'
+				profile_picture: "data:image/png;base64,anontest"
 			},
 			{ 
-				session_id: 'session-anon',
-				user_id: 'user-anon',
+				session_id: "session-anon",
+				user_id: "user-anon",
 				display_name: null // No display name
 			}
 		)
@@ -621,7 +621,7 @@ const tests = {
 		
 		// Verify "Anonymous" was used as fallback
 		assertEquals(
-			'Anonymous',
+			"Anonymous",
 			ai_ask_calls[0].messages[0].name,
 			"Should use 'Anonymous' when no display name."
 		)
@@ -636,9 +636,9 @@ const tests = {
 		const req = createMockRequest(
 			{}, // No profile_picture
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
-				display_name: 'Test User'
+				session_id: "session-123",
+				user_id: "user-456",
+				display_name: "Test User"
 			}
 		)
 		
@@ -673,12 +673,12 @@ const tests = {
 		// Setup mock request without user_id
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,test'
+				profile_picture: "data:image/png;base64,test"
 			},
 			{ 
-				session_id: 'session-123',
+				session_id: "session-123",
 				user_id: undefined, // No user_id
-				display_name: 'Test User'
+				display_name: "Test User"
 			}
 		)
 		
@@ -713,12 +713,12 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,test'
+				profile_picture: "data:image/png;base64,test"
 			},
 			{ 
-				session_id: 'session-123',
-				user_id: 'user-456',
-				display_name: 'Test User'
+				session_id: "session-123",
+				user_id: "user-456",
+				display_name: "Test User"
 			}
 		)
 		
@@ -795,7 +795,7 @@ const tests = {
 			const last_upload_command = s3_send_calls[s3_send_calls.length - 1]
 			assertEquals(
 				true,
-				last_upload_command.input.Key.endsWith('.png'),
+				last_upload_command.input.Key.endsWith(".png"),
 				`Should use .png extension for iteration ${i}.`
 			)
 			assertEquals(
@@ -835,12 +835,12 @@ const tests = {
 		// Test that database queries execute in correct sequence
 		const req = createMockRequest(
 			{ 
-				profile_picture: 'data:image/png;base64,sequencetest'
+				profile_picture: "data:image/png;base64,sequencetest"
 			},
 			{ 
-				session_id: 'session-sequence',
-				user_id: 'user-sequence',
-				display_name: 'Sequence User'
+				session_id: "session-sequence",
+				user_id: "user-sequence",
+				display_name: "Sequence User"
 			}
 		)
 		
@@ -850,7 +850,7 @@ const tests = {
 			{ 
 				rows: [
 					{
-						profile_picture_uuid: 'old-sequence-uuid'
+						profile_picture_uuid: "old-sequence-uuid"
 					}
 				]
 			}
@@ -885,12 +885,12 @@ const tests = {
 			"Should perform upload then delete sequence."
 		)
 		assertEquals(
-			'PutObject',
+			"PutObject",
 			s3_send_calls[0].commandType,
 			"First operation should be upload."
 		)
 		assertEquals(
-			'Delete',
+			"Delete",
 			s3_send_calls[1].commandType,
 			"Second operation should be delete."
 		)

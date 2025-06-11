@@ -248,13 +248,13 @@ async function main() {
 		const categoriesToReport = ["integration", "unit", "other"]
 		categoriesToReport.forEach((catKey) => {
 			if (
-				categorizedFiles[catKey] &&
-				(categorizedFiles[catKey].length > 0 || catKey === "integration")
+				categorizedFiles[catKey]
+				&& (categorizedFiles[catKey].length > 0 || catKey === "integration")
 			) {
 				// Adjusted condition slightly
 				const groupHeader =
-					filesToRun.find((g) => g.category === catKey)?.header ||
-					catKey.charAt(0).toUpperCase() + catKey.slice(1) + " Tests"
+					filesToRun.find((g) => g.category === catKey)?.header
+					|| catKey.charAt(0).toUpperCase() + catKey.slice(1) + " Tests"
 				console.log(`\n  --- ${groupHeader} Summary ---`)
 				console.log(`  \x1b[32mPASSED:\x1b[0m ${results[catKey].passed}`)
 				if (results[catKey].failed > 0) {

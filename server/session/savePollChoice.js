@@ -1,9 +1,9 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.post_id &&
-		req.body.poll_choice
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.post_id
+		&& req.body.poll_choice
 	) {
 		// Save new vote
 		await req.client.query(

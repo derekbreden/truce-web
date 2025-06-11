@@ -70,7 +70,7 @@ const tests = {
 		const $pollWrapper = $postElement.$("poll-wrapper")
 		// Assert Poll Options Text
 		// When post.edit is false and post.voted is false, options are inside poll-vote-wrapper
-		const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper");
+		const $pollVoteWrapper = $pollWrapper.$("poll-vote-wrapper")
 		const $pollOption1 = $pollVoteWrapper.$("poll-1") // Corrected selector
 		assertEquals("Option A", $pollOption1.innerText.trim(), "Poll option 1 text should be 'Option A'.")
 

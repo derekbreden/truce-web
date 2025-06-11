@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		(req.body.post_id_to_favorite || req.body.reply_id_to_favorite)
+		!res.writableEnded
+		&& req.session.user_id
+		&& (req.body.post_id_to_favorite || req.body.reply_id_to_favorite)
 	) {
 		// Remove the favorite
 		if (req.body.was_favorited) {

@@ -219,10 +219,10 @@ async function testMessageSendingFlow() {
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
-				return body.action === "sendMessage" && 
-					   body.conversation_id === 101 &&
-					   body.pngs !== undefined &&
-					   Array.isArray(body.pngs)
+				return body.action === "sendMessage" 
+					   && body.conversation_id === 101
+					   && body.pngs !== undefined
+					   && Array.isArray(body.pngs)
 			}
 			return false
 		},
@@ -233,8 +233,8 @@ async function testMessageSendingFlow() {
 		match: (url, options) => {
 			if (url === "/session" && options?.method === "POST") {
 				const body = JSON.parse(options.body)
-				return body.path === "/messages/101" && 
-					   body.min_message_create_date !== undefined
+				return body.path === "/messages/101" 
+					   && body.min_message_create_date !== undefined
 			}
 			return false
 		},

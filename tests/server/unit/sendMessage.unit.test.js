@@ -104,25 +104,25 @@ async function testSendNewMessage() {
 	
 	// Mock updateDisplayName
 	req.client.addQueryMock(
-		'UPDATE users',
+		"UPDATE users",
 		{ rows: [] }
 	)
 	
 	// Mock image updates
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock conversation update
 	req.client.addQueryMock(
-		'UPDATE conversations',
+		"UPDATE conversations",
 		{ rows: [] }
 	)
 	
 	// Mock notification queries
 	req.client.addQueryMock(
-		'SELECT', // subscriptions
+		"SELECT", // subscriptions
 		{ rows: [] }
 	)
 	
@@ -219,37 +219,37 @@ async function testEditExistingMessage() {
 	
 	// Mock message update (instead of insert)
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock updateDisplayName
 	req.client.addQueryMock(
-		'UPDATE users',
+		"UPDATE users",
 		{ rows: [] }
 	)
 	
 	// Mock existing images query
 	req.client.addQueryMock(
-		'SELECT image_uuids',
+		"SELECT image_uuids",
 		{ rows: [{ image_uuids: null }] }
 	)
 	
 	// Mock image updates
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock conversation update
 	req.client.addQueryMock(
-		'UPDATE conversations',
+		"UPDATE conversations",
 		{ rows: [] }
 	)
 	
 	// Mock notification queries
 	req.client.addQueryMock(
-		'SELECT', // subscriptions
+		"SELECT", // subscriptions
 		{ rows: [] }
 	)
 	

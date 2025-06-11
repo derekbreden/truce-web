@@ -357,7 +357,7 @@ const tests = {
 			{ 
 				rows: [{ 
 					unread_count: "3",
-					unseen_count: '1'
+					unseen_count: "1"
 				}]
 			}
 		)

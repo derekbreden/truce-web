@@ -19,12 +19,12 @@ const tests = {
 		// Setup mock database responses
 		// Check for existing subscription (none found)
 		req.client.addQueryMock(
-			'SELECT subscription_id FROM subscriptions',
+			"SELECT subscription_id FROM subscriptions",
 			{ rows: [] }
 		)
 		// Insert new subscription
 		req.client.addQueryMock(
-			'INSERT INTO subscriptions (user_id, subscription_json)',
+			"INSERT INTO subscriptions (user_id, subscription_json)",
 			{ rows: [] }
 		)
 		
@@ -57,7 +57,7 @@ const tests = {
 		// Setup mock database responses
 		// Check for existing subscription (found)
 		req.client.addQueryMock(
-			'SELECT subscription_id FROM subscriptions',
+			"SELECT subscription_id FROM subscriptions",
 			{ rows: [{ subscription_id: 123 }] }
 		)
 		// No INSERT should happen
@@ -86,7 +86,7 @@ const tests = {
 		// Setup mock database responses
 		// Delete subscription
 		req.client.addQueryMock(
-			'DELETE FROM subscriptions',
+			"DELETE FROM subscriptions",
 			{ rows: [] }
 		)
 		
@@ -113,12 +113,12 @@ const tests = {
 		// Setup mock database responses
 		// Check for existing FCM subscription (none found)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [] }
 		)
 		// Insert new FCM subscription
 		req.client.addQueryMock(
-			'INSERT INTO subscriptions (user_id, fcm_token)',
+			"INSERT INTO subscriptions (user_id, fcm_token)",
 			{ rows: [] }
 		)
 		
@@ -145,7 +145,7 @@ const tests = {
 		// Setup mock database responses
 		// Check for existing FCM subscription (found and active)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [{ subscription_id: 123, active: true }] }
 		)
 		
@@ -177,7 +177,7 @@ const tests = {
 		// Setup mock database responses
 		// Check for existing FCM subscription (found but inactive)
 		req.client.addQueryMock(
-			'SELECT',
+			"SELECT",
 			{ rows: [{ subscription_id: 456, active: false }] }
 		)
 		
@@ -210,7 +210,7 @@ const tests = {
 		// Setup mock database responses
 		// Update existing subscription to inactive (found)
 		req.client.addQueryMock(
-			'UPDATE subscriptions',
+			"UPDATE subscriptions",
 			{ rows: [{ subscription_id: 789 }] }
 		)
 		
@@ -238,12 +238,12 @@ const tests = {
 		// Setup mock database responses
 		// Update finds no existing subscription
 		req.client.addQueryMock(
-			'UPDATE subscriptions',
+			"UPDATE subscriptions",
 			{ rows: [] }
 		)
 		// Insert new inactive subscription
 		req.client.addQueryMock(
-			'INSERT INTO subscriptions (user_id, fcm_token, active)',
+			"INSERT INTO subscriptions (user_id, fcm_token, active)",
 			{ rows: [] }
 		)
 		
@@ -271,7 +271,7 @@ const tests = {
 		// Setup mock database responses
 		// Update existing subscription to active (found)
 		req.client.addQueryMock(
-			'UPDATE subscriptions',
+			"UPDATE subscriptions",
 			{ rows: [{ subscription_id: 999 }] }
 		)
 		
@@ -299,12 +299,12 @@ const tests = {
 		// Setup mock database responses
 		// Update finds no existing subscription
 		req.client.addQueryMock(
-			'UPDATE subscriptions',
+			"UPDATE subscriptions",
 			{ rows: [] }
 		)
 		// Insert new active subscription
 		req.client.addQueryMock(
-			'INSERT INTO subscriptions (user_id, fcm_token, active)',
+			"INSERT INTO subscriptions (user_id, fcm_token, active)",
 			{ rows: [] }
 		)
 		
@@ -398,11 +398,11 @@ const tests = {
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT subscription_id FROM subscriptions',
+			"SELECT subscription_id FROM subscriptions",
 			{ rows: [] }
 		)
 		req.client.addQueryMock(
-			'INSERT INTO subscriptions (user_id, subscription_json)',
+			"INSERT INTO subscriptions (user_id, subscription_json)",
 			{ rows: [] }
 		)
 		

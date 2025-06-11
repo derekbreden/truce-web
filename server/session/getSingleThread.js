@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.body.path &&
-		req.body.path.startsWith("/reply/")
+		!res.writableEnded
+		&& req.body.path
+		&& req.body.path.startsWith("/reply/")
 	) {
 		const reply_id = req.body.path.split("/")[2]
 		const reply_results = await req.client.query(

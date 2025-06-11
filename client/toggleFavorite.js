@@ -37,12 +37,12 @@ const toggleFavorite = async (post_or_reply) => {
 	// Remove from the active dom / cache if unfavorited
 	state.cache["/favorites"]?.activities?.forEach((activity, activity_index) => {
 		if (
-			(post_or_reply.$reply &&
-				activity.type === "reply" &&
-				activity.id === reply_id) ||
-			(post_or_reply.$post &&
-				activity.type === "post" &&
-				activity.id === post_id)
+			(post_or_reply.$reply
+				&& activity.type === "reply"
+				&& activity.id === reply_id)
+			|| (post_or_reply.$post
+				&& activity.type === "post"
+				&& activity.id === post_id)
 		) {
 			if (was_favorited) {
 				state.cache["/favorites"]?.activities?.splice(activity_index, 1)
@@ -88,7 +88,7 @@ const toggleFavorite = async (post_or_reply) => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				if (data.error || !data.success) {
 					console.error(data.error)
 					alertError(data.error || "Server error")
@@ -102,7 +102,7 @@ const toggleFavorite = async (post_or_reply) => {
 				}
 				performNextSave()
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.error(error)
 				alertError("Network error")
 				performNextSave()

@@ -71,14 +71,14 @@ const renderActivities = (activities) => {
 	const $activities = activities
 		.sort(
 			(a, b) =>
-				new Date(b.favorite_create_date || b.create_date) -
-				new Date(a.favorite_create_date || a.create_date),
+				new Date(b.favorite_create_date || b.create_date)
+				- new Date(a.favorite_create_date || a.create_date),
 		)
 		.filter((activity) => {
 			if (activity.type === "reply") {
 				if (
-					reply_ids_rendered.includes(activity.id) &&
-					state.path !== "/favorites"
+					reply_ids_rendered.includes(activity.id)
+					&& state.path !== "/favorites"
 				) {
 					return false
 				}
@@ -152,8 +152,8 @@ const renderActivities = (activities) => {
 			"main-content-wrapper[active] main-content-2 activities",
 		)?.replaceChildren(...$activities_2)
 	} else if (
-		state.path.startsWith("/user") &&
-		state.path.split("/")[3] === "replies"
+		state.path.startsWith("/user")
+		&& state.path.split("/")[3] === "replies"
 	) {
 		$("main-content-wrapper[active] main-content-2 activities").replaceChildren(
 			$(

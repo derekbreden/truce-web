@@ -179,19 +179,19 @@ async function testSendMessageWithImages() {
 	
 	// Mock updateDisplayName
 	req.client.addQueryMock(
-		'UPDATE users',
+		"UPDATE users",
 		{ rows: [] }
 	)
 	
 	// Mock image updates
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock conversation update
 	req.client.addQueryMock(
-		'UPDATE conversations',
+		"UPDATE conversations",
 		{ rows: [] }
 	)
 	
@@ -285,13 +285,13 @@ async function testEditMessageWithImageDeletion() {
 	
 	// Mock message update
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock updateDisplayName
 	req.client.addQueryMock(
-		'UPDATE users',
+		"UPDATE users",
 		{ rows: [] }
 	)
 	
@@ -303,13 +303,13 @@ async function testEditMessageWithImageDeletion() {
 	
 	// Mock image updates (clear images)
 	req.client.addQueryMock(
-		'UPDATE messages',
+		"UPDATE messages",
 		{ rows: [] }
 	)
 	
 	// Mock conversation update
 	req.client.addQueryMock(
-		'UPDATE conversations',
+		"UPDATE conversations",
 		{ rows: [] }
 	)
 	

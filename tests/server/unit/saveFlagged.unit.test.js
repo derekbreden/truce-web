@@ -13,12 +13,12 @@ const tests = {
 	testFlagPost: async () => {
 		// Setup mock request with post flagging data
 		const req = createMockRequest({
-			post_id_to_flag: 'post-456'
+			post_id_to_flag: "post-456"
 		})
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'INSERT INTO flagged_posts',
+			"INSERT INTO flagged_posts",
 			{ rows: [] }
 		)
 		
@@ -41,12 +41,12 @@ const tests = {
 			"Response should indicate success."
 		)
 		assertEquals(
-			'123',
+			"123",
 			responseData.user_id,
 			"Response should include user_id."
 		)
 		assertEquals(
-			'Test User',
+			"Test User",
 			responseData.display_name,
 			"Response should include display_name."
 		)
@@ -55,7 +55,7 @@ const tests = {
 	testFlagReply: async () => {
 		// Setup mock request with reply flagging data
 		const req = createMockRequest({
-			reply_id_to_flag: 'reply-789'
+			reply_id_to_flag: "reply-789"
 		})
 		
 		// Mock response tracker to handle sequential queries
@@ -97,8 +97,8 @@ const tests = {
 	testFlagBothPostAndReply: async () => {
 		// Edge case: both post_id and reply_id provided
 		const req = createMockRequest({
-			post_id_to_flag: 'post-123',
-			reply_id_to_flag: 'reply-456'
+			post_id_to_flag: "post-123",
+			reply_id_to_flag: "reply-456"
 		})
 		
 		let queryCount = 0
@@ -137,7 +137,7 @@ const tests = {
 	testNoActionWhenAlreadyEnded: async () => {
 		// Setup mock request
 		const req = createMockRequest({
-			post_id_to_flag: 'post-123'
+			post_id_to_flag: "post-123"
 		})
 		
 		const res = createMockResponse()
@@ -158,7 +158,7 @@ const tests = {
 	testNoActionWhenMissingUserId: async () => {
 		// Setup mock request without user_id
 		const req = createMockRequest({
-			post_id_to_flag: 'post-123'
+			post_id_to_flag: "post-123"
 		}, { user_id: null })
 		
 		const res = createMockResponse()
@@ -195,7 +195,7 @@ const tests = {
 
 	testFlagMultiplePosts: async () => {
 		// Test flagging multiple posts (sequential calls)
-		const postIds = ['post-1', 'post-2', 'post-3']
+		const postIds = ["post-1", "post-2", "post-3"]
 		
 		for (const postId of postIds) {
 			const req = createMockRequest({
@@ -204,7 +204,7 @@ const tests = {
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'INSERT INTO flagged_posts',
+				"INSERT INTO flagged_posts",
 				{ rows: [] }
 			)
 			
@@ -225,7 +225,7 @@ const tests = {
 
 	testFlagMultipleReplies: async () => {
 		// Test flagging multiple replies (each triggers reply count update)
-		const replyIds = ['reply-1', 'reply-2']
+		const replyIds = ["reply-1", "reply-2"]
 		
 		for (const replyId of replyIds) {
 			const req = createMockRequest({
@@ -268,11 +268,11 @@ const tests = {
 	testResponseStructure: async () => {
 		// Test that response has correct structure
 		const req = createMockRequest({
-			post_id_to_flag: 'response-test-post'
+			post_id_to_flag: "response-test-post"
 		})
 		
 		req.client.addQueryMock(
-			'INSERT INTO flagged_posts',
+			"INSERT INTO flagged_posts",
 			{ rows: [] }
 		)
 		
@@ -285,7 +285,7 @@ const tests = {
 		const responseData = JSON.parse(res.getResponseData())
 		
 		// Should have exactly these fields
-		const expectedFields = ['success', 'user_id', 'display_name']
+		const expectedFields = ["success", "user_id", "display_name"]
 		const actualFields = Object.keys(responseData)
 		
 		assertEquals(
@@ -304,17 +304,17 @@ const tests = {
 		
 		// Verify field types and values
 		assertEquals(
-			'boolean',
+			"boolean",
 			typeof responseData.success,
 			"Success field should be boolean."
 		)
 		assertEquals(
-			'string',
+			"string",
 			typeof responseData.user_id,
 			"User_id field should be string."
 		)
 		assertEquals(
-			'string',
+			"string",
 			typeof responseData.display_name,
 			"Display_name field should be string."
 		)

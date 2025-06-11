@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
 	if (
-		!res.writableEnded &&
-		req.session.user_id &&
-		req.body.subscribe_to_user_id
+		!res.writableEnded
+		&& req.session.user_id
+		&& req.body.subscribe_to_user_id
 	) {
 		await req.client.query(
 			`

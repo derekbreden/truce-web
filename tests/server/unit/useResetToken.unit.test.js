@@ -9,11 +9,11 @@ const {
 // Mock bcrypt module
 const bcrypt = require("bcrypt")
 const originalHash = bcrypt.hash
-let mockHashResult = 'mocked-password-hash'
+let mockHashResult = "mocked-password-hash"
 bcrypt.hash = async (password, saltRounds) => {
 	// Return mocked hash but verify correct parameters were passed
-	if (typeof password !== 'string' || saltRounds !== 12) {
-		throw new Error('Invalid bcrypt parameters')
+	if (typeof password !== "string" || saltRounds !== 12) {
+		throw new Error("Invalid bcrypt parameters")
 	}
 	return mockHashResult
 }
@@ -26,31 +26,31 @@ const tests = {
 		// Setup mock request with valid reset token and password
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword123',
-				reset_token_uuid: 'valid-reset-token-uuid'
+				password: "newPassword123",
+				reset_token_uuid: "valid-reset-token-uuid"
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'user-to-reset-456'
+						user_id: "user-to-reset-456"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
 		// Set mock hash result
-		mockHashResult = 'hashed-new-password-123'
+		mockHashResult = "hashed-new-password-123"
 		
 		const res = createMockResponse()
 		
@@ -81,16 +81,16 @@ const tests = {
 		// Setup mock request with expired/invalid reset token
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword456',
-				reset_token_uuid: 'expired-reset-token-uuid'
+				password: "newPassword456",
+				reset_token_uuid: "expired-reset-token-uuid"
 			},
-			{ session_id: 'session-id-456' }
+			{ session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response with no results (expired token)
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ rows: [] }
 		)
 		
@@ -123,16 +123,16 @@ const tests = {
 		// Setup mock request with invalid reset token
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword789',
-				reset_token_uuid: 'invalid-token-uuid'
+				password: "newPassword789",
+				reset_token_uuid: "invalid-token-uuid"
 			},
-			{ session_id: 'session-id-789' }
+			{ session_id: "session-id-789" }
 		)
 		req.results = {}
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ rows: [] }
 		)
 		
@@ -154,10 +154,10 @@ const tests = {
 		// Setup mock request without password
 		const req = createMockRequest(
 			{ 
-				reset_token_uuid: 'valid-token-uuid'
+				reset_token_uuid: "valid-token-uuid"
 				// password missing
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -178,10 +178,10 @@ const tests = {
 		// Setup mock request without reset token
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword123'
+				password: "newPassword123"
 				// reset_token_uuid missing
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -202,8 +202,8 @@ const tests = {
 		// Setup mock request without session_id
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword123',
-				reset_token_uuid: 'valid-token-uuid'
+				password: "newPassword123",
+				reset_token_uuid: "valid-token-uuid"
 			},
 			{ session_id: undefined }
 		)
@@ -226,10 +226,10 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				password: 'newPassword123',
-				reset_token_uuid: 'valid-token-uuid'
+				password: "newPassword123",
+				reset_token_uuid: "valid-token-uuid"
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -252,31 +252,31 @@ const tests = {
 		// Test that password is properly hashed with correct parameters
 		const req = createMockRequest(
 			{ 
-				password: 'testPassword456',
-				reset_token_uuid: 'hash-test-token'
+				password: "testPassword456",
+				reset_token_uuid: "hash-test-token"
 			},
-			{ session_id: 'session-id-456' }
+			{ session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'hash-test-user'
+						user_id: "hash-test-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
 		// Set specific mock hash result
-		mockHashResult = 'specifically-hashed-password'
+		mockHashResult = "specifically-hashed-password"
 		
 		const res = createMockResponse()
 		
@@ -296,26 +296,26 @@ const tests = {
 		// Test that the time validation is part of the query (60 minutes)
 		const req = createMockRequest(
 			{ 
-				password: 'timeValidPassword',
-				reset_token_uuid: 'time-valid-token'
+				password: "timeValidPassword",
+				reset_token_uuid: "time-valid-token"
 			},
-			{ session_id: 'session-id-time' }
+			{ session_id: "session-id-time" }
 		)
 		req.results = {}
 		
 		// Mock database response (time validation handled by query)
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'time-valid-user'
+						user_id: "time-valid-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
@@ -336,28 +336,28 @@ const tests = {
 		// Test edge case where query returns multiple rows (shouldn't happen normally)
 		const req = createMockRequest(
 			{ 
-				password: 'multiRowPassword',
-				reset_token_uuid: 'multi-row-token'
+				password: "multiRowPassword",
+				reset_token_uuid: "multi-row-token"
 			},
-			{ session_id: 'session-id-multi' }
+			{ session_id: "session-id-multi" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'first-user'
+						user_id: "first-user"
 					},
 					{
-						user_id: 'second-user'
+						user_id: "second-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
@@ -378,10 +378,10 @@ const tests = {
 		// Test with empty string password
 		const req = createMockRequest(
 			{ 
-				password: '',
-				reset_token_uuid: 'empty-password-token'
+				password: "",
+				reset_token_uuid: "empty-password-token"
 			},
-			{ session_id: 'session-id-empty' }
+			{ session_id: "session-id-empty" }
 		)
 		req.results = {}
 		
@@ -402,30 +402,30 @@ const tests = {
 		// Test that both database queries execute in correct sequence
 		const req = createMockRequest(
 			{ 
-				password: 'sequenceTestPassword',
-				reset_token_uuid: 'sequence-test-token'
+				password: "sequenceTestPassword",
+				reset_token_uuid: "sequence-test-token"
 			},
-			{ session_id: 'session-sequence' }
+			{ session_id: "session-sequence" }
 		)
 		req.results = {}
 		
 		// Setup sequential mock responses
 		req.client.addQueryMock(
-			'SELECT reset_tokens.user_id',
+			"SELECT reset_tokens.user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'sequence-test-user-123'
+						user_id: "sequence-test-user-123"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'UPDATE users',
+			"UPDATE users",
 			{ rows: [] }
 		)
 		
-		mockHashResult = 'sequence-hashed-password'
+		mockHashResult = "sequence-hashed-password"
 		
 		const res = createMockResponse()
 		
@@ -444,24 +444,24 @@ const tests = {
 	testResetTokenUuidHandling: async () => {
 		// Test various reset token UUID formats
 		const testTokens = [
-			'simple-token',
-			'uuid-with-dashes-123-456',
-			'very-long-reset-token-uuid-with-multiple-parts'
+			"simple-token",
+			"uuid-with-dashes-123-456",
+			"very-long-reset-token-uuid-with-multiple-parts"
 		]
 		
 		for (const token of testTokens) {
 			const req = createMockRequest(
 				{ 
-					password: 'testPassword',
+					password: "testPassword",
 					reset_token_uuid: token
 				},
-				{ session_id: 'session-id-format' }
+				{ session_id: "session-id-format" }
 			)
 			req.results = {}
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT reset_tokens.user_id',
+				"SELECT reset_tokens.user_id",
 				{ 
 					rows: [
 						{
@@ -471,7 +471,7 @@ const tests = {
 				}
 			)
 			req.client.addQueryMock(
-				'UPDATE users',
+				"UPDATE users",
 				{ rows: [] }
 			)
 			

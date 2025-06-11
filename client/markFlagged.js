@@ -24,7 +24,7 @@ const markFlagged = async (post_or_reply) => {
 			}),
 		})
 			.then((response) => response.json())
-			.then(function (data) {
+			.then((data) => {
 				if (data.error || !data.success) {
 					console.error(data.error)
 					alertError(data.error || "Server error")
@@ -38,7 +38,7 @@ const markFlagged = async (post_or_reply) => {
 				}
 				performNextSave()
 			})
-			.catch(function (error) {
+			.catch((error) => {
 				console.error(error)
 				alertError("Network error")
 				performNextSave()

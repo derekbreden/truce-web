@@ -16,57 +16,57 @@ node index.js                         # Start the application
 
 ### Core Structure
 Node.js social media platform with unique client-side architecture:
-- **Server**: Express-like HTTP server with PostgreSQL database
-- **Client**: Non-standard module system using server-side includes
-- **Real-time**: WebSocket integration for live updates
-- **AI Integration**: OpenAI-powered content moderation
+	**Server**: Express-like HTTP server with PostgreSQL database
+	**Client**: Non-standard module system using server-side includes
+	**Real-time**: WebSocket integration for live updates
+	**AI Integration**: OpenAI-powered content moderation
 
 ### Client-Side Architecture (Critical)
 **Non-standard module system**:
-- All client JS files included via server-side includes in `index.html`
-- Files concatenated into single `<script>` block by `server/server.js`
-- All `const`/`let` declarations globally scoped across client files
-- No traditional module imports/exports - everything is global
+	All client JS files included via server-side includes in `index.html`
+	Files concatenated into single `<script>` block by `server/server.js`
+	All `const`/`let` declarations globally scoped across client files
+	No traditional module imports/exports - everything is global
 
 ### Flint.js DOM Library
 Custom DOM manipulation library:
-- jQuery-like `$()` selector function
-- Indentation-based template syntax with `$1`, `$2` placeholders
-- **Critical**: Often returns NodeLists, not single elements
+	jQuery-like `$()` selector function
+	Indentation-based template syntax with `$1`, `$2` placeholders
+	**Critical**: Often returns NodeLists, not single elements
 
 ### Session Middleware Pattern
 ```javascript
 module.exports = async (req, res) => {
-  if (!res.writableEnded && req.session.user_id && req.body.data) {
-    // Handle request logic
-    res.end(JSON.stringify({ success: true }))
-  }
+	if (!res.writableEnded && req.session.user_id && req.body.data) {
+		// Handle request logic
+		res.end(JSON.stringify({ success: true }))
+	}
 }
 ```
 
 ### State Management
 ```javascript
 const state = {
-  path: "/",
-  user_id: "",
-  display_name: "",
-  cache: {},
-  loading_path: false
+	path: "/",
+	user_id: "",
+	display_name: "",
+	cache: {},
+	loading_path: false
 }
 ```
 
 ## Code Conventions
 
 ### JavaScript Style
-- **Functions**: `camelCase` for functions only
-- **Variables**: `snake_case` for all variables  
-- **Arrow functions**: Use `const func = () => {}` not `function func() {}`
-- **Quotes**: Double quotes `"string"` not single quotes
-- **Semicolons**: Omit semicolons
-- **DOM variables**: Prefix with `$` like `const $button = $("button")`
-- **String methods**: Use `.startsWith()` and `.endsWith()` instead of `.substr()`
-- **Array methods**: Use `.includes()` instead of `.indexOf() === -1`
-- **Path extraction**: Use `path.split("/")[index]` consistently
+	**Functions**: `camelCase` for functions only
+	**Variables**: `snake_case` for all variables  
+	**Arrow functions**: Use `const func = () => {}` not `function func() {}`
+	**Quotes**: Double quotes `"string"` not single quotes
+	**Semicolons**: Omit semicolons
+	**DOM variables**: Prefix with `$` like `const $button = $("button")`
+	**String methods**: Use `.startsWith()` and `.endsWith()` instead of `.substr()`
+	**Array methods**: Use `.includes()` instead of `.indexOf() === -1`
+	**Path extraction**: Use `path.split("/")[index]` consistently
 
 ### Variable Naming for Client-Server Data Flow
 When client calculations become server filters with inverted meaning:
@@ -74,9 +74,9 @@ When client calculations become server filters with inverted meaning:
 // ✅ CORRECT: Name for client context, map explicitly to server
 const client_max_post_date = findMaxDate(posts)
 fetch("/session", {
-  body: JSON.stringify({
-    min_post_create_date: client_max_post_date  // Explicit mapping
-  })
+	body: JSON.stringify({
+		min_post_create_date: client_max_post_date  // Explicit mapping
+	})
 })
 
 // ❌ WRONG: Name for server context, confusing on client  
@@ -110,10 +110,10 @@ $("button").click() // Let it crash if button doesn't exist
 ```
 
 **Why direct assertions are superior:**
-- Better error messages: "Cannot read properties of null" tells you exactly which selector failed
-- Less code noise: Eliminates defensive programming patterns
-- Faster debugging: Fails exactly where the problem occurs
-- Mirrors app behavior: If the app would crash, the test should too
+	Better error messages: "Cannot read properties of null" tells you exactly which selector failed
+	Less code noise: Eliminates defensive programming patterns
+	Faster debugging: Fails exactly where the problem occurs
+	Mirrors app behavior: If the app would crash, the test should too
 
 ### Integration Test Pattern
 ```javascript
@@ -121,16 +121,16 @@ const { assertEquals, runTests } = require("../shared/testUtils.js")
 const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
 
 async function testFeature() {
-  const window = await setupIntegrationTestEnvironment()
-  const { state, $ } = window
+	const window = await setupIntegrationTestEnvironment()
+	const { state, $ } = window
 
-  window.setMockFetchResponseForPaths({
-    "/path": { data: "mock response" }
-  })
+	window.setMockFetchResponseForPaths({
+		"/path": { data: "mock response" }
+	})
 
-  $("button").click()
-  await new Promise(resolve => setTimeout(resolve, 0))
-  assertEquals("expected", $("element").innerText.trim(), "Should match")
+	$("button").click()
+	await new Promise(resolve => setTimeout(resolve, 0))
+	assertEquals("expected", $("element").innerText.trim(), "Should match")
 }
 
 runTests("test.js", [testFeature])
@@ -142,14 +142,14 @@ const { createMockRequest, createMockResponse, assertEquals, runTests } = requir
 const handlerToTest = require("../../../server/session/handlerName.js")
 
 async function testHandler() {
-  const req = createMockRequest({ data: "test" }, { user_id: "123" })
-  req.client.addQueryMock('INSERT INTO table', { rows: [] })
-  const res = createMockResponse()
-  
-  await handlerToTest(req, res)
-  
-  const responseData = JSON.parse(res.getResponseData())
-  assertEquals(true, responseData.success, "Should succeed")
+	const req = createMockRequest({ data: "test" }, { user_id: "123" })
+	req.client.addQueryMock("INSERT INTO table", { rows: [] })
+	const res = createMockResponse()
+	
+	await handlerToTest(req, res)
+	
+	const responseData = JSON.parse(res.getResponseData())
+	assertEquals(true, responseData.success, "Should succeed")
 }
 
 runTests("handler.unit.test.js", [testHandler])
@@ -175,8 +175,8 @@ runTests("handler.unit.test.js", [testHandler])
 Always use parameterized queries:
 ```javascript
 const result = await req.client.query(
-  `SELECT * FROM table WHERE id = $1 AND date > $2`,
-  [id, date]
+	`SELECT * FROM table WHERE id = $1 AND date > $2`,
+	[id, date]
 )
 ```
 
@@ -185,7 +185,7 @@ Guard against deleted connections:
 ```javascript
 // ✅ CORRECT: Guard against deleted connections
 if (this.ws_active[ws_uuid]) {
-  delete this.ws_active[ws_uuid].active_post_id
+	delete this.ws_active[ws_uuid].active_post_id
 }
 ```
 
@@ -194,20 +194,20 @@ if (this.ws_active[ws_uuid]) {
 const ai_response = await ai.ask(messages, "common", prompts.common_response_format)
 const parsed = JSON.parse(ai_response)
 if (parsed.keyword === "Spam") {
-  res.end(JSON.stringify({ error: parsed.keyword }))
-  return
+	res.end(JSON.stringify({ error: parsed.keyword }))
+	return
 }
 ```
 
 ## Development Workflow
 
 When working on tasks:
-- Use TodoWrite tool to plan multi-step tasks
-- Use search tools to understand codebase and requirements
-- **ALWAYS create comprehensive tests** for new functionality
-- **ALWAYS run `npm test` after changes** to verify everything works
-- **ALWAYS commit after tests pass** with descriptive message
-- User handles pushing to remote - only commit locally
+	Use TodoWrite tool to plan multi-step tasks
+	Use search tools to understand codebase and requirements
+	**ALWAYS create comprehensive tests** for new functionality
+	**ALWAYS run `npm test` after changes** to verify everything works
+	**ALWAYS commit after tests pass** with descriptive message
+	User handles pushing to remote - only commit locally
 
 ### Test-First Refactoring
 1. Write comprehensive tests FIRST
@@ -217,23 +217,23 @@ When working on tasks:
 5. Any test failure means refactoring broke something - fix code, not test
 
 ## Debugging Philosophy
-- **Test suspected layer directly** - Write minimal tests for database, API, DOM
-- **Subtract complexity, don't add it** - Remove layers to isolate problems  
-- **One variable at a time** - Change only what you're testing
-- **Hypothesis-driven** - Form specific theories and test them
-- **Understand before judging** - Surface patterns != root causes. Dig deeper than "guards bad" or "comments bad"
+	**Test suspected layer directly** - Write minimal tests for database, API, DOM
+	**Subtract complexity, don't add it** - Remove layers to isolate problems  
+	**One variable at a time** - Change only what you're testing
+	**Hypothesis-driven** - Form specific theories and test them
+	**Understand before judging** - Surface patterns != root causes. Dig deeper than "guards bad" or "comments bad"
 
 ## 10x Developer Principles
 
 ### Subtraction Over Addition
-- Before adding code, ask: "What can I remove?"
-- Before adding abstraction, ask: "Is concrete version clearer?"
-- Before adding defensive code, ask: "Will this help debugging?"
+	Before adding code, ask: "What can I remove?"
+	Before adding abstraction, ask: "Is concrete version clearer?"
+	Before adding defensive code, ask: "Will this help debugging?"
 
 ### Signal vs Noise Optimization
-- Every line should solve the problem or help debug it
-- Eliminate ceremony, boilerplate, and "just in case" code
-- Prefer failures that give actionable information
+	Every line should solve the problem or help debug it
+	Eliminate ceremony, boilerplate, and "just in case" code
+	Prefer failures that give actionable information
 
 ## DRY vs Readability
 
@@ -244,9 +244,9 @@ When working on tasks:
 **The test:** Would you rather debug the abstracted or original version?
 
 ## Key Files
-- `index.js`: Application entry point
-- `server/server.js`: HTTP server and client file concatenation
-- `client/flint.js`: Custom DOM manipulation library
-- `runAllTests.js`: Test runner
-- `server/session/`: Session middleware functions
-- `tests/client/integration/`: Integration tests
+	`index.js`: Application entry point
+	`server/server.js`: HTTP server and client file concatenation
+	`client/flint.js`: Custom DOM manipulation library
+	`runAllTests.js`: Test runner
+	`server/session/`: Session middleware functions
+	`tests/client/integration/`: Integration tests

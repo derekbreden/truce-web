@@ -34,8 +34,8 @@ module.exports = {
 		}
 		const ai_response = await this.openai.chat.completions.create(criteria)
 		return (
-			ai_response.choices[0].message.content[0].text ||
-			ai_response.choices[0].message.content
+			ai_response.choices[0].message.content[0].text
+			|| ai_response.choices[0].message.content
 		)
 	},
 	async generateImage(prompt, model) {

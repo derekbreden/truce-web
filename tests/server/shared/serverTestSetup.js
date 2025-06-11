@@ -24,7 +24,7 @@ function createMockDatabaseClient(options = {}) {
 		// Helper to add query mocks
 		addQueryMock: (matcher, response) => {
 			queryMocks.push({
-				match: typeof matcher === 'string' 
+				match: typeof matcher === "string" 
 					? (sql) => sql.includes(matcher)
 					: matcher,
 				response: response
@@ -48,9 +48,9 @@ function createMockRequest(body = {}, session = {}, options = {}) {
 	return {
 		body,
 		session: {
-			user_id: '123',
-			display_name: 'Test User',
-			user_slug: 'test-user',
+			user_id: "123",
+			display_name: "Test User",
+			user_slug: "test-user",
 			display_name_index: 0,
 			...session
 		},

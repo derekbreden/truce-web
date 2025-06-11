@@ -6,7 +6,7 @@ const mockNodemailer = {
 			// Capture the email call for verification
 			emailSendCalls.push(mailOptions)
 			// Simulate successful sending
-			setImmediate(() => callback(null, { response: 'Email sent successfully' }))
+			setImmediate(() => callback(null, { response: "Email sent successfully" }))
 		}
 	})
 }
@@ -43,31 +43,31 @@ const tests = {
 		// Setup mock request with valid email
 		const req = createMockRequest(
 			{ 
-				email: 'user@example.com'
+				email: "user@example.com"
 				// No password field (required condition)
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
 		// Setup mock database responses
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'found-user-456'
+						user_id: "found-user-456"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO reset_tokens',
+			"INSERT INTO reset_tokens",
 			{ rows: [] }
 		)
 		
 		// Set specific UUID for this test
-		mockUuidResult = 'reset-token-uuid-789'
+		mockUuidResult = "reset-token-uuid-789"
 		
 		const res = createMockResponse()
 		
@@ -97,7 +97,7 @@ const tests = {
 		
 		const emailCall = emailSendCalls[0]
 		assertEquals(
-			'user@example.com',
+			"user@example.com",
 			emailCall.to,
 			"Should send email to correct address."
 		)
@@ -107,18 +107,18 @@ const tests = {
 			"Should have correct email subject."
 		)
 		assertEquals(
-			'"Derek Bredensteiner" <derek@truce.net>',
+			"\"Derek Bredensteiner\" <derek@truce.net>",
 			emailCall.from,
 			"Should have correct from address."
 		)
 		assertEquals(
 			true,
-			emailCall.text.includes('https://truce.net/reset/'),
+			emailCall.text.includes("https://truce.net/reset/"),
 			"Email text should contain reset URL base."
 		)
 		assertEquals(
 			true,
-			emailCall.html.includes('https://truce.net/reset/'),
+			emailCall.html.includes("https://truce.net/reset/"),
 			"Email HTML should contain reset URL base."
 		)
 		// Check that a UUID-like string follows the URL (36 characters including dashes)
@@ -136,7 +136,7 @@ const tests = {
 		)
 		assertEquals(
 			true,
-			emailCall.text.includes('30 minutes'),
+			emailCall.text.includes("30 minutes"),
 			"Email should mention expiration time."
 		)
 	},
@@ -148,15 +148,15 @@ const tests = {
 		// Setup mock request with email that doesn't exist
 		const req = createMockRequest(
 			{ 
-				email: 'nonexistent@example.com'
+				email: "nonexistent@example.com"
 			},
-			{ session_id: 'session-id-456' }
+			{ session_id: "session-id-456" }
 		)
 		req.results = {}
 		
 		// Setup mock database response with no results
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ rows: [] }
 		)
 		
@@ -194,29 +194,29 @@ const tests = {
 		// Setup mock request with mixed case email
 		const req = createMockRequest(
 			{ 
-				email: 'User@Example.COM'
+				email: "User@Example.COM"
 			},
-			{ session_id: 'session-id-case' }
+			{ session_id: "session-id-case" }
 		)
 		req.results = {}
 		
 		// Setup mock database response
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'case-test-user'
+						user_id: "case-test-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO reset_tokens',
+			"INSERT INTO reset_tokens",
 			{ rows: [] }
 		)
 		
-		mockUuidResult = 'case-test-uuid'
+		mockUuidResult = "case-test-uuid"
 		
 		const res = createMockResponse()
 		
@@ -230,7 +230,7 @@ const tests = {
 			"Should send email for case-insensitive match."
 		)
 		assertEquals(
-			'User@Example.COM',
+			"User@Example.COM",
 			emailSendCalls[0].to,
 			"Should send email to original case format."
 		)
@@ -243,10 +243,10 @@ const tests = {
 		// Setup mock request WITH password (should prevent action)
 		const req = createMockRequest(
 			{ 
-				email: 'user@example.com',
-				password: 'somePassword' // This should prevent processing
+				email: "user@example.com",
+				password: "somePassword" // This should prevent processing
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -275,7 +275,7 @@ const tests = {
 		// Setup mock request without email
 		const req = createMockRequest(
 			{}, // no email
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -304,7 +304,7 @@ const tests = {
 		// Setup mock request without session_id
 		const req = createMockRequest(
 			{ 
-				email: 'user@example.com'
+				email: "user@example.com"
 			},
 			{ session_id: undefined }
 		)
@@ -335,9 +335,9 @@ const tests = {
 		// Setup mock request
 		const req = createMockRequest(
 			{ 
-				email: 'user@example.com'
+				email: "user@example.com"
 			},
-			{ session_id: 'session-id-123' }
+			{ session_id: "session-id-123" }
 		)
 		req.results = {}
 		
@@ -371,13 +371,13 @@ const tests = {
 				{ 
 					email: `user${i}@example.com`
 				},
-				{ session_id: 'session-id-uuid' }
+				{ session_id: "session-id-uuid" }
 			)
 			req.results = {}
 			
 			req.client.clearQueryMocks()
 			req.client.addQueryMock(
-				'SELECT user_id',
+				"SELECT user_id",
 				{ 
 					rows: [
 						{
@@ -387,7 +387,7 @@ const tests = {
 				}
 			)
 			req.client.addQueryMock(
-				'INSERT INTO reset_tokens',
+				"INSERT INTO reset_tokens",
 				{ rows: [] }
 			)
 			
@@ -431,28 +431,28 @@ const tests = {
 		
 		const req = createMockRequest(
 			{ 
-				email: 'content@example.com'
+				email: "content@example.com"
 			},
-			{ session_id: 'session-content' }
+			{ session_id: "session-content" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'content-user'
+						user_id: "content-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO reset_tokens',
+			"INSERT INTO reset_tokens",
 			{ rows: [] }
 		)
 		
-		mockUuidResult = 'content-test-uuid'
+		mockUuidResult = "content-test-uuid"
 		
 		const res = createMockResponse()
 		
@@ -463,27 +463,27 @@ const tests = {
 		// Verify email content structure
 		assertEquals(
 			true,
-			emailCall.text.includes('A password reset request was made'),
+			emailCall.text.includes("A password reset request was made"),
 			"Email text should contain reset request message."
 		)
 		assertEquals(
 			true,
-			emailCall.text.includes('If you did not request this'),
+			emailCall.text.includes("If you did not request this"),
 			"Email text should contain security disclaimer."
 		)
 		assertEquals(
 			true,
-			emailCall.html.includes('<p>'),
+			emailCall.html.includes("<p>"),
 			"Email HTML should contain HTML topics."
 		)
 		assertEquals(
 			true,
-			emailCall.html.includes('<a href='),
+			emailCall.html.includes("<a href="),
 			"Email HTML should contain clickable link."
 		)
 		assertEquals(
 			true,
-			emailCall.html.includes('https://truce.net/reset/'),
+			emailCall.html.includes("https://truce.net/reset/"),
 			"Email HTML should contain reset URL base."
 		)
 		// Verify it contains a valid UUID
@@ -502,29 +502,29 @@ const tests = {
 		// Test that both database queries execute in correct sequence
 		const req = createMockRequest(
 			{ 
-				email: 'sequence@example.com'
+				email: "sequence@example.com"
 			},
-			{ session_id: 'session-sequence' }
+			{ session_id: "session-sequence" }
 		)
 		req.results = {}
 		
 		// Setup sequential mock responses
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'sequence-user-123'
+						user_id: "sequence-user-123"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO reset_tokens',
+			"INSERT INTO reset_tokens",
 			{ rows: [] }
 		)
 		
-		mockUuidResult = 'sequence-test-uuid'
+		mockUuidResult = "sequence-test-uuid"
 		
 		const res = createMockResponse()
 		
@@ -552,9 +552,9 @@ const tests = {
 		// Setup mock request with empty email string
 		const req = createMockRequest(
 			{ 
-				email: '' // Empty string
+				email: "" // Empty string
 			},
-			{ session_id: 'session-id-empty' }
+			{ session_id: "session-id-empty" }
 		)
 		req.results = {}
 		
@@ -583,31 +583,31 @@ const tests = {
 		// Test edge case where multiple users have same email (shouldn't happen)
 		const req = createMockRequest(
 			{ 
-				email: 'duplicate@example.com'
+				email: "duplicate@example.com"
 			},
-			{ session_id: 'session-duplicate' }
+			{ session_id: "session-duplicate" }
 		)
 		req.results = {}
 		
 		req.client.addQueryMock(
-			'SELECT user_id',
+			"SELECT user_id",
 			{ 
 				rows: [
 					{
-						user_id: 'first-user'
+						user_id: "first-user"
 					},
 					{
-						user_id: 'second-user'
+						user_id: "second-user"
 					}
 				]
 			}
 		)
 		req.client.addQueryMock(
-			'INSERT INTO reset_tokens',
+			"INSERT INTO reset_tokens",
 			{ rows: [] }
 		)
 		
-		mockUuidResult = 'duplicate-test-uuid'
+		mockUuidResult = "duplicate-test-uuid"
 		
 		const res = createMockResponse()
 		
