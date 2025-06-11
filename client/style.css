@@ -1538,6 +1538,7 @@ posts {
   flex-direction: column;
 }
 
+conversations post,
 activities activity,
 posts post {
   padding-bottom: 21px;
@@ -1784,6 +1785,7 @@ activities[favorites] activity::after,
 notifications notification::after,
 users user:after,
 topics[topics-list][big]:after,
+conversations post::before,
 posts post::before {
   content: "";
   display: flex;
@@ -2128,8 +2130,6 @@ h2[conversations-empty] icon {
 }
 
 h2[conversations-empty] svg {
-  width: 30px;
-  height: 30px;
   margin: -12px -4px -8px -4px;
 }
 
@@ -2138,9 +2138,7 @@ p[conversations-empty] {
 }
 
 p[conversations-empty] svg {
-  width: 24px;
-  height: 24px;
-  margin: 0 4px;
+  margin: 0 4px -16px 4px;
 }
 
 p[add-to-home] {
