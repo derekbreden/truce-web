@@ -200,94 +200,141 @@ module.exports = async (req, res) => {
 			)
 		}
 
-		// Send push notifications
+		// Handle notifications for each user - either queue+alert or push+unread  
 		subscriptions.rows.forEach(async (subscription) => {
-			const short_display_name =
-				req.session.display_name.length > 20
+			// Check if user has any active WebSocket connection
+			const websocket = require("../websocket")
+			const has_active_websocket = websocket.hasActiveWebSocketConnection(subscription.user_id)
+			
+			if (has_active_websocket) {
+				// User is actively viewing - mark notification as read and send instant alert
+				await req.client.query(
+					`
+					UPDATE message_notifications
+					SET read = TRUE
+					WHERE user_id = $1 AND message_id = $2
+					`,
+					[subscription.user_id, message_id]
+				)
+				
+				// Send instant alert via WebSocket (with fallback notification data)
+				const short_display_name = req.session.display_name.length > 20
 					? req.session.display_name.slice(0, 20) + "..."
 					: req.session.display_name
-			const short_body =
-				req.body.body.length > 50
+				const short_body = req.body.body.length > 50
 					? req.body.body.slice(0, 50) + "..."
 					: req.body.body
-
-			// Get the unread count for this user id
-			const unread_count_result = await req.client.query(
-				`
-				SELECT 
-					COUNT(*) AS unread_count
-				FROM message_notifications
-				WHERE
-					user_id = $1
-					AND read = FALSE
-				`,
-				[subscription.user_id],
-			)
-			const unread_count = unread_count_result.rows[0].unread_count
-
-			// FCM version
-			if (subscription.fcm_token) {
-				const message = {
-					notification: {
-						title: `${short_display_name} sent a message`,
-						body: short_body,
-					},
-					apns: {
-						payload: {
-							aps: {
-								badge: Number(unread_count || 0),
-							},
-						},
-					},
-					token: JSON.parse(subscription.fcm_token),
+				
+				// Get unread count for fallback notification
+				const unread_count_result = await req.client.query(
+					`
+					SELECT COUNT(*) AS unread_count
+					FROM message_notifications
+					WHERE user_id = $1 AND read = FALSE
+					`,
+					[subscription.user_id]
+				)
+				const unread_count = unread_count_result.rows[0].unread_count
+				
+				// Prepare fallback notification data for queuing if WebSocket fails
+				const notification_data = {
+					title: `${short_display_name} sent a message`,
+					body: short_body,
+					topic: `conversation:${req.body.conversation_id}`,
+					unread_count: unread_count
 				}
-				try {
-					const result = await firebase.getMessaging().send(message)
-				} catch (e) {
-					if (e.code === "messaging/registration-token-not-registered") {
-						console.log("Unsubscribing", subscription.fcm_token)
-						await req.client.query(
-							`
-							DELETE FROM subscriptions
-							WHERE fcm_token = $1
-							`,
-							[subscription.fcm_token],
-						)
-					} else {
-						console.error("Unhandled FCM message:", e.message)
-						console.error("Unhandled FCM code:", e.code)
-					}
-				}
-
-				// Web Push version
+				
+				websocket.sendInstantAlert(
+					subscription.user_id,
+					`${short_display_name} sent you a message`,
+					notification_data,
+					req.body.conversation_id // Pass conversation_id for UI suppression
+				)
 			} else {
-				webpush
-					.sendNotification(
-						JSON.parse(subscription.subscription_json),
-						JSON.stringify({
+				// User not actively viewing - send traditional push notification
+				const short_body =
+					req.body.body.length > 50
+						? req.body.body.slice(0, 50) + "..."
+						: req.body.body
+
+				// Get the unread count for this user id
+				const unread_count_result = await req.client.query(
+					`
+					SELECT 
+						COUNT(*) AS unread_count
+					FROM message_notifications
+					WHERE
+						user_id = $1
+						AND read = FALSE
+					`,
+					[subscription.user_id],
+				)
+				const unread_count = unread_count_result.rows[0].unread_count
+
+				// FCM version
+				if (subscription.fcm_token) {
+					const message = {
+						notification: {
 							title: `${short_display_name} sent a message`,
 							body: short_body,
-							topic: `conversation:${req.body.conversation_id}`,
-							unread_count,
-						}),
-					)
-					.then((result) => {
-					})
-					.catch(async (error) => {
-						// 410 means unsubscribed and is expected, but means we need to stop sending to that subscription_json
-						if (error.statusCode === 410) {
-							console.log("Unsubscribing", subscription.subscription_json)
+						},
+						apns: {
+							payload: {
+								aps: {
+									badge: Number(unread_count || 0),
+								},
+							},
+						},
+						token: JSON.parse(subscription.fcm_token),
+					}
+					try {
+						const result = await firebase.getMessaging().send(message)
+					} catch (e) {
+						if (e.code === "messaging/registration-token-not-registered") {
+							console.log("Unsubscribing", subscription.fcm_token)
 							await req.client.query(
 								`
 								DELETE FROM subscriptions
-								WHERE subscription_json = $1
+								WHERE fcm_token = $1
 								`,
-								[subscription.subscription_json],
+								[subscription.fcm_token],
 							)
 						} else {
-							console.error(error)
+							console.error("Unhandled FCM message:", e.message)
+							console.error("Unhandled FCM code:", e.code)
 						}
-					})
+					}
+
+					// Web Push version
+				} else {
+					webpush
+						.sendNotification(
+							JSON.parse(subscription.subscription_json),
+							JSON.stringify({
+								title: `${short_display_name} sent a message`,
+								body: short_body,
+								topic: `conversation:${req.body.conversation_id}`,
+								unread_count,
+							}),
+						)
+						.then((result) => {
+						})
+						.catch(async (error) => {
+							// 410 means unsubscribed and is expected, but means we need to stop sending to that subscription_json
+							if (error.statusCode === 410) {
+								console.log("Unsubscribing", subscription.subscription_json)
+								await req.client.query(
+									`
+									DELETE FROM subscriptions
+									WHERE subscription_json = $1
+									`,
+									[subscription.subscription_json],
+								)
+							} else {
+								console.error(error)
+							}
+						})
+				}
 			}
 		})
 

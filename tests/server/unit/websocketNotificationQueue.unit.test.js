@@ -179,8 +179,9 @@ async function testIsUserActivelyViewingWithMultipleConnections() {
 }
 
 async function testSendInstantAlert() {
-	// Clear any existing WebSocket state
+	// Clear any existing WebSocket state and queue
 	websocket.ws_active = {}
+	websocket.pending_push_notifications = {}
 	
 	// Mock WebSocket connections with send tracking
 	const sent_messages = []
@@ -199,20 +200,108 @@ async function testSendInstantAlert() {
 		send: mockSend
 	}
 	
-	// Send instant alert to target user
-	websocket.sendInstantAlert("target-user", "You have a new message!")
+	// Send instant alert with notification data
+	const notification_data = {
+		title: "Test Notification",
+		body: "Test message",
+		topic: "conversation:123"
+	}
+	const alert_sent = websocket.sendInstantAlert("target-user", "You have a new message!", notification_data)
 	
 	// Verify messages were sent to target user only (2 connections)
 	assertEquals(2, sent_messages.length, "Should send to both connections for target user")
+	assertEquals(true, alert_sent, "Should return true when alert was sent successfully")
 	
-	// Verify message content
+	// Verify message content includes notification_id
 	const parsed_message_1 = JSON.parse(sent_messages[0])
 	assertEquals("INSTANT_ALERT", parsed_message_1.type, "Should have correct message type")
 	assertEquals("You have a new message!", parsed_message_1.message, "Should have correct alert message")
+	assertEquals(true, Boolean(parsed_message_1.notification_id), "Should include notification_id")
 	
 	const parsed_message_2 = JSON.parse(sent_messages[1])
 	assertEquals("INSTANT_ALERT", parsed_message_2.type, "Should have correct message type for second connection")
 	assertEquals("You have a new message!", parsed_message_2.message, "Should have correct alert message for second connection")
+	assertEquals(true, Boolean(parsed_message_2.notification_id), "Should include notification_id for second connection")
+	
+	// Verify notification was queued
+	assertEquals(true, Boolean(websocket.pending_push_notifications["target-user"]), "Should queue notification for target user")
+	assertEquals(1, websocket.pending_push_notifications["target-user"].length, "Should have 1 queued notification")
+}
+
+async function testAcknowledgeNotification() {
+	// Clear any existing state
+	websocket.pending_push_notifications = {}
+	
+	// Queue a notification
+	websocket.queuePushNotification("test-user", {
+		notification_id: "test-123",
+		title: "Test",
+		body: "Message"
+	})
+	
+	// Verify it's queued
+	assertEquals(1, websocket.pending_push_notifications["test-user"].length, "Should have 1 queued notification")
+	
+	// Acknowledge it
+	const ack_result = websocket.acknowledgeNotification("test-user", "test-123")
+	assertEquals(true, ack_result, "Should return true for successful acknowledgment")
+	
+	// Verify it's removed from queue
+	assertEquals(undefined, websocket.pending_push_notifications["test-user"], "Queue should be cleared after acknowledgment")
+}
+
+async function testAcknowledgeNotificationNotFound() {
+	// Clear any existing state
+	websocket.pending_push_notifications = {}
+	
+	// Try to acknowledge non-existent notification
+	const ack_result = websocket.acknowledgeNotification("test-user", "non-existent")
+	assertEquals(false, ack_result, "Should return false for non-existent notification")
+}
+
+async function testHasActiveWebSocketConnection() {
+	// Clear any existing WebSocket state
+	websocket.ws_active = {}
+	
+	// Test with no connections
+	assertEquals(false, websocket.hasActiveWebSocketConnection("any-user"), "Should return false with no connections")
+	
+	// Add some connections
+	websocket.ws_active["ws-1"] = { user_id: "user-a" }
+	websocket.ws_active["ws-2"] = { user_id: "user-b" }
+	websocket.ws_active["ws-3"] = { user_id: "user-a" } // Same user, different connection
+	
+	// Test active users
+	assertEquals(true, websocket.hasActiveWebSocketConnection("user-a"), "Should detect user-a has active connection")
+	assertEquals(true, websocket.hasActiveWebSocketConnection("user-b"), "Should detect user-b has active connection")
+	
+	// Test inactive user
+	assertEquals(false, websocket.hasActiveWebSocketConnection("user-c"), "Should not detect user-c (no connection)")
+}
+
+async function testSendInstantAlertWithConversationSuppression() {
+	// Clear any existing state
+	websocket.ws_active = {}
+	websocket.pending_push_notifications = {}
+	
+	// Mock WebSocket connection viewing specific conversation
+	const sent_messages = []
+	const mockSend = (message) => sent_messages.push(message)
+	
+	websocket.ws_active["ws-1"] = {
+		user_id: "viewing-user",
+		active_conversation_id: 123,
+		send: mockSend
+	}
+	
+	// Send alert for the same conversation user is viewing
+	const notification_data = { title: "Test", body: "Message" }
+	websocket.sendInstantAlert("viewing-user", "New message!", notification_data, "123")
+	
+	// Verify message sent with suppression flag
+	assertEquals(1, sent_messages.length, "Should send message")
+	const parsed_message = JSON.parse(sent_messages[0])
+	assertEquals(true, parsed_message.suppress_ui, "Should suppress UI when viewing same conversation")
 }
 
 runTests("websocketNotificationQueue.unit.test.js", [
@@ -225,5 +314,9 @@ runTests("websocketNotificationQueue.unit.test.js", [
 	testIsUserActivelyViewingWithActiveUser,
 	testIsUserActivelyViewingWithNoActiveUsers,
 	testIsUserActivelyViewingWithMultipleConnections,
-	testSendInstantAlert
+	testSendInstantAlert,
+	testAcknowledgeNotification,
+	testAcknowledgeNotificationNotFound,
+	testHasActiveWebSocketConnection,
+	testSendInstantAlertWithConversationSuppression
 ])

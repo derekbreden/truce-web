@@ -20,6 +20,11 @@ module.exports = {
 				delete this.ws_active[ws_uuid]
 			})
 			ws.on("close", () => {
+				// Flush any pending notifications for this user before cleanup
+				const user_id = this.ws_active[ws_uuid]?.user_id
+				if (user_id) {
+					this.flushUserNotificationsOnDisconnect(user_id)
+				}
 				delete this.ws_active[ws_uuid]
 			})
 			ws.on("message", async (buffer) => {
@@ -35,6 +40,11 @@ module.exports = {
 					if (message.typing && message.conversation_id && this.ws_active[ws_uuid].user_id) {
 						// Broadcast typing status to other participants in the conversation
 						this.sendTypingIndicator(message.typing, message.conversation_id, this.ws_active[ws_uuid].user_id)
+					}
+					
+					// Handle instant alert acknowledgments
+					if (message.type === "INSTANT_ALERT_ACK" && message.notification_id && this.ws_active[ws_uuid].user_id) {
+						this.acknowledgeNotification(this.ws_active[ws_uuid].user_id, message.notification_id)
 					}
 					
 					if (message.path) {
@@ -210,15 +220,149 @@ module.exports = {
 			ws.active_conversation_id === Number(conversation_id)
 		)
 	},
-	sendInstantAlert(user_id, alert_message) {
+	hasActiveWebSocketConnection(user_id) {
+		// Check if user has ANY active WebSocket connection
+		return Object.values(this.ws_active).some(ws => 
+			ws.user_id === user_id
+		)
+	},
+	isUserActivelyViewingPost(user_id, post_id) {
+		// Check if user has an active WebSocket connection viewing this post
+		return Object.values(this.ws_active).some(ws => 
+			ws.user_id === user_id && 
+			ws.active_post_id === Number(post_id)
+		)
+	},
+	sendInstantAlert(user_id, alert_message, notification_data = null, conversation_id = null) {
+		// Always queue the notification first - only remove upon acknowledgment
+		let notification_id = null
+		if (notification_data) {
+			notification_id = `${user_id}_${Date.now()}_${Math.random()}`
+			this.queuePushNotification(user_id, {
+				...notification_data,
+				notification_id: notification_id
+			})
+		}
+		
+		let alert_sent = false
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (this.ws_active[ws_uuid].user_id === user_id) {
-				const alertMessage = JSON.stringify({
-					type: "INSTANT_ALERT",
-					message: alert_message
-				})
-				this.ws_active[ws_uuid].send(alertMessage)
+				try {
+					// Check if user is viewing the specific conversation for this alert
+					const viewing_this_conversation = conversation_id && 
+						this.ws_active[ws_uuid].active_conversation_id === Number(conversation_id)
+					
+					const alertMessage = JSON.stringify({
+						type: "INSTANT_ALERT", 
+						message: alert_message,
+						notification_id: notification_id,
+						suppress_ui: viewing_this_conversation // Don't show alertInfo if viewing this conversation
+					})
+					this.ws_active[ws_uuid].send(alertMessage)
+					alert_sent = true
+				} catch (error) {
+					// WebSocket send failed - notification stays queued
+				}
 			}
 		})
+		
+		return alert_sent
+	},
+	acknowledgeNotification(user_id, notification_id) {
+		if (this.pending_push_notifications[user_id]) {
+			// Remove the specific notification from the queue
+			this.pending_push_notifications[user_id] = this.pending_push_notifications[user_id].filter(
+				notification => notification.notification_id !== notification_id
+			)
+			
+			// Clean up empty queues
+			if (this.pending_push_notifications[user_id].length === 0) {
+				delete this.pending_push_notifications[user_id]
+			}
+			
+			return true
+		}
+		return false
+	},
+	async flushUserNotificationsOnDisconnect(user_id) {
+		const queued_notifications = this.flushPendingPushNotifications(user_id)
+		
+		if (queued_notifications.length > 0) {
+			// Import necessary modules for sending push notifications
+			const firebase = require("./firebase")
+			const webpush = require("web-push")
+			const pool = require("./pool")
+			
+			try {
+				const client = await pool.pool.connect()
+				
+				// Get user's active subscriptions
+				const subscriptions = await client.query(
+					`
+					SELECT subscription_json, fcm_token
+					FROM subscriptions
+					WHERE user_id = $1 AND active = TRUE
+					`,
+					[user_id]
+				)
+				
+				// Send each queued notification as a push notification
+				for (const notification of queued_notifications) {
+					for (const subscription of subscriptions.rows) {
+						// FCM version
+						if (subscription.fcm_token) {
+							const message = {
+								notification: {
+									title: notification.title,
+									body: notification.body,
+								},
+								apns: {
+									payload: {
+										aps: {
+											badge: Number(notification.unread_count || 0),
+										},
+									},
+								},
+								token: JSON.parse(subscription.fcm_token),
+							}
+							try {
+								await firebase.getMessaging().send(message)
+							} catch (e) {
+								if (e.code === "messaging/registration-token-not-registered") {
+									await client.query(
+										`DELETE FROM subscriptions WHERE fcm_token = $1`,
+										[subscription.fcm_token]
+									)
+								}
+							}
+						} else {
+							// Web Push version
+							try {
+								await webpush.sendNotification(
+									JSON.parse(subscription.subscription_json),
+									JSON.stringify({
+										title: notification.title,
+										body: notification.body,
+										topic: notification.topic,
+										unread_count: notification.unread_count,
+									})
+								)
+							} catch (error) {
+								if (error.statusCode === 410) {
+									await client.query(
+										`DELETE FROM subscriptions WHERE subscription_json = $1`,
+										[subscription.subscription_json]
+									)
+								}
+							}
+						}
+					}
+				}
+				
+				client.release()
+			} catch (error) {
+				console.error("Error flushing queued notifications:", error)
+			}
+		}
 	},
 }

@@ -101,8 +101,18 @@ const handleReadStatusUpdate = (data) => {
 
 // Handle instant alerts
 const handleInstantAlert = (data) => {
-	// Call the existing alertInfo function to show a sliding notification
-	alertInfo(data.message)
+	// Only show alertInfo if not suppressed (user viewing different conversation)
+	if (!data.suppress_ui) {
+		alertInfo(data.message)
+	}
+	
+	// Send acknowledgment back to server if notification_id is provided
+	if (data.notification_id && state.ws && state.ws.readyState === WebSocket.OPEN) {
+		state.ws.send(JSON.stringify({
+			type: "INSTANT_ALERT_ACK",
+			notification_id: data.notification_id
+		}))
+	}
 }
 
 // Expose for testing
