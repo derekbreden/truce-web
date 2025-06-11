@@ -12,8 +12,3 @@
 - **Current**: Only MESSAGE_UPDATE and CONVERSATION_UPDATE
 - **Need**: READ_STATUS_UPDATE for real-time read state sync
 - **Location**: `websocket.js` and server WebSocket handling
-
-### 3. No Scroll-to-Bottom on New Messages
-- **Problem**: New messages don't auto-scroll to bottom via WebSocket updates
-- **Current**: Only scrolls on initial render in `renderMessages.js:147`
-- **Fix**: Add scroll logic to WebSocket message handler
