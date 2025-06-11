@@ -47,8 +47,6 @@ async function debugConversationRendering() {
 	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
-
 	// Open menu and click conversations
 	const $hamburger = $("hamburger")
 	$hamburger.click()

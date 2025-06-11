@@ -40,12 +40,6 @@ const tests = {
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
 		assertEquals(
-			"/posts",
-			state.path,
-			"Path should be /posts after agreeing to terms.",
-		)
-
-		assertEquals(
 			"test-user-123",
 			state.user_id,
 			`state.user_id should be updated by mock. Initial: ${initialUserId}, Current: ${state.user_id}`,

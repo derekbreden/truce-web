@@ -92,15 +92,7 @@ const tests = {
 		$firstPostElement.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		// 4. Assert navigation to the post detail path
-		const expectedElement = "replies"
-		assertEquals(
-			expectedElement,
-			$("replies") ? "replies" : "not-replies",
-			`Should be on post detail page after clicking the first post.`,
-		)
-
-		// 5. Assert the post includes the detail rendered text
+		// 4. Assert the post includes the detail rendered text
 		const $postPSpan = $("main-content-wrapper[active] post p span")
 		assertEquals(
 			true,

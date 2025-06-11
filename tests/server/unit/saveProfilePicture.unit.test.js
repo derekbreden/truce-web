@@ -517,7 +517,6 @@ const tests = {
 		)
 	},
 
-
 	testDisplayNameSanitization: async () => {
 		// Reset all calls
 		s3_send_calls = []

@@ -87,7 +87,6 @@ const renderMessage = (message) => {
 const renderMessages = (messages, conversation) => {
 	const skip_messages = !state.path.startsWith("/messages/")
 
-
 	if (!skip_messages) {
 		beforeDomUpdate()
 		if (!$("main-content-wrapper[active] messages-container")) {

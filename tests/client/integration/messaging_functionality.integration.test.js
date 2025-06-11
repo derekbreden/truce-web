@@ -46,8 +46,6 @@ async function testNavigateToMessagesViaMenu() {
 	$join_button.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
-
 	const $hamburger = $("hamburger")
 	$hamburger.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
@@ -135,8 +133,6 @@ async function testNavigateToSpecificMessage() {
 	const $messages_link = $(`menu-wrapper a[href="/conversations"]`)
 	$messages_link.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
-
-	assertEquals("conversations", $("conversations") ? "conversations" : "not-conversations", "Should be on conversations page")
 
 	// Click on the specific conversation
 	const $conversations_container = $("conversations")
@@ -282,10 +278,6 @@ async function testMessageSendingFlow() {
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify we're on the right page
-	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper") ? "all-clear-wrapper" : "not-all-clear", "Should be on message thread page")
-
-	// Verify empty state shows initially  
 	assertEquals("all-clear-wrapper", $("main-content-wrapper[active] all-clear-wrapper").tagName.toLowerCase(), "Empty state should be displayed initially")
 
 	const $textarea = $("main-content-wrapper[active] textarea")

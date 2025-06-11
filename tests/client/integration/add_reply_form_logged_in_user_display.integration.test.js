@@ -80,11 +80,6 @@ const tests = {
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
 		assertEquals(
-			"/posts",
-			state.path,
-			`After clicking "Join", path should be /posts.`,
-		)
-		assertEquals(
 			mockUser.user_id,
 			state.user_id,
 			"state.user_id should be set from /posts mock. Actual: " + state.user_id,

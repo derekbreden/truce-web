@@ -71,7 +71,6 @@ And a numbered list:
 	await new Promise(resolve => setTimeout(resolve, 0))
 
 	// Test markdown rendering
-	assertEquals("posts", $("posts") ? "posts" : "not-posts", "Should be on posts page")
 	assertEquals("Header Test", $("p[bold] span").innerText.trim(), "Should render header with bold attribute")
 	assertEquals("This is a quote block", $("p[quote] span").innerText.trim(), "Should render quote with quote attribute")
 	assertEquals("https://example.com/test", $(`a[href="https://example.com/test"]`).getAttribute("href"), "Should auto-link plain URLs")

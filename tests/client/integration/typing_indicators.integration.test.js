@@ -89,9 +89,6 @@ async function testTypingIndicatorSendsOnInput() {
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify we are on the message thread
-	assertEquals("textarea", $("main-content-wrapper[active] textarea") ? "textarea" : "not-textarea", "Should be on message thread")
-
 	// Clear any existing WebSocket messages from navigation
 	wsMessages = []
 

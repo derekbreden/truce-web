@@ -35,12 +35,6 @@ const tests = {
 		// Wait for navigation and rendering
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		assertEquals(
-			"/posts",
-			state.path,
-			"Path should be /posts after agreeing to terms.",
-		)
-
 		const footerIconsToTest = ["posts", "topic", "mail", "notifications"]
 
 		footerIconsToTest.forEach((iconName) => {

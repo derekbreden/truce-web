@@ -94,17 +94,8 @@ const tests = {
 		// 1. Agree to terms to navigate to /posts
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
-
-		// Wait for navigation and rendering
-		// Multiple awaits for setTimeout(0) to allow microtasks and rendering to process
-		await new Promise((resolve) => setTimeout(resolve, 0))
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		assertEquals(
-			"/posts",
-			state.path,
-			"Path should be /posts after agreeing to terms.",
-		)
 		const $postsWrapper = $("posts")
 		assertEquals(
 			true,

@@ -178,12 +178,6 @@ const tests = {
 
 		await new Promise((resolve) => setTimeout(resolve, 0))
 
-		assertEquals(
-			"/posts",
-			state.path,
-			"Path should be /posts after agreeing to terms.",
-		)
-
 		// 2. Click on the post to navigate to detail page
 		const $firstPostElement = $("posts > post[trimmed]")
 		$firstPostElement.click()

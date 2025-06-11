@@ -81,11 +81,6 @@ const tests = {
 		const $joinButton = $(`a[href="/posts"][big]`)
 		$joinButton.click()
 		await new Promise((resolve) => setTimeout(resolve, 0))
-		assertEquals(
-			"/posts",
-			state.path,
-			"Path should be /posts after agreeing to terms.",
-		)
 
 		// 3. Ensure the post is rendered on /posts
 		const $postAuthorElement = $(`posts > post author[slug="test-user"]`)

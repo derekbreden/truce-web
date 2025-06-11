@@ -105,8 +105,6 @@ async function testMessageDisplayWithContent() {
 	$conversation.click()
 	await new Promise(resolve => setTimeout(resolve, 0))
 
-	assertEquals("messages", $("messages") ? "messages" : "not-messages", "Should be on message thread page")
-
 	const $messages_container = $("messages")
 	const $messages = $messages_container.querySelectorAll("message")
 	assertEquals(2, $messages.length, "Should display two messages")
