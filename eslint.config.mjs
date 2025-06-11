@@ -1,7 +1,30 @@
-import globals from "globals";
-import { defineConfig } from "eslint/config";
-
-
-export default defineConfig([
-  { files: ["**/*.js"], languageOptions: { globals: {...globals.browser, ...globals.node} } },
-]);
+export default [
+    {
+        languageOptions: {
+            ecmaVersion: 2021,
+            sourceType: "module",
+            globals: {
+                console: "readonly",
+                window: "readonly"
+            }
+        },
+        rules: {
+            "semi": ["error", "never"],
+            "quotes": ["error", "double"],
+            "eqeqeq": ["error", "always"],
+            "prefer-arrow-callback": "error",
+            "func-style": ["error", "expression"],
+            "max-len": ["error", { "code": 120 }],
+            "operator-linebreak": ["error", "before", {
+                "overrides": {
+                    "=": "after",
+                    "+=": "after",
+                    "-=": "after",
+                    "*=": "after",
+                    "/=": "after"
+                }
+            }],
+            "allowTemplateLiterals": true,
+        }
+    }
+]

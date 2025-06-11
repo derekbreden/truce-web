@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node runAllTests.js",
-    "test:integration": "node runAllTests.js integration"
+    "test:integration": "node runAllTests.js integration",
+    "lint": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
