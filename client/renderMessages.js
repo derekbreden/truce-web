@@ -113,7 +113,8 @@ const renderMessages = (messages, conversation) => {
 
 		// Update conversation header with participants
 		if (conversation && conversation.participants) {
-			const other_participants = conversation.participants.filter(participant => participant.user_id !== state.user_id)
+			const other_participants = conversation.participants
+				.filter(participant => Number(participant.user_id) !== Number(state.user_id))
 			const participant_names = other_participants.map(participant => 
 				renderName(participant.display_name, participant.display_name_index || 0)
 			).join(", ")
