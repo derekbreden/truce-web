@@ -95,6 +95,9 @@ if (Boolean(items.length)) { ... }  // Redundant
 
 ## Testing Philosophy
 
+### Incremental Implementation
+1. Tests pass → 2. Add coverage → 3. Verify green → 4. Small change → 5. Test → 6. Repeat 4-5
+
 ### No Guard Assertions
 **Critical**: Direct assertions over defensive checks:
 
@@ -180,6 +183,9 @@ const result = await req.client.query(
 )
 ```
 
+### Cache Updates
+Update client cache immediately before API calls for responsive UI
+
 ### WebSocket Race Conditions
 Guard against deleted connections:
 ```javascript
@@ -208,6 +214,7 @@ When working on tasks:
 	**ALWAYS run `npm test` after changes** to verify everything works
 	**ALWAYS commit after tests pass** with descriptive message
 	User handles pushing to remote - only commit locally
+	Scope down aggressively: Pick ONE task when complexity emerges
 
 ### Test-First Refactoring
 1. Write comprehensive tests FIRST
