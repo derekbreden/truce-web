@@ -18,6 +18,8 @@ const reconnectWs = () => {
 				handleTypingIndicator(data)
 			} else if (data.type === "READ_STATUS_UPDATE") {
 				handleReadStatusUpdate(data)
+			} else if (data.type === "INSTANT_ALERT") {
+				handleInstantAlert(data)
 			}
 		}
 	})
@@ -97,9 +99,16 @@ const handleReadStatusUpdate = (data) => {
 	}
 }
 
+// Handle instant alerts
+const handleInstantAlert = (data) => {
+	// Call the existing alertInfo function to show a sliding notification
+	alertInfo(data.message)
+}
+
 // Expose for testing
 if (typeof window !== "undefined") {
 	window.handleReadStatusUpdate = handleReadStatusUpdate
+	window.handleInstantAlert = handleInstantAlert
 }
 
 // Send typing indicator

@@ -3,6 +3,7 @@ const { WebSocketServer } = require("ws")
 const pool = require("./pool")
 
 module.exports = {
+	pending_push_notifications: {},
 	clearConnectionProperties(ws_uuid) {
 		if (this.ws_active[ws_uuid]) {
 			delete this.ws_active[ws_uuid].active_post_id
@@ -174,6 +175,49 @@ module.exports = {
 					})
 					this.ws_active[ws_uuid].send(readStatusMessage)
 				}
+			}
+		})
+	},
+	queuePushNotification(user_id, notification_data) {
+		if (!this.pending_push_notifications[user_id]) {
+			this.pending_push_notifications[user_id] = []
+		}
+		this.pending_push_notifications[user_id].push({
+			...notification_data,
+			timestamp: Date.now()
+		})
+	},
+	flushPendingPushNotifications(user_id) {
+		const queued_notifications = this.pending_push_notifications[user_id]
+		if (queued_notifications && queued_notifications.length > 0) {
+			// Clear the queue first to prevent re-queuing during flush
+			delete this.pending_push_notifications[user_id]
+			
+			// Send each queued notification as a push notification
+			queued_notifications.forEach(notification => {
+				// Return the notifications for the caller to send via FCM/web-push
+				// Since this module doesn't have direct access to webpush/FCM
+			})
+			
+			return queued_notifications
+		}
+		return []
+	},
+	isUserActivelyViewing(user_id, conversation_id) {
+		// Check if user has an active WebSocket connection viewing this conversation
+		return Object.values(this.ws_active).some(ws => 
+			ws.user_id === user_id && 
+			ws.active_conversation_id === Number(conversation_id)
+		)
+	},
+	sendInstantAlert(user_id, alert_message) {
+		Object.keys(this.ws_active).forEach((ws_uuid) => {
+			if (this.ws_active[ws_uuid].user_id === user_id) {
+				const alertMessage = JSON.stringify({
+					type: "INSTANT_ALERT",
+					message: alert_message
+				})
+				this.ws_active[ws_uuid].send(alertMessage)
 			}
 		})
 	},
