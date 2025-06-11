@@ -2087,8 +2087,10 @@ h2[topics] svg,
 h2[welcome] svg,
 h2[moderation] svg,
 h2[favorites] svg,
+h2[conversations-empty] svg,
 p[add-to-home] svg,
-p[favorites-empty] svg {
+p[favorites-empty] svg,
+p[conversations-empty] svg {
   fill: #000;
   fill: light-dark(#000, #fff);
   margin-bottom: -16px;
@@ -2117,6 +2119,28 @@ h2[favorites] svg {
 
 h2[favorites] svg:nth-child(2) {
   margin-top: -9px;
+}
+
+h2[conversations-empty] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2[conversations-empty] svg {
+  width: 30px;
+  height: 30px;
+  margin: -12px -4px -8px -4px;
+}
+
+p[conversations-empty] {
+  overflow: visible;
+}
+
+p[conversations-empty] svg {
+  width: 24px;
+  height: 24px;
+  margin: 0 4px;
 }
 
 p[add-to-home] {

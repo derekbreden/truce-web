@@ -69,9 +69,20 @@ const renderConversations = (conversations) => {
 			$("main-content-wrapper[active] main-content conversations").appendChild(
 				$(
 					`
-					all-clear-wrapper
-						p Nothing to see here
-					`
+					post[conversations-empty]
+						h2[conversations-empty]
+							span Messages
+							icon
+								$1
+						p[conversations-empty]
+							span Click the
+							$2
+							span on a user's profile to start a conversation with them.
+					`,
+					[
+						$("icons icon[mail] svg").cloneNode(true),
+						$("icons icon[mail] svg").cloneNode(true)
+					]
 				)
 			)
 		} else {
