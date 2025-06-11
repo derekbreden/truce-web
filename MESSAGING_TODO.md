@@ -17,8 +17,3 @@
 - **Problem**: New messages don't auto-scroll to bottom via WebSocket updates
 - **Current**: Only scrolls on initial render in `renderMessages.js:147`
 - **Fix**: Add scroll logic to WebSocket message handler
-
-### 4. Broken Message Edit Functionality
-- **Problem**: `renderMessages.js:80` calls `showEditMessageModal(message)` but function doesn't exist
-- **Risk**: Clicking edit button causes JavaScript runtime error
-- **Fix**: Remove edit button, this is advanced and not needed

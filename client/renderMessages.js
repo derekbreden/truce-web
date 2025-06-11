@@ -63,23 +63,6 @@ const renderMessage = (message) => {
 		]
 	)
 
-	// Add edit functionality for own messages
-	if (is_own_message) {
-		$message.$("message-header").appendChild(
-			$(
-				`
-				edit-button
-					icon[edit]
-						$1
-				`,
-				[$("icons icon[edit] svg").cloneNode(true)]
-			)
-		)
-		
-		$message.$("edit-button").on("click", () => {
-			showEditMessageModal(message)
-		})
-	}
 
 	return $message
 }
