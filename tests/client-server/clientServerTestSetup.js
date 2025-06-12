@@ -96,13 +96,11 @@ async function setupIntegrationTestEnvironment(options) {
 	// Setup virtual console
 	// --------------------------------------------------------------------------
 	const virtualConsole = new VirtualConsole()
-	virtualConsole.on("error", () => {
-		// Swallow errors to prevent them from cluttering test output.
-		// Comment this out if you need to debug.
+	virtualConsole.on("error", (error) => {
+		console.error(error)
 	})
-	virtualConsole.on("warn", () => {
-		// Swallow warnings to prevent them from cluttering test output.
-		// Comment this out if you need to debug.
+	virtualConsole.on("warn", (warn) => {
+		console.warn(warn)
 	})
 	// --------------------------------------------------------------------------
 	// END Setup virtual console
@@ -123,6 +121,12 @@ async function setupIntegrationTestEnvironment(options) {
 			
 			// Register an async handler for a specific fetch
 			window.mockAsyncFetch = function(url, bodyPattern, asyncHandler) {
+				if (!asyncHandler) {
+					asyncHandler = async (fetchOptions) => {
+						const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
+						return await window.executeHandler(req, res)
+					}
+				}
 				const promise = new Promise(resolve => {
 					asyncFetchHandlers.push({
 						url,
