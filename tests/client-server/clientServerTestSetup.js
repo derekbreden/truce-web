@@ -190,9 +190,6 @@ async function setupIntegrationTestEnvironment(options) {
 						pool: {
 							connect: async () => ({
 								query: async (sql, params) => {
-									console.log("Mock database query called:", sql.substring(0, 50) + "...")
-									console.log("Query params:", params)
-									
 									// Use database mocks from options if provided
 									if (options.databaseMocks) {
 										for (const mockName in options.databaseMocks) {
@@ -207,10 +204,13 @@ async function setupIntegrationTestEnvironment(options) {
 										return { rows: [{ session_id: 1 }] }
 									}
 									
+									// Log unmocked queries
+									console.log("UNMOCKED database query:", sql.substring(0, 100) + "...")
+									console.log("Query params:", params)
 									return { rows: [] }
 								},
 								release: () => {
-									console.log("Mock database connection released")
+									// Silent release
 								}
 							})
 						}
@@ -236,13 +236,13 @@ async function setupIntegrationTestEnvironment(options) {
 					statusCode: 200,
 					writableEnded: false,
 					setHeader: function(name, value) {
-						console.log(`Setting header ${name}: ${value}`)
+						// Silent header setting
 					},
 					end: function(data) {
 						this.responseData = data
 						this.ended = true
 						this.writableEnded = true
-						console.log("Response sent:", data.substring(0, 50) + "...")
+						// Silent response
 					}
 				}
 				return { req, res }
@@ -251,7 +251,6 @@ async function setupIntegrationTestEnvironment(options) {
 			window.executeHandler = async function(req, res) {
 				const handleSession = require("../../server/handleSession.js")
 				await handleSession(req, res)
-				console.log("Handler completed, response ended:", res.ended)
 				return JSON.parse(res.responseData)
 			}
 			

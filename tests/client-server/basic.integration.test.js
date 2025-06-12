@@ -9,6 +9,21 @@ const tests = {
 		const window = await setupIntegrationTestEnvironment({
 			beforeParse(window){
 				window.localStorage.setItem("trucev1:session_uuid", "test-session-uuid-123")
+				
+				// Set up external mocks before any scripts run
+				window.setupExternalMocks()
+				
+				// Register async fetch handlers for early requests to prevent failures
+				window.mockAsyncFetch("/session", '{"path":"/"}', async (fetchOptions) => {
+					const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
+					return await window.executeHandler(req, res)
+				})
+				
+				window.mockAsyncFetch("/session", '{"path":"/unread_count_unseen_count"}', async (fetchOptions) => {
+					const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
+					return await window.executeHandler(req, res)
+				})
+				
 			},
 			databaseMocks: {
 				sessionValidation: (sql, params) => {
@@ -29,6 +44,16 @@ const tests = {
 							}
 						}
 					}
+				},
+				notifications: (sql, params) => {
+					if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
+						return { 
+							rows: [{ 
+								unseen_count: 0,
+								unread_count: 0
+							}] 
+						}
+					}
 				}
 			}
 		})
@@ -36,15 +61,13 @@ const tests = {
 		
 		console.log("Testing client-server flow")
 		
+		const $join_button = $(`a[href="/posts"][big]`)
 		const fetchPromise = window.mockAsyncFetch("/session", '{"path":"/posts"}', async (fetchOptions) => {
-			window.setupExternalMocks()
 			const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
 			return await window.executeHandler(req, res)
 		})
 		
-		const $join_button = $(`a[href="/posts"][big]`)
 		$join_button.click()
-		
 		await fetchPromise
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
