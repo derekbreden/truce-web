@@ -8,6 +8,7 @@ async function setupIntegrationTestEnvironment(options) {
 	options.constsToExpose = options.constsToExpose || []
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 	options.localStorage = options.localStorage || {}
+	options.databaseMocks = options.databaseMocks || {}
 
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../../index.html")
