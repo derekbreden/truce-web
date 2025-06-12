@@ -93,7 +93,7 @@ module.exports = {
 		)
 
 		// Handle notifications for each user - either queue+alert or push+unread
-		subscriptions.rows.forEach(async (subscription) => {
+		for (const subscription of subscriptions.rows) {
 
 			// Skip if the user has an active websocket connection
 			if (user_details[subscription.user_id].has_active_websocket) {
@@ -135,7 +135,7 @@ module.exports = {
 
 			// Web Push version
 			} else {
-				webpush
+				await webpush
 					.sendNotification(
 						JSON.parse(subscription.subscription_json),
 						JSON.stringify({
@@ -161,7 +161,7 @@ module.exports = {
 						}
 					})
 			}
-		})
+		}
 
 		// Release the DB connection
 		pool_client.release()

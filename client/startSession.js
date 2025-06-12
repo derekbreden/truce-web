@@ -68,7 +68,7 @@ const startSession = (was_same_path) => {
 					data.session_uuid,
 				)
 				state.session_uuid = data.session_uuid
-				sendSessionUuidToWebSocket
+				sendSessionUuidToWebSocket()
 			}
 
 			if (data.email) {
