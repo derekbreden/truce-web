@@ -54,6 +54,23 @@ const tests = {
 							}] 
 						}
 					}
+				},
+				posts: (sql, params) => {
+					if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id")) {
+						return { 
+							rows: [
+								{
+									post_id: 1,
+									title: "Test Post",
+									content: "This is a test post",
+									create_date: "2024-01-01T00:00:00.000Z",
+									user_id: 1,
+									reply_count: 0,
+									favorite_count: 0
+								}
+							] 
+						}
+					}
 				}
 			}
 		})
