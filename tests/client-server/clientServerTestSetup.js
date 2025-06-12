@@ -273,10 +273,10 @@ async function setupIntegrationTestEnvironment(options) {
 				fn()
 			}
 			
-			// Set localStorage items from options before scripts run
-			Object.keys(options.localStorage).forEach(key => {
-				window.localStorage.setItem(key, options.localStorage[key])
-			})
+			// Allow an options "beforeParse()" handler to be executed
+			if (options.beforeParse && typeof options.beforeParse === "function") {
+				options.beforeParse(window)
+			}
 		},
 	})
 	// --------------------------------------------------------------------------

@@ -7,8 +7,8 @@ const { assertEquals, runTests } = require("../client/shared/testUtils.js")
 const tests = {
 	testClientServerFlow: async () => {
 		const window = await setupIntegrationTestEnvironment({
-			localStorage: {
-				"trucev1:session_uuid": "test-session-uuid-123"
+			beforeParse(window){
+				window.localStorage.setItem("trucev1:session_uuid", "test-session-uuid-123")
 			},
 			databaseMocks: {
 				sessionValidation: (sql, params) => {
