@@ -17,6 +17,7 @@ webpush.setVapidDetails(
 )
 const firebase = require("../firebase")
 const prompts = require("../prompts")
+const websocket = require("../websocket")
 
 module.exports = async (req, res) => {
 	if (
@@ -498,23 +499,72 @@ module.exports = async (req, res) => {
 			)
 		}
 
-		// Trigger all pushes
+		// Handle notifications for each user - either queue+alert or push+unread
 		subscriptions.rows.forEach(async (subscription) => {
-			// Create data for the push
-			const short_display_name =
-				req.body.display_name.length > 20
-					? req.body.display_name.substring(0, 20) + "..."
+			// Check if user has any active WebSocket connection
+			const has_active_websocket = websocket.hasActiveWebSocketConnection(subscription.user_id)
+			
+			if (has_active_websocket) {
+				// User is actively viewing - mark notification as read and send instant alert
+				await req.client.query(
+					`
+					UPDATE reply_notifications
+					SET read = TRUE
+					WHERE user_id = $1 AND reply_id = $2
+					`,
+					[subscription.user_id, reply_id]
+				)
+				
+				// Send instant alert via WebSocket (with fallback notification data)
+				const short_display_name = req.body.display_name.length > 20
+					? req.body.display_name.slice(0, 20) + "..."
 					: req.body.display_name
-			const short_body =
-				req.body.body.length > 50
-					? req.body.body.substring(0, 50) + "..."
+				const short_body = req.body.body.length > 50
+					? req.body.body.slice(0, 50) + "..."
 					: req.body.body
-			let topic = `post:${post_id}`
+				
+				// Get unread count for fallback notification
+				const unread_count_result = await req.client.query(
+					`
+					SELECT COUNT(*) AS unread_count
+					FROM reply_notifications
+					WHERE user_id = $1 AND read = FALSE
+					`,
+					[subscription.user_id]
+				)
+				const unread_count = unread_count_result.rows[0].unread_count
+				
+				// Prepare fallback notification data for queuing if WebSocket fails
+				const notification_data = {
+					title: `${short_display_name} replied`,
+					body: short_body,
+					topic: `post:${post_id}`,
+					unread_count: unread_count
+				}
+				
+				websocket.sendInstantAlert(
+					subscription.user_id,
+					`${short_display_name} replied to a post`,
+					notification_data,
+					post_id // Pass post_id for UI suppression
+				)
+			} else {
+				// User not actively viewing - send traditional push notification
+				// Create data for the push
+				const short_display_name =
+					req.body.display_name.length > 20
+						? req.body.display_name.substring(0, 20) + "..."
+						: req.body.display_name
+				const short_body =
+					req.body.body.length > 50
+						? req.body.body.substring(0, 50) + "..."
+						: req.body.body
+				let topic = `post:${post_id}`
 
-			// Chrome wants unique topics ¯\_(ツ)_/¯
-			if (String(subscription.subscription_json || "").match(/google/i)) {
-				topic = `reply:${reply_id}`
-			}
+				// Chrome wants unique topics ¯\_(ツ)_/¯
+				if (String(subscription.subscription_json || "").match(/google/i)) {
+					topic = `reply:${reply_id}`
+				}
 
 			// Get the unread count for this user id
 			const unread_count_result = await req.client.query(
@@ -594,7 +644,8 @@ module.exports = async (req, res) => {
 						}
 					})
 			}
-		})
+		}
+	})
 
 		// Send websocket update after all notifications have been inserted
 		req.sendWsMessage("UPDATE", post_id)

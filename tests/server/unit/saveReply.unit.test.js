@@ -160,6 +160,23 @@ require.cache[firebase_messaging_path] = {
 	id: firebase_messaging_path
 }
 
+// Mock WebSocket module to avoid errors from hasActiveWebSocketConnection calls
+const mock_websocket = {
+	hasActiveWebSocketConnection: (user_id) => {
+		// Return false by default for existing tests (not testing websocket functionality)
+		return false
+	}
+}
+
+// Replace websocket module in require cache
+const websocket_path = require.resolve("../../../server/websocket")
+delete require.cache[websocket_path]
+require.cache[websocket_path] = {
+	exports: mock_websocket,
+	loaded: true,
+	id: websocket_path
+}
+
 // Track updateDisplayName calls by monitoring for its specific database query
 let update_display_name_calls = []
 
@@ -1143,7 +1160,7 @@ const cleanup = () => {
 	delete require.cache[firebase_admin_path]
 	delete require.cache[firebase_app_path]
 	delete require.cache[firebase_messaging_path]
-	// updateDisplayNamePath was removed
+	delete require.cache[websocket_path]
 	delete require.cache[save_reply_path]
 }
 
