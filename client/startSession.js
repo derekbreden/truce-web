@@ -14,7 +14,6 @@ fetch = function (url, options) {
 	}
 	return original_fetch_2(url, options)
 }
-// END Workaround
 
 const startSession = (was_same_path) => {
 	// If cache available, render from that first

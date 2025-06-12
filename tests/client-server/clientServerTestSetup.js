@@ -7,6 +7,7 @@ async function setupIntegrationTestEnvironment(options) {
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
+	options.localStorage = options.localStorage || {}
 
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../../index.html")
@@ -132,8 +133,8 @@ async function setupIntegrationTestEnvironment(options) {
 				return promise
 			}
 			
-			// Mock fetch that uses registered handlers
-			window.fetch = async function(url, fetchOptions) {
+			// Mock fetch that supports async handlers
+			async function mockFetchImplementation(url, fetchOptions) {
 				// Find matching handler
 				const handlerIndex = asyncFetchHandlers.findIndex(h => {
 					if (h.url !== url) return false
@@ -146,7 +147,7 @@ async function setupIntegrationTestEnvironment(options) {
 					asyncFetchHandlers.splice(handlerIndex, 1) // Remove after use
 					
 					// Run the async handler and get response
-					const response = await handler.asyncHandler()
+					const response = await handler.asyncHandler(fetchOptions)
 					
 					// Resolve the promise returned by mockAsyncFetch
 					handler.resolve()
@@ -165,13 +166,96 @@ async function setupIntegrationTestEnvironment(options) {
 				}
 			}
 			
+			// Replace fetch directly - client code will wrap this
+			window.fetch = mockFetchImplementation
+			
+			// Utility functions for client-server testing
+			window.setupExternalMocks = function() {
+				// Mock web-push module
+				const webpushPath = require.resolve("web-push")
+				require.cache[webpushPath] = {
+					exports: {
+						setVapidDetails: () => {},
+						sendNotification: async () => ({ success: true })
+					},
+					loaded: true,
+					id: webpushPath
+				}
+				
+				// Mock the pool module
+				const poolPath = require.resolve("../../server/pool")
+				require.cache[poolPath] = {
+					exports: {
+						pool: {
+							connect: async () => ({
+								query: async (sql, params) => {
+									console.log("Mock database query called:", sql.substring(0, 50) + "...")
+									console.log("Query params:", params)
+									
+									// Use database mocks from options if provided
+									if (options.databaseMocks) {
+										for (const mockName in options.databaseMocks) {
+											const mockFn = options.databaseMocks[mockName]
+											const result = mockFn(sql, params)
+											if (result) return result
+										}
+									}
+									
+									// Default responses
+									if (sql.includes("INSERT INTO sessions")) {
+										return { rows: [{ session_id: 1 }] }
+									}
+									
+									return { rows: [] }
+								},
+								release: () => {
+									console.log("Mock database connection released")
+								}
+							})
+						}
+					},
+					loaded: true,
+					id: poolPath
+				}
+			}
+			
+			window.createMockReqRes = function(body, headers) {
+				const req = {
+					headers: headers || {},
+					body: body
+				}
+				// Ensure headers are lowercase (HTTP standard)
+				if (req.headers.Authorization) {
+					req.headers.authorization = req.headers.Authorization
+					delete req.headers.Authorization
+				}
+				const res = {
+					responseData: "",
+					ended: false,
+					statusCode: 200,
+					writableEnded: false,
+					setHeader: function(name, value) {
+						console.log(`Setting header ${name}: ${value}`)
+					},
+					end: function(data) {
+						this.responseData = data
+						this.ended = true
+						this.writableEnded = true
+						console.log("Response sent:", data.substring(0, 50) + "...")
+					}
+				}
+				return { req, res }
+			}
+			
+			window.executeHandler = async function(req, res) {
+				const handleSession = require("../../server/handleSession.js")
+				await handleSession(req, res)
+				console.log("Handler completed, response ended:", res.ended)
+				return JSON.parse(res.responseData)
+			}
+			
 			// Keep essential mocks
 			window.HTMLElement.prototype.scrollIntoView = () => {}
-			window.localStorage = {
-				getItem: () => null,
-				setItem: () => {},
-				removeItem: () => {}
-			}
 			window.sessionStorage = {
 				getItem: () => null,
 				setItem: () => {},
@@ -187,6 +271,11 @@ async function setupIntegrationTestEnvironment(options) {
 			window.setTimeout = (fn) => {
 				fn()
 			}
+			
+			// Set localStorage items from options before scripts run
+			Object.keys(options.localStorage).forEach(key => {
+				window.localStorage.setItem(key, options.localStorage[key])
+			})
 		},
 	})
 	// --------------------------------------------------------------------------
@@ -194,6 +283,8 @@ async function setupIntegrationTestEnvironment(options) {
 	// --------------------------------------------------------------------------
 
 	const { window } = dom
+	
+	
 	//
 	// Wait for DOM content to be loaded and scripts to execute
 	await new Promise(resolve => setTimeout(resolve, 0))
