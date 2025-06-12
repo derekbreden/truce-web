@@ -185,6 +185,7 @@ const {
 	createMockRequest,
 	createMockResponse,
 	assertEquals,
+	addQueryMock,
 	runTests
 } = require("../shared/serverTestSetup.js")
 
@@ -851,7 +852,7 @@ const tests = {
 		req.client.addQueryMock("UPDATE posts", { rows: [] })
 		
 		// Mock subscriptions for notifications
-		req.client.addQueryMock(
+		addQueryMock(
 			"SELECT\n        user_id,",
 			{ 
 				rows: [
@@ -881,11 +882,11 @@ const tests = {
 		)
 		
 		// Mock notification insertions
-		req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [] })
+		req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [{notification_id: 1}] })
 		
 		// Mock unread counts for badge
-		req.client.addQueryMock(
-			"SELECT \n          COUNT(*)",
+		addQueryMock(
+			"SELECT sum(unread_count) AS unread_count",
 			{ 
 				rows: [
 					{ unread_count: 3 }

@@ -34,6 +34,11 @@ function createMockDatabaseClient(options = {}) {
 		// Helper to clear all mocks
 		clearQueryMocks: () => {
 			queryMocks.length = 0
+		},
+
+		// Mock release
+		release: () => {
+			// No-op for mock client
 		}
 	}
 	
@@ -99,7 +104,24 @@ function createMockResponse() {
 	}
 }
 
+// Mock pool
+const poolMockDatabaseClient = createMockDatabaseClient() // {verbose: true})
+const pool_path = require.resolve("../../../server/pool.js")
+delete require.cache[pool_path]
+require.cache[pool_path] = {
+	exports: {
+		pool: {
+			async connect(){
+				return poolMockDatabaseClient
+			},
+		},
+	},
+	loaded: true,
+	id: pool_path
+}
+
 module.exports = {
+	addQueryMock: poolMockDatabaseClient.addQueryMock,
 	createMockDatabaseClient,
 	createMockRequest,
 	createMockResponse,

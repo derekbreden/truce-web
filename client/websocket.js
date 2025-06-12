@@ -26,7 +26,7 @@ const reconnectWs = () => {
 	state.ws.addEventListener("open", () => {
 		state.ws.send(JSON.stringify({ 
 			path: state.path,
-			user_id: state.user_id 
+			session_uuid: state.session_uuid,
 		}))
 	})
 	state.ws.addEventListener("close", (event) => {
@@ -41,7 +41,7 @@ const updateWebSocketPath = (new_path) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 		state.ws.send(JSON.stringify({ 
 			path: new_path,
-			user_id: state.user_id 
+			session_uuid: state.session_uuid,
 		}))
 	}
 }
@@ -103,22 +103,17 @@ const handleReadStatusUpdate = (data) => {
 const handleInstantAlert = (data) => {
 	// Only show alertInfo if not suppressed (user viewing different conversation)
 	if (!data.suppress_ui) {
-		alertInfo(data.message)
+		alertInfo(data.push_data.title + "\n" + data.push_data.body)
 	}
 	
 	// Send acknowledgment back to server if notification_id is provided
 	if (data.notification_id && state.ws && state.ws.readyState === WebSocket.OPEN) {
 		state.ws.send(JSON.stringify({
 			type: "INSTANT_ALERT_ACK",
-			notification_id: data.notification_id
+			notification_id: data.notification_id,
+			session_uuid: state.session_uuid,
 		}))
 	}
-}
-
-// Expose for testing
-if (typeof window !== "undefined") {
-	window.handleReadStatusUpdate = handleReadStatusUpdate
-	window.handleInstantAlert = handleInstantAlert
 }
 
 // Send typing indicator
@@ -127,7 +122,8 @@ const sendTypingIndicator = (is_typing, conversation_id) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN && conversation_id) {
 		state.ws.send(JSON.stringify({
 			typing: is_typing,
-			conversation_id: conversation_id
+			conversation_id: conversation_id,
+			session_uuid: state.session_uuid,
 		}))
 		
 		if (is_typing) {
@@ -136,5 +132,14 @@ const sendTypingIndicator = (is_typing, conversation_id) => {
 				sendTypingIndicator(false, conversation_id)
 			}, 3000)
 		}
+	}
+}
+
+// Send session_uuid
+const sendSessionUuidToWebSocket = () => {
+	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+		state.ws.send(JSON.stringify({
+			session_uuid: state.session_uuid,
+		}))
 	}
 }

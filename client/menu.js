@@ -91,10 +91,8 @@ const showMenu = () => {
 			state.email = ""
 			state.reset_token_uuid = ""
 
-			// Workaround for replit Webview not supporting Set-Cookie
 			localStorage.removeItem(`${window.local_storage_key}:session_uuid`)
 			state.session_uuid = ""
-			// END Workaround
 
 			// Tell server to clear the cookie and set a new one
 			fetch("/session", {
@@ -105,15 +103,14 @@ const showMenu = () => {
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					// Workaround for replit Webview not supporting Set-Cookie
 					if (data.session_uuid) {
 						localStorage.setItem(
 							`${window.local_storage_key}:session_uuid`,
 							data.session_uuid,
 						)
 						state.session_uuid = data.session_uuid
+						sendSessionUuidToWebSocket()
 					}
-					// END Workaround
 
 					state.cache = {}
 					goToPath("/posts")

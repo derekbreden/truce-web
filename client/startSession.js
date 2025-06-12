@@ -1,12 +1,16 @@
-// Workaround for replit Webview not supporting Set-Cookie
 const original_fetch_2 = fetch
 fetch = function (url, options) {
+	state_session_uuid_was = state.session_uuid
 	state.session_uuid = localStorage.getItem(
 		`${window.local_storage_key}:session_uuid`,
 	)
 	if (state.session_uuid) {
 		options.headers = options.headers || {}
 		options.headers["Authorization"] = `Bearer ${state.session_uuid}`
+
+		if (state.session_uuid !== state_session_uuid_was) {
+			sendSessionUuidToWebSocket()
+		}
 	}
 	return original_fetch_2(url, options)
 }
@@ -58,15 +62,14 @@ const startSession = (was_same_path) => {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			// Workaround for replit Webview not supporting Set-Cookie
 			if (data.session_uuid) {
 				localStorage.setItem(
 					`${window.local_storage_key}:session_uuid`,
 					data.session_uuid,
 				)
 				state.session_uuid = data.session_uuid
+				sendSessionUuidToWebSocket
 			}
-			// END Workaround
 
 			if (data.email) {
 				state.email = data.email

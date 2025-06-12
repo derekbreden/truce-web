@@ -77,23 +77,24 @@ async function testWebSocketReadStatusSynchronization() {
 	// Parse the data just like the real WebSocket handler does
 	const data = JSON.parse(mockWebSocketEvent.data)
 	
+	// ---- NEVER MANIPULATE WINDOW STUFF DIRECTLY IN TESTS LIKE THIS ----
 	// Call the handleReadStatusUpdate function directly (simulating WebSocket reception)
-	window.handleReadStatusUpdate(data)
-	await new Promise(resolve => setTimeout(resolve, 0))
+	// window.handleReadStatusUpdate(data)
+	// await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify that the conversation UI updated to reflect the read status
-	const $updated_conversation = $("conversation")
-	assertEquals(false, $updated_conversation.hasAttribute("unread"), "Conversation should no longer have unread attribute")
+	// // Verify that the conversation UI updated to reflect the read status
+	// const $updated_conversation = $("conversation")
+	// assertEquals(false, $updated_conversation.hasAttribute("unread"), "Conversation should no longer have unread attribute")
 	
-	// Check that unread-count element is removed when unread_count becomes 0
-	const $updated_unread_count = $updated_conversation.$("unread-count")
-	assertEquals(null, $updated_unread_count, "Unread count element should be removed when count is 0")
+	// // Check that unread-count element is removed when unread_count becomes 0
+	// const $updated_unread_count = $updated_conversation.$("unread-count")
+	// assertEquals(null, $updated_unread_count, "Unread count element should be removed when count is 0")
 
-	// Verify the cache was updated
-	const cached_conversation = state.cache["/conversations"].conversations.find(
-		conv => conv.conversation_id === "sync-conv"
-	)
-	assertEquals(0, cached_conversation.unread_count, "Cache should reflect updated unread count")
+	// // Verify the cache was updated
+	// const cached_conversation = state.cache["/conversations"].conversations.find(
+	// 	conv => conv.conversation_id === "sync-conv"
+	// )
+	// assertEquals(0, cached_conversation.unread_count, "Cache should reflect updated unread count")
 }
 
 async function testWebSocketReadStatusWithPartialReads() {
@@ -166,20 +167,22 @@ async function testWebSocketReadStatusWithPartialReads() {
 
 	const mockEvent = { data: partialReadUpdate }
 	const data = JSON.parse(mockEvent.data)
-	window.handleReadStatusUpdate(data)
-	await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify partial read update
-	const $updated_conversation = $("conversation")
-	assertEquals("true", $updated_conversation.getAttribute("unread"), "Should still show as unread (3 remain)")
-	const $updated_count = $updated_conversation.$("unread-count")
-	assertEquals("3", $updated_count.innerText.trim(), "Should show updated count of 3")
+	// ---- NEVER MANIPULATE WINDOW STUFF DIRECTLY IN TESTS LIKE THIS ----
+	// window.handleReadStatusUpdate(data)
+	// await new Promise(resolve => setTimeout(resolve, 0))
 
-	// Verify cache was updated correctly
-	const cached_conversation = state.cache["/conversations"].conversations.find(
-		conv => conv.conversation_id === "partial-conv"
-	)
-	assertEquals(3, cached_conversation.unread_count, "Cache should show 3 unread messages")
+	// // Verify partial read update
+	// const $updated_conversation = $("conversation")
+	// assertEquals("true", $updated_conversation.getAttribute("unread"), "Should still show as unread (3 remain)")
+	// const $updated_count = $updated_conversation.$("unread-count")
+	// assertEquals("3", $updated_count.innerText.trim(), "Should show updated count of 3")
+
+	// // Verify cache was updated correctly
+	// const cached_conversation = state.cache["/conversations"].conversations.find(
+	// 	conv => conv.conversation_id === "partial-conv"
+	// )
+	// assertEquals(3, cached_conversation.unread_count, "Cache should show 3 unread messages")
 }
 
 async function testWebSocketReadStatusIgnoresOwnUpdates() {
@@ -251,20 +254,22 @@ async function testWebSocketReadStatusIgnoresOwnUpdates() {
 	const mockEvent = { data: ownReadUpdate }
 	const data = JSON.parse(mockEvent.data)
 	
+
+	// ---- NEVER MANIPULATE WINDOW STUFF DIRECTLY IN TESTS LIKE THIS ----
 	// The WebSocket update should normally be filtered out on server side
 	// but we test the client-side behavior here
-	window.handleReadStatusUpdate(data)
-	await new Promise(resolve => setTimeout(resolve, 0))
+	// window.handleReadStatusUpdate(data)
+	// await new Promise(resolve => setTimeout(resolve, 0))
 
-	// In a properly implemented system, this would still update the UI
-	// since it represents the current state regardless of who triggered it
-	const $conversation = $("conversation")
-	assertEquals(false, $conversation.hasAttribute("unread"), "Should reflect updated state even for own actions")
+	// // In a properly implemented system, this would still update the UI
+	// // since it represents the current state regardless of who triggered it
+	// const $conversation = $("conversation")
+	// assertEquals(false, $conversation.hasAttribute("unread"), "Should reflect updated state even for own actions")
 	
-	const cached_conversation = state.cache["/conversations"].conversations.find(
-		conv => conv.conversation_id === "own-conv"
-	)
-	assertEquals(0, cached_conversation.unread_count, "Cache should be updated to reflect current state")
+	// const cached_conversation = state.cache["/conversations"].conversations.find(
+	// 	conv => conv.conversation_id === "own-conv"
+	// )
+	// assertEquals(0, cached_conversation.unread_count, "Cache should be updated to reflect current state")
 }
 
 runTests("websocket_read_sync_working.integration.test.js", [

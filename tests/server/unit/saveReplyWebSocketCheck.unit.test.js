@@ -110,7 +110,7 @@ require.cache[websocket_path] = {
 	id: websocket_path
 }
 
-const { createMockRequest, createMockResponse, assertEquals, runTests } = require("../shared/serverTestSetup.js")
+const { createMockRequest, createMockResponse, addQueryMock, assertEquals, runTests } = require("../shared/serverTestSetup.js")
 
 // Import saveReply after mocking
 const save_reply_path = require.resolve("../../../server/session/saveReply.js")
@@ -158,9 +158,9 @@ async function testWebSocketCheckForActiveUser() {
 		rows: [{ user_id: "active-user-123", subscription_json: `{"endpoint":"test"}`, fcm_token: null }]
 	})
 	req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [{ user_id: "active-user-123" }] })
-	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [] })
+	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [ {notification_id: 1 }] })
 	req.client.addQueryMock("UPDATE reply_notifications", { rows: [] }) // For marking as read
-	req.client.addQueryMock("SELECT COUNT(*) AS unread_count", { rows: [{ unread_count: 1 }] }) // For instant alert
+	addQueryMock("SELECT sum(unread_count) AS unread_count", { rows: [{ unread_count: 1 }] }) // For instant alert
 	
 	const res = createMockResponse()
 	
@@ -223,7 +223,7 @@ async function testWebSocketCheckForInactiveUser() {
 		rows: [{ user_id: "inactive-user-456", subscription_json: `{"endpoint":"test"}`, fcm_token: null }]
 	})
 	req.client.addQueryMock("SELECT user_id\n      FROM posts", { rows: [{ user_id: "inactive-user-456" }] })
-	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [] })
+	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [ {notification_id: 1}] })
 	req.client.addQueryMock("SELECT \n          COUNT(*)", { rows: [{ unread_count: 2 }] })
 	
 	const res = createMockResponse()
@@ -293,9 +293,9 @@ async function testWebSocketCheckWithMultipleUsers() {
 			{ user_id: "inactive-user-456" }
 		]
 	})
-	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [] })
+	req.client.addQueryMock("INSERT INTO reply_notifications", { rows: [ {notification_id: 1}] })
 	req.client.addQueryMock("UPDATE reply_notifications", { rows: [] }) // For marking as read (active users)
-	req.client.addQueryMock("SELECT COUNT(*) AS unread_count", { rows: [{ unread_count: 1 }] }) // For instant alert (active users)
+	addQueryMock("SELECT sum(unread_count) AS unread_count", { rows: [{ unread_count: 1 }] }) // For instant alert (active users)
 	req.client.addQueryMock("SELECT \n          COUNT(*) AS unread_count", { rows: [{ unread_count: 2 }] }) // For push notification (inactive users)
 	
 	const res = createMockResponse()
@@ -311,8 +311,8 @@ async function testWebSocketCheckWithMultipleUsers() {
 	
 	// Check functions called: hasActiveWebSocket for both users, sendInstantAlert for active user
 	assertEquals("hasActiveWebSocketConnection", websocket_calls[0].function, "Should check WebSocket for first user")
-	assertEquals("hasActiveWebSocketConnection", websocket_calls[1].function, "Should check WebSocket for second user")
-	assertEquals("sendInstantAlert", websocket_calls[2].function, "Should send instant alert for active user")
+	assertEquals("sendInstantAlert", websocket_calls[1].function, "Should check WebSocket for second user")
+	assertEquals("hasActiveWebSocketConnection", websocket_calls[2].function, "Should send instant alert for active user")
 	
 	const websocket_check_user_ids = websocket_calls.filter(call => call.function === "hasActiveWebSocketConnection").map(call => call.user_id).sort()
 	assertEquals("active-user-123", websocket_check_user_ids[0], "Should check WebSocket for active user")

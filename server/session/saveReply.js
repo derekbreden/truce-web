@@ -9,15 +9,8 @@ const {
 const object_client = new S3Client({
 	region: "us-east-1",
 })
-const webpush = require("web-push")
-webpush.setVapidDetails(
-	"mailto:derek@truce.net",
-	process.env.VAPID_PUBLIC_KEY,
-	process.env.VAPID_PRIVATE_KEY,
-)
-const firebase = require("../firebase")
 const prompts = require("../prompts")
-const websocket = require("../websocket")
+const push = require("../push")
 
 module.exports = async (req, res) => {
 	if (
@@ -437,34 +430,8 @@ module.exports = async (req, res) => {
 			}),
 		)
 
-		// Send push notifications
-		const subscriptions = await req.client.query(
-			`
-      SELECT
-        user_id,
-        subscription_json,
-        fcm_token
-      FROM subscriptions
-      WHERE user_id IN (
-        SELECT user_id
-        FROM posts
-        WHERE post_id = $1
-        UNION
-        SELECT user_id
-        FROM replies
-        WHERE reply_id IN (
-          SELECT ancestor_reply_id
-          FROM reply_ancestors
-          WHERE reply_id = $2
-        )
-      ) AND user_id <> $3
-      AND active = TRUE
-      `,
-			[post_id, reply_id, req.session.user_id],
-		)
-
 		// Get user_id(s) to notify
-		const user_ids_to_notify = await req.client.query(
+		const user_records_to_notify = await req.client.query(
 			`
       SELECT user_id
       FROM posts
@@ -484,168 +451,43 @@ module.exports = async (req, res) => {
       `,
 			[post_id, reply_id, req.session.user_id],
 		)
+		const user_ids_to_notify = user_records_to_notify.rows.map(row => row.user_id)
 
 		// Wait for all notifications to be inserted
-		for (const user_id_record of user_ids_to_notify.rows) {
-			// Insert notifications records for unread notifications
-			await req.client.query(
+		const notification_ids = {}
+		for (const user_id of user_ids_to_notify) {
+			const insert_result = await req.client.query(
 				`
         INSERT INTO reply_notifications
           (user_id, reply_id)
         VALUES
           ($1, $2)
+				RETURNING notification_id
         `,
-				[user_id_record.user_id, reply_id],
+				[user_id, reply_id],
 			)
+			notification_ids[user_id] = insert_result.rows[0].notification_id
 		}
 
-		// Handle notifications for each user - either queue+alert or push+unread
-		subscriptions.rows.forEach(async (subscription) => {
-			// Check if user has any active WebSocket connection
-			const has_active_websocket = websocket.hasActiveWebSocketConnection(subscription.user_id)
-			
-			if (has_active_websocket) {
-				// User is actively viewing - mark notification as read and send instant alert
-				await req.client.query(
-					`
-					UPDATE reply_notifications
-					SET read = TRUE
-					WHERE user_id = $1 AND reply_id = $2
-					`,
-					[subscription.user_id, reply_id]
-				)
-				
-				// Send instant alert via WebSocket (with fallback notification data)
-				const short_display_name = req.body.display_name.length > 20
+		// Prepare push data
+		const push_data = {
+			title: `${
+				req.body.display_name.length > 20
 					? req.body.display_name.slice(0, 20) + "..."
 					: req.body.display_name
-				const short_body = req.body.body.length > 50
-					? req.body.body.slice(0, 50) + "..."
-					: req.body.body
-				
-				// Get unread count for fallback notification
-				const unread_count_result = await req.client.query(
-					`
-					SELECT COUNT(*) AS unread_count
-					FROM reply_notifications
-					WHERE user_id = $1 AND read = FALSE
-					`,
-					[subscription.user_id]
-				)
-				const unread_count = unread_count_result.rows[0].unread_count
-				
-				// Prepare fallback notification data for queuing if WebSocket fails
-				const notification_data = {
-					title: `${short_display_name} replied`,
-					body: short_body,
-					topic: `post:${post_id}`,
-					unread_count: unread_count
-				}
-				
-				websocket.sendInstantAlert(
-					subscription.user_id,
-					`${short_display_name} replied to a post`,
-					notification_data,
-					post_id // Pass post_id for UI suppression
-				)
-			} else {
-				// User not actively viewing - send traditional push notification
-				// Create data for the push
-				const short_display_name =
-					req.body.display_name.length > 20
-						? req.body.display_name.substring(0, 20) + "..."
-						: req.body.display_name
-				const short_body =
-					req.body.body.length > 50
-						? req.body.body.substring(0, 50) + "..."
-						: req.body.body
-				let topic = `post:${post_id}`
-
-				// Chrome wants unique topics ¯\_(ツ)_/¯
-				if (String(subscription.subscription_json || "").match(/google/i)) {
-					topic = `reply:${reply_id}`
-				}
-
-			// Get the unread count for this user id
-			const unread_count_result = await req.client.query(
-				`
-        SELECT 
-          COUNT(*) AS unread_count
-        FROM reply_notifications
-        WHERE
-          user_id = $1
-          AND read = FALSE
-        `,
-				[subscription.user_id],
-			)
-			const unread_count = unread_count_result.rows[0].unread_count
-
-			// Send the push
-
-			// FCM version
-			if (subscription.fcm_token) {
-				const message = {
-					notification: {
-						title: `${short_display_name} replied`,
-						body: short_body,
-					},
-					apns: {
-						payload: {
-							aps: {
-								badge: Number(unread_count || 0),
-							},
-						},
-					},
-					token: JSON.parse(subscription.fcm_token),
-				}
-				try {
-					const result = await firebase.getMessaging().send(message)
-				} catch (e) {
-					if (e.code === "messaging/registration-token-not-registered") {
-						await req.client.query(
-							`
-              DELETE FROM subscriptions
-              WHERE fcm_token = $1
-              `,
-							[subscription.fcm_token],
-						)
-					} else {
-						console.error("Unhandled FCM message:", e.message)
-						console.error("Unhandled FCM code:", e.code)
-					}
-				}
-
-				// Web Push version
-			} else {
-				webpush
-					.sendNotification(
-						JSON.parse(subscription.subscription_json),
-						JSON.stringify({
-							title: `${short_display_name} replied`,
-							body: short_body,
-							topic,
-							unread_count,
-						}),
-					)
-					.then((result) => {
-					})
-					.catch(async (error) => {
-						// 410 means unsubscribed and is expected, but means we need to stop sending to that subscription_json
-						if (error.statusCode === 410) {
-							await req.client.query(
-								`
-              DELETE FROM subscriptions
-              WHERE subscription_json = $1
-              `,
-								[subscription.subscription_json],
-							)
-						} else {
-							console.error("Unhandled webpush error:", error)
-						}
-					})
-			}
+				} replied`,
+			body: req.body.body.length > 50
+				? req.body.body.slice(0, 50) + "..."
+				: req.body.body,
+			topic: `reply:${reply_id}`,
 		}
-	})
+
+		// Send the push
+		await push.sendPush(
+			user_ids_to_notify,
+			notification_ids,
+			push_data,
+		)
 
 		// Send websocket update after all notifications have been inserted
 		req.sendWsMessage("UPDATE", post_id)

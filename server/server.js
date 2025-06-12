@@ -123,7 +123,7 @@ module.exports = {
 		const server = http.createServer(this.handleRequest.bind(this))
 
 		// Our websocket server
-		require("./websocket").init(server)
+		await require("./websocket").init(server)
 
 		// Start listening
 		server.listen(port, hostname, () => {
