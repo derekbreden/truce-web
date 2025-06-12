@@ -224,6 +224,7 @@ When working on tasks:
 5. Any test failure means refactoring broke something - fix code, not test
 
 ## Debugging Philosophy
+	**Debug by investigation, not speculation** - Find actual causes before attempting fixes
 	**Test suspected layer directly** - Write minimal tests for database, API, DOM
 	**Subtract complexity, don't add it** - Remove layers to isolate problems  
 	**One variable at a time** - Change only what you're testing
