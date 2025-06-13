@@ -457,15 +457,15 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 							rows: [
 								{
 									post_id: 123, // The newly created post
-									title: "Test Post Title",
-									body: "This is the content of my test post. It needs to be longer than the title to pass validation.",
+									title: "Newly Created Post Title",
+									body: "This is the body content of the newly created post. It needs to be longer than the title to pass validation.",
 									create_date: "2024-01-02T01:00:00.000Z",
 									user_id: 1,
 									reply_count: 0,
 									favorite_count: 0,
 									topics: "religion,media",
 									edit: true,
-									slug: "test_post_title"
+									slug: "newly_created_post_title"
 								}
 							] 
 						}

@@ -10,8 +10,8 @@ const tests = {
 		const { $ } = window
 		
 		// Fill in the post form
-		$("add-new[post] input[title]").value = "Test Post Title"
-		$("add-new[post] textarea[body]").value = "This is the content of my test post. It needs to be longer than the title to pass validation."
+		$("add-new[post] input[title]").value = "Newly Created Post Title"
+		$("add-new[post] textarea[body]").value = "This is the body content of the newly created post. It needs to be longer than the title to pass validation."
 
 		// Submit the post
 		$("add-new[post] button[submit]").click()
@@ -26,12 +26,12 @@ const tests = {
 
 		// Verify the new post is rendered instantly (getMoreRecent was triggered)
 		assertEquals(
-			"Test Post Title", 
+			"Newly Created Post Title", 
 			$("main-content-2 posts post:first-child h2").textContent.trim(),
 			"New post should be rendered with correct title",
 		)
 		assertEquals(
-			"This is the content of my test post. It needs to be longer than the title to pass validation.",
+			"This is the body content of the newly created post. It needs to be longer than the title to pass validation.",
 			$("main-content-2 posts post:first-child p span").innerText,
 			"New post should be rendered with correct body content",
 		)
