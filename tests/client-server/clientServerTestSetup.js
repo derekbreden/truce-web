@@ -244,8 +244,8 @@ async function setupIntegrationTestEnvironment(options) {
 									}
 									
 									// Log unmocked queries
-									console.log("UNMOCKED database query:", sql.substring(0, 100) + "...")
-									console.log("Query params:", params)
+									console.warn("UNMOCKED database query:", sql.substring(0, 200) + "...")
+									console.warn("Query params:", params)
 									return { rows: [] }
 								},
 								release: () => {
@@ -403,7 +403,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 				}
 			},
 			posts: (sql, params) => {
-				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id")) {
+				// Regular posts queries (not single post)
+				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id") && !sql.includes("p.slug = $2")) {
 					return { 
 						rows: [
 							{
@@ -415,7 +416,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
-								edit: true
+								edit: true,
+								slug: "my-post"
 							},
 							{
 								post_id: 2,
@@ -426,7 +428,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
-								edit: false
+								edit: false,
+								slug: "other-users-post"
 							}
 						] 
 					}
@@ -565,6 +568,103 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 								topics: ""
 							}
 						] 
+					}
+				}
+			},
+			singlePost: (sql, params) => {
+				// Single post query from getSinglePost.js
+				if (sql.includes("SELECT") && sql.includes("p.post_id as post_id") && sql.includes("p.slug = $2")) {
+					return {
+						rows: [
+							{
+								create_date: "2024-01-02T00:00:00.000Z",
+								post_id: 1,
+								title: "My Post",
+								user_id: 1,
+								display_name: "Test User",
+								display_name_index: "test-user",
+								user_slug: "test-user",
+								profile_picture_uuid: null,
+								user_verified: true,
+								slug: "my-post",
+								body: "This is my own post with full content",
+								poll_1: null,
+								poll_2: null,
+								poll_3: null,
+								poll_4: null,
+								poll_counts: null,
+								poll_counts_estimated: null,
+								note: null,
+								favorite_count: 2,
+								reply_count: 2,
+								counts_max_create_date: "2024-01-02T12:00:00.000Z",
+								edit: true,
+								image_uuids: null,
+								favorited: false,
+								replyed: false,
+								voted: false,
+								topics: "religion,media"
+							}
+						]
+					}
+				}
+				
+				// Post ID lookup query
+				if (sql.includes("SELECT p.post_id as post_id") && sql.includes("WHERE p.slug = $2")) {
+					return {
+						rows: [{ post_id: 1 }]
+					}
+				}
+				
+				// Root replies query
+				if (sql.includes("SELECT") && sql.includes("r.reply_id as reply_id") && sql.includes("r.parent_reply_id IS NULL")) {
+					return {
+						rows: [
+							{
+								create_date: "2024-01-02T01:00:00.000Z",
+								reply_id: 101,
+								body: "First reply to the post",
+								note: null,
+								parent_reply_id: null,
+								favorite_count: 1,
+								counts_max_create_date: "2024-01-02T01:00:00.000Z",
+								user_id: 2,
+								display_name: "Other User",
+								display_name_index: "other-user",
+								user_slug: "other-user",
+								profile_picture_uuid: null,
+								user_verified: true,
+								edit: false,
+								image_uuids: null,
+								favorited: false
+							}
+						]
+					}
+				}
+				
+				// Reply replies query 
+				if (sql.includes("SELECT") && sql.includes("r.reply_id as reply_id") && sql.includes("reply_ancestors")) {
+					return {
+						rows: [
+							{
+								create_date: "2024-01-02T02:00:00.000Z",
+								reply_id: 102,
+								body: "Reply to the first reply",
+								note: null,
+								parent_reply_id: 101,
+								favorite_count: 0,
+								counts_max_create_date: "2024-01-02T02:00:00.000Z",
+								user_id: 3,
+								display_name: "Reply User",
+								display_name_index: "reply-user",
+								user_slug: "reply-user",
+								profile_picture_uuid: null,
+								user_verified: true,
+								edit: false,
+								image_uuids: null,
+								favorited: false
+							}
+						]
 					}
 				}
 			}

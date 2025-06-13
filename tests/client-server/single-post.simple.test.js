@@ -1,0 +1,39 @@
+const path = require("path")
+const {
+	setupIntegrationTestEnvironment,
+} = require("./clientServerTestSetup.js")
+const { assertEquals, runTests } = require("../client/shared/testUtils.js")
+
+const tests = {
+	testClientServerFlow: async () => {
+		const window = await setupIntegrationTestEnvironment()
+		const { $ } = window
+		
+		// By default, clientServerTestSetup.js starts on /posts with 2 posts
+		// Click on the post itself (not just h2) to navigate to single post view
+		$("main-content-2 posts post:first-child").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+
+		// Verify we navigated to single post page 
+		assertEquals(
+			"/post/my-post",
+			window.state.path,
+			"Should navigate to single post path",
+		)
+		
+		// Verify the single post content matches what our database mock returns
+		assertEquals(
+			"My Post",
+			$("main-content posts post h2").textContent.trim(),
+			"Post title should match database mock",
+		)
+
+		// Verify the single post body content
+		assertEquals(
+			"This is my own post with full content",
+			$("main-content posts post p span").innerText,
+			"Post body should match database mock content",
+		)
+
+
+runTests(path.basename(__filename), Object.values(tests))
