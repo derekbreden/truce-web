@@ -1,0 +1,25 @@
+const path = require("path")
+const {
+	setupIntegrationTestEnvironment,
+} = require("./clientServerTestSetup.js")
+const { assertEquals, runTests } = require("../client/shared/testUtils.js")
+
+const tests = {
+	testClientServerFlow: async () => {
+		const window = await setupIntegrationTestEnvironment()
+		const { $ } = window
+		
+		// By default, clientServerTestSetup.js starts on /posts with 2 posts
+
+		// The first listed (by create_date) default post is the user's own post
+		$("main-content-2 posts post:first-child icon[more]").click()
+		assertEquals(false, Boolean($("modal action[block]")), "Own post should not show block action")
+		$("modal-bg").click()
+
+		// The second listed (by create_date) default post is another user's post
+		$("main-content-2 posts post:nth-child(2) icon[more]").click()
+		assertEquals(true, Boolean($("modal action[block]")), "Other user's post should show block action")
+	},
+}
+
+runTests(path.basename(__filename), Object.values(tests))

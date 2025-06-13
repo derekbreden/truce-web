@@ -10,6 +10,34 @@ async function setupIntegrationTestEnvironment(options) {
 	options.localStorage = options.localStorage || {}
 	options.databaseMocks = options.databaseMocks || {}
 
+	// Default database mocks are abstracted as they are quite a few lines of specific code
+	/*
+		NOTE TO CLAUDE:
+			If you want to override one of these defaults, for example to not have a logged in session:
+
+		// Override default logged in session
+		setupIntegrationTestEnvironment({
+			sessionValidation: (sql, params) => {
+				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
+					return { 
+						rows: [{ 
+							session_uuid: "foo-bar",
+							session_id: "1", 
+							email: "",
+							display_name: "",
+							admin: false,
+							user_id: "0",
+							profile_picture_uuid: null,
+							slug: "",
+							subscribed_to_users: "0"
+						}] 
+					}
+				}
+			}
+		})
+	*/
+	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks)
+
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../../index.html")
 	const indexHtmlContent = fs.readFileSync(indexPath, "utf8")
@@ -163,11 +191,18 @@ async function setupIntegrationTestEnvironment(options) {
 					}
 				}
 				
-				// No handler registered
-				console.error("No async fetch handler for:", url, fetchOptions?.body)
+				// Do we want to notify and throw errors for no handler registered?
+				// console.error("No async fetch handler for:", url, fetchOptions?.body)
+				// return {
+				// 	status: 500,
+				// 	json: async () => ({ error: "No handler registered" })
+				// }
+				// Or simply return a good default?
+				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
+				const response = await window.executeHandler(req, res)
 				return {
-					status: 500,
-					json: async () => ({ error: "No handler registered" })
+					status: 200,
+					json: async () => response
 				}
 			}
 			
@@ -275,11 +310,32 @@ async function setupIntegrationTestEnvironment(options) {
 			window.setTimeout = (fn) => {
 				fn()
 			}
+
+			// Default to user being logged in, agreed to terms, and last visited /posts
+			window.localStorage.setItem("trucev1:session_uuid", "test-session-uuid-123")
+			window.localStorage.setItem("trucev1:agreed", true)
+			window.localStorage.setItem("trucev1:last_root_path", "/posts")
 			
 			// Allow an options "beforeParse()" handler to be executed
+			/*
+				NOTE TO CLAUDE:
+					If you need to override localStorage defaults, for example to simulate not logged-in user:
+					(one that will be required to click "Join" first)
+
+				const window = await setupIntegrationTestEnvironment({
+					beforeParse(window){
+						window.localStorage.removeItem("trucev1:session_uuid")
+						window.localStorage.removeItem("trucev1:agreed")
+						window.localStorage.removeItem("trucev1:last_root_path")
+					},
+				})
+			*/
 			if (options.beforeParse && typeof options.beforeParse === "function") {
 				options.beforeParse(window)
 			}
+
+			// Trigger setup external mocks
+			window.setupExternalMocks()
 		},
 	})
 	// --------------------------------------------------------------------------
@@ -312,6 +368,116 @@ async function setupIntegrationTestEnvironment(options) {
 	//
 	// Return the window
 	return window
+}
+
+function setupDefaultDatabaseMocks(databaseMocks) {
+	return {
+		...{
+			sessionValidation: (sql, params) => {
+				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
+					if (params && params[0] === "test-session-uuid-123") {
+						return { 
+							rows: [{ 
+								session_uuid: "test-session-uuid-123",
+								session_id: 1, 
+								email: "test@example.com",
+								display_name: "Test User",
+								admin: false,
+								user_id: 1,
+								profile_picture_uuid: null,
+								slug: "test-user",
+								subscribed_to_users: "0"
+							}] 
+						}
+					}
+				}
+			},
+			notifications: (sql, params) => {
+				if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
+					return { 
+						rows: [{ 
+							unseen_count: 0,
+							unread_count: 0
+						}] 
+					}
+				}
+			},
+			posts: (sql, params) => {
+				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id")) {
+					return { 
+						rows: [
+							{
+								post_id: 1,
+								title: "My Post",
+								body: "This is my own post",
+								create_date: "2024-01-02T00:00:00.000Z",
+								user_id: 1, // Same as our logged-in user
+								reply_count: 0,
+								favorite_count: 0,
+								topics: "religion,media",
+								edit: true
+							},
+							{
+								post_id: 2,
+								title: "Other User's Post", 
+								body: "This is someone else's post",
+								create_date: "2024-01-01T01:00:00.000Z",
+								user_id: 2, // Different user
+								reply_count: 0,
+								favorite_count: 0,
+								topics: "religion,media",
+								edit: false
+							}
+						] 
+					}
+				}
+			},
+			topics: (sql, params) => {
+				/*
+					NOTE TO CLAUDE:
+						I am leaving this large comment block here, as guidance to you for
+						how to go about mocking new queries.
+						
+						(1) Find the query that you are working with in the server handler
+						(2) Find the table schemas in schema.js for each table involved
+
+					-- Table Schemas from schema.js
+					CREATE TABLE IF NOT EXISTS post_topics (
+					post_id INT NOT NULL,
+					topic_id INT NOT NULL
+					)
+					CREATE TABLE IF NOT EXISTS topics (
+					topic_id INT PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY,
+					topic_name VARCHAR(10) NOT NULL UNIQUE,
+					subtitle VARCHAR(50) NOT NULL
+					)
+
+					-- The query we are working with from getTopics.js
+					SELECT
+						ts.topic_name,
+						ts.subtitle,
+						COUNT(tt.topic_id) AS posts
+					FROM
+						topics ts
+						LEFT JOIN post_topics tt ON ts.topic_id = tt.topic_id
+					GROUP BY
+						ts.topic_id,
+						ts.topic_name,
+						ts.subtitle
+					ORDER BY ts.topic_id ASC
+				*/
+				if (sql.includes("SELECT") && sql.includes("topics ts") && sql.includes("COUNT(tt.topic_id) AS posts")) {
+					return { 
+						rows: [
+							{ topic_name: "religion", subtitle: "Discussions about religion", posts: 2 },
+							{ topic_name: "media", subtitle: "Media discussions", posts: 2 }
+						] 
+					}
+				}
+			}
+		},
+		...databaseMocks, // Allow user to override or add more mocks
+	}
 }
 
 module.exports = { setupIntegrationTestEnvironment }
