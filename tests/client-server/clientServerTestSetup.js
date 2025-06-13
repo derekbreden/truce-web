@@ -9,6 +9,9 @@ async function setupIntegrationTestEnvironment(options) {
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 	options.localStorage = options.localStorage || {}
 	options.databaseMocks = options.databaseMocks || {}
+	
+	// Track whether a post was created in this test session
+	let postCreatedInThisSession = false
 
 	// Default database mocks are abstracted as they are quite a few lines of specific code
 	/*
@@ -36,7 +39,7 @@ async function setupIntegrationTestEnvironment(options) {
 			}
 		})
 	*/
-	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks)
+	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks, { postCreatedInThisSession: () => postCreatedInThisSession, setPostCreatedInThisSession: (value) => postCreatedInThisSession = value })
 
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../../index.html")
@@ -415,7 +418,10 @@ async function setupIntegrationTestEnvironment(options) {
 	return window
 }
 
-function setupDefaultDatabaseMocks(databaseMocks) {
+function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
+	const getPostCreatedInThisSession = sessionState?.postCreatedInThisSession || (() => false)
+	const setPostCreatedInThisSession = sessionState?.setPostCreatedInThisSession || (() => {})
+	
 	return {
 		...{
 			sessionValidation: (sql, params) => {
@@ -450,9 +456,10 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 			posts: (sql, params) => {
 				// Regular posts queries (not single post)
 				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id") && !sql.includes("p.slug = $2")) {
-					// Check if this is after post creation (looks for newer posts)
+					// Only return newly created post if one was actually created in this test session
+					// and we're asking for posts newer than existing posts (getMoreRecent call)
 					// params[0] = user_id, params[1] = min_post_create_date, params[2] = max_post_create_date
-					if (params && params[1] && new Date(params[1]) >= new Date("2024-01-02T00:00:00.000Z")) {
+					if (getPostCreatedInThisSession() && params && params[1] && new Date(params[1]) >= new Date("2024-01-02T00:00:00.000Z")) {
 						return { 
 							rows: [
 								{
@@ -465,7 +472,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 									favorite_count: 0,
 									topics: "religion,media",
 									edit: true,
-									slug: "newly_created_post_title"
+									slug: "newly_created_post_title",
+									favorited: false
 								}
 							] 
 						}
@@ -484,7 +492,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 								favorite_count: 0,
 								topics: "religion,media",
 								edit: true,
-								slug: "my-post"
+								slug: "my-post",
+								favorited: false
 							},
 							{
 								post_id: 2,
@@ -496,7 +505,8 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 								favorite_count: 0,
 								topics: "religion,media",
 								edit: false,
-								slug: "other-users-post"
+								slug: "other-users-post",
+								favorited: false
 							}
 						] 
 					}
@@ -548,6 +558,60 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 			activities: (sql, params) => {
 				// The query is for favorites page - combines posts and replies that were favorited
 				if (sql.includes("WITH combined AS") && sql.includes("combined.favorited = TRUE")) {
+					
+					// Check if this is after favorite creation (looks for newer favorited items)
+					// params[0] = user_id, params[1] = max_create_date, params[2] = min_create_date
+					// Since client bug uses create_date instead of favorite_create_date, check for My Post's create_date
+					if (params && params[2] && new Date(params[2]) >= new Date("2024-01-02T00:00:00.000Z")) {
+						return { 
+							rows: [
+								// The newly favorited post
+								{
+									id: 1,
+									create_date: "2024-01-02T00:00:00.000Z",
+									title: "My Post",
+									body: "This is my own post",
+									poll_1: null,
+									poll_2: null,
+									poll_3: null,
+									poll_4: null,
+									poll_counts: null,
+									poll_counts_estimated: null,
+									note: null,
+									slug: "my-post",
+									favorite_count: 1,
+									reply_count: 0,
+									counts_max_create_date: "2024-01-02T00:00:00.000Z",
+									type: "post",
+									edit: true,
+									image_uuids: null,
+									favorited: true,
+									replyed: false,
+									voted: false,
+									favorite_create_date: "2024-01-03T01:00:00.000Z", // Newer than existing favorite
+									user_id: 1,
+									display_name: "Test User",
+									display_name_index: "test-user",
+									user_slug: "test-user",
+									profile_picture_uuid: null,
+									user_verified: true,
+									parent_post_title: null,
+									parent_post_slug: null,
+									parent_reply_id: null,
+									parent_reply_body: null,
+									parent_reply_note: null,
+									parent_reply_display_name: null,
+									parent_reply_display_name_index: null,
+									parent_reply_user_slug: null,
+									parent_reply_profile_picture_uuid: null,
+									parent_reply_favorited: false,
+									topics: "religion,media"
+								}
+							] 
+						}
+					}
+					
+					// Default favorited items for initial load
 					return { 
 						rows: [
 							// A favorited post
@@ -771,6 +835,7 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 				
 				// Insert new post
 				if (sql.includes("INSERT INTO posts") && sql.includes("RETURNING post_id")) {
+					setPostCreatedInThisSession(true) // Mark that a post was created
 					return { 
 						rows: [{ post_id: 123 }] 
 					}
@@ -868,6 +933,37 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 			
 			// Get updated reply counts
 			if (sql.includes("SELECT") && sql.includes("c.reply_id") && sql.includes("c.favorite_count")) {
+				return { rows: [] }
+			}
+		},
+		saveFavorite: (sql, params) => {
+			// Insert favorite post
+			if (sql.includes("INSERT INTO favorite_posts")) {
+				return { rows: [] }
+			}
+			
+			// Update post favorite count after adding/removing favorite
+			if (sql.includes("UPDATE posts") && sql.includes("favorite_count = COALESCE")) {
+				return { rows: [] }
+			}
+			
+			// Delete favorite post (when unfavoriting)
+			if (sql.includes("DELETE FROM favorite_posts")) {
+				return { rows: [] }
+			}
+			
+			// Insert favorite reply
+			if (sql.includes("INSERT INTO favorite_replies")) {
+				return { rows: [] }
+			}
+			
+			// Update reply favorite count
+			if (sql.includes("UPDATE replies") && sql.includes("favorite_count = COALESCE")) {
+				return { rows: [] }
+			}
+			
+			// Delete favorite reply (when unfavoriting)
+			if (sql.includes("DELETE FROM favorite_replies")) {
 				return { rows: [] }
 			}
 		},
