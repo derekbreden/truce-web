@@ -459,12 +459,77 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				}
 			},
 			notifications: (sql, params) => {
+				// Unread count and unseen count query
 				if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
 					return { 
 						rows: [{ 
 							unseen_count: 0,
-							unread_count: 0
+							unread_count: 2
 						}] 
+					}
+				}
+				
+				// Unread notifications query
+				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
+					return {
+						rows: [
+							{
+								notification_id: 1,
+								read: false,
+								seen: false,
+								create_date: "2024-01-03T01:00:00.000Z",
+								display_name: "Reply User",
+								display_name_index: "reply-user",
+								reply_id: 101,
+								body: "This is a reply notification",
+								note: null,
+								title: "My Post",
+								reply_type: "post",
+								conversation_id: null,
+								message_id: null,
+								notification_type: "reply"
+							},
+							{
+								notification_id: 2,
+								read: false,
+								seen: false,
+								create_date: "2024-01-03T00:30:00.000Z",
+								display_name: "Message User",
+								display_name_index: "message-user",
+								reply_id: null,
+								body: "Hey there, how are you?",
+								note: null,
+								title: null,
+								reply_type: null,
+								conversation_id: 5,
+								message_id: 10,
+								notification_type: "message"
+							}
+						]
+					}
+				}
+				
+				// Read notifications query
+				if (sql.includes("WITH combined_read") && sql.includes("n.read = TRUE")) {
+					return {
+						rows: [
+							{
+								notification_id: 3,
+								read: true,
+								seen: true,
+								create_date: "2024-01-02T15:00:00.000Z",
+								display_name: "Old User",
+								display_name_index: "old-user",
+								reply_id: 102,
+								body: "This was an old reply",
+								note: null,
+								title: "Other Post",
+								reply_type: "post",
+								conversation_id: null,
+								message_id: null,
+								notification_type: "reply"
+							}
+						]
 					}
 				}
 			},
