@@ -35,5 +35,23 @@ const tests = {
 			"Post body should match database mock content",
 		)
 
+		// Verify replies are rendered with correct content
+		assertEquals(
+			2,
+			$("reply")?.length || 0,
+			"Should have 2 replies from database mock",
+		)
+		assertEquals(
+			"First reply to the post",
+			$("reply p span")[0]?.innerText,
+			"First reply content should match database mock",
+		)
+		assertEquals(
+			"Reply to the first reply",
+			$("reply p span")[1]?.innerText,
+			"Nested reply content should match database mock",
+		)
+	},
+}
 
 runTests(path.basename(__filename), Object.values(tests))
