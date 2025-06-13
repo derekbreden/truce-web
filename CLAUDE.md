@@ -165,6 +165,7 @@ runTests("handler.unit.test.js", [testHandler])
 **URL attributes**: Use `.endsWith()` for image src comparisons in tests
 **Test data**: Use minimal, focused test cases rather than complex scenarios
 **Data flow tracing**: When tests fail, trace data from mock → DOM attributes → JS parsing (e.g. Number()) → API calls
+**Database mock isolation**: Track session state to prevent test interference (e.g., post creation affecting favorites test)
 
 ### Integration Test Complex Flows
 **Pre-populate state**: Pass `mockFetchResponseForPaths` to `setupIntegrationTestEnvironment()`
