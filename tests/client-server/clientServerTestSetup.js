@@ -685,6 +685,34 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 				
 				// Root replies query
 				if (sql.includes("SELECT") && sql.includes("r.reply_id as reply_id") && sql.includes("r.parent_reply_id IS NULL")) {
+					// Check if this is after reply creation (looks for newer replies)
+					// params[0] = user_id, params[1] = post_id, params[2] = min_reply_create_date, params[3] = max_reply_create_date
+					if (params && params[2] && new Date(params[2]) >= new Date("2024-01-02T01:00:00.000Z")) {
+						return {
+							rows: [
+								{
+									create_date: "2024-01-02T03:00:00.000Z",
+									reply_id: 201, // The newly created reply
+									body: "Newly Created Reply Content",
+									note: null,
+									parent_reply_id: null,
+									favorite_count: 0,
+									counts_max_create_date: "2024-01-02T03:00:00.000Z",
+									user_id: 1, // Same as logged-in user
+									display_name: "Test User",
+									display_name_index: "test-user",
+									user_slug: "test-user",
+									profile_picture_uuid: null,
+									user_verified: true,
+									edit: true,
+									image_uuids: null,
+									favorited: false
+								}
+							]
+						}
+					}
+					
+					// Default replies for initial load
 					return {
 						rows: [
 							{
@@ -777,6 +805,70 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 				if (sql.includes("UPDATE posts") && sql.includes("poll_counts_estimated")) {
 					return { rows: [] }
 				}
+			}
+		},
+		saveReply: (sql, params) => {
+			// Post lookup by slug for reply creation
+			if (sql.includes("SELECT post_id as post_id") && sql.includes("FROM posts") && sql.includes("WHERE slug = $1")) {
+				return { rows: [{ post_id: 1 }] }
+			}
+			
+			// Get post details for AI moderation context
+			if (sql.includes("SELECT") && sql.includes("t.title") && sql.includes("t.body") && sql.includes("FROM posts t")) {
+				return { 
+					rows: [{ 
+						title: "My Post",
+						body: "This is my own post with full content",
+						note: null,
+						display_name: "Test User",
+						image_uuids: null
+					}] 
+				}
+			}
+			
+			// Insert new reply
+			if (sql.includes("INSERT INTO replies") && sql.includes("RETURNING reply_id")) {
+				return { rows: [{ reply_id: 201 }] }
+			}
+			
+			// Update post reply count
+			if (sql.includes("UPDATE posts") && sql.includes("reply_count = COALESCE")) {
+				return { rows: [] }
+			}
+			
+			// Update reply image UUIDs
+			if (sql.includes("UPDATE replies") && sql.includes("image_uuids")) {
+				return { rows: [] }
+			}
+			
+			// Update user display name (called from saveReply)
+			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+				return { rows: [] }
+			}
+			
+			// Get users to notify about reply
+			if (sql.includes("SELECT user_id") && sql.includes("FROM posts") && sql.includes("UNION")) {
+				return { rows: [] }
+			}
+			
+			// Insert reply notification
+			if (sql.includes("INSERT INTO reply_notifications")) {
+				return { rows: [{ notification_id: 1 }] }
+			}
+			
+			// Get subscriptions for push notifications
+			if (sql.includes("SELECT") && sql.includes("subscription_json") && sql.includes("fcm_token")) {
+				return { rows: [] }
+			}
+			
+			// Get updated post counts
+			if (sql.includes("SELECT") && sql.includes("t.post_id as post_id") && sql.includes("t.favorite_count")) {
+				return { rows: [] }
+			}
+			
+			// Get updated reply counts
+			if (sql.includes("SELECT") && sql.includes("c.reply_id") && sql.includes("c.favorite_count")) {
+				return { rows: [] }
 			}
 		},
 		...databaseMocks, // Allow user to override or add more mocks
