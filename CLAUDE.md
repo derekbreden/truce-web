@@ -117,6 +117,7 @@ $("button").click() // Let it crash if button doesn't exist
 	Less code noise: Eliminates defensive programming patterns
 	Faster debugging: Fails exactly where the problem occurs
 	Mirrors app behavior: If the app would crash, the test should too
+	Forces precision: Use innerHTML discovery when selectors fail
 
 ### Integration Test Pattern
 ```javascript
@@ -159,7 +160,7 @@ runTests("handler.unit.test.js", [testHandler])
 ```
 
 ### Key Testing Gotchas
-**JSDOM innerText**: Only set on actual text-containing elements, not parents
+**JSDOM text**: `.innerText` on deepest element; `.textContent` only for standalone `$1`
 **Flint.js NodeLists**: Access first element when needed: `$("selector")[0]`
 **URL attributes**: Use `.endsWith()` for image src comparisons in tests
 **Test data**: Use minimal, focused test cases rather than complex scenarios
