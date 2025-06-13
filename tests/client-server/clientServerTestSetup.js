@@ -12,6 +12,10 @@ async function setupIntegrationTestEnvironment(options) {
 	
 	// Track whether a post was created in this test session
 	let postCreatedInThisSession = false
+	
+	// Track post editing
+	let postEditedInThisSession = false
+	let editedPostData = null
 
 	// Default database mocks are abstracted as they are quite a few lines of specific code
 	/*
@@ -39,7 +43,14 @@ async function setupIntegrationTestEnvironment(options) {
 			}
 		})
 	*/
-	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks, { postCreatedInThisSession: () => postCreatedInThisSession, setPostCreatedInThisSession: (value) => postCreatedInThisSession = value })
+	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks, { 
+		postCreatedInThisSession: () => postCreatedInThisSession, 
+		setPostCreatedInThisSession: (value) => postCreatedInThisSession = value,
+		postEditedInThisSession: () => postEditedInThisSession,
+		setPostEditedInThisSession: (value) => postEditedInThisSession = value,
+		editedPostData: () => editedPostData,
+		setEditedPostData: (data) => editedPostData = data
+	})
 
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../../index.html")
@@ -421,6 +432,10 @@ async function setupIntegrationTestEnvironment(options) {
 function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 	const getPostCreatedInThisSession = sessionState?.postCreatedInThisSession || (() => false)
 	const setPostCreatedInThisSession = sessionState?.setPostCreatedInThisSession || (() => {})
+	const getPostEditedInThisSession = sessionState?.postEditedInThisSession || (() => false)
+	const setPostEditedInThisSession = sessionState?.setPostEditedInThisSession || (() => {})
+	const getEditedPostData = sessionState?.editedPostData || (() => null)
+	const setEditedPostData = sessionState?.setEditedPostData || (() => {})
 	
 	return {
 		...{
@@ -705,12 +720,15 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 			singlePost: (sql, params) => {
 				// Single post query from getSinglePost.js
 				if (sql.includes("SELECT") && sql.includes("p.post_id as post_id") && sql.includes("p.slug = $2")) {
+					const editedData = getEditedPostData()
+					const isEdited = getPostEditedInThisSession()
+					
 					return {
 						rows: [
 							{
 								create_date: "2024-01-02T00:00:00.000Z",
 								post_id: 1,
-								title: "My Post",
+								title: isEdited && editedData ? editedData.title : "My Post",
 								user_id: 1,
 								display_name: "Test User",
 								display_name_index: "test-user",
@@ -718,7 +736,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								profile_picture_uuid: null,
 								user_verified: true,
 								slug: "my-post",
-								body: "This is my own post with full content",
+								body: isEdited && editedData ? editedData.body : "This is my own post with full content",
 								poll_1: null,
 								poll_2: null,
 								poll_3: null,
@@ -853,6 +871,27 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				// Insert post topics
 				if (sql.includes("INSERT INTO post_topics")) {
+					return { rows: [] }
+				}
+				
+				// Update existing post (for editing)
+				if (sql.includes("UPDATE posts") && sql.includes("title = $1") && sql.includes("body = $3")) {
+					// Capture the edited data
+					setPostEditedInThisSession(true)
+					setEditedPostData({
+						title: params[0],
+						body: params[2]  // body is the 3rd parameter (index 2)
+					})
+					return { rows: [] }
+				}
+				
+				// Get existing images for cleanup (for editing)
+				if (sql.includes("SELECT image_uuids") && sql.includes("FROM posts") && sql.includes("WHERE post_id = $1")) {
+					return { rows: [{ image_uuids: "" }] } // No existing images
+				}
+				
+				// Delete existing poll votes (for editing)
+				if (sql.includes("DELETE FROM post_poll_votes") && sql.includes("WHERE post_id = $1")) {
 					return { rows: [] }
 				}
 				
