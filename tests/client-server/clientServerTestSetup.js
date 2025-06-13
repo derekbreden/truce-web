@@ -474,6 +474,99 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 						] 
 					}
 				}
+			},
+			activities: (sql, params) => {
+				// The query is for favorites page - combines posts and replies that were favorited
+				if (sql.includes("WITH combined AS") && sql.includes("combined.favorited = TRUE")) {
+					return { 
+						rows: [
+							// A favorited post
+							{
+								id: 2,
+								create_date: "2024-01-01T01:00:00.000Z",
+								title: "Other User's Post",
+								body: "This is someone else's post",
+								poll_1: null,
+								poll_2: null,
+								poll_3: null,
+								poll_4: null,
+								poll_counts: null,
+								poll_counts_estimated: null,
+								note: null,
+								slug: "other-users-post",
+								favorite_count: 5,
+								reply_count: 3,
+								counts_max_create_date: "2024-01-01T01:00:00.000Z",
+								type: "post",
+								edit: false,
+								image_uuids: null,
+								favorited: true,
+								replyed: false,
+								voted: false,
+								favorite_create_date: "2024-01-03T00:00:00.000Z",
+								user_id: 2,
+								display_name: "Other User",
+								display_name_index: "other-user",
+								user_slug: "other-user",
+								profile_picture_uuid: null,
+								user_verified: true,
+								parent_post_title: null,
+								parent_post_slug: null,
+								parent_reply_id: null,
+								parent_reply_body: null,
+								parent_reply_note: null,
+								parent_reply_display_name: null,
+								parent_reply_display_name_index: null,
+								parent_reply_user_slug: null,
+								parent_reply_profile_picture_uuid: null,
+								parent_reply_favorited: false,
+								topics: "religion,media"
+							},
+							// A favorited reply
+							{
+								id: 10,
+								create_date: "2024-01-02T00:00:00.000Z",
+								title: null,
+								body: "Great point!",
+								poll_1: null,
+								poll_2: null,
+								poll_3: null,
+								poll_4: null,
+								poll_counts: null,
+								poll_counts_estimated: null,
+								note: null,
+								slug: null,
+								favorite_count: 2,
+								reply_count: null,
+								counts_max_create_date: "2024-01-02T00:00:00.000Z",
+								type: "reply",
+								edit: false,
+								image_uuids: null,
+								favorited: true,
+								replyed: false,
+								voted: false,
+								favorite_create_date: "2024-01-04T00:00:00.000Z",
+								user_id: 3,
+								display_name: "Reply User",
+								display_name_index: "reply-user",
+								user_slug: "reply-user",
+								profile_picture_uuid: null,
+								user_verified: true,
+								parent_post_title: "My Post",
+								parent_post_slug: "my-post",
+								parent_reply_id: null,
+								parent_reply_body: null,
+								parent_reply_note: null,
+								parent_reply_display_name: null,
+								parent_reply_display_name_index: null,
+								parent_reply_user_slug: null,
+								parent_reply_profile_picture_uuid: null,
+								parent_reply_favorited: false,
+								topics: ""
+							}
+						] 
+					}
+				}
 			}
 		},
 		...databaseMocks, // Allow user to override or add more mocks
