@@ -222,6 +222,50 @@ async function setupIntegrationTestEnvironment(options) {
 					id: webpushPath
 				}
 				
+				// Mock AI module
+				const aiPath = require.resolve("../../server/ai")
+				require.cache[aiPath] = {
+					exports: {
+						ask: async (messages, type, format) => {
+							// Return appropriate mock responses
+							if (type === "topics") {
+								return JSON.stringify({ topics: ["religion", "media"] })
+							}
+							if (type === "poll_estimate") {
+								return JSON.stringify({ 
+									response_rate: 0.1,
+									choice_a: 0.6,
+									choice_b: 0.4,
+									choice_c: 0,
+									choice_d: 0
+								})
+							}
+							return JSON.stringify({ keyword: "OK", note: "" })
+						}
+					},
+					loaded: true,
+					id: aiPath
+				}
+				
+				// Mock S3 client dependencies
+				const s3Path = require.resolve("@aws-sdk/client-s3")
+				require.cache[s3Path] = {
+					exports: {
+						S3Client: class MockS3Client {
+							constructor() {}
+							async send() { return { success: true } }
+						},
+						PutObjectCommand: class MockPutObjectCommand {
+							constructor() {}
+						},
+						DeleteObjectCommand: class MockDeleteObjectCommand {
+							constructor() {}
+						}
+					},
+					loaded: true,
+					id: s3Path
+				}
+				
 				// Mock the pool module
 				const poolPath = require.resolve("../../server/pool")
 				require.cache[poolPath] = {
@@ -244,8 +288,8 @@ async function setupIntegrationTestEnvironment(options) {
 									}
 									
 									// Log unmocked queries
-									console.warn("UNMOCKED database query:", sql.substring(0, 200) + "...")
-									console.warn("Query params:", params)
+									console.log("UNMOCKED database query:", sql.substring(0, 100) + "...")
+									console.log("Query params:", params)
 									return { rows: [] }
 								},
 								release: () => {
@@ -262,7 +306,8 @@ async function setupIntegrationTestEnvironment(options) {
 			window.createMockReqRes = function(body, headers) {
 				const req = {
 					headers: headers || {},
-					body: body
+					body: body,
+					sendWsMessage: () => {} // Mock WebSocket message sending
 				}
 				// Ensure headers are lowercase (HTTP standard)
 				if (req.headers.Authorization) {
@@ -405,6 +450,28 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 			posts: (sql, params) => {
 				// Regular posts queries (not single post)
 				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id") && !sql.includes("p.slug = $2")) {
+					// Check if this is after post creation (looks for newer posts)
+					// params[0] = user_id, params[1] = min_post_create_date, params[2] = max_post_create_date
+					if (params && params[1] && new Date(params[1]) >= new Date("2024-01-02T00:00:00.000Z")) {
+						return { 
+							rows: [
+								{
+									post_id: 123, // The newly created post
+									title: "Test Post Title",
+									body: "This is the content of my test post. It needs to be longer than the title to pass validation.",
+									create_date: "2024-01-02T01:00:00.000Z",
+									user_id: 1,
+									reply_count: 0,
+									favorite_count: 0,
+									topics: "religion,media",
+									edit: true,
+									slug: "test_post_title"
+								}
+							] 
+						}
+					}
+					
+					// Default posts for initial load
 					return { 
 						rows: [
 							{
@@ -666,6 +733,49 @@ function setupDefaultDatabaseMocks(databaseMocks) {
 							}
 						]
 					}
+				}
+			},
+			savePost: (sql, params) => {
+				// Check if slug exists
+				if (sql.includes("SELECT slug FROM posts WHERE slug = $1")) {
+					return { rows: [] } // Slug doesn't exist
+				}
+				
+				// Insert new post
+				if (sql.includes("INSERT INTO posts") && sql.includes("RETURNING post_id")) {
+					return { 
+						rows: [{ post_id: 123 }] 
+					}
+				}
+				
+				// Get all topics for topic assignment
+				if (sql.includes("SELECT topic_id, topic_name FROM topics")) {
+					return { 
+						rows: [
+							{ topic_id: 1, topic_name: "religion" },
+							{ topic_id: 2, topic_name: "media" }
+						] 
+					}
+				}
+				
+				// Insert post topics
+				if (sql.includes("INSERT INTO post_topics")) {
+					return { rows: [] }
+				}
+				
+				// Update post with image UUIDs
+				if (sql.includes("UPDATE posts") && sql.includes("image_uuids")) {
+					return { rows: [] }
+				}
+				
+				// Delete post topics (for editing)
+				if (sql.includes("DELETE FROM post_topics")) {
+					return { rows: [] }
+				}
+				
+				// Update poll counts estimated
+				if (sql.includes("UPDATE posts") && sql.includes("poll_counts_estimated")) {
+					return { rows: [] }
 				}
 			}
 		},
