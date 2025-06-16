@@ -65,8 +65,178 @@ This test will verify the complete notification creation workflow across users.
 
 const tests = {
 	testClientServerFlow: async () => {
+		// Custom notifications mock for this test's 3-phase scenario
+		let userANotificationQueries = 0
+		const customNotificationsMock = (sql, params) => {
+			const user_id = params?.[0] // First parameter is typically user_id in notification queries
+			
+			// Unread count and unseen count query
+			if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
+				if (user_id === 10) { // User A (Post Owner)
+					// Track User A notification count queries
+					userANotificationQueries++
+					
+					// First query: 2 unread, Second query (after reply): 3 unread
+					const unread_count = userANotificationQueries >= 2 ? 3 : 2
+					return { 
+						rows: [{ 
+							unseen_count: userANotificationQueries === 1 ? 1 : 0,
+							unread_count: unread_count
+						}] 
+					}
+				}
+				// Fallback for any other user
+				return { 
+					rows: [{ 
+						unseen_count: 0,
+						unread_count: 0
+					}] 
+				}
+			}
+			
+			// Unread notifications query
+			if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
+				if (user_id === 10) { // User A (Post Owner)
+					// Second query and beyond: show new notification first
+					if (userANotificationQueries >= 2) {
+						return {
+							rows: [
+								{
+									notification_id: 103,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T02:00:00.000Z", // Newest notification
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 201,
+									body: "Reply from User B to User A",
+									note: null,
+									title: "User A's Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								},
+								{
+									notification_id: 100,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T01:00:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 201,
+									body: "First notification for User A",
+									note: null,
+									title: "User A's Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								},
+								{
+									notification_id: 101,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T00:30:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: null,
+									body: "Second notification for User A",
+									note: null,
+									title: null,
+									reply_type: null,
+									conversation_id: 5,
+									message_id: 10,
+									notification_type: "message"
+								}
+							]
+						}
+					} else {
+						// First query: baseline 2 notifications
+						return {
+							rows: [
+								{
+									notification_id: 100,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T01:00:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 201,
+									body: "First notification for User A",
+									note: null,
+									title: "User A's Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								},
+								{
+									notification_id: 101,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T00:30:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: null,
+									body: "Second notification for User A",
+									note: null,
+									title: null,
+									reply_type: null,
+									conversation_id: 5,
+									message_id: 10,
+									notification_type: "message"
+								}
+							]
+						}
+					}
+				}
+				// Fallback for any other user
+				return { rows: [] }
+			}
+			
+			// Mark all notifications as seen (reply_notifications)
+			if (sql.includes("UPDATE reply_notifications") && sql.includes("SET seen = TRUE")) {
+				return { rows: [] }
+			}
+			
+			// Mark all notifications as seen (message_notifications)
+			if (sql.includes("UPDATE message_notifications") && sql.includes("SET seen = TRUE")) {
+				return { rows: [] }
+			}
+			
+			// Read notifications query
+			if (sql.includes("WITH combined_read") && sql.includes("n.read = TRUE")) {
+				if (user_id === 10) { // User A (Post Owner)
+					return {
+						rows: [
+							{
+								notification_id: 102,
+								read: true,
+								seen: true,
+								create_date: "2024-01-02T15:00:00.000Z",
+								display_name: "User B",
+								display_name_index: "user-b",
+								reply_id: 202,
+								body: "This was an old reply to User A",
+								note: null,
+								title: "User A's Other Post",
+								reply_type: "post",
+								conversation_id: null,
+								message_id: null,
+								notification_type: "reply"
+							}
+						]
+					}
+				}
+			}
+		}
 		// Phase 1: User A checks baseline notifications (2 unread)
-		const window_user_a = await setupIntegrationTestEnvironment()
+		const window_user_a = await setupIntegrationTestEnvironment({
+			databaseMocks: {
+				notifications: customNotificationsMock
+			}
+		})
 		const { $: $a } = window_user_a
 		
 		$a("footer a[href='/notifications']").click()

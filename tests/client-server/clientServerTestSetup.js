@@ -2,8 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const { JSDOM, VirtualConsole } = require("jsdom")
 
-// Track User A notification count queries - reset for each test file
-let userANotificationQueries = 0
+// Removed userANotificationQueries - complex state tracking moved to individual tests
 
 async function setupIntegrationTestEnvironment(options) {
 	// Default Options
@@ -13,8 +12,7 @@ async function setupIntegrationTestEnvironment(options) {
 	options.localStorage = options.localStorage || {}
 	options.databaseMocks = options.databaseMocks || {}
 	
-	// Reset User A notification query counter only at the very start of each test
-	// The counter should persist across User A's navigation within the same test
+	// Removed notification counter - state tracking moved to individual tests
 	
 	// Track whether a post was created in this test session
 	let postCreatedInThisSession = false
@@ -491,15 +489,10 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Unread count and unseen count query
 				if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
 					if (user_id === 10) { // User A (Post Owner)
-						// Track User A notification count queries
-						userANotificationQueries++
-						
-						// First query: 2 unread, Second query (after reply): 3 unread
-						const unread_count = userANotificationQueries >= 2 ? 3 : 2
 						return { 
 							rows: [{ 
-								unseen_count: userANotificationQueries === 1 ? 1 : 0,
-								unread_count: unread_count
+								unseen_count: 0,
+								unread_count: 2
 							}] 
 						}
 					} else { // Default for other users including User B
@@ -515,98 +508,41 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Unread notifications query
 				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
 					if (user_id === 10) { // User A (Post Owner)
-						// Second query and beyond: show new notification first
-						if (userANotificationQueries >= 2) {
-							return {
-								rows: [
-									{
-										notification_id: 103,
-										read: false,
-										seen: false,
-										create_date: "2024-01-03T02:00:00.000Z", // Newest notification
-										display_name: "User B",
-										display_name_index: "user-b",
-										reply_id: 201,
-										body: "Reply from User B to User A",
-										note: null,
-										title: "User A's Post",
-										reply_type: "post",
-										conversation_id: null,
-										message_id: null,
-										notification_type: "reply"
-									},
-									{
-										notification_id: 100,
-										read: false,
-										seen: false,
-										create_date: "2024-01-03T01:00:00.000Z",
-										display_name: "User B",
-										display_name_index: "user-b",
-										reply_id: 201,
-										body: "First notification for User A",
-										note: null,
-										title: "User A's Post",
-										reply_type: "post",
-										conversation_id: null,
-										message_id: null,
-										notification_type: "reply"
-									},
-									{
-										notification_id: 101,
-										read: false,
-										seen: false,
-										create_date: "2024-01-03T00:30:00.000Z",
-										display_name: "User B",
-										display_name_index: "user-b",
-										reply_id: null,
-										body: "Second notification for User A",
-										note: null,
-										title: null,
-										reply_type: null,
-										conversation_id: 5,
-										message_id: 10,
-										notification_type: "message"
-									}
-								]
-							}
-						} else {
-							// First query: baseline 2 notifications
-							return {
-								rows: [
-									{
-										notification_id: 100,
-										read: false,
-										seen: false,
-										create_date: "2024-01-03T01:00:00.000Z",
-										display_name: "User B",
-										display_name_index: "user-b",
-										reply_id: 201,
-										body: "First notification for User A",
-										note: null,
-										title: "User A's Post",
-										reply_type: "post",
-										conversation_id: null,
-										message_id: null,
-										notification_type: "reply"
-									},
-									{
-										notification_id: 101,
-										read: false,
-										seen: false,
-										create_date: "2024-01-03T00:30:00.000Z",
-										display_name: "User B",
-										display_name_index: "user-b",
-										reply_id: null,
-										body: "Second notification for User A",
-										note: null,
-										title: null,
-										reply_type: null,
-										conversation_id: 5,
-										message_id: 10,
-										notification_type: "message"
-									}
-								]
-							}
+						return {
+							rows: [
+								{
+									notification_id: 100,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T01:00:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 201,
+									body: "First notification for User A",
+									note: null,
+									title: "User A's Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								},
+								{
+									notification_id: 101,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T00:30:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: null,
+									body: "Second notification for User A",
+									note: null,
+									title: null,
+									reply_type: null,
+									conversation_id: 5,
+									message_id: 10,
+									notification_type: "message"
+								}
+							]
 						}
 					} else { // Default for other users
 						return {
