@@ -137,6 +137,16 @@ runTests("feature.test.js", [testFeature])
 **Mock POST actions**: Use `window.addMockFetchMatcher()` for requests with specific body keys (not path-based)
 **Test full flow**: Check DOM content before/after, update mocks, navigate to trigger re-render
 
+### Multiple Test Environments (Critical)
+When testing with multiple users/sessions, require.cache contamination occurs:
+```javascript
+const { $: $a, setupExternalMocks: aSetupExternalMocks } = window_user_a
+const { $: $b } = window_user_b  // This overwrites User A's mocks globally
+// Later, User A must restore its mocks:
+aSetupExternalMocks()  // Re-establish User A's database mocks
+```
+**Why**: setupExternalMocks() clears require.cache to prevent cross-test contamination, but this makes the last caller "win" globally. Each environment must re-establish its mocks before database operations.
+
 ## Common Patterns
 
 ### Database Queries
