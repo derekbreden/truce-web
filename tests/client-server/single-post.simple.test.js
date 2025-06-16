@@ -38,17 +38,18 @@ const tests = {
 		// Verify replies are rendered with correct content
 		assertEquals(
 			2,
-			$("reply")?.length || 0,
+			$("reply").length,
 			"Should have 2 replies from database mock",
 		)
+		
 		assertEquals(
 			"First reply to the post",
-			$("reply p span")[0]?.innerText,
+			$("replies > reply > p > span").innerText,
 			"First reply content should match database mock",
 		)
 		assertEquals(
-			"Reply to the first reply",
-			$("reply p span")[1]?.innerText,
+			"Reply to the first reply", 
+			$("replies reply:nth-child(4) p span").innerText,
 			"Nested reply content should match database mock",
 		)
 	},

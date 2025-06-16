@@ -188,15 +188,22 @@ When working on tasks:
 4. **MUST** verify tests still pass with identical results
 5. Any test failure means refactoring broke something - **MUST** fix code, not test
 
-## Debugging Philosophy - when debugging:
+## Debugging Philosophy
 	**MUST debug by investigation, not speculation** - Find actual causes before attempting fixes
 	**SHALL NOT guess or make vague assertions** about things being broken
 	**MUST investigate your own changes first** - When tests fail after your changes, the bug IS in your code
+	**MUST check existing working examples** - Before declaring anything impossible, search for how other tests/code in the same codebase solve similar problems
+	**SHALL NOT declare approaches impossible** - Keep investigating systematically until you exhaust context/usage limits
 	**MUST test suspected layer directly** - Write minimal tests for database, API, DOM
 	**MUST subtract complexity, don't add it** - Remove layers to isolate problems - Then add back only the needful to complete the task with no skips
 	**MUST change only one variable at a time** - Change only what you're testing
 	**MUST be hypothesis-driven** - Form specific theories and test them
-	**MUST understand before judging** - Surface patterns != root causes.
+	**MUST understand before judging** - Surface patterns != root causes
+
+When encountering selector/DOM issues, you **MUST**:
+1. Check .length at each selector level to understand structure  
+2. Look at existing tests for similar selector patterns
+3. Test incrementally (nth-child(1), nth-child(2), etc.)
 
 ## 10x Developer Principles
 
