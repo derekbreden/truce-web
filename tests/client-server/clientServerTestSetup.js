@@ -230,6 +230,10 @@ async function setupIntegrationTestEnvironment(options) {
 			
 			// Utility functions for client-server testing
 			window.setupExternalMocks = function() {
+				Object.keys(require.cache).forEach(key => {
+					delete require.cache[key]
+				})
+
 				// Mock web-push module
 				const webpushPath = require.resolve("web-push")
 				require.cache[webpushPath] = {

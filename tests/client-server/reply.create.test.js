@@ -27,13 +27,6 @@ const tests = {
 						}] 
 					}
 				}
-				// Fallback for any other user
-				return { 
-					rows: [{ 
-						unseen_count: 0,
-						unread_count: 0
-					}] 
-				}
 			}
 			
 			// Unread notifications query
@@ -133,8 +126,6 @@ const tests = {
 						}
 					}
 				}
-				// Fallback for any other user
-				return { rows: [] }
 			}
 			
 			// Mark all notifications as seen (reply_notifications)
@@ -180,7 +171,7 @@ const tests = {
 				notifications: customNotificationsMock
 			}
 		})
-		const { $: $a } = window_user_a
+		const { $: $a, setupExternalMocks: aSetupExternalMocks} = window_user_a
 		
 		$a("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
@@ -233,6 +224,7 @@ const tests = {
 			"User B's reply should be rendered with mock content",
 		)
 		// User A navigates away and back to trigger getMoreRecent()
+		aSetupExternalMocks()
 		$a("footer a[href='/posts']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		$a("footer a[href='/notifications']").click()
