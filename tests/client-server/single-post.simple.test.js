@@ -16,21 +16,21 @@ const tests = {
 
 		// Verify we navigated to single post page 
 		assertEquals(
-			"/post/my-post",
+			"/post/user-as-post",
 			window.state.path,
 			"Should navigate to single post path",
 		)
 		
 		// Verify the single post content matches what our database mock returns
 		assertEquals(
-			"My Post",
+			"User A's Post",
 			$("main-content posts post h2").textContent.trim(),
 			"Post title should match database mock",
 		)
 
 		// Verify the single post body content
 		assertEquals(
-			"This is my own post with full content",
+			"This is User A's own post with full content",
 			$("main-content posts post p span").innerText,
 			"Post body should match database mock content",
 		)

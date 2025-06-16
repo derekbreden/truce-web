@@ -371,7 +371,7 @@ async function setupIntegrationTestEnvironment(options) {
 			}
 
 			// Default to user being logged in, agreed to terms, and last visited /posts
-			window.localStorage.setItem("trucev1:session_uuid", "test-session-uuid-123")
+			window.localStorage.setItem("trucev1:session_uuid", "user-a-session-123")
 			window.localStorage.setItem("trucev1:agreed", true)
 			window.localStorage.setItem("trucev1:last_root_path", "/posts")
 			
@@ -441,99 +441,178 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 		...{
 			sessionValidation: (sql, params) => {
 				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
-					if (params && params[0] === "test-session-uuid-123") {
+					if (params && params[0] === "user-a-session-123") {
 						return { 
 							rows: [{ 
-								session_uuid: "test-session-uuid-123",
+								session_uuid: "user-a-session-123",
 								session_id: 1, 
-								email: "test@example.com",
-								display_name: "Test User",
+								email: "usera@example.com",
+								display_name: "User A",
 								admin: false,
-								user_id: 1,
+								user_id: 10,
 								profile_picture_uuid: null,
-								slug: "test-user",
+								slug: "user-a",
+								subscribed_to_users: "0"
+							}] 
+						}
+					}
+					if (params && params[0] === "user-b-session-456") {
+						return { 
+							rows: [{ 
+								session_uuid: "user-b-session-456",
+								session_id: 2, 
+								email: "userb@example.com",
+								display_name: "User B",
+								admin: false,
+								user_id: 20,
+								profile_picture_uuid: null,
+								slug: "user-b",
 								subscribed_to_users: "0"
 							}] 
 						}
 					}
 				}
 			},
+			sessionResponse: (sql, params) => {
+				// This handles the /session endpoint calls, not database queries
+				// When the client calls /session with different paths, we need to mock the response
+				return null // Database mock - not applicable, handled in fetch mocking
+			},
 			notifications: (sql, params) => {
+				const user_id = params?.[0] // First parameter is typically user_id in notification queries
+				
 				// Unread count and unseen count query
 				if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
-					return { 
-						rows: [{ 
-							unseen_count: 0,
-							unread_count: 2
-						}] 
+					if (user_id === 10) { // User A (Post Owner)
+						return { 
+							rows: [{ 
+								unseen_count: 0,
+								unread_count: 1 // Baseline: User A has 1 unread notification
+							}] 
+						}
+					} else { // Default for other users including User B
+						return { 
+							rows: [{ 
+								unseen_count: 0,
+								unread_count: 2
+							}] 
+						}
 					}
 				}
 				
 				// Unread notifications query
 				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
-					return {
-						rows: [
-							{
-								notification_id: 1,
-								read: false,
-								seen: false,
-								create_date: "2024-01-03T01:00:00.000Z",
-								display_name: "Reply User",
-								display_name_index: "reply-user",
-								reply_id: 101,
-								body: "This is a reply notification",
-								note: null,
-								title: "My Post",
-								reply_type: "post",
-								conversation_id: null,
-								message_id: null,
-								notification_type: "reply"
-							},
-							{
-								notification_id: 2,
-								read: false,
-								seen: false,
-								create_date: "2024-01-03T00:30:00.000Z",
-								display_name: "Message User",
-								display_name_index: "message-user",
-								reply_id: null,
-								body: "Hey there, how are you?",
-								note: null,
-								title: null,
-								reply_type: null,
-								conversation_id: 5,
-								message_id: 10,
-								notification_type: "message"
-							}
-						]
+					if (user_id === 10) { // User A (Post Owner) - baseline notification
+						return {
+							rows: [
+								{
+									notification_id: 100,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T01:00:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 201,
+									body: "This is an existing notification for User A",
+									note: null,
+									title: "User A's Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								}
+							]
+						}
+					} else { // Default for other users
+						return {
+							rows: [
+								{
+									notification_id: 1,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T01:00:00.000Z",
+									display_name: "Reply User",
+									display_name_index: "reply-user",
+									reply_id: 101,
+									body: "This is a reply notification",
+									note: null,
+									title: "My Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								},
+								{
+									notification_id: 2,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T00:30:00.000Z",
+									display_name: "Message User",
+									display_name_index: "message-user",
+									reply_id: null,
+									body: "Hey there, how are you?",
+									note: null,
+									title: null,
+									reply_type: null,
+									conversation_id: 5,
+									message_id: 10,
+									notification_type: "message"
+								}
+							]
+						}
 					}
 				}
 				
 				// Read notifications query
 				if (sql.includes("WITH combined_read") && sql.includes("n.read = TRUE")) {
-					return {
-						rows: [
-							{
-								notification_id: 3,
-								read: true,
-								seen: true,
-								create_date: "2024-01-02T15:00:00.000Z",
-								display_name: "Old User",
-								display_name_index: "old-user",
-								reply_id: 102,
-								body: "This was an old reply",
-								note: null,
-								title: "Other Post",
-								reply_type: "post",
-								conversation_id: null,
-								message_id: null,
-								notification_type: "reply"
-							}
-						]
+					if (user_id === 10) { // User A (Post Owner)
+						return {
+							rows: [
+								{
+									notification_id: 101,
+									read: true,
+									seen: true,
+									create_date: "2024-01-02T15:00:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: 202,
+									body: "This was an old reply to User A",
+									note: null,
+									title: "User A's Other Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								}
+							]
+						}
+					} else { // Default for other users
+						return {
+							rows: [
+								{
+									notification_id: 3,
+									read: true,
+									seen: true,
+									create_date: "2024-01-02T15:00:00.000Z",
+									display_name: "Old User",
+									display_name_index: "old-user",
+									reply_id: 102,
+									body: "This was an old reply",
+									note: null,
+									title: "Other Post",
+									reply_type: "post",
+									conversation_id: null,
+									message_id: null,
+									notification_type: "reply"
+								}
+							]
+						}
 					}
 				}
 			},
 			posts: (sql, params) => {
+				const user_id = params?.[0] // First parameter is typically user_id in posts queries
+				
 				// Regular posts queries (not single post)
 				if (sql.includes("SELECT") && sql.includes("p.create_date") && sql.includes("p.post_id") && !sql.includes("p.slug = $2")) {
 					// Only return newly created post if one was actually created in this test session
@@ -559,33 +638,33 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 						}
 					}
 					
-					// Default posts for initial load
+					// Default posts for all users (everyone sees the same posts)
 					return { 
 						rows: [
 							{
 								post_id: 1,
-								title: "My Post",
-								body: "This is my own post",
+								title: "User A's Post",
+								body: "This is User A's own post",
 								create_date: "2024-01-02T00:00:00.000Z",
-								user_id: 1, // Same as our logged-in user
+								user_id: 10, // User A owns this
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
-								edit: true,
-								slug: "my-post",
+								edit: user_id === 10, // Only User A can edit
+								slug: "user-as-post",
 								favorited: false
 							},
 							{
 								post_id: 2,
-								title: "Other User's Post", 
-								body: "This is someone else's post",
+								title: "User B's Post", 
+								body: "This is User B's post",
 								create_date: "2024-01-01T01:00:00.000Z",
-								user_id: 2, // Different user
+								user_id: 20, // User B owns this
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
-								edit: false,
-								slug: "other-users-post",
+								edit: user_id === 20, // Only User B can edit
+								slug: "user-bs-post",
 								favorited: false
 							}
 						] 
@@ -649,8 +728,8 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								{
 									id: 1,
 									create_date: "2024-01-02T00:00:00.000Z",
-									title: "My Post",
-									body: "This is my own post",
+									title: "User A's Post",
+									body: "This is User A's own post",
 									poll_1: null,
 									poll_2: null,
 									poll_3: null,
@@ -658,7 +737,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									poll_counts: null,
 									poll_counts_estimated: null,
 									note: null,
-									slug: "my-post",
+									slug: "user-as-post",
 									favorite_count: 1,
 									reply_count: 0,
 									counts_max_create_date: "2024-01-02T00:00:00.000Z",
@@ -669,10 +748,10 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									replyed: false,
 									voted: false,
 									favorite_create_date: "2024-01-03T01:00:00.000Z", // Newer than existing favorite
-									user_id: 1,
-									display_name: "Test User",
-									display_name_index: "test-user",
-									user_slug: "test-user",
+									user_id: 10,
+									display_name: "User A",
+									display_name_index: "user-a",
+									user_slug: "user-a",
 									profile_picture_uuid: null,
 									user_verified: true,
 									parent_post_title: null,
@@ -698,8 +777,8 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 							{
 								id: 2,
 								create_date: "2024-01-01T01:00:00.000Z",
-								title: "Other User's Post",
-								body: "This is someone else's post",
+								title: "User B's Post",
+								body: "This is User B's post",
 								poll_1: null,
 								poll_2: null,
 								poll_3: null,
@@ -707,7 +786,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								poll_counts: null,
 								poll_counts_estimated: null,
 								note: null,
-								slug: "other-users-post",
+								slug: "user-bs-post",
 								favorite_count: 5,
 								reply_count: 3,
 								counts_max_create_date: "2024-01-01T01:00:00.000Z",
@@ -718,10 +797,10 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								replyed: false,
 								voted: false,
 								favorite_create_date: "2024-01-03T00:00:00.000Z",
-								user_id: 2,
-								display_name: "Other User",
-								display_name_index: "other-user",
-								user_slug: "other-user",
+								user_id: 20,
+								display_name: "User B",
+								display_name_index: "user-b",
+								user_slug: "user-b",
 								profile_picture_uuid: null,
 								user_verified: true,
 								parent_post_title: null,
@@ -787,46 +866,99 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				if (sql.includes("SELECT") && sql.includes("p.post_id as post_id") && sql.includes("p.slug = $2")) {
 					const editedData = getEditedPostData()
 					const isEdited = getPostEditedInThisSession()
+					const user_id = params?.[0] // First param is user_id
+					const slug = params?.[1] // Second param is slug
 					
-					return {
-						rows: [
-							{
-								create_date: "2024-01-02T00:00:00.000Z",
-								post_id: 1,
-								title: isEdited && editedData ? editedData.title : "My Post",
-								user_id: 1,
-								display_name: "Test User",
-								display_name_index: "test-user",
-								user_slug: "test-user",
-								profile_picture_uuid: null,
-								user_verified: true,
-								slug: "my-post",
-								body: isEdited && editedData ? editedData.body : "This is my own post with full content",
-								poll_1: null,
-								poll_2: null,
-								poll_3: null,
-								poll_4: null,
-								poll_counts: null,
-								poll_counts_estimated: null,
-								note: null,
-								favorite_count: 2,
-								reply_count: 2,
-								counts_max_create_date: "2024-01-02T12:00:00.000Z",
-								edit: true,
-								image_uuids: null,
-								favorited: false,
-								replyed: false,
-								voted: false,
-								topics: "religion,media"
-							}
-						]
+					// Handle User A's post
+					if (slug === "user-as-post" || slug === "User_As_Post") {
+						return {
+							rows: [
+								{
+									create_date: "2024-01-02T00:00:00.000Z",
+									post_id: 1,
+									title: isEdited && editedData ? editedData.title : "User A's Post",
+									user_id: 10,
+									display_name: "User A",
+									display_name_index: "user-a",
+									user_slug: "user-a",
+									profile_picture_uuid: null,
+									user_verified: true,
+									slug: "user-as-post",
+									body: isEdited && editedData ? editedData.body : "This is User A's own post with full content",
+									poll_1: null,
+									poll_2: null,
+									poll_3: null,
+									poll_4: null,
+									poll_counts: null,
+									poll_counts_estimated: null,
+									note: null,
+									favorite_count: 2,
+									reply_count: 2,
+									counts_max_create_date: "2024-01-02T12:00:00.000Z",
+									edit: user_id === 10,
+									image_uuids: null,
+									favorited: false,
+									replyed: false,
+									voted: false,
+									topics: "religion,media"
+								}
+							]
+						}
+					}
+					
+					// Handle User B's post
+					if (slug === "user-bs-post" || slug === "User_Bs_Post") {
+						return {
+							rows: [
+								{
+									create_date: "2024-01-01T01:00:00.000Z",
+									post_id: 2,
+									title: "User B's Post",
+									user_id: 20,
+									display_name: "User B",
+									display_name_index: "user-b",
+									user_slug: "user-b",
+									profile_picture_uuid: null,
+									user_verified: true,
+									slug: "user-bs-post",
+									body: "This is User B's post with full content",
+									poll_1: null,
+									poll_2: null,
+									poll_3: null,
+									poll_4: null,
+									poll_counts: null,
+									poll_counts_estimated: null,
+									note: null,
+									favorite_count: 1,
+									reply_count: 0,
+									counts_max_create_date: "2024-01-01T01:00:00.000Z",
+									edit: user_id === 20,
+									image_uuids: null,
+									favorited: false,
+									replyed: false,
+									voted: false,
+									topics: "religion,media"
+								}
+							]
+						}
 					}
 				}
 				
 				// Post ID lookup query
 				if (sql.includes("SELECT p.post_id as post_id") && sql.includes("WHERE p.slug = $2")) {
+					const slug = params?.[1] // Second param is slug
+					if (slug === "user-as-post" || slug === "User_As_Post") {
+						return {
+							rows: [{ post_id: 1 }]
+						}
+					}
+					if (slug === "user-bs-post" || slug === "User_Bs_Post") {
+						return {
+							rows: [{ post_id: 2 }]
+						}
+					}
 					return {
-						rows: [{ post_id: 1 }]
+						rows: [{ post_id: 1 }] // Default fallback
 					}
 				}
 				
