@@ -5,40 +5,60 @@ const {
 const { assertEquals, runTests } = require("../client/shared/testUtils.js")
 
 /*
-DETAILED PLAN FOR TWO-USER NOTIFICATION CREATION TEST:
+TWO-USER NOTIFICATION CREATION TEST IMPLEMENTATION PLAN:
 
-CRITICAL REALIZATION: This change affects ALL tests, not just this one!
+CURRENT STATE: All client-server tests pass with new user system
+- User A (user_id=10, session="user-a-session-123") - Default user, owns "User A's Post"
+- User B (user_id=20, session="user-b-session-456") - Reply creator, owns "User B's Post"
 
-1. Major refactoring of user system:
-   - Change DEFAULT user for ALL tests from user_id=1 to user_id=10
-   - Change DEFAULT session from "test-session-uuid-123" to "user-a-session-123"
-   - User A: user_id=10, session_uuid="user-a-session-123", display_name="User A"
-   - User B: user_id=20, session_uuid="user-b-session-456", display_name="User B"
+REMAINING WORK: Implement the actual two-user notification flow test
 
-2. Database mock changes needed:
-   - Update ALL post titles to indicate ownership: "User A's Post", "User B's Post", etc.
-   - Update ALL mock data to use new user_ids (10, 20, etc. instead of 1, 2, etc.)
-   - Ensure notifications are user-specific
-   - Posts table returns same posts for all users, but edit permissions vary by user_id
+TEST FLOW:
+1. User A checks baseline notifications (expects 1 unread notification)
+2. User B creates reply to User A's post (triggers notification creation)
+3. User A checks notifications again (expects 2 unread notifications, with new one first)
 
-3. Impact on existing tests:
-   - ALL tests need to be verified/updated for new user_ids
-   - Default localStorage setup needs to change to "user-a-session-123"
-   - Any test expecting "Test User" needs to expect "User A" instead
-   - Any test expecting user_id 1 needs to expect user_id 10
+TECHNICAL IMPLEMENTATION:
 
-4. Test flow for THIS specific test:
-   - Setup User A environment, navigate to /notifications, check baseline (1 unread)
-   - Setup User B environment, navigate to User A's post, create reply
-   - Back to User A environment, navigate to /notifications, verify new notification (2 unread)
+1. Setup User A environment (default - no beforeParse needed):
+   - Navigate to /notifications page
+   - Verify current unread count is 1
+   - Verify top notification is existing baseline notification from User B
 
-5. Implementation steps:
-   - Update default session UUID in clientServerTestSetup.js
-   - Update sessionValidation mock to remove old "test-session-uuid-123"
-   - Update ALL post mock data with new user_ids and clear titles
-   - Update ALL notification mock data with new user_ids
-   - Run ALL tests to find and fix breakages
-   - Then implement the two-user notification test
+2. Setup User B environment using beforeParse:
+   - Call setupIntegrationTestEnvironment with beforeParse to override localStorage
+   - Set session UUID to "user-b-session-456" to become User B
+   - Navigate to User A's post (/post/user-as-post)
+   - Create reply with specific content like "Reply from User B to User A"
+   - Verify reply appears (existing reply creation logic)
+
+3. Back to User A environment (fresh setupIntegrationTestEnvironment call):
+   - Navigate to /notifications page again
+   - Verify unread count is now 2
+   - Verify first notification is the new reply from User B
+   - Verify second notification is the original baseline notification
+
+DATABASE MOCK CHANGES NEEDED:
+
+1. Update notifications mock in clientServerTestSetup.js:
+   - Add state tracking for "reply created by User B to User A's post"
+   - When User A queries notifications after reply creation, return updated list
+   - New notification should have notification_id=102, from User B, about User A's post
+
+2. Update saveReply mock to track cross-user reply creation:
+   - When User B (user_id=20) creates reply to post owned by User A (user_id=10)
+   - Mark that notification should be created for User A
+   - Add session state tracking similar to postCreatedInThisSession
+
+3. No changes needed to existing posts, singlePost, or other mocks
+
+IMPLEMENTATION STRUCTURE:
+- Three distinct setupIntegrationTestEnvironment calls for three test phases
+- Use sessionState tracking to coordinate notification state between phases
+- Specific assertions on notification content and ordering
+- Clean test that follows the pattern of existing client-server tests
+
+This test will verify the complete notification creation workflow across users.
 */
 
 const tests = {

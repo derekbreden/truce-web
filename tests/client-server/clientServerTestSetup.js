@@ -487,7 +487,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 						return { 
 							rows: [{ 
 								unseen_count: 0,
-								unread_count: 1 // Baseline: User A has 1 unread notification
+								unread_count: 2 // User A has 2 unread notifications like before
 							}] 
 						}
 					} else { // Default for other users including User B
@@ -502,7 +502,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				// Unread notifications query
 				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
-					if (user_id === 10) { // User A (Post Owner) - baseline notification
+					if (user_id === 10) { // User A (Post Owner) - 2 unread notifications
 						return {
 							rows: [
 								{
@@ -513,13 +513,29 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									display_name: "User B",
 									display_name_index: "user-b",
 									reply_id: 201,
-									body: "This is an existing notification for User A",
+									body: "First notification for User A",
 									note: null,
 									title: "User A's Post",
 									reply_type: "post",
 									conversation_id: null,
 									message_id: null,
 									notification_type: "reply"
+								},
+								{
+									notification_id: 101,
+									read: false,
+									seen: false,
+									create_date: "2024-01-03T00:30:00.000Z",
+									display_name: "User B",
+									display_name_index: "user-b",
+									reply_id: null,
+									body: "Second notification for User A",
+									note: null,
+									title: null,
+									reply_type: null,
+									conversation_id: 5,
+									message_id: 10,
+									notification_type: "message"
 								}
 							]
 						}
@@ -569,7 +585,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 						return {
 							rows: [
 								{
-									notification_id: 101,
+									notification_id: 102,
 									read: true,
 									seen: true,
 									create_date: "2024-01-02T15:00:00.000Z",

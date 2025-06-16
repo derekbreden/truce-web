@@ -20,19 +20,47 @@ const tests = {
 			"Should show 'Alerts' header",
 		)
 		
-		// Check that notifications page structure is working
+		// Check unread count
 		assertEquals(
-			true,
-			Boolean($("main-content posts[notifications-header]")),
-			"Should have notifications header",
+			"Unread (2)",
+			$("main-content notifications h3").innerText.trim(),
+			"Should show unread count as 'Unread (2)'",
 		)
 		
-		// For now, just verify the basic page loads
-		// TODO: The full notification rendering needs push notification state setup
+		// Check unread notifications
+		const $unreadNotifications = $("main-content notifications notification")
 		assertEquals(
-			"usera@example.com",
-			window.state.email,
-			"User A should be logged in with email",
+			2,
+			$unreadNotifications.length,
+			"Should have 2 unread notifications",
+		)
+		
+		// Check first notification shows User B name
+		assertEquals(
+			"User B",
+			$unreadNotifications[0].querySelector("b").innerText,
+			"First notification should show User B name",
+		)
+		
+		// Check second notification shows User B name
+		assertEquals(
+			"User B",
+			$unreadNotifications[1].querySelector("b").innerText,
+			"Second notification should show User B name",
+		)
+		
+		// Check read notifications exist in main-content-2
+		const $readNotifications = $("main-content-2").querySelectorAll("notifications notification")
+		assertEquals(
+			1,
+			$readNotifications.length,
+			"Should have 1 read notification",
+		)
+		
+		assertEquals(
+			"User B",
+			$readNotifications[0].querySelector("b").innerText,
+			"Read notification should show User B name",
 		)
 	},
 }
