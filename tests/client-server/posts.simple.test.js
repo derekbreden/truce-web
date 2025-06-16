@@ -18,7 +18,7 @@ const tests = {
 
 		// The second listed (by create_date) default post is another user's post
 		$("main-content-2 posts post:nth-child(2) icon[more]").click()
-		assertEquals(true, Boolean($("modal action[block]")), "Other user's post should show block action")
+		assertEquals("Block user", $("action[block] p").innerText, "Other user's post should show Block action")
 	},
 }
 

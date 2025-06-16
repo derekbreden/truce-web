@@ -17,7 +17,7 @@ const tests = {
 		// Verify we have 2 favorited items (1 post and 1 reply) from the default mocks
 		assertEquals(
 			2,
-			$("main-content-wrapper activities activity")?.length || 0,
+			$("main-content-wrapper activities activity").length,
 			"Should have 2 activities on favorites page",
 		)
 

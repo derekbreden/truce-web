@@ -15,7 +15,7 @@ const tests = {
 
 		// Submit the post
 		$("add-new[post] button[submit]").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify the form was cleared after successful creation
 		assertEquals(
