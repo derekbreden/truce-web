@@ -65,36 +65,105 @@ This test will verify the complete notification creation workflow across users.
 
 const tests = {
 	testClientServerFlow: async () => {
-		const window = await setupIntegrationTestEnvironment()
-		const { $ } = window
+		// Phase 1: User A checks baseline notifications (2 unread)
+		const window_user_a = await setupIntegrationTestEnvironment()
+		const { $: $a } = window_user_a
 		
-		// Start at /posts and navigate to single post (like single-post.simple.test.js)
-		$("main-content-2 posts post:first-child").click()
+		$a("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		// Verify we're on the single post page
 		assertEquals(
-			"/post/user-as-post",
-			window.state.path,
-			"Should navigate to single post path",
+			"Unread (2)",
+			$a("main-content notifications h3").innerText.trim(),
+			"User A should have 2 unread notifications initially",
 		)
 		
-		// Click the "Reply to post" button to show the reply form
-		$("p[add-new-reply] button")[0].click()
+		assertEquals(
+			"User B",
+			$a("main-content notifications notification:nth-child(2) b:first-child").innerText,
+			"First notification should be from User B",
+		)
+		
+		assertEquals(
+			`"First notification for User A"`,
+			$a("main-content notifications notification:nth-child(2) i").innerText,
+			"First notification should show correct content",
+		)
+		
+		// Phase 2: User B creates reply to User A's post
+		const window_user_b = await setupIntegrationTestEnvironment({
+			beforeParse: (window) => {
+				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
+			}
+		})
+		const { $: $b } = window_user_b
+		
+		// Navigate to User A's post
+		$b("main-content-2 posts post:first-child").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		// Fill in the reply form
-		$("add-new[reply] textarea[body]").value = "Newly Created Reply Content"
+		assertEquals(
+			"/post/user-as-post",
+			window_user_b.state.path,
+			"User B should navigate to User A's post",
+		)
 		
-		// Submit the reply
-		$("add-new[reply] button[submit]").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		// Click the reply button (first p[add-new-reply] element's button)
+		$b("main-content-2 replies p[add-new-reply]:first-child button").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		// Verify the new reply is rendered instantly (getMoreRecent was triggered)
+		$b("add-new[reply] textarea[body]").value = "Reply from User B to User A"
+		
+		$b("add-new[reply] button[submit]").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		
+		// Check the newly created reply (should be the 3rd child after p and expand-wrapper)
 		assertEquals(
 			"Newly Created Reply Content",
-			$("reply p span")[0]?.innerText,
-			"New reply should be rendered with correct content",
+			$b("main-content-2 replies reply:nth-child(3) p span").innerText,
+			"User B's reply should be rendered with mock content",
+		)
+		
+		// Phase 3: User A navigates away and back to trigger getMoreRecent()
+		// Navigate away from notifications
+		$a("footer a[href='/posts']").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Navigate back to notifications
+		$a("footer a[href='/notifications']").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		assertEquals(
+			"Unread (3)",
+			$a("main-content notifications h3").innerText.trim(),
+			"User A should have 3 unread notifications after User B's reply",
+		)
+		
+		// Check new notification is first (most recent)
+		assertEquals(
+			"User B",
+			$a("main-content notifications notification:nth-child(2) b:first-child").innerText,
+			"New notification should be from User B",
+		)
+		
+		assertEquals(
+			`"Reply from User B to User A"`,
+			$a("main-content notifications notification:nth-child(2) i").innerText,
+			"New notification should show User B's reply content",
+		)
+		
+		// Verify original notifications are still there
+		assertEquals(
+			"User B",
+			$a("main-content notifications notification:nth-child(3) b:first-child").innerText,
+			"Second notification should still be from User B",
+		)
+		
+		assertEquals(
+			`"First notification for User A"`,
+			$a("main-content notifications notification:nth-child(3) i").innerText,
+			"Second notification should show original content",
 		)
 	},
 }
