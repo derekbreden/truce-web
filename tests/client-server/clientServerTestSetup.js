@@ -544,43 +544,6 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								}
 							]
 						}
-					} else { // Default for other users
-						return {
-							rows: [
-								{
-									notification_id: 1,
-									read: false,
-									seen: false,
-									create_date: "2024-01-03T01:00:00.000Z",
-									display_name: "Reply User",
-									display_name_index: "reply-user",
-									reply_id: 101,
-									body: "This is a reply notification",
-									note: null,
-									title: "My Post",
-									reply_type: "post",
-									conversation_id: null,
-									message_id: null,
-									notification_type: "reply"
-								},
-								{
-									notification_id: 2,
-									read: false,
-									seen: false,
-									create_date: "2024-01-03T00:30:00.000Z",
-									display_name: "Message User",
-									display_name_index: "message-user",
-									reply_id: null,
-									body: "Hey there, how are you?",
-									note: null,
-									title: null,
-									reply_type: null,
-									conversation_id: 5,
-									message_id: 10,
-									notification_type: "message"
-								}
-							]
-						}
 					}
 				}
 				
@@ -1008,7 +971,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									parent_reply_id: null,
 									favorite_count: 0,
 									counts_max_create_date: "2024-01-02T03:00:00.000Z",
-									user_id: 1, // Same as logged-in user
+									user_id: 10, // Same as logged-in user
 									display_name: "Test User",
 									display_name_index: "test-user",
 									user_slug: "test-user",
@@ -1033,7 +996,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								parent_reply_id: null,
 								favorite_count: 1,
 								counts_max_create_date: "2024-01-02T01:00:00.000Z",
-								user_id: 2,
+								user_id: 20,
 								display_name: "Other User",
 								display_name_index: "other-user",
 								user_slug: "other-user",
@@ -1059,7 +1022,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								parent_reply_id: 101,
 								favorite_count: 0,
 								counts_max_create_date: "2024-01-02T02:00:00.000Z",
-								user_id: 3,
+								user_id: 30,
 								display_name: "Reply User",
 								display_name_index: "reply-user",
 								user_slug: "reply-user",
@@ -1137,102 +1100,102 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				if (sql.includes("UPDATE posts") && sql.includes("poll_counts_estimated")) {
 					return { rows: [] }
 				}
-			}
-		},
-		saveReply: (sql, params) => {
-			// Post lookup by slug for reply creation
-			if (sql.includes("SELECT post_id as post_id") && sql.includes("FROM posts") && sql.includes("WHERE slug = $1")) {
-				return { rows: [{ post_id: 1 }] }
-			}
-			
-			// Get post details for AI moderation context
-			if (sql.includes("SELECT") && sql.includes("t.title") && sql.includes("t.body") && sql.includes("FROM posts t")) {
-				return { 
-					rows: [{ 
-						title: "My Post",
-						body: "This is my own post with full content",
-						note: null,
-						display_name: "Test User",
-						image_uuids: null
-					}] 
+			},
+			saveReply: (sql, params) => {
+				// Post lookup by slug for reply creation
+				if (sql.includes("SELECT post_id as post_id") && sql.includes("FROM posts") && sql.includes("WHERE slug = $1")) {
+					return { rows: [{ post_id: 1 }] }
 				}
-			}
-			
-			// Insert new reply
-			if (sql.includes("INSERT INTO replies") && sql.includes("RETURNING reply_id")) {
-				return { rows: [{ reply_id: 201 }] }
-			}
-			
-			// Update post reply count
-			if (sql.includes("UPDATE posts") && sql.includes("reply_count = COALESCE")) {
-				return { rows: [] }
-			}
-			
-			// Update reply image UUIDs
-			if (sql.includes("UPDATE replies") && sql.includes("image_uuids")) {
-				return { rows: [] }
-			}
-			
-			// Update user display name (called from saveReply)
-			if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
-				return { rows: [] }
-			}
-			
-			// Get users to notify about reply
-			if (sql.includes("SELECT user_id") && sql.includes("FROM posts") && sql.includes("UNION")) {
-				return { rows: [] }
-			}
-			
-			// Insert reply notification
-			if (sql.includes("INSERT INTO reply_notifications")) {
-				return { rows: [{ notification_id: 1 }] }
-			}
-			
-			// Get subscriptions for push notifications
-			if (sql.includes("SELECT") && sql.includes("subscription_json") && sql.includes("fcm_token")) {
-				return { rows: [] }
-			}
-			
-			// Get updated post counts
-			if (sql.includes("SELECT") && sql.includes("t.post_id as post_id") && sql.includes("t.favorite_count")) {
-				return { rows: [] }
-			}
-			
-			// Get updated reply counts
-			if (sql.includes("SELECT") && sql.includes("c.reply_id") && sql.includes("c.favorite_count")) {
-				return { rows: [] }
-			}
-		},
-		saveFavorite: (sql, params) => {
-			// Insert favorite post
-			if (sql.includes("INSERT INTO favorite_posts")) {
-				return { rows: [] }
-			}
-			
-			// Update post favorite count after adding/removing favorite
-			if (sql.includes("UPDATE posts") && sql.includes("favorite_count = COALESCE")) {
-				return { rows: [] }
-			}
-			
-			// Delete favorite post (when unfavoriting)
-			if (sql.includes("DELETE FROM favorite_posts")) {
-				return { rows: [] }
-			}
-			
-			// Insert favorite reply
-			if (sql.includes("INSERT INTO favorite_replies")) {
-				return { rows: [] }
-			}
-			
-			// Update reply favorite count
-			if (sql.includes("UPDATE replies") && sql.includes("favorite_count = COALESCE")) {
-				return { rows: [] }
-			}
-			
-			// Delete favorite reply (when unfavoriting)
-			if (sql.includes("DELETE FROM favorite_replies")) {
-				return { rows: [] }
-			}
+				
+				// Get post details for AI moderation context
+				if (sql.includes("SELECT") && sql.includes("t.title") && sql.includes("t.body") && sql.includes("FROM posts t")) {
+					return { 
+						rows: [{ 
+							title: "My Post",
+							body: "This is my own post with full content",
+							note: null,
+							display_name: "Test User",
+							image_uuids: null
+						}] 
+					}
+				}
+				
+				// Insert new reply
+				if (sql.includes("INSERT INTO replies") && sql.includes("RETURNING reply_id")) {
+					return { rows: [{ reply_id: 201 }] }
+				}
+				
+				// Update post reply count
+				if (sql.includes("UPDATE posts") && sql.includes("reply_count = COALESCE")) {
+					return { rows: [] }
+				}
+				
+				// Update reply image UUIDs
+				if (sql.includes("UPDATE replies") && sql.includes("image_uuids")) {
+					return { rows: [] }
+				}
+				
+				// Update user display name (called from saveReply)
+				if (sql.includes("UPDATE users") && sql.includes("display_name = $1")) {
+					return { rows: [] }
+				}
+				
+				// Get users to notify about reply
+				if (sql.includes("SELECT user_id") && sql.includes("FROM posts") && sql.includes("UNION")) {
+					return { rows: [] }
+				}
+				
+				// Insert reply notification
+				if (sql.includes("INSERT INTO reply_notifications")) {
+					return { rows: [{ notification_id: 1 }] }
+				}
+				
+				// Get subscriptions for push notifications
+				if (sql.includes("SELECT") && sql.includes("subscription_json") && sql.includes("fcm_token")) {
+					return { rows: [] }
+				}
+				
+				// Get updated post counts
+				if (sql.includes("SELECT") && sql.includes("t.post_id as post_id") && sql.includes("t.favorite_count")) {
+					return { rows: [] }
+				}
+				
+				// Get updated reply counts
+				if (sql.includes("SELECT") && sql.includes("c.reply_id") && sql.includes("c.favorite_count")) {
+					return { rows: [] }
+				}
+			},
+			saveFavorite: (sql, params) => {
+				// Insert favorite post
+				if (sql.includes("INSERT INTO favorite_posts")) {
+					return { rows: [] }
+				}
+				
+				// Update post favorite count after adding/removing favorite
+				if (sql.includes("UPDATE posts") && sql.includes("favorite_count = COALESCE")) {
+					return { rows: [] }
+				}
+				
+				// Delete favorite post (when unfavoriting)
+				if (sql.includes("DELETE FROM favorite_posts")) {
+					return { rows: [] }
+				}
+				
+				// Insert favorite reply
+				if (sql.includes("INSERT INTO favorite_replies")) {
+					return { rows: [] }
+				}
+				
+				// Update reply favorite count
+				if (sql.includes("UPDATE replies") && sql.includes("favorite_count = COALESCE")) {
+					return { rows: [] }
+				}
+				
+				// Delete favorite reply (when unfavoriting)
+				if (sql.includes("DELETE FROM favorite_replies")) {
+					return { rows: [] }
+				}
+			},
 		},
 		...databaseMocks, // Allow user to override or add more mocks
 	}
