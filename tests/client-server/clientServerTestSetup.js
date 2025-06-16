@@ -230,9 +230,6 @@ async function setupIntegrationTestEnvironment(options) {
 			
 			// Utility functions for client-server testing
 			window.setupExternalMocks = function() {
-				Object.keys(require.cache).forEach(key => {
-					delete require.cache[key]
-				})
 
 				// Mock web-push module
 				const webpushPath = require.resolve("web-push")
@@ -291,6 +288,12 @@ async function setupIntegrationTestEnvironment(options) {
 				
 				// Mock the pool module
 				const poolPath = require.resolve("../../server/pool")
+				// Clear the cache of things that require pool
+				Object.keys(require.cache).forEach(key => {
+					if (key.includes("handleSession")) {
+						delete require.cache[key]
+					}
+				})
 				require.cache[poolPath] = {
 					exports: {
 						pool: {
