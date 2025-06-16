@@ -32,7 +32,7 @@ Node.js social media platform with unique client-side architecture:
 Custom DOM manipulation library:
 	jQuery-like `$()` selector function
 	Indentation-based template syntax with `$1`, `$2` placeholders
-	**Critical**: Often returns NodeLists, not single elements
+	**Critical**: Returns single elements or NodeLists with `.length`
 
 ### Session Middleware Pattern
 ```javascript

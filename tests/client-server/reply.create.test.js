@@ -10,20 +10,21 @@ TWO-USER NOTIFICATION CREATION TEST IMPLEMENTATION PLAN:
 CURRENT STATE: All client-server tests pass with new user system
 - User A (user_id=10, session="user-a-session-123") - Default user, owns "User A's Post"
 - User B (user_id=20, session="user-b-session-456") - Reply creator, owns "User B's Post"
+- notifications.simple.test.js restored and passing with 2 unread + 1 read notifications
 
 REMAINING WORK: Implement the actual two-user notification flow test
 
 TEST FLOW:
-1. User A checks baseline notifications (expects 1 unread notification)
+1. User A checks baseline notifications (expects 2 unread notifications)
 2. User B creates reply to User A's post (triggers notification creation)
-3. User A checks notifications again (expects 2 unread notifications, with new one first)
+3. User A checks notifications again (expects 3 unread notifications, with new one first)
 
 TECHNICAL IMPLEMENTATION:
 
 1. Setup User A environment (default - no beforeParse needed):
    - Navigate to /notifications page
-   - Verify current unread count is 1
-   - Verify top notification is existing baseline notification from User B
+   - Verify current unread count is "Unread (2)"
+   - Verify 2 existing baseline notifications from User B
 
 2. Setup User B environment using beforeParse:
    - Call setupIntegrationTestEnvironment with beforeParse to override localStorage
@@ -33,17 +34,18 @@ TECHNICAL IMPLEMENTATION:
    - Verify reply appears (existing reply creation logic)
 
 3. Back to User A environment (fresh setupIntegrationTestEnvironment call):
-   - Navigate to /notifications page again
-   - Verify unread count is now 2
+   - Navigate to /notifications page again  
+   - Verify unread count is now "Unread (3)"
    - Verify first notification is the new reply from User B
-   - Verify second notification is the original baseline notification
+   - Verify remaining 2 notifications are the original baseline notifications
 
 DATABASE MOCK CHANGES NEEDED:
 
 1. Update notifications mock in clientServerTestSetup.js:
    - Add state tracking for "reply created by User B to User A's post"
    - When User A queries notifications after reply creation, return updated list
-   - New notification should have notification_id=102, from User B, about User A's post
+   - New notification should have notification_id=103 (avoiding conflict with 102 used by read notification)
+   - Update unread_count from 2 to 3 when reply was created
 
 2. Update saveReply mock to track cross-user reply creation:
    - When User B (user_id=20) creates reply to post owned by User A (user_id=10)

@@ -13,54 +13,52 @@ const tests = {
 		$("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		// Check header text
 		assertEquals(
 			"Alerts",
 			$("main-content posts[notifications-header] h2").innerText.trim(),
 			"Should show 'Alerts' header",
 		)
-		
-		// Check unread count
+
 		assertEquals(
 			"Unread (2)",
 			$("main-content notifications h3").innerText.trim(),
 			"Should show unread count as 'Unread (2)'",
 		)
-		
-		// Check unread notifications
-		const $unreadNotifications = $("main-content notifications notification")
-		assertEquals(
-			2,
-			$unreadNotifications.length,
-			"Should have 2 unread notifications",
-		)
-		
-		// Check first notification shows User B name
+
 		assertEquals(
 			"User B",
-			$unreadNotifications[0].querySelector("b").innerText,
+			$("main-content notifications notification:nth-child(2) b:first-child").innerText,
 			"First notification should show User B name",
 		)
-		
-		// Check second notification shows User B name
+
+		assertEquals(
+			`"First notification for User A"`,
+			$("main-content notifications notification:nth-child(2) i").innerText,
+			"First notification should show First notification for User A",
+		)
+
 		assertEquals(
 			"User B",
-			$unreadNotifications[1].querySelector("b").innerText,
+			$("main-content notifications notification:nth-child(3) b:first-child").innerText,
 			"Second notification should show User B name",
 		)
-		
-		// Check read notifications exist in main-content-2
-		const $readNotifications = $("main-content-2").querySelectorAll("notifications notification")
+
 		assertEquals(
-			1,
-			$readNotifications.length,
-			"Should have 1 read notification",
+			`"Second notification for User A"`,
+			$("main-content notifications notification:nth-child(3) i").innerText,
+			"Second notification should show Second notification for User A",
 		)
-		
+
 		assertEquals(
 			"User B",
-			$readNotifications[0].querySelector("b").innerText,
+			$("main-content-2 notifications notification:nth-child(2) b:first-child").innerText,
 			"Read notification should show User B name",
+		)
+
+		assertEquals(
+			`"This was an old reply to User A"`,
+			$("main-content-2 notifications notification:nth-child(2) i").innerText,
+			"Read notification should show This was an old reply to User A",
 		)
 	},
 }
