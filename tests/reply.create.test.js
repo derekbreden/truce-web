@@ -59,7 +59,15 @@ const tests = {
 		$b("add-new[reply] textarea[body]").value = "Reply from User B to User A"
 		
 		$b("add-new[reply] button[submit]").click()
+
 		await new Promise(resolve => setTimeout(resolve, 0))
+
+		// Verify the banner appears for $a
+		assertEquals(
+			"User B replied\nReply from User B to User A",
+			$a("alert-wrapper alert info").innerText.trim(),
+			`Alert should say "User B replied\nReply from User B to User A"`,
+		)
 		assertEquals(
 			"Newly Created Reply Content",
 			$b("main-content-2 replies reply:nth-child(3) p span").innerText,

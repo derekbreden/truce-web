@@ -12,7 +12,7 @@ module.exports = {
 	},
 	async init(server) {
 		const wss = new WebSocketServer({ server })
-		this.ws_active = {}
+		this.ws_active = this.ws_active || {}
 		wss.on("connection", (ws) => {
 			const ws_uuid = crypto.randomUUID()
 			this.ws_active[ws_uuid] = ws

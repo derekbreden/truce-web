@@ -11,6 +11,7 @@ async function setupTestEnvironment(options) {
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 	options.localStorage = options.localStorage || {}
 	options.databaseMocks = options.databaseMocks || {}
+	options.setup_id = options.setup_id || require("crypto").randomUUID()
 	
 	// Removed notification counter - state tracking moved to individual tests
 	
@@ -121,8 +122,8 @@ async function setupTestEnvironment(options) {
 	virtualConsole.on("error", (error) => {
 		console.error(error)
 	})
-	virtualConsole.on("warn", (warn) => {
-		console.warn(warn)
+	virtualConsole.on("warn", (warn, warn2, warn3) => {
+		console.warn(warn, warn2 || "", warn3 || "")
 	})
 	// --------------------------------------------------------------------------
 	// END Setup virtual console
@@ -162,6 +163,27 @@ async function setupTestEnvironment(options) {
 					},
 					loaded: true,
 					id: webpushPath
+				}
+				
+				// Mock ws module (WebSocketServer)
+				const wsPath = require.resolve("ws")
+				const setup_id = options.setup_id
+				
+				global.current_setup_id = setup_id
+				require.cache[wsPath] = {
+					exports: {
+						WebSocketServer: class MockWebSocketServer {
+							constructor(options) {}
+							on(event, handler) {
+								if (event === "connection") {
+									global._ws_connection_handlers = global._ws_connection_handlers || {}
+									global._ws_connection_handlers[global.current_setup_id] = handler
+								}
+							}
+						}
+					},
+					loaded: true,
+					id: wsPath
 				}
 				
 				// Mock AI module
@@ -210,12 +232,6 @@ async function setupTestEnvironment(options) {
 				
 				// Mock the pool module
 				const poolPath = require.resolve("../server/pool")
-				// Clear the cache of things that require pool
-				Object.keys(require.cache).forEach(key => {
-					if (key.includes("handleSession")) {
-						delete require.cache[key]
-					}
-				})
 				require.cache[poolPath] = {
 					exports: {
 						pool: {
@@ -249,6 +265,10 @@ async function setupTestEnvironment(options) {
 					loaded: true,
 					id: poolPath
 				}
+				
+				// Initialize server WebSocket module  
+				const websocketModule = require("../server/websocket.js")
+				websocketModule.init({ on: () => {} })
 			}
 			
 			window.createMockReqRes = function(body, headers) {
@@ -293,12 +313,55 @@ async function setupTestEnvironment(options) {
 				setItem: () => {},
 				removeItem: () => {}
 			}
+			// Store setup identifier for client logging
+			window._setup_id = options.setup_id
+			
 			window.WebSocket = class {
-				constructor() { this.readyState = 1 }
-				send() {}
+				constructor(url) { 
+					this.readyState = 1
+					this._handlers = {}
+					
+					// Simulate connection opening
+					setTimeout(() => {
+						if (this._handlers.open) {
+							this._handlers.open()
+						}
+					}, 0)
+				}
+				send(data) {
+					const client_ws = this
+					if (global._ws_connection_handlers[window._setup_id]) {
+						if (!global._ws_connection_handlers[window._setup_id].mock_ws) {
+							const mock_ws = {
+								_handlers: {},
+								readyState: 1,
+								on(event, handler) {
+									if (event === "message") {
+										this._handlers.message = handler
+									}
+								},
+								send(message) {
+									client_ws._handlers.message({
+										data: message
+									})
+								}
+							}
+							global._ws_connection_handlers[window._setup_id](mock_ws)
+							global._ws_connection_handlers[window._setup_id].mock_ws = mock_ws
+						}
+						global._ws_connection_handlers[window._setup_id].mock_ws._handlers.message({
+							toString(){ return data }
+						})
+					} else {
+						console.error("No global _ws_connection_handlers for setup_id:", window._setup_id)
+					}
+				}
 				close() {}
-				addEventListener() {}
+				addEventListener(event, handler) {
+					this._handlers[event] = handler
+				}
 			}
+
 			window.matchMedia = () => ({ matches: false })
 			window.originalSetTimeout = window.setTimeout
 			window.setTimeout = (fn) => {
@@ -391,7 +454,8 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 	return {
 		...{
 			sessionValidation: (sql, params) => {
-				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
+				// Handle both HTTP session validation (with display_name) and WebSocket session validation (user_id only)
+				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && (sql.includes("users.display_name") || sql.includes("users.user_id"))) {
 					if (params && params[0] === "user-a-session-123") {
 						return { 
 							rows: [{ 
@@ -610,6 +674,20 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Mark all notifications as seen (message_notifications)
 				if (sql.includes("UPDATE message_notifications") && sql.includes("SET seen = TRUE")) {
 					return { rows: [] }
+				}
+				
+				// Mark notifications as read (for WebSocket users)
+				if (sql.includes("UPDATE reply_notifications") && sql.includes("SET read = TRUE")) {
+					return { rows: [] }
+				}
+				
+				if (sql.includes("UPDATE message_notifications") && sql.includes("SET read = TRUE")) {
+					return { rows: [] }
+				}
+				
+				// Get unread count for WebSocket users
+				if (sql.includes("SELECT sum(unread_count) AS unread_count")) {
+					return { rows: [{ unread_count: 0 }] }
 				}
 			},
 			posts: (sql, params) => {
@@ -1186,7 +1264,8 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				// Get users to notify about reply
 				if (sql.includes("SELECT user_id") && sql.includes("FROM posts") && sql.includes("UNION")) {
-					return { rows: [] }
+					// Return User A (post owner) to be notified when User B creates a reply
+					return { rows: [{ user_id: 10 }] }
 				}
 				
 				// Insert reply notification
