@@ -1,12 +1,12 @@
 const path = require("path")
 const {
-	setupIntegrationTestEnvironment,
-} = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testClientServerFlow: async () => {
-		const window = await setupIntegrationTestEnvironment()
+	testFlow: async () => {
+		const window = await setupTestEnvironment()
 		const { $ } = window
 		
 		// Navigate to the single post page for "User A's Post" (which has edit: true)

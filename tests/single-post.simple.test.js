@@ -1,15 +1,15 @@
 const path = require("path")
 const {
-	setupIntegrationTestEnvironment,
-} = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testClientServerFlow: async () => {
-		const window = await setupIntegrationTestEnvironment()
+	testFlow: async () => {
+		const window = await setupTestEnvironment()
 		const { $ } = window
 		
-		// By default, clientServerTestSetup.js starts on /posts with 2 posts
+		// By default, testSetupHelpers.js starts on /posts with 2 posts
 		// Click on the post itself (not just h2) to navigate to single post view
 		$("main-content-2 posts post:first-child").click()
 		await new Promise(resolve => setTimeout(resolve, 0))

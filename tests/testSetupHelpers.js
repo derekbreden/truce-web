@@ -4,7 +4,7 @@ const { JSDOM, VirtualConsole } = require("jsdom")
 
 // Removed userANotificationQueries - complex state tracking moved to individual tests
 
-async function setupIntegrationTestEnvironment(options) {
+async function setupTestEnvironment(options) {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
@@ -28,7 +28,7 @@ async function setupIntegrationTestEnvironment(options) {
 			If you want to override one of these defaults, for example to not have a logged in session:
 
 		// Override default logged in session
-		setupIntegrationTestEnvironment({
+		setupTestEnvironment({
 			sessionValidation: (sql, params) => {
 				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
 					return { 
@@ -58,7 +58,7 @@ async function setupIntegrationTestEnvironment(options) {
 	})
 
 	// Index path and content
-	const indexPath = path.resolve(__dirname, "../../index.html")
+	const indexPath = path.resolve(__dirname, "../index.html")
 	const indexHtmlContent = fs.readFileSync(indexPath, "utf8")
 
 
@@ -161,8 +161,7 @@ async function setupIntegrationTestEnvironment(options) {
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
 		beforeParse(window) {
-			// Clean slate - new API for client-server tests
-			
+		
 			// Track async fetch handlers
 			const asyncFetchHandlers = []
 			
@@ -228,7 +227,7 @@ async function setupIntegrationTestEnvironment(options) {
 			// Replace fetch directly - client code will wrap this
 			window.fetch = mockFetchImplementation
 			
-			// Utility functions for client-server testing
+			// Utility functions for testing
 			window.setupExternalMocks = function() {
 
 				// Mock web-push module
@@ -243,7 +242,7 @@ async function setupIntegrationTestEnvironment(options) {
 				}
 				
 				// Mock AI module
-				const aiPath = require.resolve("../../server/ai")
+				const aiPath = require.resolve("../server/ai")
 				require.cache[aiPath] = {
 					exports: {
 						ask: async (messages, type, format) => {
@@ -287,7 +286,7 @@ async function setupIntegrationTestEnvironment(options) {
 				}
 				
 				// Mock the pool module
-				const poolPath = require.resolve("../../server/pool")
+				const poolPath = require.resolve("../server/pool")
 				// Clear the cache of things that require pool
 				Object.keys(require.cache).forEach(key => {
 					if (key.includes("handleSession")) {
@@ -359,7 +358,7 @@ async function setupIntegrationTestEnvironment(options) {
 			}
 			
 			window.executeHandler = async function(req, res) {
-				const handleSession = require("../../server/handleSession.js")
+				const handleSession = require("../server/handleSession.js")
 				await handleSession(req, res)
 				return JSON.parse(res.responseData)
 			}
@@ -393,7 +392,7 @@ async function setupIntegrationTestEnvironment(options) {
 					If you need to override localStorage defaults, for example to simulate not logged-in user:
 					(one that will be required to click "Join" first)
 
-				const window = await setupIntegrationTestEnvironment({
+				const window = await setupTestEnvironment({
 					beforeParse(window){
 						window.localStorage.removeItem("trucev1:session_uuid")
 						window.localStorage.removeItem("trucev1:agreed")
@@ -1208,4 +1207,4 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 	}
 }
 
-module.exports = { setupIntegrationTestEnvironment }
+module.exports = { setupTestEnvironment }

@@ -1,19 +1,19 @@
 const path = require("path")
 const {
-	setupIntegrationTestEnvironment,
-} = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testClientServerFlow: async () => {
-		const window = await setupIntegrationTestEnvironment()
+	testFlow: async () => {
+		const window = await setupTestEnvironment()
 		const { $ } = window
 		
 		// Navigate to the topics page
 		$(`footer [href="/topics"]`).click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 
-		// Verify the default topics returned in clientServerTestup.js are shown in the DOM
+		// Verify the default topics returned in testSetupHelpers.js are shown in the DOM
 		assertEquals(
 			"Religion",
 			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname name").innerText,

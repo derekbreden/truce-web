@@ -102,13 +102,13 @@ $("button").click() // Let it crash if button doesn't exist
 	Mirrors app behavior: If the app would crash, the test should too
 	Forces precision: Use innerHTML discovery when selectors fail
 
-### Client-Server Test Pattern
+### Test Pattern
 ```javascript
-const { setupIntegrationTestEnvironment } = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+const { setupTestEnvironment } = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 async function testFeature() {
-	const window = await setupIntegrationTestEnvironment()
+	const window = await setupTestEnvironment()
 	const { $, state } = window
 
 	$("main-content posts post:nth-child(2) button[submit]").click()
@@ -160,7 +160,7 @@ When working on tasks:
 	**MUST** scope down aggressively: Pick ONE task when complexity emerges
 
 ### Test-First Refactoring
-1. **MUST** write comprehensive client-server tests FIRST
+1. **MUST** write comprehensive tests FIRST
 2. **MUST** ensure ALL tests pass with original code
 3. Make refactoring changes
 4. **MUST** verify tests still pass with identical results
@@ -209,4 +209,4 @@ When encountering selector/DOM issues, you **MUST**:
 	`client/flint.js`: Custom DOM manipulation library
 	`runAllTests.js`: Test runner
 	`server/session/`: Session middleware functions
-	`tests/client-server`: Integration tests
+	`tests/`: End-to-end-to-end Integration tests

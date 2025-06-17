@@ -1,12 +1,12 @@
 const path = require("path")
 const {
-	setupIntegrationTestEnvironment,
-} = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 
 const tests = {
-	testClientServerFlow: async () => {
+	testFlow: async () => {
 		// Custom notifications mock for this test's 3-phase scenario
 		let userANotificationQueries = 0
 		const customNotificationsMock = (sql, params) => {
@@ -166,7 +166,7 @@ const tests = {
 		}
 		
 		// Phase 1: User A checks baseline notifications
-		const window_user_a = await setupIntegrationTestEnvironment({
+		const window_user_a = await setupTestEnvironment({
 			databaseMocks: {
 				notifications: customNotificationsMock
 			}
@@ -195,7 +195,7 @@ const tests = {
 		)
 		
 		// Phase 2: User B creates reply to User A's post
-		const window_user_b = await setupIntegrationTestEnvironment({
+		const window_user_b = await setupTestEnvironment({
 			beforeParse: (window) => {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}

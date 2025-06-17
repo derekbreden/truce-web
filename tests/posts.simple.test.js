@@ -1,15 +1,15 @@
 const path = require("path")
 const {
-	setupIntegrationTestEnvironment,
-} = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("./testUtils.js")
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
+const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testClientServerFlow: async () => {
-		const window = await setupIntegrationTestEnvironment()
+	testFlow: async () => {
+		const window = await setupTestEnvironment()
 		const { $ } = window
 		
-		// By default, clientServerTestSetup.js starts on /posts with 2 posts
+		// By default, testSetupHelpers.js starts on /posts with 2 posts
 
 		// The first listed (by create_date) default post is the user's own post
 		$("main-content-2 posts post:first-child icon[more]").click()
