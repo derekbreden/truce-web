@@ -638,6 +638,42 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 						}
 					}
 					
+					// Infinite scroll - loading older posts
+					if (params && params[2]) {
+						const max_date = new Date(params[2])
+						
+						// First scroll - return third post when scrolling past User B's Post date
+						if (max_date <= new Date("2024-01-01T01:00:00.000Z") && max_date > new Date("2023-12-31T00:00:00.000Z")) {
+							return {
+								rows: [
+									{
+										post_id: 3,
+										title: "Third post loaded via scroll",
+										body: "This is the third post that loads when you scroll",
+										create_date: "2023-12-31T00:00:00.000Z",
+										user_id: 30,
+										reply_count: 0,
+										favorite_count: 0,
+										topics: "religion,media",
+										edit: user_id === 30,
+										slug: "third-post-loaded-via-scroll",
+										favorited: false,
+										display_name: "User C",
+										display_name_index: "user-c",
+										user_slug: "user-c",
+										profile_picture_uuid: null,
+										user_verified: false
+									}
+								]
+							}
+						}
+						
+						// Second scroll or beyond - no more posts
+						if (max_date <= new Date("2023-12-31T00:00:00.000Z")) {
+							return { rows: [] }
+						}
+					}
+					
 					// Default posts for all users (everyone sees the same posts)
 					return { 
 						rows: [
