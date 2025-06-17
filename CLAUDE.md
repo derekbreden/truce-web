@@ -8,11 +8,8 @@ Every line and every word considered carefully for deletion. Say only what is ab
 ## Development Commands
 
 ```bash
-npm test                              # Run all tests
-npm test integration                  # Client-side integration tests  
-npm test unit                         # Server-side unit tests
-npm test navigation.integration.test.js  # Run specific test file
-node index.js                         # Start the application
+npm test                       # Run all tests
+npm test reply.create.test.js  # Run specific test file
 ```
 
 ## Project Architecture
