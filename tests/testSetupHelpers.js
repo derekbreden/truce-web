@@ -23,31 +23,6 @@ async function setupTestEnvironment(options) {
 	
 
 	// Default database mocks are abstracted as they are quite a few lines of specific code
-	/*
-		NOTE TO CLAUDE:
-			If you want to override one of these defaults, for example to not have a logged in session:
-
-		// Override default logged in session
-		setupTestEnvironment({
-			sessionValidation: (sql, params) => {
-				if (sql.includes("SELECT") && sql.includes("sessions.session_uuid") && sql.includes("users.display_name")) {
-					return { 
-						rows: [{ 
-							session_uuid: "foo-bar",
-							session_id: "1", 
-							email: "",
-							display_name: "",
-							admin: false,
-							user_id: "0",
-							profile_picture_uuid: null,
-							slug: "",
-							subscribed_to_users: "0"
-						}] 
-					}
-				}
-			}
-		})
-	*/
 	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks, { 
 		postCreatedInThisSession: () => postCreatedInThisSession, 
 		setPostCreatedInThisSession: (value) => postCreatedInThisSession = value,
@@ -161,61 +136,9 @@ async function setupTestEnvironment(options) {
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
 		beforeParse(window) {
-		
-			// Track async fetch handlers
-			const asyncFetchHandlers = []
 			
-			// Register an async handler for a specific fetch
-			window.mockAsyncFetch = function(url, bodyPattern, asyncHandler) {
-				if (!asyncHandler) {
-					asyncHandler = async (fetchOptions) => {
-						const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
-						return await window.executeHandler(req, res)
-					}
-				}
-				const promise = new Promise(resolve => {
-					asyncFetchHandlers.push({
-						url,
-						bodyPattern,
-						asyncHandler,
-						resolve
-					})
-				})
-				return promise
-			}
-			
-			// Mock fetch that supports async handlers
+			// Mock fetch
 			async function mockFetchImplementation(url, fetchOptions) {
-				// Find matching handler
-				const handlerIndex = asyncFetchHandlers.findIndex(h => {
-					if (h.url !== url) return false
-					if (h.bodyPattern && fetchOptions?.body !== h.bodyPattern) return false
-					return true
-				})
-				
-				if (handlerIndex !== -1) {
-					const handler = asyncFetchHandlers[handlerIndex]
-					asyncFetchHandlers.splice(handlerIndex, 1) // Remove after use
-					
-					// Run the async handler and get response
-					const response = await handler.asyncHandler(fetchOptions)
-					
-					// Resolve the promise returned by mockAsyncFetch
-					handler.resolve()
-					
-					return {
-						status: 200,
-						json: async () => response
-					}
-				}
-				
-				// Do we want to notify and throw errors for no handler registered?
-				// console.error("No async fetch handler for:", url, fetchOptions?.body)
-				// return {
-				// 	status: 500,
-				// 	json: async () => ({ error: "No handler registered" })
-				// }
-				// Or simply return a good default?
 				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
 				const response = await window.executeHandler(req, res)
 				return {
@@ -448,6 +371,15 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 	const getEditedPostData = sessionState?.editedPostData || (() => null)
 	const setEditedPostData = sessionState?.setEditedPostData || (() => {})
 	
+	// Global state tracker for reply.create.test.js scenario
+	// Initialize only if not already set (don't reset during same test run)
+	if (global.userANotificationQueries === undefined) {
+		global.userANotificationQueries = 0
+	}
+	if (global.replyCreatedInSession === undefined) {
+		global.replyCreatedInSession = false
+	}
+	
 	return {
 		...{
 			sessionValidation: (sql, params) => {
@@ -495,10 +427,15 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Unread count and unseen count query
 				if (sql.includes("WITH combined_notifications") || sql.includes("unseen_count")) {
 					if (user_id === 10) { // User A (Post Owner)
+						// Track User A notification count queries for reply.create.test.js scenario
+						global.userANotificationQueries++
+						
+						// First query: 2 unread, Second query (after reply): 3 unread
+						const unread_count = global.userANotificationQueries >= 2 ? 3 : 2
 						return { 
 							rows: [{ 
-								unseen_count: 0,
-								unread_count: 2
+								unseen_count: global.userANotificationQueries === 1 ? 1 : 0,
+								unread_count: unread_count
 							}] 
 						}
 					} else { // Default for other users including User B
@@ -514,41 +451,98 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Unread notifications query
 				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
 					if (user_id === 10) { // User A (Post Owner)
-						return {
-							rows: [
-								{
-									notification_id: 100,
-									read: false,
-									seen: false,
-									create_date: "2024-01-03T01:00:00.000Z",
-									display_name: "User B",
-									display_name_index: "user-b",
-									reply_id: 201,
-									body: "First notification for User A",
-									note: null,
-									title: "User A's Post",
-									reply_type: "post",
-									conversation_id: null,
-									message_id: null,
-									notification_type: "reply"
-								},
-								{
-									notification_id: 101,
-									read: false,
-									seen: false,
-									create_date: "2024-01-03T00:30:00.000Z",
-									display_name: "User B",
-									display_name_index: "user-b",
-									reply_id: null,
-									body: "Second notification for User A",
-									note: null,
-									title: null,
-									reply_type: null,
-									conversation_id: 5,
-									message_id: 10,
-									notification_type: "message"
-								}
-							]
+						// Second query and beyond: show new notification first
+						if (global.userANotificationQueries >= 2) {
+							return {
+								rows: [
+									{
+										notification_id: 103,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T02:00:00.000Z", // Newest notification
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: 201,
+										body: "Reply from User B to User A",
+										note: null,
+										title: "User A's Post",
+										reply_type: "post",
+										conversation_id: null,
+										message_id: null,
+										notification_type: "reply"
+									},
+									{
+										notification_id: 100,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T01:00:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: 201,
+										body: "First notification for User A",
+										note: null,
+										title: "User A's Post",
+										reply_type: "post",
+										conversation_id: null,
+										message_id: null,
+										notification_type: "reply"
+									},
+									{
+										notification_id: 101,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T00:30:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: null,
+										body: "Second notification for User A",
+										note: null,
+										title: null,
+										reply_type: null,
+										conversation_id: 5,
+										message_id: 10,
+										notification_type: "message"
+									}
+								]
+							}
+						} else {
+							// First query: baseline 2 notifications
+							return {
+								rows: [
+									{
+										notification_id: 100,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T01:00:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: 201,
+										body: "First notification for User A",
+										note: null,
+										title: "User A's Post",
+										reply_type: "post",
+										conversation_id: null,
+										message_id: null,
+										notification_type: "reply"
+									},
+									{
+										notification_id: 101,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T00:30:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: null,
+										body: "Second notification for User A",
+										note: null,
+										title: null,
+										reply_type: null,
+										conversation_id: 5,
+										message_id: 10,
+										notification_type: "message"
+									}
+								]
+							}
 						}
 					}
 				}
