@@ -300,8 +300,16 @@ async function setupTestEnvironment(options) {
 				addEventListener() {}
 			}
 			window.matchMedia = () => ({ matches: false })
+			window.originalSetTimeout = window.setTimeout
 			window.setTimeout = (fn) => {
-				fn()
+				// Special case with banners to leave them for a moment only
+				if (fn.toString().includes(`$("alert-wrapper")?.remove()`)) {
+					window.originalSetTimeout(fn, 0)
+
+				// Otherwise we call the setTimeout instantly
+				} else {
+					fn()
+				}
 			}
 
 			// Default to user being logged in, agreed to terms, and last visited /posts
