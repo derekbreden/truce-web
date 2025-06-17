@@ -21,7 +21,7 @@ function clearTestResults() {
 async function runTests(testFileName, testFunctions, includeTimer) {
 	clearTestResults()
 	const startTime = new Date()
-	console.log(`\n  ${testFileName}`)
+	console.log(`  ${testFileName}`)
 
 	for (const testFn of testFunctions) {
 		try {
@@ -53,28 +53,23 @@ async function runTests(testFileName, testFunctions, includeTimer) {
 			// console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`)
 			passedCount++
 		} else {
-			console.log(`  \x1b[31mFAIL:\x1b[0m ${result.message}`)
-			console.log(`    Expected: ${JSON.stringify(result.expected)}`)
-			console.log(`    Actual:   ${JSON.stringify(result.actual)}`)
+			console.log(`    \x1b[31mFAIL:\x1b[0m ${result.message}`)
+			console.log(`      Expected: ${JSON.stringify(result.expected)}`)
+			console.log(`      Actual:   ${JSON.stringify(result.actual)}`)
 			failedCount++
 		}
 	})
 
-	console.log(`  \x1b[32mPASSED:\x1b[0m ${passedCount}`)
+	console.log(`    \x1b[32mPASSED:\x1b[0m ${passedCount}`)
 	if (failedCount) {
-		console.log(`  \x1b[31mFAILED:\x1b[0m ${failedCount}`)
-	} else {
-		// console.log(`FAILED: ${failedCount}`)
-	}
-	const endTime = new Date()
-	if (includeTimer) {
-		console.log("TIME IN FILE: " + (endTime - startTime) + "ms")
+		console.log(`    \x1b[31mFAILED:\x1b[0m ${failedCount}`)
 	}
 
 	if (failedCount > 0) {
-		console.log("\x1b[31mSome tests failed. Exiting with status 1.\x1b[0m")
+		console.log("  \x1b[31mSome tests failed. Exiting with status 1.\x1b[0m")
 		process.exit(1)
 	}
+	console.log(``)
 }
 
 module.exports = {

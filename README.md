@@ -62,89 +62,11 @@ alert("Success");
 
 ### How to run tests
 ```bash
-npm test                              # Run all tests
-npm test navigation.integration.test.js  # Run specific test file
+npm test                        # Run all tests
+npm test topics.simple.test.js  # Run specific test file
 ```
 
-Make sure you have run `npm install jsdom` before running tests.
-
-### How to write tests
-
-All integration tests follow this pattern:
-
-```javascript
-const { assertEquals, runTests } = require("../shared/testUtils.js")
-const { setupIntegrationTestEnvironment } = require("../shared/integrationTestSetup.js")
-
-async function testMyFeature() {
-	const window = await setupIntegrationTestEnvironment()
-	const { state, $ } = window
-
-	// Mock API responses
-	window.setMockFetchResponseForPaths({
-		"/posts": { 
-			path: "/posts", 
-			posts: [{slug: "example", title: "Example", body: "Body", user_slug: "user", display_name: "User"}], 
-			replies: [], 
-			activities: [], 
-			notifications: [] 
-		}
-	})
-
-	// Navigate from welcome page
-	const $joinButton = $("a[href='/posts'][big]")
-	$joinButton.click()
-	await new Promise(resolve => setTimeout(resolve, 0))
-
-	// Test assertions
-	assertEquals("/posts", state.path, "Should navigate to posts")
-	assertEquals("Example", $("post h2").innerText.trim(), "Should show post title")
-}
-
-runTests("myFeature.test.js", [testMyFeature])
-```
-
-### Critical Testing Philosophy: No Guard Assertions
-
-**This project strictly prohibits "guard assertions" in favor of direct failure patterns.**
-
-#### Wrong Approach (Guard Assertions)
-```javascript
-// ❌ AVOID: Defensive, noisy, less informative
-const $element = $("my-selector")
-assertEquals(true, Boolean($element), "Element should exist")
-assertEquals("expected text", $element.innerText.trim(), "Text should match")
-```
-
-#### Correct Approach (Direct Assertions)
-```javascript
-// ✅ CORRECT: Direct, clear, more informative
-assertEquals("expected text", $("my-selector").innerText.trim(), "Text should match")
-```
-
-#### Why Direct Assertions Are Superior
-
-1. **Better Error Messages**: When `$("my-selector")` returns null, you get `Cannot read properties of null (reading 'innerText')` which immediately tells you the selector failed and what you were trying to access.
-
-2. **Less Code Noise**: Guard assertions double the line count and obscure the actual test intent.
-
-3. **Modern JSDOM**: Unlike legacy environments, JSDOM provides excellent isolated error messages without crashing test suites.
-
-4. **Mirrors Application Behavior**: If the app would crash with a missing element, the test should too.
-
-### Key Testing Guidelines
-
-1. **Mock Data First**: Before changing application code, adjust mock data to match expected server responses.
-
-2. **Target Flint.js Child Elements**: For text content, target the specific child element where Flint.js places text:
-   ```javascript
-   // Correct for Flint.js rendered content
-   assertEquals("Title", $("h2[page-title] span").innerText.trim(), "Title should match")
-   ```
-
-3. **Use innerText.trim()**: Preferred for Flint.js rendered content as it handles `<br>` tags properly.
-
-4. **Direct Failures Over Guards**: Let tests crash naturally at the point of failure for better debugging.
+Make sure you have run `npm install` before running tests.
 
 ## Flint.js DOM Manipulation
 

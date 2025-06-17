@@ -108,7 +108,7 @@ $("button").click() // Let it crash if button doesn't exist
 ### Client-Server Test Pattern
 ```javascript
 const { setupIntegrationTestEnvironment } = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("../client/shared/testUtils.js")
+const { assertEquals, runTests } = require("./testUtils.js")
 
 async function testFeature() {
 	const window = await setupIntegrationTestEnvironment()
@@ -123,21 +123,10 @@ runTests("feature.test.js", [testFeature])
 ```
 
 ### Key Testing Gotchas
-**JSDOM text**: `.innerText` on deepest element; `.textContent` only for standalone `$1`
-**Flint.js NodeLists**: Access first element when needed: `$("selector")[0]`
-**URL attributes**: Use `.endsWith()` for image src comparisons in tests
-**Test data**: Use minimal, focused test cases rather than complex scenarios
-**Data flow tracing**: When tests fail, trace data from mock → DOM attributes → JS parsing (e.g. Number()) → API calls
-**Database mock isolation**: Track session state to prevent test interference (e.g., post creation affecting favorites test)
+**JSDOM text**: Always check `.innerText` on deepest element; Sometimes check `.textContent` only for RARE standalone `element\n  $1` instead of usual `element $1`
+**Target elements**: MUST use specific CSS selectors like `notification[unread] + notification[unread]` or `post posts:nth-child(2) p:nth-child(0) span` to get a single element instead of an array. NEVER get an array.
 
-### Integration Test Complex Flows
-**Pre-populate state**: Pass `mockFetchResponseForPaths` to `setupIntegrationTestEnvironment()`
-**Target elements**: Use specific CSS selectors like `notification[unread] + notification[unread]`
-**Update mocks mid-test**: Call `window.setMockFetchResponseForPaths()` between actions
-**Mock POST actions**: Use `window.addMockFetchMatcher()` for requests with specific body keys (not path-based)
-**Test full flow**: Check DOM content before/after, update mocks, navigate to trigger re-render
-
-### Multiple Test Environments (Critical)
+### Multiple Test Environments
 When testing with multiple users/sessions, require.cache contamination occurs:
 ```javascript
 const { $: $a, setupExternalMocks: aSetupExternalMocks } = window_user_a
@@ -149,26 +138,8 @@ aSetupExternalMocks()  // Re-establish User A's database mocks
 
 ## Common Patterns
 
-### Database Queries
-Always use parameterized queries:
-```javascript
-const result = await req.client.query(
-	`SELECT * FROM table WHERE id = $1 AND date > $2`,
-	[id, date]
-)
-```
-
 ### Cache Updates
-Update client cache immediately before API calls for responsive UI
-
-### WebSocket Race Conditions
-Guard against deleted connections:
-```javascript
-// ✅ CORRECT: Guard against deleted connections
-if (this.ws_active[ws_uuid]) {
-	delete this.ws_active[ws_uuid].active_post_id
-}
-```
+Update client cache immediately (and call render functions) before API calls for responsive UI
 
 ### AI Content Moderation
 ```javascript
@@ -192,7 +163,7 @@ When working on tasks:
 	**MUST** scope down aggressively: Pick ONE task when complexity emerges
 
 ### Test-First Refactoring
-1. **MUST** write comprehensive tests FIRST
+1. **MUST** write comprehensive client-server tests FIRST
 2. **MUST** ensure ALL tests pass with original code
 3. Make refactoring changes
 4. **MUST** verify tests still pass with identical results
@@ -219,7 +190,7 @@ When encountering selector/DOM issues, you **MUST**:
 
 ### Subtraction Over Addition
 	Before adding code, ask: "What can I remove?"
-	Before adding abstraction, ask: "Is concrete version clearer?"
+	Before adding abstraction, ask: "Is a concrete version clearer?"
 	Before adding defensive code, ask: "Will this help debugging?"
 
 ### Signal vs Noise Optimization
@@ -241,4 +212,4 @@ When encountering selector/DOM issues, you **MUST**:
 	`client/flint.js`: Custom DOM manipulation library
 	`runAllTests.js`: Test runner
 	`server/session/`: Session middleware functions
-	`tests/client/integration/`: Integration tests
+	`tests/client-server`: Integration tests

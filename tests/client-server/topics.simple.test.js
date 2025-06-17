@@ -2,7 +2,7 @@ const path = require("path")
 const {
 	setupIntegrationTestEnvironment,
 } = require("./clientServerTestSetup.js")
-const { assertEquals, runTests } = require("../client/shared/testUtils.js")
+const { assertEquals, runTests } = require("./testUtils.js")
 
 const tests = {
 	testClientServerFlow: async () => {
