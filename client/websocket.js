@@ -6,9 +6,7 @@ const reconnectWs = () => {
 			getMoreRecent()
 		} else {
 			const data = JSON.parse(event.data)
-			if (data.type === "TYPING_INDICATOR") {
-				handleTypingIndicator(data)
-			} else if (data.type === "READ_STATUS_UPDATE") {
+			if (data.type === "READ_STATUS_UPDATE") {
 				handleReadStatusUpdate(data)
 			} else if (data.type === "INSTANT_ALERT") {
 				handleInstantAlert(data)
@@ -38,39 +36,6 @@ const updateWebSocketPath = (new_path) => {
 	}
 }
 
-// Handle typing indicators
-const handleTypingIndicator = (data) => {
-	if (state.path === `/messages/${data.conversation_id}`) {
-		const typingIndicator = $("main-content-wrapper[active] typing-indicator")
-		
-		if (data.typing) {
-			// Show typing indicator if not already present
-			if (!typingIndicator) {
-				// Get display name from cached conversation data
-				const conversation = state.cache[state.path]
-				let display_name = data.user_id // fallback
-				if (conversation && conversation.participants) {
-					const participant = conversation.participants.find(participant => participant.user_id === data.user_id)
-					if (participant) {
-						display_name = participant.display_name
-					}
-				}
-				
-				const $indicator = $(
-					`
-					typing-indicator
-						span $1 is typing...
-					`,
-					[display_name]
-				)
-				$("main-content-wrapper[active] messages").appendChild($indicator)
-			}
-		} else {
-			// Remove typing indicator
-			typingIndicator?.remove()
-		}
-	}
-}
 
 // Handle read status updates
 const handleReadStatusUpdate = (data) => {
@@ -108,24 +73,6 @@ const handleInstantAlert = (data) => {
 	}
 }
 
-// Send typing indicator
-let typing_timeout
-const sendTypingIndicator = (is_typing, conversation_id) => {
-	if (state.ws && state.ws.readyState === WebSocket.OPEN && conversation_id) {
-		state.ws.send(JSON.stringify({
-			typing: is_typing,
-			conversation_id: conversation_id,
-			session_uuid: state.session_uuid,
-		}))
-		
-		if (is_typing) {
-			clearTimeout(typing_timeout)
-			typing_timeout = setTimeout(() => {
-				sendTypingIndicator(false, conversation_id)
-			}, 3000)
-		}
-	}
-}
 
 // Send session_uuid
 const sendSessionUuidToWebSocket = () => {

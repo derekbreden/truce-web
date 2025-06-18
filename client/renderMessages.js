@@ -134,24 +134,6 @@ const renderMessages = (messages, conversation) => {
 				}
 			})
 
-			// Add typing indicators
-			let last_typing_time = 0
-			$textarea.on("input", () => {
-				if (conversation && conversation.conversation_id) {
-					const now = Date.now()
-					last_typing_time = now
-					
-					// Start typing indicator
-					sendTypingIndicator(true, conversation.conversation_id)
-					
-					// Stop typing after 1 second of no input
-					setTimeout(() => {
-						if (Date.now() - last_typing_time >= 1000) {
-							sendTypingIndicator(false, conversation.conversation_id)
-						}
-					}, 1000)
-				}
-			})
 
 		}
 
