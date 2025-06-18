@@ -275,7 +275,9 @@ async function setupTestEnvironment(options) {
 				const req = {
 					headers: headers || {},
 					body: body,
-					sendWsMessage: () => {} // Mock WebSocket message sending
+					sendWsMessage: () => {}, // Mock WebSocket message sending
+					sendWsMessageToConversation: () => {}, // Mock WebSocket message to conversation
+					sendWsMessageToUsers: () => {} // Mock WebSocket message to users
 				}
 				// Ensure headers are lowercase (HTTP standard)
 				if (req.headers.Authorization) {
@@ -450,6 +452,9 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 	if (global.replyCreatedInSession === undefined) {
 		global.replyCreatedInSession = false
 	}
+	if (global.messageCreatedInSession === undefined) {
+		global.messageCreatedInSession = false
+	}
 	
 	return {
 		...{
@@ -502,8 +507,11 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 						// Track User A notification count queries for reply.create.test.js scenario
 						global.userANotificationQueries++
 						
-						// First query: 2 unread, Second query (after reply): 3 unread
-						const unread_count = global.userANotificationQueries >= 2 ? 3 : 2
+						// Determine unread count: 2 baseline, 3 after second query (after reply/message created)
+						let unread_count = 2 // baseline
+						if (global.userANotificationQueries >= 2) {
+							unread_count = 3 // Second query always shows 3 (after reply or message was created)
+						}
 						return { 
 							rows: [{ 
 								unseen_count: global.userANotificationQueries === 1 ? 1 : 0,
@@ -523,8 +531,62 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Unread notifications query
 				if (sql.includes("WITH combined_unread") && sql.includes("n.read = FALSE")) {
 					if (user_id === 10) { // User A (Post Owner)
-						// Second query and beyond: show new notification first
-						if (global.userANotificationQueries >= 2) {
+						// Show appropriate notification based on what was created
+						if (global.userANotificationQueries >= 2 && global.messageCreatedInSession) {
+							// Show new message notification first after message creation
+							return {
+								rows: [
+									{
+										notification_id: 200, // New message notification
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T02:30:00.000Z", // Newest notification
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: null,
+										body: "Hello User A, this is a message from User B",
+										note: null,
+										title: null,
+										reply_type: null,
+										conversation_id: 100,
+										message_id: 500,
+										notification_type: "message"
+									},
+									{
+										notification_id: 100,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T01:00:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: 201,
+										body: "First notification for User A",
+										note: null,
+										title: "User A's Post",
+										reply_type: "post",
+										conversation_id: null,
+										message_id: null,
+										notification_type: "reply"
+									},
+									{
+										notification_id: 101,
+										read: false,
+										seen: false,
+										create_date: "2024-01-03T00:30:00.000Z",
+										display_name: "User B",
+										display_name_index: "user-b",
+										reply_id: null,
+										body: "Second notification for User A",
+										note: null,
+										title: null,
+										reply_type: null,
+										conversation_id: 5,
+										message_id: 10,
+										notification_type: "message"
+									}
+								]
+							}
+						} else if (global.userANotificationQueries >= 2 && global.replyCreatedInSession) {
 							return {
 								rows: [
 									{
@@ -763,12 +825,28 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								body: "This is User A's own post",
 								create_date: "2024-01-02T00:00:00.000Z",
 								user_id: 10, // User A owns this
+								display_name: "User A",
+								display_name_index: "user-a",
+								user_slug: "user-a",
+								profile_picture_uuid: null,
+								user_verified: true,
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
 								edit: user_id === 10, // Only User A can edit
 								slug: "user-as-post",
-								favorited: false
+								favorited: false,
+								replyed: false,
+								voted: false,
+								poll_1: null,
+								poll_2: null,
+								poll_3: null,
+								poll_4: null,
+								poll_counts: null,
+								poll_counts_estimated: null,
+								note: null,
+								counts_max_create_date: "2024-01-02T00:00:00.000Z",
+								image_uuids: null
 							},
 							{
 								post_id: 2,
@@ -776,12 +854,28 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 								body: "This is User B's post",
 								create_date: "2024-01-01T01:00:00.000Z",
 								user_id: 20, // User B owns this
+								display_name: "User B",
+								display_name_index: "user-b",
+								user_slug: "user-b",
+								profile_picture_uuid: null,
+								user_verified: true,
 								reply_count: 0,
 								favorite_count: 0,
 								topics: "religion,media",
 								edit: user_id === 20, // Only User B can edit
 								slug: "user-bs-post",
-								favorited: false
+								favorited: false,
+								replyed: false,
+								voted: false,
+								poll_1: null,
+								poll_2: null,
+								poll_3: null,
+								poll_4: null,
+								poll_counts: null,
+								poll_counts_estimated: null,
+								note: null,
+								counts_max_create_date: "2024-01-01T01:00:00.000Z",
+								image_uuids: null
 							}
 						] 
 					}
@@ -1244,6 +1338,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				// Insert new reply
 				if (sql.includes("INSERT INTO replies") && sql.includes("RETURNING reply_id")) {
+					global.replyCreatedInSession = true // Mark that a reply was created
 					return { rows: [{ reply_id: 201 }] }
 				}
 				
@@ -1317,6 +1412,129 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				// Delete favorite reply (when unfavoriting)
 				if (sql.includes("DELETE FROM favorite_replies")) {
 					return { rows: [] }
+				}
+			},
+			messageFlow: (sql, params) => {
+				// User profile query for /user/user-a
+				if (sql.includes("SELECT") && sql.includes("u.user_id") && sql.includes("u.display_name") && sql.includes("CASE WHEN (u.slug = '' OR u.slug IS NULL)")) {
+					const user_slug = params?.[1] // Second param is user slug
+					if (user_slug === "user-a") {
+						return {
+							rows: [{
+								user_id: 10,
+								display_name: "User A",
+								display_name_index: "user-a",
+								user_slug: "user-a",
+								profile_picture_uuid: null,
+								user_verified: true,
+								subscribed: false // User B is not subscribed to User A
+							}]
+						}
+					}
+					if (user_slug === "user-b") {
+						return {
+							rows: [{
+								user_id: 20,
+								display_name: "User B",
+								display_name_index: "user-b",
+								user_slug: "user-b",
+								profile_picture_uuid: null,
+								user_verified: true,
+								subscribed: false
+							}]
+						}
+					}
+				}
+				
+				// Check if participants exist (createConversation)
+				if (sql.includes("SELECT user_id") && sql.includes("FROM users") && sql.includes("WHERE user_id = ANY($1)")) {
+					return { rows: [{ user_id: 10 }, { user_id: 20 }] } // Both users exist
+				}
+				
+				// Check for blocked relationships (createConversation)
+				if (sql.includes("SELECT user_id_blocked") && sql.includes("FROM blocked_users")) {
+					return { rows: [] } // No blocks
+				}
+				
+				// Check if conversation already exists (createConversation)
+				if (sql.includes("SELECT conversation_id") && sql.includes("FROM conversations") && sql.includes("participant_user_ids @> $1")) {
+					return { rows: [] } // No existing conversation
+				}
+				
+				// Create new conversation (createConversation)
+				if (sql.includes("INSERT INTO conversations") && sql.includes("participant_user_ids") && sql.includes("RETURNING conversation_id")) {
+					return { rows: [{ conversation_id: 100 }] } // New conversation ID
+				}
+				
+				// Verify user is participant in conversation (sendMessage)
+				if (sql.includes("SELECT participant_user_ids") && sql.includes("FROM conversations") && sql.includes("WHERE conversation_id = $1")) {
+					return { rows: [{ participant_user_ids: [10, 20] }] } // User A and User B
+				}
+				
+				// Insert new message (sendMessage)
+				if (sql.includes("INSERT INTO messages") && sql.includes("RETURNING message_id")) {
+					global.messageCreatedInSession = true // Mark that a message was created
+					return { rows: [{ message_id: 500 }] } // New message ID
+				}
+				
+				// Update message with image UUIDs (sendMessage)
+				if (sql.includes("UPDATE messages") && sql.includes("SET image_uuids")) {
+					return { rows: [] }
+				}
+				
+				// Update conversation's last_message_id (sendMessage)
+				if (sql.includes("UPDATE conversations") && sql.includes("SET last_message_id")) {
+					return { rows: [] }
+				}
+				
+				// Insert message notification (sendMessage)
+				if (sql.includes("INSERT INTO message_notifications") && sql.includes("RETURNING notification_id")) {
+					return { rows: [{ notification_id: 200 }] } // New notification ID
+				}
+				
+				// Get subscriptions for push notifications (sendMessage)
+				if (sql.includes("SELECT") && sql.includes("subscription_json") && sql.includes("fcm_token") && sql.includes("FROM subscriptions")) {
+					return { rows: [] } // No push subscriptions
+				}
+				
+				// Get messages for a conversation (getMessages)
+				if (sql.includes("SELECT") && sql.includes("m.create_date") && sql.includes("m.message_id") && sql.includes("m.body") && sql.includes("m.sender_user_id")) {
+					// Return empty messages initially (conversation just created)
+					return { rows: [] }
+				}
+				
+				// Get conversations for a user (getConversations)
+				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("c.create_date") && sql.includes("c.last_message_id") && sql.includes("array_agg")) {
+					const conversation_id = params?.[0] // First param is conversation_id when loading specific conversation
+					if (conversation_id === 100) {
+						// Return the conversation that was just created
+						return {
+							rows: [{
+								conversation_id: 100,
+								create_date: "2024-01-03T02:25:00.000Z",
+								last_message_id: null,
+								participants: [
+									{
+										user_id: 10,
+										display_name: "User A",
+										display_name_index: "user-a",
+										user_slug: "user-a",
+										profile_picture_uuid: null,
+										user_verified: true
+									},
+									{
+										user_id: 20,
+										display_name: "User B", 
+										display_name_index: "user-b",
+										user_slug: "user-b",
+										profile_picture_uuid: null,
+										user_verified: true
+									}
+								],
+								unread_count: 0
+							}]
+						}
+					}
 				}
 			},
 		},
