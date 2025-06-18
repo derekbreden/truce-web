@@ -164,24 +164,6 @@ module.exports = {
 			}
 		})
 	},
-	sendReadStatusUpdate(conversation_id, updated_by_user_id, new_unread_count) {
-		Object.keys(this.ws_active).forEach((ws_uuid) => {
-			// Send to users viewing conversations page, but not the user who marked as read
-			if (this.ws_active[ws_uuid].user_id !== updated_by_user_id) {
-				// Check if user is participant in this conversation and viewing conversations page
-				const user_id = this.ws_active[ws_uuid].user_id
-				if (user_id) {
-					const readStatusMessage = JSON.stringify({
-						type: "READ_STATUS_UPDATE",
-						conversation_id,
-						updated_by_user_id,
-						new_unread_count
-					})
-					this.ws_active[ws_uuid].send(readStatusMessage)
-				}
-			}
-		})
-	},
 	queuePushNotification(user_id, notification_id, push_data) {
 		if (!this.pending_push_notifications[user_id]) {
 			this.pending_push_notifications[user_id] = []
