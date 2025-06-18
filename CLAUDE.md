@@ -88,12 +88,29 @@ const $element = $("selector")
 assertEquals(true, Boolean($element), "Element should exist")
 if ($element) $element.click()
 
+// ❌ WRONG: Defensive state checks before DOM operations
+assertEquals("/expected/path", state.path, "Should navigate to path")
+$("button[on-that-page]").click() // This will fail better if path is wrong
+
+// ❌ WRONG: Defensive intermediate assertions  
+$("nav-link").click()
+assertEquals("/user/profile", state.path, "Should be on profile") // NOISE
+$("profile-edit-button").click() // This tells you navigation failed anyway
+
 // ✅ CORRECT: Direct assertions that fail immediately
 assertEquals("text", $("selector").innerText.trim(), "Text should match")
-$("button").click() // Let it crash if button doesn't exist
+$("button").click() // Let it crash if button doesn't exist - better error
 ```
 
 **SHALL NOT add defensive checks before specific assertions** - If your test would fail anyway from more specific checks later on, your assertion is pointless noise
+
+Defensive assertions create the illusion of disambiguation while actually providing minimal debugging value at high readability cost. When something breaks, you need real debugging anyway - console logs, DOM inspection, data verification. One path assertion doesn't meaningfully reduce that debugging burden but permanently clutters the test.
+
+**Common defensive assertion patterns to AVOID:**
+- Path checks before DOM operations: `assertEquals("/path", state.path)` then `$("element-on-that-path").click()`
+- Existence checks before interactions: `assertEquals(true, Boolean($el))` then `$el.click()`  
+- Intermediate state validation during multi-step flows
+- Any assertion that doesn't provide better debugging than the natural failure point
 
 **Why direct assertions are superior:**
 	Better error messages: "Cannot read properties of null" tells you exactly which selector failed
