@@ -116,7 +116,7 @@ const renderMessages = (messages, conversation) => {
 						} else {
 							$textarea.value = ""
 							// Refresh messages
-							startSession()
+							getMoreRecent()
 						}
 					})
 					.catch(error => {
