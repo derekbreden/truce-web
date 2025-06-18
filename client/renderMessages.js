@@ -103,7 +103,6 @@ const renderMessages = (messages, conversation) => {
 					fetch("/session", {
 						method: "POST",
 						body: JSON.stringify({
-							action: "sendMessage",
 							conversation_id: conversation.conversation_id,
 							body: message_body,
 							pngs: []
@@ -201,7 +200,6 @@ const markMessagesAsRead = (messages) => {
 		fetch("/session", {
 			method: "POST",
 			body: JSON.stringify({
-				action: "markMessageAsRead",
 				message_id: message.message_id
 			})
 		})

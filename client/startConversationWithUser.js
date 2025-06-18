@@ -2,7 +2,6 @@ const startConversationWithUser = (user_id) => {
 	fetch("/session", {
 		method: "POST",
 		body: JSON.stringify({
-			action: "createConversation",
 			participant_user_ids: [user_id]
 		}),
 	})
