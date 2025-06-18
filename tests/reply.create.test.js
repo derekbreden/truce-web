@@ -65,7 +65,7 @@ const tests = {
 		// Verify the banner appears for $a
 		assertEquals(
 			"User B replied\nReply from User B to User A",
-			$a("alert-wrapper alert info").innerText.trim(),
+			$a("alert-wrapper alert:nth-child(1) info").innerText.trim(),
 			`Alert should say "User B replied\nReply from User B to User A"`,
 		)
 		assertEquals(

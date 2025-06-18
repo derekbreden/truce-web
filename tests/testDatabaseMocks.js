@@ -979,6 +979,52 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				}
 			},
 			messageFlow: (sql, params) => {
+				// Get conversations list for a user (getConversations) - check first
+				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("last_message_body") && sql.includes("array_agg") && params) {
+					const user_id = params?.[0] // First param is user_id for conversations list query
+					
+					// If message was created in session, return conversation with that message
+					if (global.messageCreatedInSession) {
+						if (user_id === 20) { // User B sees conversation with User A
+							return {
+								rows: [{
+									conversation_id: 100,
+									create_date: "2024-01-03T02:25:00.000Z",
+									last_message_id: 500,
+									participant_user_ids: [10, 20],
+									last_message_body: "Hello User B, this is from User A",
+									last_message_date: "2024-01-03T02:26:00.000Z",
+									last_message_sender_id: 10,
+									last_message_sender_name: "User A",
+									last_message_sender_slug: "user-a",
+									last_message_sender_picture: null,
+									last_message_sender_verified: true,
+									participants: [
+										{
+											user_id: 10,
+											display_name: "User A",
+											user_slug: "user-a",
+											profile_picture_uuid: null,
+											user_verified: true
+										},
+										{
+											user_id: 20,
+											display_name: "User B",
+											user_slug: "user-b",
+											profile_picture_uuid: null,
+											user_verified: true
+										}
+									],
+									unread_count: 1 // User B has 1 unread message from User A
+								}]
+							}
+						}
+					}
+					
+					// Return empty conversations list initially (no messages sent yet)
+					return { rows: [] }
+				}
+				
 				// User profile query for /user/user-a
 				if (sql.includes("SELECT") && sql.includes("u.user_id") && sql.includes("u.display_name") && sql.includes("CASE WHEN (u.slug = '' OR u.slug IS NULL)")) {
 					const user_slug = params?.[1] // Second param is user slug
@@ -1086,11 +1132,11 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 					}
 				}
 				
-				// Get conversations for a user (getConversations)
-				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("c.create_date") && sql.includes("c.last_message_id") && sql.includes("array_agg")) {
-					const conversation_id = params?.[0] // First param is conversation_id when loading specific conversation
+				
+				// Get conversation metadata for messages (getMessages)
+				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("c.create_date") && sql.includes("c.last_message_id") && sql.includes("array_agg") && !sql.includes("unread_count")) {
+					const conversation_id = params?.[0]
 					if (conversation_id === 100) {
-						// Return the conversation that was just created
 						return {
 							rows: [{
 								conversation_id: 100,
@@ -1118,6 +1164,20 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 							}]
 						}
 					}
+				}
+				
+				// Get total unread message count across all conversations
+				if (sql.includes("SELECT COUNT(*) as total_unread") && sql.includes("FROM message_notifications mn") && sql.includes("INNER JOIN messages m") && sql.includes("INNER JOIN conversations c")) {
+					const user_id = params?.[0]
+					if (global.messageCreatedInSession && user_id === 20) {
+						return { rows: [{ total_unread: 1 }] }
+					}
+					return { rows: [{ total_unread: 0 }] }
+				}
+				
+				// Get conversation ID for message (markMessageAsRead)
+				if (sql.includes("SELECT m.conversation_id") && sql.includes("FROM messages m") && sql.includes("WHERE m.message_id = $1")) {
+					return { rows: [{ conversation_id: 100 }] }
 				}
 			},
 		},

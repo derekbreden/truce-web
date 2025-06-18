@@ -69,7 +69,7 @@ const tests = {
 		// Verify the instant alert banner appears for User A
 		assertEquals(
 			"User B replied\nHello User A, this is a message from User B",
-			$a("alert-wrapper alert info").innerText.trim(),
+			$a("alert-wrapper alert:nth-child(1) info").innerText.trim(),
 			`Alert should show "User B replied" with message content`,
 		)
 		

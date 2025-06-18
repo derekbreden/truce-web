@@ -142,6 +142,10 @@ const getMoreRecent = () => {
 	const client_max_post_date = findMaxDate(current_cache.posts)
 	const client_max_reply_date = findMaxDate(current_cache.replies)
 	const client_max_message_date = current_cache.messages ? findMaxDate(current_cache.messages) : ""
+	const client_max_conversation_last_activity_date = current_cache.conversations ? current_cache.conversations.reduce((max, conversation) => {
+		const conversation_date = conversation.last_message_date || conversation.create_date
+		return max > conversation_date ? max : conversation_date
+	}, "") : ""
 	
 	const client_max_activity_date = current_cache.activities.reduce((max, activity) => {
 		if (current_cache === "/favorites") {
@@ -243,6 +247,7 @@ const getMoreRecent = () => {
 			min_notification_unread_create_date: client_max_notification_unread_date,
 			min_notification_read_create_date: client_max_notification_read_date,
 			min_message_create_date: client_max_message_date,
+			min_conversation_last_activity_date: client_max_conversation_last_activity_date,
 			min_counts_create_date,
 			min_create_date_for_counts,
 			has_posts,

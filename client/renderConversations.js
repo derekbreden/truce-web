@@ -5,7 +5,8 @@ const renderConversation = (conversation) => {
 		: last_message_body
 
 	// Get other participants (exclude current user)
-	const other_participants = conversation.participants
+	const participants = conversation.participants || []
+	const other_participants = participants
 		.filter(participant => Number(participant.user_id) !== Number(state.user_id))
 	const participant_names = other_participants.map(participant => 
 		renderName(participant.display_name, participant.display_name_index || 0)

@@ -254,12 +254,13 @@ async function setupTestEnvironment(options) {
 			}
 			
 			window.createMockReqRes = function(body, headers) {
+				const websocketModule = require("../server/websocket.js")
 				const req = {
 					headers: headers || {},
 					body: body,
-					sendWsMessage: () => {}, // Mock WebSocket message sending
-					sendWsMessageToConversation: () => {}, // Mock WebSocket message to conversation
-					sendWsMessageToUsers: () => {} // Mock WebSocket message to users
+					sendWsMessage: (message, post_id) => websocketModule.sendMessage(message, post_id),
+					sendWsMessageToConversation: (message, conversation_id) => websocketModule.sendMessageToConversation(message, conversation_id),
+					sendWsMessageToUsers: (message, user_ids) => websocketModule.sendMessageToUsers(message, user_ids)
 				}
 				// Ensure headers are lowercase (HTTP standard)
 				if (req.headers.Authorization) {
@@ -319,13 +320,14 @@ async function setupTestEnvironment(options) {
 							const mock_ws = {
 								_handlers: {},
 								readyState: 1,
+								client_ws: client_ws, // Store reference to client websocket
 								on(event, handler) {
 									if (event === "message") {
 										this._handlers.message = handler
 									}
 								},
 								send(message) {
-									client_ws._handlers.message({
+									this.client_ws._handlers.message({
 										data: message
 									})
 								}
@@ -342,6 +344,12 @@ async function setupTestEnvironment(options) {
 				}
 				close() {}
 				addEventListener(event, handler) {
+					if (!this._messageHandlers) {
+						this._messageHandlers = []
+					}
+					if (event === "message") {
+						this._messageHandlers.push(handler)
+					}
 					this._handlers[event] = handler
 				}
 			}
@@ -393,18 +401,22 @@ async function setupTestEnvironment(options) {
 	
 	// Add state.ws._messageHandlers support
 	if (window.state && window.state.ws) {
-		window.state.ws._messageHandlers = []
-		const originalAddEventListener = window.state.ws.addEventListener
-		window.state.ws.addEventListener = function(event, handler) {
-			if (event === "message") {
-				this._messageHandlers.push(handler)
-			}
-			originalAddEventListener?.call(this, event, handler)
-		}
-		// Attach trigger to the mock WebSocket
+		// The mock WebSocket already has _messageHandlers from addEventListener calls
+		// Just add the triggerMessage method
 		window.state.ws.triggerMessage = (message) => {
 			const event = { data: message }
 			window.state.ws._messageHandlers?.forEach(handler => handler(event))
+		}
+		
+		// Also ensure _handlers.message calls all _messageHandlers
+		const originalMessageHandler = window.state.ws._handlers.message
+		window.state.ws._handlers.message = function(event) {
+			// Call all addEventListener handlers
+			window.state.ws._messageHandlers?.forEach(handler => handler(event))
+			// Call the original single handler if it exists
+			if (originalMessageHandler) {
+				originalMessageHandler.call(this, event)
+			}
 		}
 	}
 	
