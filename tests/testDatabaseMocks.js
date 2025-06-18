@@ -53,6 +53,8 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 							}] 
 						}
 					}
+					// Anonymous/guest session - no user associated
+					return { rows: [] }
 				}
 			},
 			sessionResponse: (sql, params) => {
