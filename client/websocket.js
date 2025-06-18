@@ -4,14 +4,6 @@ const reconnectWs = () => {
 	state.ws.addEventListener("message", (event) => {
 		if (event.data === "UPDATE") {
 			getMoreRecent()
-		} else if (event.data === "MESSAGE_UPDATE") {
-			if (state.path.startsWith("/messages/")) {
-				getMoreRecent()
-			}
-		} else if (event.data === "CONVERSATION_UPDATE") {
-			if (state.path === "/conversations") {
-				getMoreRecent()
-			}
 		} else {
 			const data = JSON.parse(event.data)
 			if (data.type === "TYPING_INDICATOR") {
