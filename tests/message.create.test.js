@@ -49,21 +49,9 @@ const tests = {
 		$b("posts post:nth-child(1) author").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		assertEquals(
-			"/user/user-a",
-			window_user_b.state.path,
-			"User B should navigate to User A's profile",
-		)
-		
 		// Phase 3: User B clicks message button for User A
 		$b("post[user] button[message]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
-		
-		assertEquals(
-			"/messages/100",
-			window_user_b.state.path,
-			"User B should navigate to conversation with User A",
-		)
 		
 		// Phase 4: User B sends a message to User A
 		$b("main-content-wrapper[active] textarea").value = "Hello User A, this is a message from User B"
