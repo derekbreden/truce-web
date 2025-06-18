@@ -59,6 +59,13 @@ const tests = {
 		$b("main-content-wrapper[active] send-button").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
+		// Verify User B sees their own sent message
+		assertEquals(
+			"Hello User A, this is a message from User B",
+			$b("main-content-wrapper[active] messages message:nth-child(1) message-content p span").innerText,
+			"User B should see their own sent message"
+		)
+		
 		// Verify the instant alert banner appears for User A
 		assertEquals(
 			"User B replied\nHello User A, this is a message from User B",

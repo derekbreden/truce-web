@@ -1063,8 +1063,27 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				// Get messages for a conversation (getMessages)
 				if (sql.includes("SELECT") && sql.includes("m.create_date") && sql.includes("m.message_id") && sql.includes("m.body") && sql.includes("m.sender_user_id")) {
-					// Return empty messages initially (conversation just created)
-					return { rows: [] }
+					if (global.messageCreatedInSession) {
+						// Return the message that was sent in this session
+						return { 
+							rows: [{
+								create_date: "2024-01-03T02:26:00.000Z",
+								message_id: 500,
+								body: "Hello User A, this is a message from User B",
+								image_uuids: null,
+								sender_user_id: 20, // User B
+								display_name: "User B",
+								display_name_index: "user-b",
+								user_slug: "user-b",
+								profile_picture_uuid: null,
+								user_verified: true,
+								edit: false // User A viewing User B's message
+							}]
+						}
+					} else {
+						// Return empty messages initially (conversation just created)
+						return { rows: [] }
+					}
 				}
 				
 				// Get conversations for a user (getConversations)
