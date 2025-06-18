@@ -59,7 +59,7 @@ const state = {
 
 ### JavaScript Style
 	**Functions**: `camelCase` for functions only
-	**Variables**: `snake_case` for all variables  
+	**Variables**: `snake_case` for all variables
 	**Arrow functions**: Use `const func = () => {}` not `function func() {}`
 	**Quotes**: Double quotes `"string"` not single quotes
 	**Semicolons**: Omit semicolons
@@ -122,6 +122,7 @@ runTests("feature.test.js", [testFeature])
 ### Key Testing Gotchas
 **JSDOM text**: Always check `.innerText` on deepest element; Sometimes check `.textContent` only for RARE standalone `element\n  $1` instead of usual `element $1`
 **Target elements**: MUST use specific CSS selectors like `notification[unread] + notification[unread]` or `post posts:nth-child(2) p:nth-child(0) span` to get a single element instead of an array. NEVER get an array.
+**CRITICAL**: NEVER use `$()[index]` syntax - this is FORBIDDEN
 
 ### Multiple Test Environments
 When testing with multiple users/sessions, require.cache contamination occurs:
@@ -179,9 +180,33 @@ When working on tasks:
 	**MUST understand before judging** - Surface patterns != root causes
 
 When encountering selector/DOM issues, you **MUST**:
-1. Check .length at each selector level to understand structure  
+1. Check `.length` at each selector level to understand structure
 2. Look at existing tests for similar selector patterns
 3. Test incrementally (nth-child(1), nth-child(2), etc.)
+4. **NEVER use `$()[index]` to access array elements**
+
+### DOM Selector Debugging Examples
+```javascript
+// ❌ WRONG: Using array indexing syntax
+const $element = $("posts post author")[0]  // FORBIDDEN
+
+// ✅ CORRECT: Debug hierarchy to find where nth-child is needed
+console.log($("posts").length)           // Maybe 2 - multiple posts containers
+console.log($("posts post").length)      // Maybe 6 - multiple posts total
+console.log($("posts post author").length) // Maybe 6 - one author per post
+
+// Target specific element by finding the right level:
+// Want author of 2nd post in 1st posts container
+console.log($("posts:nth-child(1) post").length)        // How many posts in first container?
+console.log($("posts:nth-child(1) post:nth-child(2)").length) // Does 2nd post exist?
+$("posts:nth-child(1) post:nth-child(2) author").click() // Click author of 2nd post
+
+// ❌ WRONG: Adding nth-child at wrong level
+$("posts post author:nth-child(1)").click() // author is likely unique in its parent
+
+// ✅ CORRECT: nth-child where the multiplicity actually occurs
+$("posts post:nth-child(2) author").click() // post is where disambiguation needed
+```
 
 ## 10x Developer Principles
 

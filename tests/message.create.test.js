@@ -44,7 +44,7 @@ const tests = {
 		})
 		const { $: $b } = window_user_b
 		
-		// Click on User A's profile link directly from posts list  
+		// Click on User A's profile link directly from posts list
 		// User A's post is the first post in the list
 		$b("posts post:nth-child(1) author").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
