@@ -1,7 +1,6 @@
 const fs = require("fs")
 const path = require("path")
 const { JSDOM, VirtualConsole } = require("jsdom")
-const { setupDefaultDatabaseMocks } = require("./testDatabaseMocks")
 
 async function setupTestEnvironment(options) {
 	// Default Options
@@ -9,25 +8,11 @@ async function setupTestEnvironment(options) {
 	options.constsToExpose = options.constsToExpose || []
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 	options.localStorage = options.localStorage || {}
-	options.databaseMocks = options.databaseMocks || {}
 	options.setup_id = options.setup_id || require("crypto").randomUUID()
 	
-	// Track whether a post was created in this test session
-	let postCreatedInThisSession = false
-	
-	// Track post editing
-	let postEditedInThisSession = false
-	let editedPostData = null
-	
-
-	options.databaseMocks = setupDefaultDatabaseMocks(options.databaseMocks, { 
-		postCreatedInThisSession: () => postCreatedInThisSession, 
-		setPostCreatedInThisSession: (value) => postCreatedInThisSession = value,
-		postEditedInThisSession: () => postEditedInThisSession,
-		setPostEditedInThisSession: (value) => postEditedInThisSession = value,
-		editedPostData: () => editedPostData,
-		setEditedPostData: (data) => editedPostData = data
-	})
+	// Initialize SQLite test database first
+	const { createTestDatabase, executeQuery } = require("./testSqliteSetup.js")
+	await createTestDatabase()
 
 	// Index path and content
 	const indexPath = path.resolve(__dirname, "../index.html")
@@ -212,31 +197,17 @@ async function setupTestEnvironment(options) {
 					id: s3Path
 				}
 				
-				// Mock the pool module
+				// Use SQLite instead of mocks (already initialized)
+				const { executeQuery } = require("./testSqliteSetup.js")
+				
+				// Mock the pool module to use SQLite
 				const poolPath = require.resolve("../server/pool")
 				require.cache[poolPath] = {
 					exports: {
 						pool: {
 							connect: async () => ({
 								query: async (sql, params) => {
-									// Use database mocks from options if provided
-									if (options.databaseMocks) {
-										for (const mockName in options.databaseMocks) {
-											const mockFn = options.databaseMocks[mockName]
-											const result = mockFn(sql, params)
-											if (result) return result
-										}
-									}
-									
-									// Default responses
-									if (sql.includes("INSERT INTO sessions")) {
-										return { rows: [{ session_id: 1 }] }
-									}
-									
-									// Log unmocked queries
-									console.log("UNMOCKED database query:", sql.substring(0, 100) + "...")
-									console.log("Query params:", params)
-									return { rows: [] }
+									return await executeQuery(sql, params)
 								},
 								release: () => {
 									// Silent release
