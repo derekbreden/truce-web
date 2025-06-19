@@ -69,9 +69,9 @@ const tests = {
 			`Alert should say "User B replied\nReply from User B to User A"`,
 		)
 		assertEquals(
-			"Newly Created Reply Content",
+			"Reply from User B to User A",
 			$b("main-content-2 replies reply:nth-child(3) p span").innerText,
-			"User B's reply should be rendered with mock content",
+			"User B's reply should be rendered with Reply from User B to User A",
 		)
 		// User A navigates away and back to trigger getMoreRecent()
 		$a("footer a[href='/posts']").click()
