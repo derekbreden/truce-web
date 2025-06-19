@@ -11,7 +11,7 @@ async function setupTestEnvironment(options) {
 	options.setup_id = options.setup_id || require("crypto").randomUUID()
 	
 	// Initialize SQLite test database first
-	const { createTestDatabase, executeQuery } = require("./testSqliteSetup.js")
+	const { createTestDatabase } = require("./testSqliteSetup.js")
 	await createTestDatabase()
 
 	// Index path and content
@@ -103,7 +103,7 @@ async function setupTestEnvironment(options) {
 		pretendToBeVisual: true, // Helps with some DOM manipulations if needed
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
-		beforeParse(window) {
+		async beforeParse(window) {
 			
 			// Mock fetch
 			async function mockFetchImplementation(url, fetchOptions) {
@@ -119,7 +119,7 @@ async function setupTestEnvironment(options) {
 			window.fetch = mockFetchImplementation
 			
 			// Utility functions for testing
-			window.setupExternalMocks = function() {
+			window.setupExternalMocks = async function() {
 
 				// Mock web-push module
 				const webpushPath = require.resolve("web-push")
@@ -217,6 +217,15 @@ async function setupTestEnvironment(options) {
 					},
 					loaded: true,
 					id: poolPath
+				}
+
+				// Execute any statements passed in
+				const sql_statements_to_execute = options.sql_statements_to_execute || []
+				if (sql_statements_to_execute && sql_statements_to_execute.length > 0) {
+					// Execute provided SQL statements
+					for (const [sql, params] of sql_statements_to_execute) {
+						await executeQuery(sql, params)
+					}
 				}
 				
 				// Initialize server WebSocket module  
@@ -362,7 +371,7 @@ async function setupTestEnvironment(options) {
 			}
 
 			// Trigger setup external mocks
-			window.setupExternalMocks()
+			await window.setupExternalMocks()
 		},
 	})
 	const { window } = dom

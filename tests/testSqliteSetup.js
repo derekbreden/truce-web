@@ -114,15 +114,6 @@ function convertPostgresSQLToSQLite(sql, params) {
         }
     }
     
-    // Convert PostgreSQL array/JSON functions - these queries need major rewriting for SQLite
-    // For now, detect and skip complex PostgreSQL-specific queries
-    if (convertedSQL.includes('unnest(') || 
-        convertedSQL.includes('array_agg(') || 
-        convertedSQL.includes('json_build_object(') ||
-        convertedSQL.includes('FILTER (WHERE')) {
-        console.warn(convertedSQL)
-    }
-    
     // Convert PostgreSQL ILIKE to SQLite LIKE with COLLATE NOCASE
     convertedSQL = convertedSQL.replace(/ILIKE/g, 'LIKE COLLATE NOCASE')
     
@@ -140,27 +131,25 @@ function convertPostgresSQLToSQLite(sql, params) {
 
 async function executeQuery(sql, params) {
     const { sql: convertedSQL, params: convertedParams } = convertPostgresSQLToSQLite(sql, params)
-    
-    
-    if (convertedSQL.trim().toUpperCase().startsWith('SELECT') || 
-        convertedSQL.trim().toUpperCase().startsWith('WITH') ||
-        convertedSQL.toUpperCase().includes('RETURNING')) {
-        // Execute queries that return data (SELECT, WITH, or anything with RETURNING)
-        let stmt = null
-        try {
-            stmt = testDb.prepare(convertedSQL)
-        } catch (e) {
-            console.warn(convertedSQL)
-            console.warn(e.message)
-            process.exit(1)
+    try {
+        if (convertedSQL.trim().toUpperCase().startsWith('SELECT') || 
+            convertedSQL.trim().toUpperCase().startsWith('WITH') ||
+            convertedSQL.toUpperCase().includes('RETURNING')) {
+            // Execute queries that return data (SELECT, WITH, or anything with RETURNING)
+            const stmt = testDb.prepare(convertedSQL)
+            const rows = stmt.all(...convertedParams)
+            return { rows: rows || [] }
+        } else {
+            // Handle INSERT/UPDATE/DELETE queries without RETURNING
+            const stmt = testDb.prepare(convertedSQL)
+            const result = stmt.run(...convertedParams)
+            return { rows: [], lastID: result.lastInsertRowid, changes: result.changes }
         }
-        const rows = stmt.all(...convertedParams)
-        return { rows: rows || [] }
-    } else {
-        // Handle INSERT/UPDATE/DELETE queries without RETURNING
-        const stmt = testDb.prepare(convertedSQL)
-        const result = stmt.run(...convertedParams)
-        return { rows: [], lastID: result.lastInsertRowid, changes: result.changes }
+    } catch (e) {
+        console.warn(convertedSQL)
+        console.warn(convertedParams)
+        console.warn(e.message)
+        process.exit(1)
     }
 }
 
