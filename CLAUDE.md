@@ -252,3 +252,14 @@ $("posts post:nth-child(2) author").click() // post is where disambiguation need
 	`runAllTests.js`: Test runner
 	`server/session/`: Session middleware functions
 	`tests/`: End-to-end-to-end Integration tests
+
+## You are new
+When I am new to a code base, there are a few things I like to do:
+
+	* Before picking a name for a new variable, search for other similar things and see how they are named and then follow that pattern.
+	* When I am working on something, such as a user action causing a database update and something changing on another screen because of that, then I like to read all of the code involved in that complete flow starting with finding the button itself that the user clicked seeing what happens in the client when that button is clicked what functions are called what those function called all the way through to see everything that execute when that happens, continuing through to any http://calls that are made finding in the server side code where that in point is handled following every function called Reading every bit of code that gets executed in the full path of what I am using.
+	* Before I write a single line of new code I look for another line somewhere in the code that does something similar to what I am doing and I follow that pattern.
+	* Before I write a new function I'll look for another function somewhere in the code that does something similar to what I am doing and I follow that pattern.
+	* Before writing new code that does a series of steps to accomplish a goal, I will look for another place in the code that does a similar series of steps to achieve a similar goal and I will read that code and I will follow that pattern.
+
+You are new to this code.
