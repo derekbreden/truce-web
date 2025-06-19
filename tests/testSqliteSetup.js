@@ -65,6 +65,11 @@ const convertPostgresSQLToSQLite = (sql, params) => {
             paramValue = paramValue.toISOString()
         }
         
+        // Convert booleans to integers for SQLite compatibility
+        if (typeof paramValue === 'boolean') {
+            paramValue = paramValue ? 1 : 0
+        }
+        
         // Arrays need to be flattened into more params
         if (Array.isArray(paramValue)) {
             paramValues = [...paramValues, ...paramValue]

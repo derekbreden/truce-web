@@ -121,6 +121,17 @@ const setupTestEnvironment = async (options) => {
 			// Utility functions for testing
 			window.setupExternalMocks = async function() {
 
+				// Mock bcrypt module
+				const bcryptPath = require.resolve("bcrypt")
+				require.cache[bcryptPath] = {
+					exports: {
+						hash: async (password, saltRounds) => "mocked_hash_" + password,
+						compare: async (password, hash) => hash === "mocked_hash_" + password
+					},
+					loaded: true,
+					id: bcryptPath
+				}
+
 				// Mock web-push module
 				const webpushPath = require.resolve("web-push")
 				require.cache[webpushPath] = {
