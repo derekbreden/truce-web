@@ -6,9 +6,6 @@ const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
 	testConversationListUpdates: async () => {
-		// Reset global state for this test
-		global.messageCreatedInSession = false
-		
 		// Phase 1: User A navigates to conversations list
 		const window_user_a = await setupTestEnvironment()
 		const { $: $a } = window_user_a

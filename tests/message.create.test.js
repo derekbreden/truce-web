@@ -7,10 +7,6 @@ const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {
-		// Reset global state for this test
-		global.userANotificationQueries = 0
-		global.messageCreatedInSession = false
-		
 		// Phase 1: User A checks baseline notifications
 		const window_user_a = await setupTestEnvironment()
 		const { $: $a } = window_user_a
