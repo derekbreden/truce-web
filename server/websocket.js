@@ -191,8 +191,8 @@ module.exports = {
 	isUserActivelyViewing(user_id, conversation_id) {
 		// Check if user has an active WebSocket connection viewing this conversation
 		return Object.values(this.ws_active).some(ws => 
-			ws.user_id === user_id && 
-			ws.active_conversation_id === Number(conversation_id)
+			ws.user_id === user_id 
+			&& ws.active_conversation_id === Number(conversation_id)
 		)
 	},
 	hasActiveWebSocketConnection(user_id) {
@@ -204,8 +204,8 @@ module.exports = {
 	isUserActivelyViewingPost(user_id, post_id) {
 		// Check if user has an active WebSocket connection viewing this post
 		return Object.values(this.ws_active).some(ws => 
-			ws.user_id === user_id && 
-			ws.active_post_id === Number(post_id)
+			ws.user_id === user_id 
+			&& ws.active_post_id === Number(post_id)
 		)
 	},
 	sendInstantAlert(user_id, notification_id, push_data) {

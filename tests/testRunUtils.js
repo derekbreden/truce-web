@@ -1,6 +1,6 @@
 let testResults = []
 
-function assertEquals(expected, actual, message) {
+const assertEquals = (expected, actual, message) => {
 	const pass = expected === actual // Consider a deep equality check for objects/arrays if needed
 	testResults.push({
 		pass,
@@ -10,15 +10,15 @@ function assertEquals(expected, actual, message) {
 	})
 }
 
-function getTestResults() {
+const getTestResults = () => {
 	return [...testResults]
 }
 
-function clearTestResults() {
+const clearTestResults = () => {
 	testResults = []
 }
 
-async function runTests(testFileName, testFunctions, includeTimer) {
+const runTests = async (testFileName, testFunctions, includeTimer) => {
 	clearTestResults()
 	const startTime = new Date()
 	console.log(`  ${testFileName}`)

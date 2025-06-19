@@ -10,7 +10,7 @@ const testDir = path.join(__dirname, "tests")
  * @param {string} directory - The directory to search.
  * @param {object} filesToRun - An array of file paths.
  */
-function findTestFiles(directory, filesToRun) {
+const findTestFiles = (directory, filesToRun) => {
 	try {
 		const entries = fs.readdirSync(directory, { withFileTypes: true })
 		for (const entry of entries) {
@@ -32,7 +32,7 @@ function findTestFiles(directory, filesToRun) {
  * @param {string} filePath - The absolute path to the test file.
  * @returns {Promise<number>} A promise that resolves with the exit code of the test process.
  */
-function executeTestFile(filePath) {
+const executeTestFile = (filePath) => {
 	return new Promise((resolve, reject) => {
 		const testProcess = spawn("node", [filePath], { stdio: "pipe" })
 
@@ -60,7 +60,7 @@ function executeTestFile(filePath) {
 /**
  * Main function to run all tests.
  */
-async function main() {
+const main = async () => {
 	const pathArg = process.argv[2]
 	let filesToRun = []
 

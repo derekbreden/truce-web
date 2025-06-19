@@ -1,23 +1,23 @@
-const Database = require('better-sqlite3')
-const fs = require('fs')
-const path = require('path')
+const Database = require("better-sqlite3")
+const fs = require("fs")
+const path = require("path")
 
 let testDb = null
 
-function createTestDatabase() {
+const createTestDatabase = () => {
     if (testDb) {
         testDb.close()
     }
     
     // Create in-memory database for speed
-    testDb = new Database(':memory:')
+    testDb = new Database(":memory:")
     
     // Enable foreign keys
-    testDb.pragma('foreign_keys = ON')
+    testDb.pragma("foreign_keys = ON")
     
     // Load schema
-    const schemaSQL = fs.readFileSync(path.join(__dirname, 'test-schema.sql'), 'utf8')
-    const schemaStatements = schemaSQL.split(';').filter(stmt => stmt.trim())
+    const schemaSQL = fs.readFileSync(path.join(__dirname, "test-schema.sql"), "utf8")
+    const schemaStatements = schemaSQL.split(";").filter(stmt => stmt.trim())
     
     for (const stmt of schemaStatements) {
         if (stmt.trim()) {
@@ -26,8 +26,8 @@ function createTestDatabase() {
     }
     
     // Load fixtures
-    const fixturesSQL = fs.readFileSync(path.join(__dirname, 'test-fixtures.sql'), 'utf8')
-    const fixtureStatements = fixturesSQL.split(';').filter(stmt => stmt.trim())
+    const fixturesSQL = fs.readFileSync(path.join(__dirname, "test-fixtures.sql"), "utf8")
+    const fixtureStatements = fixturesSQL.split(";").filter(stmt => stmt.trim())
     
     for (const stmt of fixtureStatements) {
         if (stmt.trim()) {
@@ -38,7 +38,7 @@ function createTestDatabase() {
     return Promise.resolve(testDb)
 }
 
-function convertPostgresSQLToSQLite(sql, params) {
+const convertPostgresSQLToSQLite = (sql, params) => {
     // Convert PostgreSQL-specific syntax to SQLite
     let convertedSQL = sql
     
@@ -78,13 +78,13 @@ function convertPostgresSQLToSQLite(sql, params) {
     convertedParams.push(...paramValues)
 
     // Convert PostgreSQL functions and syntax BEFORE replacing parameters
-    convertedSQL = convertedSQL.replace(/STRING_AGG\((.*?),\s*'([^']+)'\)/g, 'GROUP_CONCAT($1, \'$2\')')
-    convertedSQL = convertedSQL.replace(/LEFT\((.*?),\s*(\d+)\)/g, 'SUBSTR($1, 1, $2)')
+    convertedSQL = convertedSQL.replace(/STRING_AGG\((.*?),\s*'([^']+)'\)/g, "GROUP_CONCAT($1, '$2')")
+    convertedSQL = convertedSQL.replace(/LEFT\((.*?),\s*(\d+)\)/g, "SUBSTR($1, 1, $2)")
     
     // Convert PostgreSQL casting syntax to SQLite
-    convertedSQL = convertedSQL.replace(/::int\[\]/g, '')
-    convertedSQL = convertedSQL.replace(/::VARCHAR/g, '')
-    convertedSQL = convertedSQL.replace(/::INT/g, '')
+    convertedSQL = convertedSQL.replace(/::int\[\]/g, "")
+    convertedSQL = convertedSQL.replace(/::VARCHAR/g, "")
+    convertedSQL = convertedSQL.replace(/::INT/g, "")
     
     // SQLite supports RETURNING as of version 3.35.0, so we can keep it
     
@@ -94,47 +94,47 @@ function convertPostgresSQLToSQLite(sql, params) {
     for (const match of anyMatches) {
         const paramNum = Number(match.match(/\d+/)[0])
         const paramValue = paramsThatWereArrays[paramNum]
-        convertedSQL = convertedSQL.replace(match, `IN (${paramValue.map(() => '?').join(', ')})`)
+        convertedSQL = convertedSQL.replace(match, `IN (${paramValue.map(() => "?").join(", ")})`)
     }
     
     // Replace all $N with ? in order (AFTER all other conversions)
-    convertedSQL = convertedSQL.replace(/\$\d+/g, '?')
+    convertedSQL = convertedSQL.replace(/\$\d+/g, "?")
 
     // Convert PostgreSQL UPDATE...FROM to SQLite compatible syntax  
-    if (convertedSQL.includes('UPDATE') && convertedSQL.includes('FROM (')) {
+    if (convertedSQL.includes("UPDATE") && convertedSQL.includes("FROM (")) {
         // Handle UPDATE posts SET ... FROM (subquery) AS alias WHERE posts.table = value
         const match = convertedSQL.match(/UPDATE\s+(\w+)\s+SET\s+(.*?)\s+FROM\s+\((.*?)\)\s+AS\s+(\w+)\s+WHERE\s+(\w+)\.(\w+)\s*=\s*(.*)/s)
         if (match) {
             const [, tableName, setClause, subquery, alias, whereTable, whereColumn, whereValue] = match
             
             // Convert SET clause: replace alias.column with (subquery)
-            const convertedSetClause = setClause.replace(new RegExp(`${alias}\\.(\\w+)`, 'g'), `(${subquery})`)
+            const convertedSetClause = setClause.replace(new RegExp(`${alias}\\.(\\w+)`, "g"), `(${subquery})`)
             
             convertedSQL = `UPDATE ${tableName} SET ${convertedSetClause} WHERE ${whereTable}.${whereColumn} = ${whereValue}`
         }
     }
     
     // Convert PostgreSQL ILIKE to SQLite LIKE with COLLATE NOCASE
-    convertedSQL = convertedSQL.replace(/ILIKE/g, 'LIKE COLLATE NOCASE')
+    convertedSQL = convertedSQL.replace(/ILIKE/g, "LIKE COLLATE NOCASE")
     
     // Convert NOW() to datetime('now')
     convertedSQL = convertedSQL.replace(/NOW\(\)/g, "datetime('now')")
     
     // Convert COUNT(alias.*) to COUNT(*)
-    convertedSQL = convertedSQL.replace(/COUNT\(\w+\.\*\)/g, 'COUNT(*)')
+    convertedSQL = convertedSQL.replace(/COUNT\(\w+\.\*\)/g, "COUNT(*)")
     
     // Handle table name differences
-    convertedSQL = convertedSQL.replace(/post_poll_votes/g, 'poll_votes')
+    convertedSQL = convertedSQL.replace(/post_poll_votes/g, "poll_votes")
     
     return { sql: convertedSQL, params: convertedParams }
 }
 
-async function executeQuery(sql, params) {
+const executeQuery = async (sql, params) => {
     const { sql: convertedSQL, params: convertedParams } = convertPostgresSQLToSQLite(sql, params)
     try {
-        if (convertedSQL.trim().toUpperCase().startsWith('SELECT') || 
-            convertedSQL.trim().toUpperCase().startsWith('WITH') ||
-            convertedSQL.toUpperCase().includes('RETURNING')) {
+        if (convertedSQL.trim().toUpperCase().startsWith("SELECT") 
+            || convertedSQL.trim().toUpperCase().startsWith("WITH")
+            || convertedSQL.toUpperCase().includes("RETURNING")) {
             // Execute queries that return data (SELECT, WITH, or anything with RETURNING)
             const stmt = testDb.prepare(convertedSQL)
             const rows = stmt.all(...convertedParams)
@@ -153,11 +153,11 @@ async function executeQuery(sql, params) {
     }
 }
 
-function getTestDatabase() {
+const getTestDatabase = () => {
     return testDb
 }
 
-function closeTestDatabase() {
+const closeTestDatabase = () => {
     if (testDb) {
         testDb.close()
         testDb = null

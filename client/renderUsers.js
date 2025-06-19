@@ -41,7 +41,7 @@ const renderUsers = (users) => {
 											[$("icons icon[verified] svg").cloneNode(true)],
 										)
 									: [],
-								state.user_id && state.user_id != user.user_id ? (
+								state.user_id && Number(state.user_id) !== Number(user.user_id) ? (
 									user.subscribed
 										? $(
 												`
@@ -95,7 +95,7 @@ const renderUsers = (users) => {
 		$("main-content-wrapper[active] main-content-2 button[subscribe]")?.forEach(
 			($button) => {
 				const user_id = $button.getAttribute("userid")
-				const user = users.find((user) => user.user_id == user_id)
+				const user = users.find((user) => Number(user.user_id) === Number(user_id))
 				bindSubscribeUser($button, user)
 			},
 		)

@@ -2,7 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const { JSDOM, VirtualConsole } = require("jsdom")
 
-async function setupTestEnvironment(options) {
+const setupTestEnvironment = async (options) => {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
@@ -106,7 +106,7 @@ async function setupTestEnvironment(options) {
 		async beforeParse(window) {
 			
 			// Mock fetch
-			async function mockFetchImplementation(url, fetchOptions) {
+			const mockFetchImplementation = async (url, fetchOptions) => {
 				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
 				const response = await window.executeHandler(req, res)
 				return {

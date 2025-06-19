@@ -16,7 +16,6 @@ export default [
 			"eqeqeq": ["error", "always"],
 			"prefer-arrow-callback": "error",
 			"func-style": ["error", "expression"],
-			"max-len": ["error", { "code": 120 }],
 			"operator-linebreak": ["error", "before", {
 				"overrides": {
 					"=": "after",

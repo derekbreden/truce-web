@@ -11,7 +11,7 @@ const tests = {
 			// Create a conversation
 			[
 				`INSERT INTO conversations (conversation_id, create_date) VALUES ($1, $2)`,
-				[1, '2024-01-01T10:00:00.000Z']
+				[1, "2024-01-01T10:00:00.000Z"]
 			],
 			// Add participants (User A and User B)
 			[
@@ -25,15 +25,15 @@ const tests = {
 			// Add some messages to the conversation
 			[
 				`INSERT INTO messages (message_id, conversation_id, sender_user_id, body, create_date) VALUES ($1, $2, $3, $4, $5)`,
-				[1, 1, 20, 'Hello User A! How are you doing?', '2024-01-01T10:01:00.000Z']
+				[1, 1, 20, "Hello User A! How are you doing?", "2024-01-01T10:01:00.000Z"]
 			],
 			[
 				`INSERT INTO messages (message_id, conversation_id, sender_user_id, body, create_date) VALUES ($1, $2, $3, $4, $5)`,
-				[2, 1, 10, 'Hi User B! I am doing great, thanks for asking.', '2024-01-01T10:02:00.000Z']
+				[2, 1, 10, "Hi User B! I am doing great, thanks for asking.", "2024-01-01T10:02:00.000Z"]
 			],
 			[
 				`INSERT INTO messages (message_id, conversation_id, sender_user_id, body, create_date) VALUES ($1, $2, $3, $4, $5)`,
-				[3, 1, 20, 'That is wonderful to hear! What have you been up to lately?', '2024-01-01T10:03:00.000Z']
+				[3, 1, 20, "That is wonderful to hear! What have you been up to lately?", "2024-01-01T10:03:00.000Z"]
 			],
 			// Update conversation to point to the last message
 			[
