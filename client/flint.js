@@ -15,6 +15,7 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 		element.on = element.addEventListener.bind(element)
 		element.forEach = (f) => $all.forEach(f)
 		element.$ = (selector) => $(selector, element)
+		element.length = $all ? $all.length : 1
 	}
 
 	if (selector_or_flint.startsWith("\n")) {
