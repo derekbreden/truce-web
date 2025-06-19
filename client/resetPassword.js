@@ -145,7 +145,7 @@ const showResetPassword = () => {
 					passwordError(data.error || "Server error")
 					return
 				}
-				passwordResetCancel()
+				modalCancel()
 				modalInfo("Your password has been set")
 			})
 			.catch((error) => {

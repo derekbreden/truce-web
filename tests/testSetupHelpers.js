@@ -9,6 +9,7 @@ const setupTestEnvironment = async (options) => {
 	options.constsToExpose = [...options.constsToExpose, "state", "$"]
 	options.localStorage = options.localStorage || {}
 	options.setup_id = options.setup_id || require("crypto").randomUUID()
+	options.url = options.url || "http://localhost"
 	
 	// Initialize SQLite test database first
 	const { createTestDatabase } = require("./testSqliteSetup.js")
@@ -99,7 +100,7 @@ const setupTestEnvironment = async (options) => {
 	// Load the index.html content
 	const dom = new JSDOM(finalIndexHtmlContent, {
 		runScripts: "dangerously", // Allow scripts added to the DOM to run
-		url: "http://localhost", // Necessary for some scripts that might use location/history
+		url: options.url, // Necessary for some scripts that might use location/history
 		pretendToBeVisual: true, // Helps with some DOM manipulations if needed
 		includeNodeLocations: true,
 		virtualConsole: virtualConsole,
@@ -120,6 +121,26 @@ const setupTestEnvironment = async (options) => {
 			
 			// Utility functions for testing
 			window.setupExternalMocks = async function() {
+
+				// Mock nodemailer module
+				const nodemailerPath = require.resolve("nodemailer")
+				global.test_email_sent = null
+				require.cache[nodemailerPath] = {
+					exports: {
+						createTransport: () => ({
+							sendMail: (options, callback) => {
+								global.test_email_sent = options
+								if (callback) callback(null, { messageId: 'test-id' })
+							}
+						})
+					},
+					loaded: true,
+					id: nodemailerPath
+				}
+				
+				// Ensure email module is initialized with mock
+				const email = require("../server/email")
+				email.init()
 
 				// Mock bcrypt module
 				const bcryptPath = require.resolve("bcrypt")

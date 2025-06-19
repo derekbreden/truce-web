@@ -91,6 +91,10 @@ const convertPostgresSQLToSQLite = (sql, params) => {
     convertedSQL = convertedSQL.replace(/::VARCHAR/g, "")
     convertedSQL = convertedSQL.replace(/::INT/g, "")
     
+    // Convert PostgreSQL INTERVAL syntax to SQLite datetime arithmetic
+    convertedSQL = convertedSQL.replace(/datetime\('now'\) - INTERVAL '(\d+) minutes'/g, "datetime('now', '-$1 minutes')")
+    convertedSQL = convertedSQL.replace(/NOW\(\) - INTERVAL '(\d+) minutes'/g, "datetime('now', '-$1 minutes')")
+    
     // SQLite supports RETURNING as of version 3.35.0, so we can keep it
     
     // Convert PostgreSQL ANY operator to IN
