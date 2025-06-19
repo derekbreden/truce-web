@@ -4,6 +4,8 @@ const { spawn } = require("child_process")
 
 const testDir = path.join(__dirname, "tests")
 
+const start_time = new Date()
+
 /**
  * Recursively finds all files ending with .test.js in a given directory
  * and categorizes them.
@@ -105,11 +107,18 @@ const main = async () => {
 	} else {
 		console.log(`  TOTAL FILES FAILED: ${results.failed}`)
 	}
+	const end_time = new Date()
+	const duration = ((end_time - start_time) / 1000).toFixed(2)
+	console.log(`\n--- Test run completed ---`)
+	console.log(`  Duration: ${duration} seconds`)
+	if (results.passed > 0) {
+		console.log(`  \x1b[32mAll passed tests were successful!\x1b[0m`)
+	} else {
+		console.log(`  \x1b[31mNo tests passed successfully.\x1b[0m`)
+	}
 	if (results.failed > 0) {
-		console.log("\nSome test files failed. Exiting with status 1.")
 		process.exit(1)
 	} else {
-		console.log("\nAll selected test files passed successfully!")
 		process.exit(0)
 	}
 }
