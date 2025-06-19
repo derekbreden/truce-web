@@ -186,6 +186,12 @@ When working on tasks:
 	**MUST be hypothesis-driven** - Form specific theories and test them
 	**MUST understand before judging** - Surface patterns != root causes
 
+When debugging failing tests, you **MUST**:
+1. **Add console.warn to trace data flow** - Log key variables, database state, API responses
+2. **Add console.warn to trace execution paths** - Log function calls, branches taken, user actions
+3. **Add console.warn to verify assumptions** - Log what you expect vs what actually happens
+4. **Clean up all console.warn statements** after debugging is complete
+
 When encountering selector/DOM issues, you **MUST**:
 1. Check `.length` at each selector level to understand structure
 2. Look at existing tests for similar selector patterns
