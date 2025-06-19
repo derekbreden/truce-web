@@ -17,30 +17,36 @@ module.exports = async (req, res) => {
 		&& req.body.body
 		&& req.body.pngs
 	) {
-		// Verify user is participant in this conversation
+		// Verify user is participant in this conversation and get other participants
 		const conversation_check = await req.client.query(
 			`
-			SELECT participant_user_ids
-			FROM conversations
-			WHERE conversation_id = $1
+			SELECT cp.user_id
+			FROM conversation_participants cp
+			WHERE cp.conversation_id = $1
 			`,
 			[req.body.conversation_id],
 		)
 
-		if (
-			!conversation_check.rows.length
-			|| !conversation_check.rows[0].participant_user_ids.includes(req.session.user_id)
-		) {
+		if (!conversation_check.rows.length) {
 			res.end(
 				JSON.stringify({
-					error: "Conversation not found or access denied",
+					error: "Conversation not found",
+				}),
+			)
+			return
+		}
+
+		const participant_user_ids = conversation_check.rows.map(row => row.user_id)
+		if (!participant_user_ids.includes(req.session.user_id)) {
+			res.end(
+				JSON.stringify({
+					error: "Access denied",
 				}),
 			)
 			return
 		}
 
 		// Check for blocked users
-		const participant_user_ids = conversation_check.rows[0].participant_user_ids
 		const other_user_ids = participant_user_ids.filter(id => id !== req.session.user_id)
 		
 		const blocked_check = await req.client.query(

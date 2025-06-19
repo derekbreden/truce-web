@@ -11,7 +11,6 @@ module.exports = async (req, res) => {
 				c.conversation_id,
 				c.create_date,
 				c.last_message_id,
-				c.participant_user_ids,
 				lm.body as last_message_body,
 				lm.create_date as last_message_date,
 				lm.sender_user_id as last_message_sender_id,
@@ -26,14 +25,11 @@ module.exports = async (req, res) => {
 				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified,
 				COUNT(DISTINCT mn.notification_id) FILTER (WHERE mn.read = FALSE) as unread_count
 			FROM conversations c
+			INNER JOIN conversation_participants cp1 ON c.conversation_id = cp1.conversation_id AND cp1.user_id = $1
+			INNER JOIN conversation_participants cp2 ON c.conversation_id = cp2.conversation_id AND cp2.user_id != $1
+			INNER JOIN users ou ON cp2.user_id = ou.user_id
 			LEFT JOIN messages lm ON c.last_message_id = lm.message_id
 			LEFT JOIN users lmu ON lm.sender_user_id = lmu.user_id
-			INNER JOIN users ou ON (
-				CASE 
-					WHEN c.participant_user_ids[1] = $1 THEN c.participant_user_ids[2]
-					ELSE c.participant_user_ids[1]
-				END
-			) = ou.user_id
 			LEFT JOIN blocked_users b ON b.user_id_blocked = ou.user_id AND b.user_id_blocking = $1
 			LEFT JOIN message_notifications mn ON mn.user_id = $1 
 				AND mn.message_id IN (
@@ -42,8 +38,7 @@ module.exports = async (req, res) => {
 					WHERE conversation_id = c.conversation_id
 				)
 			WHERE
-				$1 = ANY(c.participant_user_ids)
-				AND b.user_id_blocked IS NULL
+				b.user_id_blocked IS NULL
 				AND (
 					COALESCE(lm.create_date, c.create_date) > $2 OR $2 IS NULL
 				)
@@ -53,8 +48,7 @@ module.exports = async (req, res) => {
 			GROUP BY 
 				c.conversation_id, 
 				c.create_date, 
-				c.last_message_id, 
-				c.participant_user_ids,
+				c.last_message_id,
 				lm.body,
 				lm.create_date,
 				lm.sender_user_id,

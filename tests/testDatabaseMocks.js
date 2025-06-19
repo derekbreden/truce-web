@@ -991,7 +991,6 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									conversation_id: 100,
 									create_date: "2024-01-03T02:25:00.000Z",
 									last_message_id: 500,
-									participant_user_ids: [10, 20],
 									last_message_body: "Hello User B, this is from User A",
 									last_message_date: "2024-01-03T02:26:00.000Z",
 									last_message_sender_id: 10,
@@ -1056,18 +1055,33 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				}
 				
 				// Check if conversation already exists (createConversation)
-				if (sql.includes("SELECT conversation_id") && sql.includes("FROM conversations") && sql.includes("participant_user_ids @> $1")) {
+				if (sql.includes("SELECT c.conversation_id") && sql.includes("FROM conversations c") && sql.includes("conversation_participants")) {
 					return { rows: [] } // No existing conversation
 				}
 				
 				// Create new conversation (createConversation)
-				if (sql.includes("INSERT INTO conversations") && sql.includes("participant_user_ids") && sql.includes("RETURNING conversation_id")) {
+				if (sql.includes("INSERT INTO conversations") && sql.includes("DEFAULT VALUES") && sql.includes("RETURNING conversation_id")) {
 					return { rows: [{ conversation_id: 100 }] } // New conversation ID
 				}
 				
+				// Insert conversation participants (createConversation)
+				if (sql.includes("INSERT INTO conversation_participants") && sql.includes("conversation_id, user_id")) {
+					return { rows: [] } // Successful insert
+				}
+				
 				// Verify user is participant in conversation (sendMessage)
-				if (sql.includes("SELECT participant_user_ids") && sql.includes("FROM conversations") && sql.includes("WHERE conversation_id = $1")) {
-					return { rows: [{ participant_user_ids: [10, 20] }] } // User A and User B
+				if (sql.includes("SELECT cp.user_id") && sql.includes("FROM conversation_participants cp") && sql.includes("WHERE cp.conversation_id = $1")) {
+					return { rows: [{ user_id: 10 }, { user_id: 20 }] } // User A and User B
+				}
+				
+				// Verify user is participant in conversation (getMessages and WebSocket)
+				if (sql.includes("SELECT conversation_id") && sql.includes("FROM conversation_participants") && sql.includes("WHERE conversation_id = $1 AND user_id = $2")) {
+					const conversation_id = params?.[0]
+					const user_id = params?.[1]
+					if ((conversation_id === 100 || conversation_id === "100") && (user_id === 10 || user_id === 20)) {
+						return { rows: [{ conversation_id: 100 }] }
+					}
+					return { rows: [] }
 				}
 				
 				// Insert new message (sendMessage)

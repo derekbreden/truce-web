@@ -14,17 +14,14 @@ module.exports = async (req, res) => {
 		// Verify user is participant in this conversation
 		const conversation_check = await req.client.query(
 			`
-			SELECT participant_user_ids
-			FROM conversations
-			WHERE conversation_id = $1
+			SELECT conversation_id
+			FROM conversation_participants
+			WHERE conversation_id = $1 AND user_id = $2
 			`,
-			[conversation_id],
+			[conversation_id, req.session.user_id],
 		)
 
-		if (
-			!conversation_check.rows.length
-			|| !conversation_check.rows[0].participant_user_ids.includes(req.session.user_id)
-		) {
+		if (!conversation_check.rows.length) {
 			res.end(
 				JSON.stringify({
 					error: "Conversation not found or access denied",
@@ -32,10 +29,6 @@ module.exports = async (req, res) => {
 			)
 			return
 		}
-
-		// Get messages in conversation, excluding blocked users
-		const participant_user_ids = conversation_check.rows[0].participant_user_ids
-		const other_user_ids = participant_user_ids.filter(id => id !== req.session.user_id)
 
 		const messages_result = await req.client.query(
 			`
@@ -86,12 +79,8 @@ module.exports = async (req, res) => {
 				ou.profile_picture_uuid as other_user_picture,
 				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified
 			FROM conversations c
-			INNER JOIN users ou ON (
-				CASE 
-					WHEN c.participant_user_ids[1] = $2 THEN c.participant_user_ids[2]
-					ELSE c.participant_user_ids[1]
-				END
-			) = ou.user_id
+			INNER JOIN conversation_participants cp ON c.conversation_id = cp.conversation_id AND cp.user_id != $2
+			INNER JOIN users ou ON cp.user_id = ou.user_id
 			LEFT JOIN blocked_users b ON b.user_id_blocked = ou.user_id AND b.user_id_blocking = $2
 			WHERE
 				c.conversation_id = $1

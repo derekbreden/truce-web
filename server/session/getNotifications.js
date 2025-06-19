@@ -209,7 +209,10 @@ module.exports = async (req, res) => {
             AND (n.create_date < $2 OR $2 IS NULL)
             AND (n.create_date > $3 OR $3 IS NULL)
             AND b.user_id_blocked IS NULL
-            AND $1 = ANY(conv.participant_user_ids)
+            AND EXISTS (
+              SELECT 1 FROM conversation_participants cp 
+              WHERE cp.conversation_id = conv.conversation_id AND cp.user_id = $1
+            )
         )
         SELECT * FROM combined_unread
         ORDER BY create_date DESC
@@ -292,7 +295,10 @@ module.exports = async (req, res) => {
             AND (n.create_date < $2 OR $2 IS NULL)
             AND (n.create_date > $3 OR $3 IS NULL)
             AND b.user_id_blocked IS NULL
-            AND $1 = ANY(conv.participant_user_ids)
+            AND EXISTS (
+              SELECT 1 FROM conversation_participants cp 
+              WHERE cp.conversation_id = conv.conversation_id AND cp.user_id = $1
+            )
         )
         SELECT * FROM combined_read
         ORDER BY create_date DESC

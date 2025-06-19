@@ -107,14 +107,13 @@ module.exports = {
 								// Verify user is participant in this conversation
 								const conversation = await pool_client.query(
 									`
-										SELECT participant_user_ids
-										FROM conversations
-										WHERE conversation_id = $1
+										SELECT conversation_id
+										FROM conversation_participants
+										WHERE conversation_id = $1 AND user_id = $2
 									`,
-									[conversation_id],
+									[conversation_id, this.ws_active[ws_uuid].user_id],
 								)
-								if (conversation.rows.length 
-										&& conversation.rows[0].participant_user_ids.includes(this.ws_active[ws_uuid].user_id)) {
+								if (conversation.rows.length) {
 									this.ws_active[ws_uuid].active_conversation_id = Number(conversation_id)
 								}
 							}
