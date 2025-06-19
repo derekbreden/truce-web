@@ -22,7 +22,8 @@ INSERT INTO topics (topic_id, topic_name, subtitle) VALUES
 INSERT INTO users (user_id, display_name, display_name_index, email, slug, profile_picture_uuid, admin, subscribed_to_users) VALUES
 (10, 'User A', 0, 'usera@example.com', 'user-a', NULL, 0, 0),
 (20, 'User B', 0, 'userb@example.com', 'user-b', NULL, 0, 0),
-(30, 'User C', 0, 'userc@example.com', 'user-c', NULL, 0, 0);
+(30, 'User C', 0, 'userc@example.com', 'user-c', NULL, 0, 0),
+(40, 'Existing User', 0, 'existing@example.com', 'existing-user', NULL, 0, 0);
 
 -- Insert test sessions
 INSERT INTO sessions (session_id, session_uuid) VALUES
@@ -72,3 +73,6 @@ INSERT INTO favorite_posts (favorite_post_id, user_id, post_id, create_date) VAL
 -- Insert favorite replies (User A has favorited one reply)
 INSERT INTO favorite_replies (favorite_reply_id, user_id, reply_id, create_date) VALUES
 (1, 10, 100, '2024-01-02T03:00:00.000Z');
+
+-- Set password hash for existing user (password: "existingpass123")
+UPDATE users SET password_hash = 'mocked_hash_existingpass123' WHERE user_id = 40;
