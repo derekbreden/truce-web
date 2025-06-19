@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {
-		// Create both user environments first to avoid database reset
+		// Phase 1: User B verifies they can see User A's content initially
 		const window_user_b = await setupTestEnvironment({
 			beforeParse: (window) => {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
@@ -14,10 +14,6 @@ const tests = {
 		})
 		const { $: $b } = window_user_b
 		
-		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
-		
-		// Phase 1: User B verifies they can see User A's content initially
 		// Verify User B can see User A's post initially
 		assertEquals(
 			"User A's Post",
@@ -63,6 +59,9 @@ const tests = {
 		)
 		
 		// Phase 4: User A creates new content - verify User B doesn't see it
+		const window_user_a = await setupTestEnvironment()
+		const { $: $a } = window_user_a
+		
 		// User A should start on /posts by default with add-new form available
 		
 		$a("add-new[post] input[title]").value = "New Post After Block"

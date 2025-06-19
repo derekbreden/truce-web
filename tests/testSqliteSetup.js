@@ -6,7 +6,7 @@ let testDb = null
 
 const createTestDatabase = () => {
     if (testDb) {
-        testDb.close()
+        return Promise.resolve(testDb)
     }
     
     // Create in-memory database for speed
