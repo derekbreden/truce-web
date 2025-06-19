@@ -102,6 +102,7 @@ const renderNotifications = (notifications) => {
 	if (state.path !== "/notifications") {
 		return
 	}
+	getUnreadCountUnseenCount()
 	if (!state.email) {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
@@ -155,7 +156,7 @@ const renderNotifications = (notifications) => {
 	const read_notifications = notifications.filter((n) => n.read)
 	const $unread_header = $(
 		`
-    h3 $1
+    h3[unread-header] $1
     `,
 		[Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"],
 	)
@@ -499,6 +500,9 @@ const getUnreadCountUnseenCount = () => {
 				} else {
 					$("hamburger").removeAttribute("unread")
 					$("footer a[notifications]").removeAttribute("unread")
+				}
+				if ($("h3[unread-header]")) {
+					$("h3[unread-header]").innerText = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
 				}
 				if (
 					state.unseen_count

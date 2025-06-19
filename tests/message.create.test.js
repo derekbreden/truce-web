@@ -73,8 +73,7 @@ const tests = {
 			`Alert should show "User B replied" with message content`,
 		)
 		
-		// Phase 5: User A navigates to notifications to see new message notification
-		$a("footer a[href='/notifications']").click()
+		// Wait for notifications to re-render
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(

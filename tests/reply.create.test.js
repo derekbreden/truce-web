@@ -73,10 +73,6 @@ const tests = {
 			$b("main-content-2 replies reply:nth-child(3) p span").innerText,
 			"User B's reply should be rendered with Reply from User B to User A",
 		)
-		// User A navigates away and back to trigger getMoreRecent()
-		$a("footer a[href='/posts']").click()
-		await new Promise(resolve => setTimeout(resolve, 0))
-		$a("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(
