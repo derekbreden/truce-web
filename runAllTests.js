@@ -63,14 +63,15 @@ const executeTestFile = (filePath) => {
  * Main function to run all tests.
  */
 const main = async () => {
-	const pathArg = process.argv[2]
+	const pathArg = process.argv.splice(2).join(" ")
 	let filesToRun = []
 
 	console.log("--- Searching for test files ---")
 	findTestFiles(testDir, filesToRun)
 	if (pathArg) {
+		const searchTerms = pathArg.split(" ")
 		filesToRun = filesToRun
-			.filter(filename => filename.includes(pathArg))
+			.filter(filename => searchTerms.some(term => filename.includes(term)))
 	}
 
 	console.log(`  Files Found: ${filesToRun.length}`)
