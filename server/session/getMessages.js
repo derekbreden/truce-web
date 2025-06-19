@@ -80,23 +80,22 @@ module.exports = async (req, res) => {
 				c.conversation_id,
 				c.create_date,
 				c.last_message_id,
-				array_agg(
-					json_build_object(
-						'user_id', u.user_id,
-						'display_name', u.display_name,
-						'user_slug', CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END,
-						'profile_picture_uuid', u.profile_picture_uuid,
-						'user_verified', CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END
-					)
-				) as participants
+				ou.user_id as other_user_id,
+				ou.display_name as other_user_name,
+				CASE WHEN (ou.slug = '' OR ou.slug IS NULL) THEN ou.user_id::VARCHAR ELSE ou.slug END as other_user_slug,
+				ou.profile_picture_uuid as other_user_picture,
+				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified
 			FROM conversations c
-			CROSS JOIN unnest(c.participant_user_ids) AS participant_id
-			INNER JOIN users u ON u.user_id = participant_id
-			LEFT JOIN blocked_users b ON b.user_id_blocked = u.user_id AND b.user_id_blocking = $2
+			INNER JOIN users ou ON (
+				CASE 
+					WHEN c.participant_user_ids[1] = $2 THEN c.participant_user_ids[2]
+					ELSE c.participant_user_ids[1]
+				END
+			) = ou.user_id
+			LEFT JOIN blocked_users b ON b.user_id_blocked = ou.user_id AND b.user_id_blocking = $2
 			WHERE
 				c.conversation_id = $1
 				AND b.user_id_blocked IS NULL
-			GROUP BY c.conversation_id, c.create_date, c.last_message_id
 			`,
 			[conversation_id, req.session.user_id],
 		)

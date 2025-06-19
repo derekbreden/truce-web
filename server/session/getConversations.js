@@ -19,22 +19,22 @@ module.exports = async (req, res) => {
 				CASE WHEN (lmu.slug = '' OR lmu.slug IS NULL) THEN lmu.user_id::VARCHAR ELSE lmu.slug END as last_message_sender_slug,
 				lmu.profile_picture_uuid as last_message_sender_picture,
 				CASE WHEN lmu.email <> '' AND lmu.email IS NOT NULL THEN true ELSE false END AS last_message_sender_verified,
-				array_agg(
-					DISTINCT json_build_object(
-						'user_id', u.user_id,
-						'display_name', u.display_name,
-						'user_slug', CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END,
-						'profile_picture_uuid', u.profile_picture_uuid,
-						'user_verified', CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END
-					)
-				) as participants,
+				ou.user_id as other_user_id,
+				ou.display_name as other_user_name,
+				CASE WHEN (ou.slug = '' OR ou.slug IS NULL) THEN ou.user_id::VARCHAR ELSE ou.slug END as other_user_slug,
+				ou.profile_picture_uuid as other_user_picture,
+				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified,
 				COUNT(DISTINCT mn.notification_id) FILTER (WHERE mn.read = FALSE) as unread_count
 			FROM conversations c
 			LEFT JOIN messages lm ON c.last_message_id = lm.message_id
 			LEFT JOIN users lmu ON lm.sender_user_id = lmu.user_id
-			CROSS JOIN unnest(c.participant_user_ids) AS participant_id
-			INNER JOIN users u ON u.user_id = participant_id
-			LEFT JOIN blocked_users b ON b.user_id_blocked = u.user_id AND b.user_id_blocking = $1
+			INNER JOIN users ou ON (
+				CASE 
+					WHEN c.participant_user_ids[1] = $1 THEN c.participant_user_ids[2]
+					ELSE c.participant_user_ids[1]
+				END
+			) = ou.user_id
+			LEFT JOIN blocked_users b ON b.user_id_blocked = ou.user_id AND b.user_id_blocking = $1
 			LEFT JOIN message_notifications mn ON mn.user_id = $1 
 				AND mn.message_id IN (
 					SELECT message_id 
@@ -62,7 +62,12 @@ module.exports = async (req, res) => {
 				lmu.slug,
 				lmu.user_id,
 				lmu.profile_picture_uuid,
-				lmu.email
+				lmu.email,
+				ou.user_id,
+				ou.display_name,
+				ou.slug,
+				ou.profile_picture_uuid,
+				ou.email
 			ORDER BY 
 				COALESCE(lm.create_date, c.create_date) DESC
 			LIMIT 50

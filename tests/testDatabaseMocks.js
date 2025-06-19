@@ -980,7 +980,7 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 			},
 			messageFlow: (sql, params) => {
 				// Get conversations list for a user (getConversations) - check first
-				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("last_message_body") && sql.includes("array_agg") && params) {
+				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("last_message_body") && sql.includes("other_user_id") && params) {
 					const user_id = params?.[0] // First param is user_id for conversations list query
 					
 					// If message was created in session, return conversation with that message
@@ -999,22 +999,11 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 									last_message_sender_slug: "user-a",
 									last_message_sender_picture: null,
 									last_message_sender_verified: true,
-									participants: [
-										{
-											user_id: 10,
-											display_name: "User A",
-											user_slug: "user-a",
-											profile_picture_uuid: null,
-											user_verified: true
-										},
-										{
-											user_id: 20,
-											display_name: "User B",
-											user_slug: "user-b",
-											profile_picture_uuid: null,
-											user_verified: true
-										}
-									],
+									other_user_id: 10,
+									other_user_name: "User A",
+									other_user_slug: "user-a",
+									other_user_picture: null,
+									other_user_verified: true,
 									unread_count: 1 // User B has 1 unread message from User A
 								}]
 							}
@@ -1134,34 +1123,37 @@ function setupDefaultDatabaseMocks(databaseMocks, sessionState) {
 				
 				
 				// Get conversation metadata for messages (getMessages)
-				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("c.create_date") && sql.includes("c.last_message_id") && sql.includes("array_agg") && !sql.includes("unread_count")) {
+				if (sql.includes("SELECT") && sql.includes("c.conversation_id") && sql.includes("c.create_date") && sql.includes("c.last_message_id") && sql.includes("other_user_id") && !sql.includes("unread_count")) {
 					const conversation_id = params?.[0]
+					const user_id = params?.[1]
 					if (conversation_id === 100) {
-						return {
-							rows: [{
-								conversation_id: 100,
-								create_date: "2024-01-03T02:25:00.000Z",
-								last_message_id: null,
-								participants: [
-									{
-										user_id: 10,
-										display_name: "User A",
-										display_name_index: "user-a",
-										user_slug: "user-a",
-										profile_picture_uuid: null,
-										user_verified: true
-									},
-									{
-										user_id: 20,
-										display_name: "User B", 
-										display_name_index: "user-b",
-										user_slug: "user-b",
-										profile_picture_uuid: null,
-										user_verified: true
-									}
-								],
-								unread_count: 0
-							}]
+						// Return the other user based on who is requesting
+						if (user_id === 10) { // User A requesting, return User B as other user
+							return {
+								rows: [{
+									conversation_id: 100,
+									create_date: "2024-01-03T02:25:00.000Z",
+									last_message_id: null,
+									other_user_id: 20,
+									other_user_name: "User B",
+									other_user_slug: "user-b",
+									other_user_picture: null,
+									other_user_verified: true
+								}]
+							}
+						} else { // User B requesting, return User A as other user
+							return {
+								rows: [{
+									conversation_id: 100,
+									create_date: "2024-01-03T02:25:00.000Z",
+									last_message_id: null,
+									other_user_id: 10,
+									other_user_name: "User A",
+									other_user_slug: "user-a",
+									other_user_picture: null,
+									other_user_verified: true
+								}]
+							}
 						}
 					}
 				}

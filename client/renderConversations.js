@@ -4,13 +4,9 @@ const renderConversation = (conversation) => {
 		? last_message_body.slice(0, 60) + "..." 
 		: last_message_body
 
-	// Get other participants (exclude current user)
-	const participants = conversation.participants || []
-	const other_participants = participants
-		.filter(participant => Number(participant.user_id) !== Number(state.user_id))
-	const participant_names = other_participants.map(participant => 
-		renderName(participant.display_name, participant.display_name_index || 0)
-	).join(", ")
+	// Get other user (1-to-1 messaging)
+	const other_user_name = conversation.other_user_name || "Unknown User"
+	const participant_names = renderName(other_user_name, 0)
 
 	const time_ago = conversation.last_message_date 
 		? new Date(conversation.last_message_date).toLocaleString()
@@ -23,7 +19,7 @@ const renderConversation = (conversation) => {
 		conversation[unread=$1]
 			conversation-info
 				participants-row
-					participants-names $2
+					other-user-name $2
 					time-ago $3
 				message-preview $4
 				$5
