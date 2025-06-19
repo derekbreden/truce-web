@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 				CASE WHEN (ou.slug = '' OR ou.slug IS NULL) THEN ou.user_id::VARCHAR ELSE ou.slug END as other_user_slug,
 				ou.profile_picture_uuid as other_user_picture,
 				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified,
-				COUNT(DISTINCT mn.notification_id) FILTER (WHERE mn.read = FALSE) as unread_count
+				COUNT(DISTINCT CASE WHEN mn.read = false THEN mn.notification_id END) as unread_count
 			FROM conversations c
 			INNER JOIN conversation_participants cp1 ON c.conversation_id = cp1.conversation_id AND cp1.user_id = $1
 			INNER JOIN conversation_participants cp2 ON c.conversation_id = cp2.conversation_id AND cp2.user_id != $1
