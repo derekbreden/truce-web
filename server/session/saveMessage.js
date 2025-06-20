@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 		const conversation_check = await req.client.query(
 			`
 			SELECT cp.user_id
-			FROM conversation_participants cp
+			FROM conversation_users cp
 			WHERE cp.conversation_id = $1
 			`,
 			[req.body.conversation_id],
@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
 				SET body = $1, create_date = NOW()
 				WHERE
 					message_id = $2
-					AND sender_user_id = $3
+					AND user_id = $3
 				`,
 				[req.body.body, req.body.message_id, req.session.user_id],
 			)
@@ -87,7 +87,7 @@ module.exports = async (req, res) => {
 			const message_inserted = await req.client.query(
 				`
 				INSERT INTO messages
-					(conversation_id, sender_user_id, body)
+					(conversation_id, user_id, body)
 				VALUES
 					($1, $2, $3)
 				RETURNING message_id as message_id

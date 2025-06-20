@@ -214,8 +214,8 @@ CREATE TABLE conversations (
     FOREIGN KEY (last_message_id) REFERENCES messages(message_id)
 );
 
--- Conversation participants table
-CREATE TABLE conversation_participants (
+-- Conversation users table
+CREATE TABLE conversation_users (
     conversation_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     PRIMARY KEY (conversation_id, user_id),
@@ -223,19 +223,18 @@ CREATE TABLE conversation_participants (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_conversation_participants_user ON conversation_participants(user_id);
+CREATE INDEX idx_conversation_users_user ON conversation_users(user_id);
 
 -- Messages table
 CREATE TABLE messages (
     message_id INTEGER PRIMARY KEY AUTOINCREMENT,
     conversation_id INT NOT NULL,
-    sender_user_id INT NOT NULL,
+    user_id INT NOT NULL,
     body VARCHAR(8000) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
-    read_by_recipients BOOLEAN DEFAULT 0,
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
-    FOREIGN KEY (sender_user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Message notifications table

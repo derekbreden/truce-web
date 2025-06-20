@@ -56,12 +56,12 @@ module.exports = async (req, res) => {
 			FROM conversations c
 			WHERE c.conversation_id IN (
 				SELECT conversation_id
-				FROM conversation_participants
+				FROM conversation_users
 				WHERE user_id = ANY($1)
 				GROUP BY conversation_id
 				HAVING COUNT(DISTINCT user_id) = $2 AND COUNT(DISTINCT user_id) = (
 					SELECT COUNT(*)
-					FROM conversation_participants cp2
+					FROM conversation_users cp2
 					WHERE cp2.conversation_id = conversation_id
 				)
 			)
@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
 		for (const user_id of all_participant_ids) {
 			await req.client.query(
 				`
-				INSERT INTO conversation_participants (conversation_id, user_id)
+				INSERT INTO conversation_users (conversation_id, user_id)
 				VALUES ($1, $2)
 				`,
 				[conversation_id, user_id],

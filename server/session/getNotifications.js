@@ -201,8 +201,8 @@ module.exports = async (req, res) => {
           FROM message_notifications n
           INNER JOIN messages m ON m.message_id = n.message_id
           INNER JOIN conversations conv ON conv.conversation_id = m.conversation_id
-          INNER JOIN users u ON u.user_id = m.sender_user_id
-          LEFT JOIN blocked_users b ON b.user_id_blocked = m.sender_user_id AND b.user_id_blocking = $1
+          INNER JOIN users u ON u.user_id = m.user_id
+          LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $1
           WHERE
             n.user_id = $1
             AND n.read = FALSE
@@ -210,7 +210,7 @@ module.exports = async (req, res) => {
             AND (n.create_date > $3 OR $3 IS NULL)
             AND b.user_id_blocked IS NULL
             AND EXISTS (
-              SELECT 1 FROM conversation_participants cp 
+              SELECT 1 FROM conversation_users cp 
               WHERE cp.conversation_id = conv.conversation_id AND cp.user_id = $1
             )
         )
@@ -287,8 +287,8 @@ module.exports = async (req, res) => {
           FROM message_notifications n
           INNER JOIN messages m ON m.message_id = n.message_id
           INNER JOIN conversations conv ON conv.conversation_id = m.conversation_id
-          INNER JOIN users u ON u.user_id = m.sender_user_id
-          LEFT JOIN blocked_users b ON b.user_id_blocked = m.sender_user_id AND b.user_id_blocking = $1
+          INNER JOIN users u ON u.user_id = m.user_id
+          LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $1
           WHERE
             n.user_id = $1
             AND n.read = TRUE
@@ -296,7 +296,7 @@ module.exports = async (req, res) => {
             AND (n.create_date > $3 OR $3 IS NULL)
             AND b.user_id_blocked IS NULL
             AND EXISTS (
-              SELECT 1 FROM conversation_participants cp 
+              SELECT 1 FROM conversation_users cp 
               WHERE cp.conversation_id = conv.conversation_id AND cp.user_id = $1
             )
         )

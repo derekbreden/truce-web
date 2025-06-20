@@ -13,7 +13,7 @@ const renderMessageImages = (image_uuids) => {
 }
 
 const renderMessage = (message) => {
-	const is_own_message = message.sender_user_id === state.user_id
+	const is_own_message = message.user_id === state.user_id
 	const time_ago = new Date(message.create_date).toLocaleString()
 	
 	let $message_body = markdownToElements(message.body)
@@ -182,41 +182,47 @@ const renderMessages = (messages, conversation) => {
 }
 
 const markMessagesAsRead = (messages) => {
-	// Only mark messages from other users as read
+	// Only mark messages from other users as read that have notifications
 	const unreadMessages = messages.filter(message => 
-		message.sender_user_id !== state.user_id
+		message.user_id !== state.user_id && message.notification_id && !message.notification_read
 	)
 
 	if (unreadMessages.length === 0) {
 		return // Nothing to mark as read
 	}
 
-	// Mark each message as read
-	unreadMessages.forEach(message => {
-		fetch("/session", {
-			method: "POST",
-			body: JSON.stringify({
-				message_id: message.message_id
-			})
+	// Collect all notification IDs to mark as read
+	const notification_ids = unreadMessages.map(message => message.notification_id)
+
+	// Mark all notifications as read in one request
+	fetch("/session", {
+		method: "POST",
+		body: JSON.stringify({
+			mark_as_read: notification_ids
 		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.success) {
-				// Update notifications cache to mark message notifications as read
-				const notifications = state.cache["/notifications"]?.notifications
-				if (notifications) {
-					notifications.forEach(notification => {
-						if (notification.notification_type === "message" && notification.message_id === message.message_id) {
-							notification.read = true
-							notification.seen = true
-						}
-					})
-				}
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			// Update notifications cache to mark message notifications as read
+			const notifications = state.cache["/notifications"]?.notifications
+			if (notifications) {
+				notifications.forEach(notification => {
+					if (notification_ids.includes(notification.notification_id)) {
+						notification.read = true
+						notification.seen = true
+					}
+				})
 			}
-		})
-		.catch(error => {
-			console.error("Error marking message as read:", error)
-		})
+			// Mark messages as read locally
+			unreadMessages.forEach(message => {
+				message.notification_read = true
+				message.notification_seen = true
+			})
+		}
+	})
+	.catch(error => {
+		console.error("Error marking messages as read:", error)
 	})
 
 	// Update conversations cache to set unread_count = 0 for current conversation

@@ -1,4 +1,4 @@
-const startConversationWithUser = (user_id) => {
+const createConversationWithUser = (user_id) => {
 	fetch("/session", {
 		method: "POST",
 		body: JSON.stringify({

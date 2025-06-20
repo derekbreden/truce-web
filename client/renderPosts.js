@@ -211,7 +211,7 @@ const renderPosts = (posts, topic, user) => {
 		$("post[user] button[message]")?.on("click", ($event) => {
 			$event.preventDefault()
 			const user_id = Number($("post[user] button[message]").getAttribute("userid"))
-			startConversationWithUser(user_id)
+			createConversationWithUser(user_id)
 		})
 		$("button[edit][small]")?.on("click", ($event) => {
 			$event.preventDefault()

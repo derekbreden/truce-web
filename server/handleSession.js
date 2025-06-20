@@ -56,11 +56,10 @@ module.exports = async (req, res) => {
 		await require("./session/savePollChoice")(req, res)
 		await require("./session/saveProfilePicture")(req, res)
 		await require("./session/promptToUsePasswordReset")(req, res)
-		await require("./session/createConversation")(req, res)
+		await require("./session/saveConversation")(req, res)
 		await require("./session/saveMessage")(req, res)
 		await require("./session/getConversations")(req, res)
 		await require("./session/getMessages")(req, res)
-		await require("./session/markMessageAsRead")(req, res)
 
 		// Default response if nothing else responded sooner
 		if (!res.writableEnded) {

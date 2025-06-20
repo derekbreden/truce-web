@@ -108,7 +108,7 @@ module.exports = {
 								const conversation = await pool_client.query(
 									`
 										SELECT conversation_id
-										FROM conversation_participants
+										FROM conversation_users
 										WHERE conversation_id = $1 AND user_id = $2
 									`,
 									[conversation_id, this.ws_active[ws_uuid].user_id],

@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
 		const conversation_check = await req.client.query(
 			`
 			SELECT conversation_id
-			FROM conversation_participants
+			FROM conversation_users
 			WHERE conversation_id = $1 AND user_id = $2
 			`,
 			[conversation_id, req.session.user_id],
@@ -37,16 +37,20 @@ module.exports = async (req, res) => {
 				m.message_id,
 				m.body,
 				m.image_uuids,
-				m.sender_user_id,
+				m.user_id,
 				u.display_name,
 				u.display_name_index,
 				CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
 				u.profile_picture_uuid,
 				CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
-				CASE WHEN m.sender_user_id = $2 THEN true ELSE false END AS edit
+				CASE WHEN m.user_id = $2 THEN true ELSE false END AS edit,
+				mn.notification_id,
+				mn.read as notification_read,
+				mn.seen as notification_seen
 			FROM messages m
-			INNER JOIN users u ON m.sender_user_id = u.user_id
-			LEFT JOIN blocked_users b ON b.user_id_blocked = m.sender_user_id AND b.user_id_blocking = $2
+			INNER JOIN users u ON m.user_id = u.user_id
+			LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $2
+			LEFT JOIN message_notifications mn ON mn.message_id = m.message_id AND mn.user_id = $2
 			WHERE
 				m.conversation_id = $1
 				AND (
@@ -79,7 +83,7 @@ module.exports = async (req, res) => {
 				ou.profile_picture_uuid as other_user_picture,
 				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified
 			FROM conversations c
-			INNER JOIN conversation_participants cp ON c.conversation_id = cp.conversation_id AND cp.user_id != $2
+			INNER JOIN conversation_users cp ON c.conversation_id = cp.conversation_id AND cp.user_id != $2
 			INNER JOIN users ou ON cp.user_id = ou.user_id
 			LEFT JOIN blocked_users b ON b.user_id_blocked = ou.user_id AND b.user_id_blocking = $2
 			WHERE
