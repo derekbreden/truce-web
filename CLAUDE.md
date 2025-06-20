@@ -142,6 +142,7 @@ runTests(path.basename(__filename), Object.values(tests))
 ## Debugging Philosophy
 	**DO NOT** guess and try things to fix it
 	**DO** guess and verify with console.warn in real code and test code what is happening
+	Use console.warn liberally in both real code and test code to see precisely what is happening - it is the only way you will ever know anything at all.
 
 When debugging failing tests, you **SHOULD**:
 1. **Add console.warn to trace data flow** - Log key variables, database state, API responses
