@@ -1,22 +1,27 @@
 module.exports = async (req, res) => {
 	if (!res.writableEnded && req.session.user_id) {
-		// Updating an array of notification_ids that are read and seen
-		if (req.body.mark_as_read) {
+		// Updating arrays of notification_ids that are read and seen by type
+		if (req.body.mark_reply_notifications_as_read) {
+
 			await req.client.query(
 				`
         UPDATE reply_notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE notification_id = ANY($1::int[]) AND user_id = $2
         `,
-				[req.body.mark_as_read, req.session.user_id],
+				[req.body.mark_reply_notifications_as_read, req.session.user_id],
 			)
+			res.end(JSON.stringify({ success: true }))
+		}
+		
+		if (req.body.mark_message_notifications_as_read) {
 			await req.client.query(
 				`
         UPDATE message_notifications
         SET read = TRUE, seen = TRUE, create_date = NOW()
         WHERE notification_id = ANY($1::int[]) AND user_id = $2
         `,
-				[req.body.mark_as_read, req.session.user_id],
+				[req.body.mark_message_notifications_as_read, req.session.user_id],
 			)
 			res.end(JSON.stringify({ success: true }))
 		}
@@ -137,6 +142,7 @@ module.exports = async (req, res) => {
 
 			// Returning the complete notifications list
 		} else if (req.body?.path === "/notifications") {
+
 			req.results.path = "/notifications"
 			const notifications_unread = await req.client.query(
 				`

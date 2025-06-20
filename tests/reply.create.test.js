@@ -72,31 +72,31 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(
-			"Unread (3)",
+			"Unread (2)",
 			$a("main-content notifications h3").textContent.trim(),
-			"User A should have 3 unread notifications after User B's reply",
+			"User A should still have 2 unread notifications after User B's reply (instant alert marks it as read)",
 		)
 		assertEquals(
 			"User B",
 			$a("main-content notifications notification:nth-child(2) b:first-child").textContent,
-			"New notification should be from User B",
-		)
-		
-		assertEquals(
-			`"Reply from User B to User A"`,
-			$a("main-content notifications notification:nth-child(2) i").textContent,
-			"New notification should show User B's reply content",
-		)
-		assertEquals(
-			"User B",
-			$a("main-content notifications notification:nth-child(3) b:first-child").textContent,
-			"Second notification should still be from User B",
+			"First unread notification should still be from User B",
 		)
 		
 		assertEquals(
 			`"First notification for User A"`,
+			$a("main-content notifications notification:nth-child(2) i").textContent,
+			"First unread notification should show first notification content",
+		)
+		assertEquals(
+			"User B",
+			$a("main-content notifications notification:nth-child(3) b:first-child").textContent,
+			"Second unread notification should still be from User B",
+		)
+		
+		assertEquals(
+			`"Second notification for User A"`,
 			$a("main-content notifications notification:nth-child(3) i").textContent,
-			"Second notification should show original content",
+			"Second unread notification should show second notification content",
 		)
 	},
 }

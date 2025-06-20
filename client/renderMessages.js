@@ -234,7 +234,7 @@ const markMessagesAsRead = (messages) => {
 	fetch("/session", {
 		method: "POST",
 		body: JSON.stringify({
-			mark_as_read: notification_ids
+			mark_message_notifications_as_read: notification_ids
 		})
 	})
 	.then(response => response.json())
@@ -244,7 +244,7 @@ const markMessagesAsRead = (messages) => {
 			const notifications = state.cache["/notifications"]?.notifications
 			if (notifications) {
 				notifications.forEach(notification => {
-					if (notification_ids.includes(notification.notification_id)) {
+					if (notification_ids.includes(notification.notification_id) && notification.notification_type === 'message') {
 						notification.read = true
 						notification.seen = true
 					}

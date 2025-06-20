@@ -163,28 +163,67 @@ module.exports = {
 			}
 		})
 	},
-	queuePushNotification(user_id, notification_id, push_data) {
+	queuePushNotification(user_id, push_data) {
 		if (!this.pending_push_notifications[user_id]) {
 			this.pending_push_notifications[user_id] = []
 		}
 		this.pending_push_notifications[user_id].push({
-			notification_id,
 			push_data,
 		})
 	},
-	flushPendingPushNotifications(user_id) {
+	async flushPendingPushNotifications(user_id) {
 		const queued_notifications = this.pending_push_notifications[user_id]
 		if (queued_notifications && queued_notifications.length > 0) {
 			delete this.pending_push_notifications[user_id]
+			
+			// Mark notifications as unread since user didn't get instant alert
+			const pool = require("./pool")
+			const pool_client = await pool.pool.connect()
+			
 			for (const notification of queued_notifications) {
-				const notification_ids = {}
-				notification_ids[user_id] = notification.notification_id
+				// Mark notifications as unread based on what's in the push_data
+				if (notification.push_data.reply_notification_id) {
+					console.warn("B - UPDATE REPLY NOTIFICATIONS", user_id, notification.push_data.reply_notification_id)
+					await pool_client.query(
+						`
+						UPDATE reply_notifications
+						SET read = FALSE
+						WHERE notification_id = $1
+						`,
+						[notification.push_data.reply_notification_id]
+					)
+				}
+				if (notification.push_data.message_notification_id) {
+					await pool_client.query(
+						`
+						UPDATE message_notifications
+						SET read = FALSE
+						WHERE notification_id = $1
+						`,
+						[notification.push_data.message_notification_id]
+					)
+				}
+				
+				// Create proper notification arrays for push
+				const reply_notification_ids = {}
+				const message_notification_ids = {}
+				
+				if (notification.push_data.reply_notification_id) {
+					reply_notification_ids[user_id] = notification.push_data.reply_notification_id
+				}
+				if (notification.push_data.message_notification_id) {
+					message_notification_ids[user_id] = notification.push_data.message_notification_id
+				}
+				
 				require("./push").sendPush(
 					[user_id],
-					notification_ids,
+					reply_notification_ids,
+					message_notification_ids,
 					notification.push_data,
 				)
 			}
+			
+			pool_client.release()
 		}
 		return []
 	},
@@ -208,13 +247,14 @@ module.exports = {
 			&& ws.active_post_id === Number(post_id)
 		)
 	},
-	sendInstantAlert(user_id, notification_id, push_data) {
+	sendInstantAlert(user_id, push_data) {
 		// Queue the notification - it will be removed upon acknowledgment
-		this.queuePushNotification(user_id, notification_id, push_data)
+		this.queuePushNotification(user_id, push_data)
 
 		// Find the active webSocket for the user_id
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (this.ws_active[ws_uuid].user_id === user_id) {
+				const notification_id = push_data.reply_notification_id || push_data.message_notification_id
 				this.ws_active[ws_uuid].send(
 					JSON.stringify({
 						type: "INSTANT_ALERT", 

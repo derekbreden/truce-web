@@ -231,7 +231,7 @@ module.exports = async (req, res) => {
 		)
 
 		// Wait for all notifications to be inserted
-		const notification_ids = {}
+		const message_notification_ids = {}
 		for (const user_id of other_user_ids) {
 			const insert_result = await req.client.query(
 				`
@@ -243,7 +243,7 @@ module.exports = async (req, res) => {
 				`,
 				[user_id, message_id],
 			)
-			notification_ids[user_id] = insert_result.rows[0].notification_id
+			message_notification_ids[user_id] = insert_result.rows[0].notification_id
 		}
 
 		// Prepare push data
@@ -262,7 +262,8 @@ module.exports = async (req, res) => {
 		// Send the push
 		await push.sendPush(
 			other_user_ids,
-			notification_ids,
+			{}, // reply_notification_ids
+			message_notification_ids,
 			push_data,
 		)
 

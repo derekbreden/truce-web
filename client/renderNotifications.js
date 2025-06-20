@@ -31,7 +31,7 @@ const renderNotification = (notification) => {
 
 			// Mark as read
 			if (!notification.read) {
-				markAsRead(notification.notification_id)
+				markAsRead(notification.notification_id, 'message')
 			}
 		})
 		return $notification
@@ -91,7 +91,7 @@ const renderNotification = (notification) => {
 
 				// Mark as read
 				if (!notification.read) {
-					markAsRead(notification.notification_id)
+					markAsRead(notification.notification_id, 'reply')
 				}
 			})
 			return $notification
@@ -516,7 +516,7 @@ const getUnreadCountUnseenCount = () => {
 						&& data.notification_id
 					) {
 						goToPath("/reply/" + data.reply_id)
-						markAsRead(data.notification_id)
+						markAsRead(data.notification_id, 'reply')
 
 						// Otherwise load the list of notifications
 					} else {
@@ -532,12 +532,17 @@ const getUnreadCountUnseenCount = () => {
 		})
 }
 
-const markAsRead = (notification_id) => {
+const markAsRead = (notification_id, notification_type) => {
+	const request_body = {}
+	if (notification_type === 'reply') {
+		request_body.mark_reply_notifications_as_read = [notification_id]
+	} else if (notification_type === 'message') {
+		request_body.mark_message_notifications_as_read = [notification_id]
+	}
+	
 	fetch("/session", {
 		method: "POST",
-		body: JSON.stringify({
-			mark_as_read: [notification_id],
-		}),
+		body: JSON.stringify(request_body),
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -547,7 +552,7 @@ const markAsRead = (notification_id) => {
 			} else {
 				// Update cache for this item
 				const notification = state.cache["/notifications"]?.notifications?.find(
-					(n) => n.notification_id === notification_id,
+					(n) => n.notification_id === notification_id && n.notification_type === notification_type,
 				)
 				if (notification) {
 					notification.read = true

@@ -267,9 +267,10 @@ const getMoreRecent = () => {
 
 			// Render notifications if appropriate
 			if (data.notifications?.length) {
-				const new_ids = data.notifications.map((n) => n.notification_id)
+				// Remove only notifications that match both ID and type
+				const new_notifications = data.notifications.map((n) => ({ id: n.notification_id, type: n.notification_type }))
 				current_cache.notifications = current_cache.notifications.filter(
-					(n) => !new_ids.includes(n.notification_id),
+					(n) => !new_notifications.some(newN => newN.id === n.notification_id && newN.type === n.notification_type),
 				)
 				current_cache.notifications.unshift(...data.notifications)
 				renderNotifications(current_cache.notifications)

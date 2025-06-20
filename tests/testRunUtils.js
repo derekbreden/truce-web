@@ -32,12 +32,15 @@ const runTests = async (testFileName, testFunctions, includeTimer) => {
 			}
 			
 			// Capture visual after test completes if window exists and capture mode enabled
-			if (global._test_window && process.env.CAPTURE_VISUALS === "true") {
+			if (global._test_window?.length && process.env.CAPTURE_VISUALS === "true") {
 				try {
 					const { captureVisual } = require("./testVisualHelpers.js")
 					const testName = testFileName.replace('.test.js', '')
 					const functionName = testFn.name || `test${i + 1}`
-					captureVisual(global._test_window, `${testName}-${functionName}`)
+					global._test_window.forEach(async (_test_window, index) => {
+						// Capture visual for each test window
+						await captureVisual(_test_window, `${testName}-${functionName}-${index}`)
+					})
 				} catch (visualError) {
 					console.log(`Visual capture failed: ${visualError.message}`)
 				}

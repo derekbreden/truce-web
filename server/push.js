@@ -9,7 +9,7 @@ const pool = require("./pool")
 const websocket = require("./websocket.js")
 
 module.exports = {
-	async sendPush(user_ids, notification_ids, push_data) {
+	async sendPush(user_ids, reply_notification_ids, message_notification_ids, push_data) {
 
 		// Get DB connection
 		const pool_client = await pool.pool.connect()
@@ -26,31 +26,34 @@ module.exports = {
 			if (has_active_websocket) {
 				user_details[user_id].has_active_websocket = true
 
-				// QUESTION: Do we need to mark notifications as read if we have an active websocket?
-				//
-				// await pool_client.query(
-				// 	`
-				// 	UPDATE reply_notifications
-				// 	SET read = TRUE
-				// 	WHERE user_id = $1 AND notification_id = $2
-				// 	`,
-				// 	[user_id, notification_ids[user_id]]
-				// )
-				// await pool_client.query(
-				// 	`
-				// 	UPDATE message_notifications
-				// 	SET read = TRUE
-				// 	WHERE user_id = $1 AND notification_id = $2
-				// 	`,
-				// 	[user_id, notification_ids[user_id]]
-				// )
-				//
-				// I am not sure
+				// Mark notifications as read since user will see instant alert
+				if (reply_notification_ids[user_id]) {
+					await pool_client.query(
+						`
+						UPDATE reply_notifications
+						SET read = TRUE
+						WHERE user_id = $1 AND notification_id = $2
+						`,
+						[user_id, reply_notification_ids[user_id]]
+					)
+				}
+				if (message_notification_ids[user_id]) {
+					await pool_client.query(
+						`
+						UPDATE message_notifications
+						SET read = TRUE
+						WHERE user_id = $1 AND notification_id = $2
+						`,
+						[user_id, message_notification_ids[user_id]]
+					)
+				}
 				
+				const alert_data = { ...push_data }
+				alert_data.reply_notification_id = reply_notification_ids[user_id]
+				alert_data.message_notification_id = message_notification_ids[user_id]
 				websocket.sendInstantAlert(
 					user_id,
-					notification_ids[user_id],
-					push_data,
+					alert_data,
 				)
 
 			} else {
