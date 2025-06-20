@@ -22,39 +22,34 @@ const setupTestEnvironment = async (options) => {
 
 
 	const parseIncludes = (fromHtmlContent) => {
-		let returningHtmlContent = fromHtmlContent
-		// Regex to find <!--#include file="..." --> directives
-		const includeDirectiveRegex = /<!--#include\s+file="([^"]+)"\s*-->/g
-		let match
-
-		// Keep replacing until no more include directives are found
-		// This handles nested includes by repeatedly applying the regex
-		while (
-			(match = includeDirectiveRegex.exec(returningHtmlContent)) !== null
-		) {
-			const directive = match[0] // The full directive, e.g., <!--#include file="path/to/file.html" -->
-			const relativeFilePath = match[1] // The path from the directive, e.g., "path/to/file.html"
-
-			// Resolve the script path relative to the directory of the indexHtmlFile
-			const indexDir = path.dirname(indexPath)
-			const absoluteFilePath = path.resolve(indexDir, relativeFilePath) // Use path.resolve for robustness
-
-			try {
-				const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
-				returningHtmlContent = returningHtmlContent.replace(
-					directive,
-					fileContent,
-				)
-			} catch (error) {
-				console.error(
-					`Error including file "${absoluteFilePath}": ${error.message}`,
-				)
-				// Optionally, replace with an error message or leave the directive,
-				// depending on desired error handling. For now, it will effectively remove the directive if file not found.
-				// returningHtmlContent = returningHtmlContent.replace(directive, `<!-- Error including ${relativeFilePath} -->`)
+		// Process line by line like server.js does
+		const lines = fromHtmlContent.split("\n")
+		const processedLines = []
+		
+		for (const line of lines) {
+			if (line.includes("<!--#include file=\"")) {
+				const file = line.split("\"")[1]
+				
+				// Resolve the script path relative to the directory of the indexHtmlFile
+				const indexDir = path.dirname(indexPath)
+				const absoluteFilePath = path.resolve(indexDir, file)
+				
+				try {
+					const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
+					// Add the file content directly (server.js processes it recursively, we'll handle that in the while loop)
+					processedLines.push(fileContent)
+				} catch (error) {
+					console.error(
+						`Error including file "${absoluteFilePath}": ${error.message}`,
+					)
+					// Skip the line if file not found (like server.js does)
+				}
+			} else {
+				processedLines.push(line)
 			}
 		}
-		return returningHtmlContent
+		
+		return processedLines.join("\n")
 	}
 
 	// Pre-process HTML to unreply JS includes
