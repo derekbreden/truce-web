@@ -95,8 +95,8 @@ const setupTestEnvironment = async (options) => {
 	virtualConsole.on("error", (error) => {
 		console.error(error)
 	})
-	virtualConsole.on("warn", (warn, warn2, warn3) => {
-		console.warn(warn, warn2 || "", warn3 || "")
+	virtualConsole.on("warn", (...args) => {
+		console.warn(...args)
 	})
 	// Load the index.html content
 	const dom = new JSDOM(finalIndexHtmlContent, {
@@ -439,10 +439,7 @@ const setupTestEnvironment = async (options) => {
 		window.state.ws._handlers.message = function(event) {
 			// Call all addEventListener handlers
 			window.state.ws._messageHandlers?.forEach(handler => handler(event))
-			// Call the original single handler if it exists
-			if (originalMessageHandler) {
-				originalMessageHandler.call(this, event)
-			}
+			// The original handler is already included in _messageHandlers, so don't call it again
 		}
 	}
 	
