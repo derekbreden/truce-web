@@ -89,6 +89,7 @@ const tests = {
 			"New notification should show User B's message content",
 		)
 	},
+
 }
 
 runTests(path.basename(__filename), Object.values(tests))

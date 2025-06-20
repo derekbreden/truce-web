@@ -36,6 +36,7 @@ module.exports = async (req, res) => {
 				m.create_date,
 				m.message_id,
 				m.body,
+				m.note,
 				m.image_uuids,
 				m.user_id,
 				u.display_name,

@@ -187,9 +187,17 @@ const setupTestEnvironment = async (options) => {
 				
 				// Mock AI module
 				const aiPath = require.resolve("../server/ai")
+				global.current_setup_id = setup_id
 				require.cache[aiPath] = {
 					exports: {
 						ask: async (messages, type, format) => {
+							// Check for setup-specific AI behavior
+							global._ai_responses = global._ai_responses || {}
+							const setupResponse = global._ai_responses[global.current_setup_id]
+							if (setupResponse) {
+								return setupResponse
+							}
+							
 							// Return appropriate mock responses
 							if (type === "topics") {
 								return JSON.stringify({ topics: ["religion", "media"] })
@@ -298,6 +306,8 @@ const setupTestEnvironment = async (options) => {
 			}
 			
 			window.executeHandler = async function(req, res) {
+				// Set current setup ID for this execution
+				global.current_setup_id = options.setup_id
 				const handleSession = require("../server/handleSession.js")
 				await handleSession(req, res)
 				return JSON.parse(res.responseData)

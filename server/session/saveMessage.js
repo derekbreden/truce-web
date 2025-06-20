@@ -1,3 +1,4 @@
+const ai = require("../ai")
 const crypto = require("node:crypto")
 const {
 	DeleteObjectCommand,
@@ -7,6 +8,7 @@ const {
 const object_client = new S3Client({
 	region: "us-east-1",
 })
+const prompts = require("../prompts")
 const push = require("../push")
 
 module.exports = async (req, res) => {
@@ -69,30 +71,85 @@ module.exports = async (req, res) => {
 			return
 		}
 
+		// AI content moderation
+		const messages = []
+		
+		let text_to_evaluate = req.body.body
+		messages.push({
+			role: "user",
+			name: (req.session.display_name || "Anonymous").replace(
+				/[^a-z0-9_\-]/g,
+				"",
+			),
+			content: [
+				{ type: "text", text: text_to_evaluate },
+				...req.body.pngs.map((png) => {
+					return {
+						image_url: {
+							url: png.url,
+						},
+						type: "image_url",
+					}
+				}),
+			],
+		})
+		
+		const ai_response = await ai.ask(
+			messages,
+			"common",
+			prompts.common_response_format,
+		)
+		
+		let ai_response_parsed = { keyword: "OK" }
+		try {
+			ai_response_parsed = JSON.parse(ai_response)
+		} catch (e) {
+			console.error("Failed to parse AI JSON", ai_response, e)
+		}
+		
+		if (ai_response_parsed.keyword === "Spam") {
+			res.end(
+				JSON.stringify({
+					error: ai_response_parsed.keyword + (ai_response_parsed.note ? ` ${ai_response_parsed.note}` : ""),
+				}),
+			)
+			return
+		}
+
 		let message_id = req.body.message_id
 		if (req.body.message_id) {
 			// Update existing message
 			await req.client.query(
 				`
 				UPDATE messages
-				SET body = $1, create_date = NOW()
+				SET body = $1, note = $2, create_date = NOW()
 				WHERE
-					message_id = $2
-					AND user_id = $3
+					message_id = $3
+					AND user_id = $4
 				`,
-				[req.body.body, req.body.message_id, req.session.user_id],
+				[
+					req.body.body, 
+					ai_response_parsed.keyword === "OK" ? null : `${ai_response_parsed.keyword}${ai_response_parsed.note ? ` ${ai_response_parsed.note}` : ""}`,
+					req.body.message_id, 
+					req.session.user_id
+				],
 			)
 		} else {
 			// Insert new message
 			const message_inserted = await req.client.query(
 				`
 				INSERT INTO messages
-					(conversation_id, user_id, body)
+					(conversation_id, user_id, body, note)
 				VALUES
-					($1, $2, $3)
+					($1, $2, $3, $4)
 				RETURNING message_id as message_id
 				`,
-				[req.body.conversation_id, req.session.user_id, req.body.body],
+				[
+					req.body.conversation_id, 
+					req.session.user_id, 
+					req.body.body,
+					ai_response_parsed.keyword === "OK" ? null : `${ai_response_parsed.keyword}${ai_response_parsed.note ? ` ${ai_response_parsed.note}` : ""}`
+				],
 			)
 			message_id = message_inserted.rows[0].message_id
 		}

@@ -16,6 +16,11 @@ const renderMessage = (message) => {
 	const is_own_message = message.user_id === state.user_id
 	const time_ago = new Date(message.create_date).toLocaleString()
 	
+	const note = message.note || ""
+	const space_index = note.indexOf(" ")
+	const note_title = space_index > -1 ? note.slice(0, space_index).replace(/[^a-z\-]/gi, "") : note.replace(/[^a-z\-]/gi, "")
+	const note_body = space_index > -1 ? note.slice(space_index + 1) : ""
+	
 	let $message_body = markdownToElements(message.body)
 
 	const $message = $(
@@ -33,6 +38,7 @@ const renderMessage = (message) => {
 			message-content
 				$7
 				$8
+				$9
 		`,
 		[
 			is_own_message ? "true" : "false",
@@ -56,6 +62,17 @@ const renderMessage = (message) => {
 				)
 				: [],
 			time_ago,
+			message.note
+				? $(
+					`
+					info-wrapper
+						info
+							b $1
+							span $2
+					`,
+					[note_title, note_body],
+				)
+				: [],
 			$message_body,
 			message.image_uuids
 				? renderMessageImages(message.image_uuids.split(",").filter(uuid => uuid))

@@ -231,6 +231,7 @@ CREATE TABLE messages (
     conversation_id INT NOT NULL,
     user_id INT NOT NULL,
     body VARCHAR(8000) DEFAULT '',
+    note VARCHAR(500) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
