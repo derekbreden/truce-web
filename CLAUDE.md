@@ -138,6 +138,7 @@ runTests(path.basename(__filename), Object.values(tests))
 
 ### Key Testing Gotchas
 **Target elements**: MUST use specific CSS selectors like `$("post posts:nth-child(2) p:nth-child(0) span")` to get exactly one element.
+**Use DOM only**: Verify outcomes through user-visible UI changes, not internal state inspection. Mock 3rd party libraries and services, never mock our own code. Exercise our code.
 
 ## Debugging Philosophy
 	**DO NOT** guess and try things to fix it
