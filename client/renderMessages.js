@@ -96,8 +96,22 @@ const renderMessages = (messages, conversation) => {
 			// Set up message sending
 			const $textarea = $("main-content-wrapper[active] textarea")
 			const $sendButton = $("main-content-wrapper[active] send-button")
+			const $messageForm = $("main-content-wrapper[active] message-form")
+			
+			const addMessageError = (error) => {
+				$messageForm.appendChild(
+					$(
+						`
+						error
+							$1
+						`,
+						[error],
+					),
+				)
+			}
 			
 			const send_message = () => {
+				$messageForm.$("error")?.remove()
 				const message_body = $textarea.value.trim()
 				if (message_body && conversation) {
 					fetch("/session", {
@@ -111,7 +125,7 @@ const renderMessages = (messages, conversation) => {
 					.then(response => response.json())
 					.then(data => {
 						if (data.error) {
-							alertError(data.error)
+							addMessageError(data.error)
 						} else {
 							$textarea.value = ""
 							// Refresh messages
@@ -120,10 +134,15 @@ const renderMessages = (messages, conversation) => {
 					})
 					.catch(error => {
 						console.error("Error sending message:", error)
-						alertError("Network error sending message")
+						addMessageError("Network error sending message")
 					})
 				}
 			}
+			
+			// Remove error when user focuses on textarea (same pattern as posts/replies)
+			$textarea.on("focus", () => {
+				$messageForm.$("error")?.remove()
+			})
 
 			$sendButton.on("click", send_message)
 			$textarea.on("keydown", (e) => {
