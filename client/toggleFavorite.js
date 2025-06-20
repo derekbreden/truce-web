@@ -69,7 +69,7 @@ const toggleFavorite = async (post_or_reply) => {
 			: $("icons icon[favorites] svg").cloneNode(true),
 	)
 	const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
-	$favoritesP.innerText = post_or_reply.favorite_count
+	$favoritesP.textContent = post_or_reply.favorite_count
 
 	// Alert the user to the change
 	const action = was_favorited ? "removed from" : "added to"

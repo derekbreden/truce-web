@@ -16,12 +16,12 @@ const tests = {
 		// Verify the default topics returned in testSetupHelpers.js are shown in the DOM
 		assertEquals(
 			"Religion",
-			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname name").innerText,
+			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname name").textContent,
 			`First topic name should be "Religion"`,
 		)
 		assertEquals(
 			"2",
-			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname count").innerText,
+			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname count").textContent,
 			`First topic post count should be "2"`,
 		)
 	},

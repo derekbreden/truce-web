@@ -402,10 +402,10 @@ const getMoreRecent = () => {
 						// Update the markup
 						;(found_post || found_activity).$post.$(
 							"[replies] p"
-						).innerText = reply_text
+						).textContent = reply_text
 						;(found_post || found_activity).$post.$(
 							"[favorites] p",
-						).innerText = favorite_text
+						).textContent = favorite_text
 
 						// Poll requires a complete re-render
 						if (
@@ -434,13 +434,13 @@ const getMoreRecent = () => {
 							&& activity.type === "reply",
 					)
 					const favorite_text = reply_count.favorite_count
-					if (found_reply?.$reply?.$("[favorites] p")?.innerText) {
+					if (found_reply?.$reply?.$("[favorites] p")?.textContent) {
 						found_reply.favorite_count = reply_count.favorite_count
-						found_reply.$reply.$("[favorites] p").innerText = favorite_text
+						found_reply.$reply.$("[favorites] p").textContent = favorite_text
 					}
-					if (found_activity?.$reply?.$("[favorites] p")?.innerText) {
+					if (found_activity?.$reply?.$("[favorites] p")?.textContent) {
 						found_activity.favorite_count = reply_count.favorite_count
-						found_activity.$reply.$("[favorites] p").innerText = favorite_text
+						found_activity.$reply.$("[favorites] p").textContent = favorite_text
 					}
 				})
 			}

@@ -32,7 +32,7 @@ const renderPost = (post) => {
 				$last_topic = $last_topic.querySelector("li:last-child")
 			}
 			if ($last_topic) {
-				$last_topic.innerText = $last_topic.innerText + "\n..."
+				$last_topic.textContent = $last_topic.textContent + "\n..."
 			}
 		}
 	}
@@ -232,14 +232,14 @@ const renderPost = (post) => {
 		const updatePollDisplay = (type, percentages) => {
 			percentages.forEach((percent, index) => {
 				const option_num = index + 1
-				$post.$(`poll-counts-${type} poll-${option_num} percent`).innerText = percent + "%"
+				$post.$(`poll-counts-${type} poll-${option_num} percent`).textContent = percent + "%"
 				$post.$(`poll-counts-${type} poll-${option_num} bg`).style.width = percent + "%"
 			})
 		}
 
 		const actual_votes = post.poll_counts.split(",").map(count => Number(count || 0))
 		const actual_total = actual_votes.reduce((sum, count) => sum + count, 0)
-		$post.$("p[results][actual]").innerText =
+		$post.$("p[results][actual]").textContent =
 			`Actual results: (${actual_total} ${actual_total === 1 ? `vote` : `votes`})`
 		const actual_percentages = calculatePercentages(actual_votes)
 		updatePollDisplay("actual", actual_percentages)

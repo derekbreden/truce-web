@@ -29,7 +29,7 @@ const tests = {
 		// Verify login form is shown instead of logged-in content
 		assertEquals(
 			"Sign up / Sign in",
-			$("menu sign-in button[submit]").innerText,
+			$("menu sign-in button[submit]").textContent,
 			"Should show sign up / sign in button for logged out user",
 		)
 		
@@ -44,7 +44,7 @@ const tests = {
 		// Verify existing account login success message (NOT creation message)
 		assertEquals(
 			"You have been signed in to your existing account",
-			$("modal[info] info").innerText.trim(),
+			$("modal[info] info").textContent.trim(),
 			"Should show existing account login success message",
 		)
 		
@@ -79,7 +79,7 @@ const tests = {
 		
 		assertEquals(
 			"Log out",
-			$("menu signed-in button[sign-out]").innerText,
+			$("menu signed-in button[sign-out]").textContent,
 			"Should show log out button for logged in user",
 		)
 	},

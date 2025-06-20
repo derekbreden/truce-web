@@ -16,19 +16,19 @@ const tests = {
 		
 		assertEquals(
 			"Unread (2)",
-			$a("main-content notifications h3").innerText.trim(),
+			$a("main-content notifications h3").textContent.trim(),
 			"User A should have 2 unread notifications initially",
 		)
 		
 		assertEquals(
 			"User B",
-			$a("main-content notifications notification:nth-child(2) b:first-child").innerText,
+			$a("main-content notifications notification:nth-child(2) b:first-child").textContent,
 			"First notification should be from User B",
 		)
 		
 		assertEquals(
 			`"First notification for User A"`,
-			$a("main-content notifications notification:nth-child(2) i").innerText,
+			$a("main-content notifications notification:nth-child(2) i").textContent,
 			"First notification should show correct content",
 		)
 		
@@ -61,41 +61,41 @@ const tests = {
 		// Verify the banner appears for $a
 		assertEquals(
 			"User B replied\nReply from User B to User A",
-			$a("alert-wrapper alert:nth-child(1) info").innerText.trim(),
+			$a("alert-wrapper alert:nth-child(1) info").textContent.trim(),
 			`Alert should say "User B replied\nReply from User B to User A"`,
 		)
 		assertEquals(
 			"Reply from User B to User A",
-			$b("main-content-2 replies reply:nth-child(3) p span").innerText,
+			$b("main-content-2 replies reply:nth-child(3) p span").textContent,
 			"User B's reply should be rendered with Reply from User B to User A",
 		)
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(
 			"Unread (3)",
-			$a("main-content notifications h3").innerText.trim(),
+			$a("main-content notifications h3").textContent.trim(),
 			"User A should have 3 unread notifications after User B's reply",
 		)
 		assertEquals(
 			"User B",
-			$a("main-content notifications notification:nth-child(2) b:first-child").innerText,
+			$a("main-content notifications notification:nth-child(2) b:first-child").textContent,
 			"New notification should be from User B",
 		)
 		
 		assertEquals(
 			`"Reply from User B to User A"`,
-			$a("main-content notifications notification:nth-child(2) i").innerText,
+			$a("main-content notifications notification:nth-child(2) i").textContent,
 			"New notification should show User B's reply content",
 		)
 		assertEquals(
 			"User B",
-			$a("main-content notifications notification:nth-child(3) b:first-child").innerText,
+			$a("main-content notifications notification:nth-child(3) b:first-child").textContent,
 			"Second notification should still be from User B",
 		)
 		
 		assertEquals(
 			`"First notification for User A"`,
-			$a("main-content notifications notification:nth-child(3) i").innerText,
+			$a("main-content notifications notification:nth-child(3) i").textContent,
 			"Second notification should show original content",
 		)
 	},

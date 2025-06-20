@@ -31,7 +31,7 @@ const tests = {
 		// Verify the single post body content
 		assertEquals(
 			"This is User A's own post with full content",
-			$("main-content posts post p span").innerText,
+			$("main-content posts post p span").textContent,
 			"Post body should match database mock content",
 		)
 
@@ -44,12 +44,12 @@ const tests = {
 		
 		assertEquals(
 			"First reply to the post",
-			$("replies > reply > p > span").innerText,
+			$("replies > reply > p > span").textContent,
 			"First reply content should match database mock",
 		)
 		assertEquals(
 			"Reply to the first reply", 
-			$("replies reply:nth-child(4) p span").innerText,
+			$("replies reply:nth-child(4) p span").textContent,
 			"Nested reply content should match database mock",
 		)
 	},

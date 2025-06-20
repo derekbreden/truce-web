@@ -208,7 +208,7 @@ const updateCounts = (data) => {
 		)
 		if (found_post) {
 			found_post.reply_count = count.reply_count
-			found_post.$post.$("[replies] p").innerText = count.reply_count
+			found_post.$post.$("[replies] p").textContent = count.reply_count
 		}
 	})
 }

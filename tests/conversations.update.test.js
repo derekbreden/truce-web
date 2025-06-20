@@ -27,7 +27,7 @@ const tests = {
 		// Verify User B starts with empty conversations list
 		assertEquals(
 			"Messages",
-			$b("main-content-wrapper[active] conversations post[conversations-empty] h2[conversations-empty] span").innerText,
+			$b("main-content-wrapper[active] conversations post[conversations-empty] h2[conversations-empty] span").textContent,
 			"User B should start with empty conversations list"
 		)
 		
@@ -51,13 +51,13 @@ const tests = {
 		// Verify that User B's conversations list now shows the conversation with User A
 		assertEquals(
 			"User A", 
-			$b("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").innerText,
+			$b("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").textContent,
 			"User B should see conversation with User A after websocket UPDATE"
 		)
 		
 		assertEquals(
 			"Hello User B, this is from User A", 
-			$b("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").innerText,
+			$b("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").textContent,
 			"User B should see the message preview in conversations list"
 		)
 	},

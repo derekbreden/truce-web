@@ -54,14 +54,14 @@ const tests = {
 		// Verify we can see the conversation with User B in the list
 		assertEquals(
 			"User B",
-			$("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").innerText,
+			$("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").textContent,
 			"Should see conversation with User B in list",
 		)
 		
 		// Verify the preview shows the latest message
 		assertEquals(
 			"That is wonderful to hear! What have you been up to lately?",
-			$("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").innerText,
+			$("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").textContent,
 			"Should show latest message in preview",
 		)
 		
@@ -79,21 +79,21 @@ const tests = {
 		// Verify the first message content
 		assertEquals(
 			"Hello User A! How are you doing?",
-			$("main-content-wrapper[active] messages message:nth-child(1) message-content p span").innerText,
+			$("main-content-wrapper[active] messages message:nth-child(1) message-content p span").textContent,
 			"First message should show correct content",
 		)
 		
 		// Verify the second message content  
 		assertEquals(
 			"Hi User B! I am doing great, thanks for asking.",
-			$("main-content-wrapper[active] messages message:nth-child(2) message-content p span").innerText,
+			$("main-content-wrapper[active] messages message:nth-child(2) message-content p span").textContent,
 			"Second message should show correct content",
 		)
 		
 		// Verify the third message content
 		assertEquals(
 			"That is wonderful to hear! What have you been up to lately?",
-			$("main-content-wrapper[active] messages message:nth-child(3) message-content p span").innerText,
+			$("main-content-wrapper[active] messages message:nth-child(3) message-content p span").textContent,
 			"Third message should show correct content",
 		)
 	},

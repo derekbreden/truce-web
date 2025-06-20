@@ -53,7 +53,7 @@ const tests = {
 		)
 		assertEquals(
 			"This is User A's edited post content with much more text than the original to pass validation.",
-			$("main-content post p span").innerText,
+			$("main-content post p span").textContent,
 			"Post should show updated body content",
 		)
 	},

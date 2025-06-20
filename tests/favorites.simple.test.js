@@ -32,12 +32,12 @@ const tests = {
 		// (span is not present in render function directly, but comes indirectly from markdownToElements on the body text from the user)
 		assertEquals(
 			"This is User B's post",
-			$("main-content-wrapper activities activity[post] p span").innerText,
+			$("main-content-wrapper activities activity[post] p span").textContent,
 			"Should have a post activity",
 		)
 		assertEquals(
 			"Great point!",
-			$("main-content-wrapper activities activity[reply] p span").innerText,
+			$("main-content-wrapper activities activity[reply] p span").textContent,
 			"Should have a reply activity",
 		)
 	},

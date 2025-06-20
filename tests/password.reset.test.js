@@ -26,7 +26,7 @@ const tests = {
 		// Verify forgot password modal is shown
 		assertEquals(
 			"Reset password",
-			$("modal[password-help] button[submit]").innerText,
+			$("modal[password-help] button[submit]").textContent,
 			"Should show password reset modal",
 		)
 		
@@ -40,7 +40,7 @@ const tests = {
 		// Verify success message
 		assertEquals(
 			"An email was sent with password reset instructions.",
-			$("modal[info] info").innerText.trim(),
+			$("modal[info] info").textContent.trim(),
 			"Should show email sent confirmation",
 		)
 		
@@ -84,7 +84,7 @@ const tests = {
 		// Verify password reset modal is shown
 		assertEquals(
 			"Set password",
-			$reset("modal[password-reset] button[submit]").innerText,
+			$reset("modal[password-reset] button[submit]").textContent,
 			"Should show password reset form",
 		)
 		
@@ -98,7 +98,7 @@ const tests = {
 		// Verify password reset success
 		assertEquals(
 			"Your password has been set",
-			$reset("modal[info] info").innerText.trim(),
+			$reset("modal[info] info").textContent.trim(),
 			"Should show password set confirmation",
 		)
 		
@@ -129,7 +129,7 @@ const tests = {
 		// Verify successful login
 		assertEquals(
 			"You have been signed in to your existing account",
-			$login("modal[info] info").innerText.trim(),
+			$login("modal[info] info").textContent.trim(),
 			"Should successfully log in with new password",
 		)
 		

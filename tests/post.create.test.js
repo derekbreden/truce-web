@@ -32,7 +32,7 @@ const tests = {
 		)
 		assertEquals(
 			"This is the body content of the newly created post. It needs to be longer than the title to pass validation.",
-			$("main-content-2 posts post:first-child p span").innerText,
+			$("main-content-2 posts post:first-child p span").textContent,
 			"New post should be rendered with correct body content",
 		)
 	},

@@ -27,7 +27,7 @@ const tests = {
 		
 		assertEquals(
 			"Block user",
-			$b("modal action[block] p").innerText,
+			$b("modal action[block] p").textContent,
 			"Block action should be available for User A's post",
 		)
 		
@@ -37,7 +37,7 @@ const tests = {
 		// Confirm the block action
 		assertEquals(
 			"Block user - are you sure?",
-			$b("modal[confirm] h2 span").innerText,
+			$b("modal[confirm] h2 span").textContent,
 			"Should show block confirmation modal",
 		)
 		

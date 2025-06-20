@@ -286,7 +286,7 @@ const markMessagesAsRead = (messages) => {
 	if (state.path === "/notifications") {
 		const $unreadHeader = $("main-content h3")
 		if ($unreadHeader) {
-			$unreadHeader.innerText = state.unread_count > 0 ? `Unread (${state.unread_count})` : "Unread"
+			$unreadHeader.textContent = state.unread_count > 0 ? `Unread (${state.unread_count})` : "Unread"
 		}
 	}
 

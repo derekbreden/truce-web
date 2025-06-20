@@ -22,7 +22,7 @@ const tests = {
 		// From fixtures: reply_id: 2, "Reply to the first reply", user_id: 10 (User A)
 		assertEquals(
 			"Reply to the first reply",
-			$("replies reply:nth-child(4) p span").innerText,
+			$("replies reply:nth-child(4) p span").textContent,
 			"Should see User A's nested reply",
 		)
 		
@@ -51,7 +51,7 @@ const tests = {
 		// Verify the updated reply is displayed
 		assertEquals(
 			"This is User A's edited reply with much more detailed content than the original.",
-			$("replies reply:nth-child(4) p span").innerText,
+			$("replies reply:nth-child(4) p span").textContent,
 			"Reply should show updated content",
 		)
 	},

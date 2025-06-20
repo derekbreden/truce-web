@@ -15,14 +15,14 @@ const tests = {
 		})
 		const { $ } = window
 
-		assertEquals("Terms and conditions", $("h2[welcome] span").innerText.trim(), "Should show welcome title")
-		assertEquals("Join the Discussion", $("a[big][href=\"/posts\"]").innerText.trim(), "Should show join button")
+		assertEquals("Terms and conditions", $("h2[welcome] span").textContent.trim(), "Should show welcome title")
+		assertEquals("Join the Discussion", $("a[big][href=\"/posts\"]").textContent.trim(), "Should show join button")
 
 		$("footer a[href='/posts']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals("Please tap \"Join the Discussion\" to agree to these terms.", 
-					 $("modal-wrapper modal[info] info").innerText.trim(), 
+					 $("modal-wrapper modal[info] info").textContent.trim(), 
 					 "Should show modal with expected text")
 
 		$("modal-wrapper modal-bg").click()
@@ -32,7 +32,7 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals("Please tap \"Join the Discussion\" to agree to these terms.", 
-					 $("modal-wrapper modal[info] info").innerText.trim(), 
+					 $("modal-wrapper modal[info] info").textContent.trim(), 
 					 "Should show modal again when trying to open menu")
 
 		$("modal-wrapper modal-bg").click()

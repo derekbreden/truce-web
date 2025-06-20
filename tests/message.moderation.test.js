@@ -82,20 +82,20 @@ const tests = {
 		// Verify the message was sent (flagged content is stored, not blocked)
 		assertEquals(
 			"You're completely wrong about this!",
-			$b("main-content-wrapper[active] messages message:nth-child(1) message-content p span").innerText,
+			$b("main-content-wrapper[active] messages message:nth-child(1) message-content p span").textContent,
 			"Flagged message should still be sent and displayed"
 		)
 		
 		// Verify the AI moderation note is displayed
 		assertEquals(
 			"Escalation",
-			$b("main-content-wrapper[active] messages message:nth-child(1) message-content info-wrapper info b").innerText,
+			$b("main-content-wrapper[active] messages message:nth-child(1) message-content info-wrapper info b").textContent,
 			"Should display AI moderation note title"
 		)
 		
 		assertEquals(
 			"Message contains aggressive language",
-			$b("main-content-wrapper[active] messages message:nth-child(1) message-content info-wrapper info span").innerText, 
+			$b("main-content-wrapper[active] messages message:nth-child(1) message-content info-wrapper info span").textContent, 
 			"Should display AI moderation note body"
 		)
 	},

@@ -98,7 +98,7 @@ assertEquals("/user/profile", state.path, "Should be on profile") // NOISE
 $("profile-edit-button").click() // This tells you navigation failed anyway
 
 // ✅ CORRECT: Direct assertions that fail immediately
-assertEquals("text", $("selector").innerText.trim(), "Text should match")
+assertEquals("text", $("selector").textContent.trim(), "Text should match")
 $("button").click() // Let it crash if button doesn't exist - better error
 ```
 
@@ -130,14 +130,13 @@ async function testFeature() {
 
 	$("main-content posts post:nth-child(2) button[submit]").click()
 	await new Promise(resolve => setTimeout(resolve, 0))
-	assertEquals("expected", $("notifications notification:nth-child(1) span").innerText.trim(), "Should match")
+	assertEquals("expected", $("notifications notification:nth-child(1) span").textContent.trim(), "Should match")
 }
 
 runTests("feature.test.js", [testFeature])
 ```
 
 ### Key Testing Gotchas
-**JSDOM text**: Always check `.innerText` on deepest element; Sometimes check `.textContent` only for RARE standalone `element\n  $1` instead of usual `element $1`
 **Target elements**: MUST use specific CSS selectors like `notification[unread] + notification[unread]` or `post posts:nth-child(2) p:nth-child(0) span` to get a single element instead of an array. NEVER get an array.
 **CRITICAL**: NEVER use `$()[index]` syntax - this is FORBIDDEN
 

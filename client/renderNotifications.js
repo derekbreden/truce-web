@@ -502,7 +502,7 @@ const getUnreadCountUnseenCount = () => {
 					$("footer a[notifications]").removeAttribute("unread")
 				}
 				if ($("h3[unread-header]")) {
-					$("h3[unread-header]").innerText = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
+					$("h3[unread-header]").textContent = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
 				}
 				if (
 					state.unseen_count

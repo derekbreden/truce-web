@@ -2,7 +2,7 @@
 	Flint provides an interface for selecting or creating elements.
 	1) Selecting:
 		const $title = $("h1")
-		$title.innerText = "New Title"
+		$title.textContent = "New Title"
 	2) Creating:
 		const $listItem = $(`
 			li[class=$1] $2
@@ -105,11 +105,9 @@ const $ = (selector_or_flint, flint_args_or_element) => {
 						element.value = content
 					} else {
 						element.textContent = content
-						element.innerText = content
 					}
 				} else if (rest.length) {
 					element.textContent = rest
-					element.innerText = rest
 				}
 			}
 
