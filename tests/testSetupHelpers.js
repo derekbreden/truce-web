@@ -345,9 +345,7 @@ const setupTestEnvironment = async (options) => {
 								readyState: 1,
 								client_ws: client_ws, // Store reference to client websocket
 								on(event, handler) {
-									if (event === "message") {
-										this._handlers.message = handler
-									}
+									this._handlers[event] = handler
 								},
 								send(message) {
 									this.client_ws._handlers.message({
