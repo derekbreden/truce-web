@@ -21,7 +21,21 @@ const captureVisual = (window, filename) => {
 	// Capture screenshot with Chrome headless
 	try {
 		const absoluteHtmlPath = path.resolve(htmlPath)
-		execSync(`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu --screenshot="${pngPath}" --window-size=1200,800 "file://${absoluteHtmlPath}"`, { stdio: 'pipe' })
+		const start_time = new Date()
+		execSync(
+			[
+				`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`,
+				"--headless",
+				"--force-device-scale-factor=1",
+				"--hide-scrollbars",
+				`--screenshot="${pngPath}"`,
+				`--window-size=1200,800 "file://${absoluteHtmlPath}"`,
+			].join(" "),
+			{ stdio: 'pipe' }
+		)
+		execSync(`convert "${pngPath}" -crop 1200x720+0+0 "${pngPath}"`, { stdio: 'pipe' })
+		const end_time = new Date()
+		console.log(`Screenshot captured in ${end_time - start_time}ms`)
 	} catch (e) {
 		console.error("Chrome screenshot failed:", e.message)
 		throw new Error("Visual capture failed")
