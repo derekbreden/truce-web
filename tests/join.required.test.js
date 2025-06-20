@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testJoinRequired: async () => {
+	testFlow: async () => {
 		const window = await setupTestEnvironment({
 			beforeParse: (window) => {
 				window.localStorage.removeItem("trucev1:session_uuid")

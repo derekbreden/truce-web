@@ -3,7 +3,6 @@ const {
 	setupTestEnvironment,
 } = require("./testSetupHelpers.js")
 const { assertEquals, runTests } = require("./testRunUtils.js")
-const { captureVisual } = require("./testVisualHelpers.js")
 
 const tests = {
 	testFlow: async () => {
@@ -11,7 +10,6 @@ const tests = {
 		const { $ } = window
 		
 		// By default, testSetupHelpers.js starts on /posts with 2 posts
-		captureVisual(window, "posts.simple-initial")
 
 		// The first listed (by create_date) default post is the user's own post
 		$("main-content-2 posts post:first-child icon[more]").click()

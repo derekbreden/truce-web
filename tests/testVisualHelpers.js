@@ -3,8 +3,8 @@ const path = require("path")
 const { execSync } = require("child_process")
 
 const captureVisual = (window, filename) => {
-	// Create visual-output directory if it doesn't exist
-	const outputDir = path.join(__dirname, "visual-output")
+	// Create capture directory if it doesn't exist
+	const outputDir = path.join(__dirname, "capture")
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir, { recursive: true })
 	}

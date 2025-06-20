@@ -422,6 +422,9 @@ const setupTestEnvironment = async (options) => {
 	// Wait for DOM content to be loaded and scripts to execute
 	await new Promise(resolve => setTimeout(resolve, 0))
 	
+	// Store window globally for visual capture
+	global._test_window = window
+	
 	// Add state.ws._messageHandlers support
 	if (window.state && window.state.ws) {
 		// The mock WebSocket already has _messageHandlers from addEventListener calls

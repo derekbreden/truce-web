@@ -5,7 +5,7 @@ const {
 const { assertEquals, runTests } = require("./testRunUtils.js")
 
 const tests = {
-	testConversationListUpdates: async () => {
+	testFlow: async () => {
 		// Phase 1: User A navigates to conversations list
 		const window_user_a = await setupTestEnvironment()
 		const { $: $a } = window_user_a

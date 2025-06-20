@@ -10,6 +10,9 @@ Every line and every word considered carefully for deletion. Say only what is ab
 ```bash
 npm test                       # Run all tests
 npm test reply.create.test.js  # Run specific test file
+npm test capture               # Run all tests with visual capture
+npm test notifications.simple capture  # Run specific test with visual capture
+npm test message conversation capture  # Run multiple tests with visual capture
 ```
 
 ## Project Architecture
@@ -75,6 +78,18 @@ Use `Boolean()` wrapper to signal intentional type transformation:
 const has_items = Boolean(items.length)
 
 ## Testing Philosophy
+
+### Visual Testing
+**Screenshot capture** for debugging display and styling issues:
+```bash
+npm test capture               # All tests with screenshots  
+npm test specific.test capture # Specific test with screenshot
+```
+
+**Automatic capture**: Screenshots saved to `tests/capture/` (git-ignored) at test completion
+**Clean runs**: Directory cleared each capture run - no leftover files
+**Naming**: `{testname}-{function}.png` format for easy identification
+**Purpose**: Debug layout bugs, styling issues, visual regressions that are hard to catch without seeing rendered output
 
 ### Incremental Implementation
 1. Tests pass → 2. Add coverage → 3. Verify green → 4. Small change → 5. Test → 6. Repeat 4-5

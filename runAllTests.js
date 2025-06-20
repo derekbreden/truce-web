@@ -63,8 +63,25 @@ const executeTestFile = (filePath) => {
  * Main function to run all tests.
  */
 const main = async () => {
-	const pathArg = process.argv.splice(2).join(" ")
+	const allArgs = process.argv.splice(2)
+	const captureMode = allArgs.includes("capture")
+	const searchArgs = allArgs.filter(arg => arg !== "capture")
+	const pathArg = searchArgs.join(" ")
+	
 	let filesToRun = []
+
+	// Clean visual output directory if in capture mode
+	if (captureMode) {
+		const captureDir = path.join(__dirname, "tests", "capture")
+		if (fs.existsSync(captureDir)) {
+			const files = fs.readdirSync(captureDir)
+			files.forEach(file => {
+				fs.unlinkSync(path.join(captureDir, file))
+			})
+		}
+		// Set environment variable for child processes
+		process.env.CAPTURE_VISUALS = "true"
+	}
 
 	console.log("--- Searching for test files ---")
 	findTestFiles(testDir, filesToRun)
