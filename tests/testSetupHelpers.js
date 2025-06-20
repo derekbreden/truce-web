@@ -39,7 +39,11 @@ const setupTestEnvironment = async (options) => {
 
 					// Extra processing to remove "animation:" and "transition:" from CSS for cleaner screenshots
 					if (file.endsWith(".css")) {
-						const processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
+						let processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
+						// Add dark mode override if requested
+						if (process.env.DARK_MODE === "true") {
+							processedContent = `:root { color-scheme: dark !important; }\n` + processedContent
+						}
 						processedLines.push(processedContent)
 					} else {
 						processedLines.push(fileContent)

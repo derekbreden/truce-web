@@ -65,7 +65,8 @@ const executeTestFile = (filePath) => {
 const main = async () => {
 	const allArgs = process.argv.splice(2)
 	const captureMode = allArgs.includes("capture")
-	const searchArgs = allArgs.filter(arg => arg !== "capture")
+	const darkMode = allArgs.includes("dark")
+	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "dark")
 	const pathArg = searchArgs.join(" ")
 	
 	let filesToRun = []
@@ -81,6 +82,11 @@ const main = async () => {
 		}
 		// Set environment variable for child processes
 		process.env.CAPTURE_VISUALS = "true"
+	}
+	
+	// Set dark mode environment variable if requested
+	if (darkMode) {
+		process.env.DARK_MODE = "true"
 	}
 
 	console.log("--- Searching for test files ---")
