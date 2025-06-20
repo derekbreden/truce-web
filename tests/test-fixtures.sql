@@ -64,7 +64,7 @@ INSERT INTO reply_ancestors (reply_id, ancestor_reply_id) VALUES
 INSERT INTO reply_notifications (notification_id, user_id, reply_id, read, seen, create_date) VALUES
 (1, 10, 98, 0, 0, '2024-01-01T00:00:00.000Z'),
 (2, 10, 99, 0, 1, '2023-12-31T00:00:00.000Z'),
-(3, 10, 97, 1, 1, '2023-12-30T00:00:00.000Z');
+(97, 10, 97, 1, 1, '2023-12-30T00:00:00.000Z');
 
 -- Insert favorite posts (User A has favorited one post)
 INSERT INTO favorite_posts (favorite_post_id, user_id, post_id, create_date) VALUES
