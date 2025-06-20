@@ -43,11 +43,12 @@ const handleInstantAlert = (data) => {
 		alertInfo(data.push_data.title + "\n" + data.push_data.body)
 	}
 	
-	// Send acknowledgment back to server if notification_id is provided
-	if (data.notification_id && state.ws && state.ws.readyState === WebSocket.OPEN) {
+	// Send acknowledgment back to server if notification IDs are provided
+	if ((data.reply_notification_id || data.message_notification_id) && state.ws && state.ws.readyState === WebSocket.OPEN) {
 		state.ws.send(JSON.stringify({
 			type: "INSTANT_ALERT_ACK",
-			notification_id: data.notification_id,
+			reply_notification_id: data.reply_notification_id,
+			message_notification_id: data.message_notification_id,
 			session_uuid: state.session_uuid,
 		}))
 	}

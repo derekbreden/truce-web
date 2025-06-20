@@ -64,8 +64,10 @@ module.exports = {
 					
 					
 					// Handle instant alert acknowledgments
-					if (message.type === "INSTANT_ALERT_ACK" && message.notification_id && this.ws_active[ws_uuid].user_id) {
-						this.acknowledgeNotification(this.ws_active[ws_uuid].user_id, message.notification_id)
+					if (message.type === "INSTANT_ALERT_ACK" && this.ws_active[ws_uuid].user_id) {
+						const reply_notification_id = message.reply_notification_id || null
+						const message_notification_id = message.message_notification_id || null
+						this.acknowledgeNotification(this.ws_active[ws_uuid].user_id, reply_notification_id, message_notification_id)
 					}
 					
 					if (message.path) {
@@ -183,7 +185,6 @@ module.exports = {
 			for (const notification of queued_notifications) {
 				// Mark notifications as unread based on what's in the push_data
 				if (notification.push_data.reply_notification_id) {
-					console.warn("B - UPDATE REPLY NOTIFICATIONS", user_id, notification.push_data.reply_notification_id)
 					await pool_client.query(
 						`
 						UPDATE reply_notifications
@@ -254,22 +255,31 @@ module.exports = {
 		// Find the active webSocket for the user_id
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
 			if (this.ws_active[ws_uuid].user_id === user_id) {
-				const notification_id = push_data.reply_notification_id || push_data.message_notification_id
 				this.ws_active[ws_uuid].send(
 					JSON.stringify({
 						type: "INSTANT_ALERT", 
 						push_data: push_data,
-						notification_id: notification_id,
+						reply_notification_id: push_data.reply_notification_id,
+						message_notification_id: push_data.message_notification_id,
 					})
 				)
 			}
 		})
 	},
-	acknowledgeNotification(user_id, notification_id) {
+	acknowledgeNotification(user_id, reply_notification_id, message_notification_id) {
 		if (this.pending_push_notifications[user_id]) {
 			// Remove the specific notification from the queue
 			this.pending_push_notifications[user_id] = this.pending_push_notifications[user_id].filter(
-				notification => notification.notification_id !== notification_id
+				notification => {
+					// Check if this notification matches what we're acknowledging
+					if (reply_notification_id && notification.push_data.reply_notification_id === reply_notification_id) {
+						return false // Remove this notification
+					}
+					if (message_notification_id && notification.push_data.message_notification_id === message_notification_id) {
+						return false // Remove this notification
+					}
+					return true // Keep this notification
+				}
 			)
 
 			// Clean up empty queues
