@@ -10,7 +10,7 @@ Every line and every word considered carefully for deletion. Say only what is ab
 ```bash
 npm test                       # Run all tests
 npm test reply.create.test.js  # Run specific test file
-npm test capture               # Run all tests with visual capture
+npm test capture               # Run all tests with visual capture (pngs you can read in /tests/capture/)
 npm test notifications.simple capture  # Run specific test with visual capture
 npm test message conversation capture  # Run multiple tests with visual capture
 ```
@@ -67,15 +67,9 @@ const state = {
 	**Quotes**: Double quotes `"string"` not single quotes
 	**Semicolons**: Omit semicolons
 	**DOM variables**: Prefix with `$` like `const $button = $("button")`
-	**String methods**: Use `.startsWith()` and `.endsWith()` instead of `.substr()`
 	**Array methods**: Use `.includes()` instead of `.indexOf() === -1`
 	**Path extraction**: Use `path.split("/")[index]` consistently
-
-### Boolean() as Type Documentation
-Use `Boolean()` wrapper to signal intentional type transformation:
-```javascript
-// ✅ CORRECT: Signals "this returns a number, converting to boolean"
-const has_items = Boolean(items.length)
+	**Casting**: Use `Number()` not `parseInt()`
 
 ## Testing Philosophy
 
@@ -95,128 +89,73 @@ npm test specific.test capture # Specific test with screenshot
 1. Tests pass → 2. Add coverage → 3. Verify green → 4. Small change → 5. Test → 6. Repeat 4-5
 
 ### No Guard Assertions
-**Critical**: You **MUST** use direct assertions over defensive checks:
+
+If your test would fail anyway from more specific checks later on, your assertion is pointless noise.
 
 ```javascript
-// ❌ WRONG: Defensive existence checks
+// ❌ WRONG: $element.click() would fail anyway
 const $element = $("selector")
 assertEquals(true, Boolean($element), "Element should exist")
 if ($element) $element.click()
 
-// ❌ WRONG: Defensive state checks before DOM operations
-assertEquals("/expected/path", state.path, "Should navigate to path")
-$("button[on-that-page]").click() // This will fail better if path is wrong
-
-// ❌ WRONG: Defensive intermediate assertions  
+// ❌ WRONG: $("profile-edit-button").click() would fail anyway
 $("nav-link").click()
 assertEquals("/user/profile", state.path, "Should be on profile") // NOISE
 $("profile-edit-button").click() // This tells you navigation failed anyway
 
-// ✅ CORRECT: Direct assertions that fail immediately
+// ✅ CORRECT: Check exact text (not just existence) of an element
 assertEquals("text", $("selector").textContent.trim(), "Text should match")
-$("button").click() // Let it crash if button doesn't exist - better error
 ```
-
-**SHALL NOT add defensive checks before specific assertions** - If your test would fail anyway from more specific checks later on, your assertion is pointless noise
-
-Defensive assertions create the illusion of disambiguation while actually providing minimal debugging value at high readability cost. When something breaks, you need real debugging anyway - console logs, DOM inspection, data verification. One path assertion doesn't meaningfully reduce that debugging burden but permanently clutters the test.
-
-**Common defensive assertion patterns to AVOID:**
-- Path checks before DOM operations: `assertEquals("/path", state.path)` then `$("element-on-that-path").click()`
-- Existence checks before interactions: `assertEquals(true, Boolean($el))` then `$el.click()`  
-- Intermediate state validation during multi-step flows
-- Any assertion that doesn't provide better debugging than the natural failure point
-
-**Why direct assertions are superior:**
-	Better error messages: "Cannot read properties of null" tells you exactly which selector failed
-	Less code noise: Eliminates defensive programming patterns
-	Faster debugging: Fails exactly where the problem occurs
-	Mirrors app behavior: If the app would crash, the test should too
-	Forces precision: Use innerHTML discovery when selectors fail
 
 ### Test Pattern
 ```javascript
-const { setupTestEnvironment } = require("./testSetupHelpers.js")
+const path = require("path")
+const {
+	setupTestEnvironment,
+} = require("./testSetupHelpers.js")
 const { assertEquals, runTests } = require("./testRunUtils.js")
 
-async function testFeature() {
-	const window = await setupTestEnvironment()
-	const { $, state } = window
+const tests = {
+	testFlow: async () => {
+		const window = await setupTestEnvironment()
+		const { $ } = window
+		
+		// By default, testSetupHelpers.js starts on /posts with 2 posts
 
-	$("main-content posts post:nth-child(2) button[submit]").click()
-	await new Promise(resolve => setTimeout(resolve, 0))
-	assertEquals("expected", $("notifications notification:nth-child(1) span").textContent.trim(), "Should match")
+		// The first listed (by create_date) default post is the user's own post
+		$("main-content-2 posts post:first-child icon[more]").click()
+		assertEquals(false, Boolean($("modal action[block]")), "Own post should not show block action")
+		$("modal-bg").click()
+
+		// The second listed (by create_date) default post is another user's post
+		$("main-content-2 posts post:nth-child(2) icon[more]").click()
+		assertEquals("Block user", $("action[block] p").textContent, "Other user's post should show Block action")
+	},
 }
 
-runTests("feature.test.js", [testFeature])
+runTests(path.basename(__filename), Object.values(tests))
 ```
 
 ### Key Testing Gotchas
-**Target elements**: MUST use specific CSS selectors like `notification[unread] + notification[unread]` or `post posts:nth-child(2) p:nth-child(0) span` to get a single element instead of an array. NEVER get an array.
-**CRITICAL**: NEVER use `$()[index]` syntax - this is FORBIDDEN
-
-## Common Patterns
-
-### Cache Updates
-Update client cache immediately (and call render functions) before API calls for responsive UI
-
-### AI Content Moderation
-```javascript
-const ai_response = await ai.ask(messages, "common", prompts.common_response_format)
-const parsed = JSON.parse(ai_response)
-if (parsed.keyword === "Spam") {
-	res.end(JSON.stringify({ error: parsed.keyword }))
-	return
-}
-```
-
-## Development Workflow
-
-When working on tasks:
-	**MUST** use TodoWrite tool to plan multi-step tasks
-	**MUST** use search tools to understand codebase and requirements
-	**MUST create comprehensive tests** for new functionality
-	**MUST run `npm test` after changes** to verify everything works
-	**MUST commit after tests pass** with descriptive message
-	User handles pushing to remote - only commit locally
-	**MUST** scope down aggressively: Pick ONE task when complexity emerges
-
-### Test-First Refactoring
-1. **MUST** write comprehensive tests FIRST
-2. **MUST** ensure ALL tests pass with original code
-3. Make refactoring changes
-4. **MUST** verify tests still pass with identical results
-5. Any test failure means refactoring broke something - **MUST** fix code, not test
+**Target elements**: MUST use specific CSS selectors like `$("post posts:nth-child(2) p:nth-child(0) span")` to get exactly one element.
 
 ## Debugging Philosophy
-	**MUST debug by investigation, not speculation** - Find actual causes before attempting fixes
-	**SHALL NOT guess or make vague assertions** about things being broken
-	**MUST investigate your own changes first** - When tests fail after your changes, the bug IS in your code
-	**MUST check existing working examples** - Before declaring anything impossible, search for how other tests/code in the same codebase solve similar problems
-	**SHALL NOT declare approaches impossible** - Keep investigating systematically until you exhaust context/usage limits
-	**MUST test suspected layer directly** - Write minimal tests for database, API, DOM
-	**MUST subtract complexity, don't add it** - Remove layers to isolate problems - Then add back only the needful to complete the task with no skips
-	**MUST change only one variable at a time** - Change only what you're testing
-	**MUST be hypothesis-driven** - Form specific theories and test them
-	**MUST understand before judging** - Surface patterns != root causes
+	**DO NOT** guess and try things to fix it
+	**DO** guess and verify with console.warn in real code and test code what is happening
 
-When debugging failing tests, you **MUST**:
+When debugging failing tests, you **SHOULD**:
 1. **Add console.warn to trace data flow** - Log key variables, database state, API responses
 2. **Add console.warn to trace execution paths** - Log function calls, branches taken, user actions
 3. **Add console.warn to verify assumptions** - Log what you expect vs what actually happens
 4. **Clean up all console.warn statements** after debugging is complete
 
-When encountering selector/DOM issues, you **MUST**:
+When encountering issues identifying the right selector for a single element, you **SHOULD**:
 1. Check `.length` at each selector level to understand structure
 2. Look at existing tests for similar selector patterns
 3. Test incrementally (nth-child(1), nth-child(2), etc.)
-4. **NEVER use `$()[index]` to access array elements**
 
 ### DOM Selector Debugging Examples
 ```javascript
-// ❌ WRONG: Using array indexing syntax
-const $element = $("posts post author")[0]  // FORBIDDEN
-
 // ✅ CORRECT: Debug hierarchy to find where nth-child is needed
 console.log($("posts").length)           // Maybe 2 - multiple posts containers
 console.log($("posts post").length)      // Maybe 6 - multiple posts total
@@ -235,18 +174,6 @@ $("posts post author:nth-child(1)").click() // author is likely unique in its pa
 $("posts post:nth-child(2) author").click() // post is where disambiguation needed
 ```
 
-## 10x Developer Principles
-
-### Subtraction Over Addition
-	Before adding code, ask: "What can I remove?"
-	Before adding abstraction, ask: "Is a concrete version clearer?"
-	Before adding defensive code, ask: "Will this help debugging?"
-
-### Signal vs Noise Optimization
-	Every line should solve the problem or help debug it
-	Eliminate ceremony, boilerplate, and "just in case" code
-	Prefer failures that give actionable information
-
 ## DRY vs Readability
 
 **Abstract when:** 20+ lines repeated identically 3+ times AND abstraction is clearer than original
@@ -261,7 +188,7 @@ $("posts post:nth-child(2) author").click() // post is where disambiguation need
 	`client/flint.js`: Custom DOM manipulation library
 	`runAllTests.js`: Test runner
 	`server/session/`: Session middleware functions
-	`tests/`: End-to-end-to-end Integration tests
+	`tests/`: End-to-end Integration tests
 
 ## You are new
 When I am new to a code base, there are a few things I like to do:
