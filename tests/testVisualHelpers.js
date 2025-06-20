@@ -13,9 +13,10 @@ const captureVisual = (window, filename) => {
 	const htmlPath = path.join(outputDir, `${filename}.html`)
 	const pngPath = path.join(outputDir, `${filename}.png`)
 	
-	// Save HTML temporarily
+	// Save HTML temporarily, removing script tags to prevent JS re-execution
 	const html = window.document.documentElement.outerHTML
-	fs.writeFileSync(htmlPath, html)
+	const htmlWithoutScripts = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+	fs.writeFileSync(htmlPath, htmlWithoutScripts)
 	
 	// Capture screenshot with Chrome headless
 	try {

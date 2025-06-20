@@ -36,8 +36,14 @@ const setupTestEnvironment = async (options) => {
 				
 				try {
 					const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
-					// Add the file content directly (server.js processes it recursively, we'll handle that in the while loop)
-					processedLines.push(fileContent)
+
+					// Extra processing to remove "animation:" and "transition:" from CSS for cleaner screenshots
+					if (file.endsWith(".css")) {
+						const processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
+						processedLines.push(processedContent)
+					} else {
+						processedLines.push(fileContent)
+					}
 				} catch (error) {
 					console.error(
 						`Error including file "${absoluteFilePath}": ${error.message}`,
