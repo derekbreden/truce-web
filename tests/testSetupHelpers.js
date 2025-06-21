@@ -111,6 +111,15 @@ const setupTestEnvironment = async (options) => {
 		virtualConsole: virtualConsole,
 		async beforeParse(window) {
 			
+			// Replace window.Image with Canvas.Image for proper image support in tests
+			try {
+				const Canvas = require('canvas')
+				window.Image = Canvas.Image
+			} catch (e) {
+				// canvas package not installed - images won't load in tests
+				console.warn("Note: canvas package not available, image tests will fail")
+			}
+			
 			// Mock fetch
 			const mockFetchImplementation = async (url, fetchOptions) => {
 				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
