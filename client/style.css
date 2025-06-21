@@ -24,6 +24,7 @@
   --color-gray-light: #ddd;    /* Standard borders, subtle separators */
   --color-gray-medium: #999;   /* Muted elements, medium borders */
   --color-gray-dark: #333;     /* Dark mode borders, strong contrast */
+  --color-gray-darker: #666;   /* Darker gray for hover states */
   
   /* Semantic State Colors */
   --color-success: #4a5;       /* Primary success green */
@@ -251,8 +252,8 @@ main-content-2 {
 
   main-content,
   main-content-2 {
-    border-left: 1px solid #333;
-    border-right: 1px solid #333;
+    border-left: 1px solid var(--color-gray-dark);
+    border-right: 1px solid var(--color-gray-dark);
   }
 }
 
@@ -327,8 +328,8 @@ footer a:nth-child(4) p {
 }
 
 footer a icon {
-  height: 34px;
-  width: 34px;
+  height: var(--icon-footer);
+  width: var(--icon-footer);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -336,7 +337,7 @@ footer a icon {
 
 footer a:nth-child(3) svg,
 footer a:nth-child(4) svg {
-  fill: #fff;
+  fill: var(--color-white);
 }
 
 footer a[unread]::before {
@@ -380,10 +381,10 @@ h2[user] author icon {
   font-size: 0;
 }
 h2[user] author icon svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
-  height: 26px;
-  width: 26px;
+  height: var(--icon-xl);
+  width: var(--icon-xl);
 }
 
 h2 button {
@@ -409,10 +410,10 @@ reply h3 author icon {
   font-size: 0;
 }
 reply h3 author icon svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
-  height: 22px;
-  width: 22px;
+  height: var(--icon-lg);
+  width: var(--icon-lg);
   margin-left: -5px;
 }
 
@@ -445,9 +446,9 @@ reply h3 icon[more] {
 }
 
 reply h3 icon[more] svg {
-  height: 30px;
-  width: 30px;
-  fill: #000;
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -463,7 +464,7 @@ p {
 
 p img {
   max-width: 100%;
-  border-radius: 10px;
+  border-radius: var(--border-radius-md);
 }
 
 reply[trimmed] p img,
@@ -630,8 +631,8 @@ menu {
   background: var(--color-bg-primary);
   border-radius: 0 0 0 2px;
   z-index: var(--z-menu);
-  border-left: 1px solid #333;
-  border-bottom: 1px solid #333;
+  border-left: 1px solid var(--color-gray-dark);
+  border-bottom: 1px solid var(--color-gray-dark);
 }
 
 menu signed-in,
@@ -691,9 +692,9 @@ modal[confirm] h2 icon[block] {
 }
 
 modal[confirm] h2 icon svg {
-  height: 30px;
-  width: 30px;
-  fill: #000;
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -755,15 +756,15 @@ p[notice] a {
 }
 
 menu links a icon {
-  height: 36px;
-  width: 36px;
+  height: var(--icon-menu);
+  width: var(--icon-menu);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 menu links a icon svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -855,7 +856,7 @@ a[big] {
   justify-content: center;
   width: 100%;
   text-decoration: none;
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   border: 1px solid #4a5;
   border: 1px solid var(--color-state-success);
   color: var(--color-white);
@@ -928,10 +929,10 @@ button icon {
 }
 
 button svg {
-  fill: #fff;
+  fill: var(--color-white);
   fill: light-dark(#fff, #000);
-  height: 26px;
-  width: 26px;
+  height: var(--icon-xl);
+  width: var(--icon-xl);
 }
 
 button[alt] {
@@ -944,7 +945,7 @@ button[alt] {
 }
 
 button[alt] svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -968,7 +969,7 @@ error {
   background: light-dark(#fee, #b66);
   border: 1px solid light-dark(#b66, #b66);
   color: light-dark(#b66, #fee);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -1007,8 +1008,8 @@ error::before {
 }
 
 info[small]::before {
-  height: 14px;
-  width: 14px;
+  height: var(--icon-xs);
+  width: var(--icon-xs);
   left: 5px;
   top: 5px;
   font-size: 11px;
@@ -1120,7 +1121,7 @@ modal {
   background: var(--color-white);
   background: var(--color-bg-primary);
   border-radius: var(--border-radius-sm);
-  box-shadow: 0px 0px 5px #000;
+  box-shadow: 0px 0px 5px var(--color-black);
   max-width: 480px;
   width: calc(100% - 20px);
 }
@@ -1191,14 +1192,14 @@ title-wrapper input {
 }
 
 title-wrapper svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
   cursor: pointer;
 }
 
 title-wrapper svg {
-  height: 34px;
-  width: 34px;
+  height: var(--icon-footer);
+  width: var(--icon-footer);
   margin: 0 -3px -5px 5px;
 }
 
@@ -1210,7 +1211,7 @@ image-previews {
 }
 
 image-previews preview {
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -1292,7 +1293,7 @@ reply {
   flex-direction: column;
   border: 1px solid var(--color-gray-light);
   border: 1px solid var(--color-border-standard);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   padding: 10px;
 }
 
@@ -1333,7 +1334,7 @@ replies>add-new:not(:first-child) {
   margin: 0 0 20px 0;
   border: 1px solid var(--color-gray-light);
   border: 1px solid var(--color-border-standard);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   margin-bottom: 20px;
   padding: 10px;
 }
@@ -1687,10 +1688,10 @@ post author-topics author name icon {
   opacity: .5;
 }
 post author-topics author name icon svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
-  height: 18px;
-  width: 18px;
+  height: var(--icon-md);
+  width: var(--icon-md);
 }
 
 post author-topics topics {
@@ -1713,7 +1714,7 @@ post author-topics topics topic icon {
 }
 
 post author-topics topics topic svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
   height: 20px;
   width: 20px;
@@ -1825,7 +1826,7 @@ topics[topics-list] topic icon {
 }
 
 topics[topics-list] topic svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
   height: 40px;
   width: 40px;
@@ -1854,10 +1855,10 @@ users author-name icon {
   font-size: 0;
 }
 users author-name icon svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
-  height: 22px;
-  width: 22px;
+  height: var(--icon-lg);
+  width: var(--icon-lg);
   margin-left: -5px;
 }
 topics[topics-list][big] {
@@ -1952,9 +1953,9 @@ post>h2>icon[more] {
 }
 
 post>h2>icon[more] svg {
-  height: 30px;
-  width: 30px;
-  fill: #000;
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -1992,7 +1993,7 @@ activity>[parent-reply] reply {
 
 @keyframes flash-focus {
   0% {
-    box-shadow: 0 0 5px #0061fe;
+    box-shadow: 0 0 5px var(--color-focus);
   }
 
   100% {
@@ -2002,11 +2003,11 @@ activity>[parent-reply] reply {
 
 @keyframes flash-long-focus {
   0% {
-    box-shadow: 0 0 5px #0061fe;
+    box-shadow: 0 0 5px var(--color-focus);
   }
 
   75% {
-    box-shadow: 0 0 5px #0061fe;
+    box-shadow: 0 0 5px var(--color-focus);
   }
 
   100% {
@@ -2061,7 +2062,7 @@ post-details icon {
 
 reply-wrapper svg,
 post-details svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
   width: 32px;
   height: 32px;
@@ -2079,7 +2080,7 @@ detail[favorites] icon {
 
 detail[favorites][favorited] svg {
   fill: #e48;
-  fill: light-dark(#e48, #f48);
+  fill: light-dark(#e48, var(--color-favorite));
 }
 
 detail[replies] icon {
@@ -2096,8 +2097,8 @@ detail[more] icon {
 }
 
 detail[more] svg {
-  height: 26px;
-  width: 26px;
+  height: var(--icon-xl);
+  width: var(--icon-xl);
 }
 
 post:not([trimmed]) detail[more] {
@@ -2178,14 +2179,14 @@ h2[conversations-empty] svg,
 p[add-to-home] svg,
 p[favorites-empty] svg,
 p[conversations-empty] svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
   margin-bottom: -16px;
 }
 
 h2[topics] svg {
-  width: 30px;
-  height: 30px;
+  width: var(--icon-xxl);
+  height: var(--icon-xxl);
 }
 
 h2[moderation] svg {
@@ -2231,8 +2232,8 @@ p[add-to-home] {
 }
 
 p[add-to-home] svg {
-  height: 30px;
-  width: 30px;
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
   margin-bottom: -6px;
 }
 
@@ -2302,7 +2303,7 @@ action>icon {
 action>icon svg {
   height: 24px;
   width: 24px;
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -2352,10 +2353,10 @@ poll-input-wrapper icon {
 }
 
 poll-input-wrapper svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
-  height: 26px;
-  width: 26px;
+  height: var(--icon-xl);
+  width: var(--icon-xl);
   margin: 0 -2px 0 -2px;
 }
 
@@ -2459,7 +2460,7 @@ p[input] input {
 
 [profile-picture] svg,
 profile-picture svg {
-  fill: #000;
+  fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
@@ -2557,7 +2558,7 @@ message {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-border-standard);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   padding: 10px;
 }
 message + message {
@@ -2581,8 +2582,8 @@ message-header profile-picture image {
 }
 
 message-header profile-picture svg {
-  width: 30px;
-  height: 30px;
+  width: var(--icon-xxl);
+  height: var(--icon-xxl);
   margin: -3px;
   opacity: .5;
 }
@@ -2611,8 +2612,8 @@ message-info author icon {
 }
 
 message-info author icon svg {
-  width: 14px;
-  height: 14px;
+  width: var(--icon-xs);
+  height: var(--icon-xs);
   fill: currentColor;
 }
 
@@ -2649,8 +2650,8 @@ edit-button:hover {
 }
 
 edit-button svg {
-  width: 16px;
-  height: 16px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
 }
 
 message-input-area {
@@ -2671,7 +2672,7 @@ message-form textarea {
   height: 60px;
   padding: 10px;
   border: 1px solid var(--color-border-standard);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   resize: none;
   font-size: var(--font-size-base);
   line-height: 1.4;
@@ -2726,7 +2727,7 @@ conversations {
 conversation {
   position: relative;
   border: 1px solid var(--color-border-standard);
-  border-radius: 2px;
+  border-radius: var(--border-radius-sm);
   padding: 10px;
   cursor: pointer;
   display: flex;
@@ -2736,7 +2737,7 @@ conversation {
 }
 
 conversation:hover {
-  border-color: light-dark(#999, #666);
+  border-color: light-dark(var(--color-gray-medium), var(--color-gray-darker));
 }
 
 conversation profile-picture {
@@ -2786,13 +2787,13 @@ conversation-info time-ago {
 conversation unread-indicator {
   width: 8px;
   height: 8px;
-  background: light-dark(#007AFF, #0056b3);
+  background: light-dark(var(--color-primary), var(--color-primary-dark));
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 conversation unread-count {
-  background: light-dark(#007AFF, #0056b3);
+  background: light-dark(var(--color-primary), var(--color-primary-dark));
   color: light-dark(#fff, #fff);
   border-radius: 12px;
   font-size: 12px;
