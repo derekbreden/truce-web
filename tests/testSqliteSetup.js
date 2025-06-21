@@ -140,25 +140,18 @@ const convertPostgresSQLToSQLite = (sql, params) => {
 
 const executeQuery = async (sql, params) => {
     const { sql: convertedSQL, params: convertedParams } = convertPostgresSQLToSQLite(sql, params)
-    try {
-        if (convertedSQL.trim().toUpperCase().startsWith("SELECT") 
-            || convertedSQL.trim().toUpperCase().startsWith("WITH")
-            || convertedSQL.toUpperCase().includes("RETURNING")) {
-            // Execute queries that return data (SELECT, WITH, or anything with RETURNING)
-            const stmt = testDb.prepare(convertedSQL)
-            const rows = stmt.all(...convertedParams)
-            return { rows: rows || [] }
-        } else {
-            // Handle INSERT/UPDATE/DELETE queries without RETURNING
-            const stmt = testDb.prepare(convertedSQL)
-            const result = stmt.run(...convertedParams)
-            return { rows: [], lastID: result.lastInsertRowid, changes: result.changes }
-        }
-    } catch (e) {
-        console.warn(convertedSQL)
-        console.warn(convertedParams)
-        console.warn(e.message)
-        process.exit(1)
+    if (convertedSQL.trim().toUpperCase().startsWith("SELECT") 
+        || convertedSQL.trim().toUpperCase().startsWith("WITH")
+        || convertedSQL.toUpperCase().includes("RETURNING")) {
+        // Execute queries that return data (SELECT, WITH, or anything with RETURNING)
+        const stmt = testDb.prepare(convertedSQL)
+        const rows = stmt.all(...convertedParams)
+        return { rows: rows || [] }
+    } else {
+        // Handle INSERT/UPDATE/DELETE queries without RETURNING
+        const stmt = testDb.prepare(convertedSQL)
+        const result = stmt.run(...convertedParams)
+        return { rows: [], lastID: result.lastInsertRowid, changes: result.changes }
     }
 }
 

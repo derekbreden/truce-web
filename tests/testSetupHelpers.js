@@ -33,26 +33,19 @@ const setupTestEnvironment = async (options) => {
 				// Resolve the script path relative to the directory of the indexHtmlFile
 				const indexDir = path.dirname(indexPath)
 				const absoluteFilePath = path.resolve(indexDir, file)
-				
-				try {
-					const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
+			
+				const fileContent = fs.readFileSync(absoluteFilePath, "utf8")
 
-					// Extra processing to remove "animation:" and "transition:" from CSS for cleaner screenshots
-					if (file.endsWith(".css")) {
-						let processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
-						// Add dark mode override if requested
-						if (process.env.DARK_MODE === "true") {
-							processedContent = `:root { color-scheme: dark !important; }\n` + processedContent
-						}
-						processedLines.push(processedContent)
-					} else {
-						processedLines.push(fileContent)
+				// Extra processing to remove "animation:" and "transition:" from CSS for cleaner screenshots
+				if (file.endsWith(".css")) {
+					let processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
+					// Add dark mode override if requested
+					if (process.env.DARK_MODE === "true") {
+						processedContent = `:root { color-scheme: dark !important; }\n` + processedContent
 					}
-				} catch (error) {
-					console.error(
-						`Error including file "${absoluteFilePath}": ${error.message}`,
-					)
-					// Skip the line if file not found (like server.js does)
+					processedLines.push(processedContent)
+				} else {
+					processedLines.push(fileContent)
 				}
 			} else {
 				processedLines.push(line)
