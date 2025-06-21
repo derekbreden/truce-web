@@ -7,6 +7,17 @@ const renderMessageImages = (image_uuids) => {
 			`,
 			["/image/" + image_uuid]
 		)
+		
+		// Add load event listener to scroll to bottom when image loads (if currently scrolled to bottom)
+		if ($("messages").scrollTop === ($("messages").scrollHeight - $("messages").clientHeight)) {
+			const $img = $image.$("img")
+			$img.on("load", () => {
+				if ($("messages")) {
+					$("messages").scrollTop = $("messages").scrollHeight
+				}
+			})
+		}
+
 		bindImageClick($image, image_uuid)
 		return $image
 	})
