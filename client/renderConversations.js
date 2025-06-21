@@ -59,6 +59,7 @@ const renderConversations = (conversations) => {
 		const $conversations = conversations.map(renderConversation)
 		
 		if ($conversations.length === 0) {
+			$("post[conversations-empty]")?.remove()
 			$("main-content-wrapper[active] main-content conversations").appendChild(
 				$(
 					`
@@ -79,6 +80,7 @@ const renderConversations = (conversations) => {
 				)
 			)
 		} else {
+			$("post[conversations-empty]")?.remove()
 			$("main-content-wrapper[active] main-content conversations").replaceChildren(
 				...$conversations
 			)
