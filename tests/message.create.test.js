@@ -84,7 +84,7 @@ const tests = {
 
 		$b("main-content-wrapper[active] textarea").value = "Hello User A, this is a message from User B"
 		
-		$b("main-content-wrapper[active] send-button").click()
+		$b("main-content-wrapper[active] button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify User B sees their own sent message

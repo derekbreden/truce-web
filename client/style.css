@@ -2570,13 +2570,14 @@ edit-button svg {
 
 message-input-area {
   flex-shrink: 0;
-  padding: 20px;
+  padding: 20px 0;
   border-top: 1px solid light-dark(#ddd, #333);
 }
 
 message-form {
   display: flex;
-  gap: 10px;
+  gap: 5px;
+  padding: 0 5px;
   align-items: flex-end;
 }
 
@@ -2593,30 +2594,12 @@ message-form textarea {
   font-family: inherit;
 }
 
-message-form textarea:focus {
-  outline: none;
-  border-color: light-dark(#666, #666);
+message-form title-wrapper svg {
+  margin: -5px -4px -9px -5px;
 }
 
-send-button {
-  flex-shrink: 0;
+message-form button[submit] {
   height: 60px;
-  padding: 0 20px;
-  background: light-dark(#fff, #1a1a1a);
-  color: light-dark(#000, #f5f5f5);
-  border: 1px solid light-dark(#ddd, #333);
-  border-radius: 2px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s;
-}
-
-send-button svg {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
 }
 
 empty-state {

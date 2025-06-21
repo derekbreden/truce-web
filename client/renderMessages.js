@@ -105,9 +105,8 @@ const renderMessages = (messages, conversation) => {
 											$2
 										input[image][type=file][accept=image/*]
 								textarea[placeholder="Type a message..."]
-								send-button
-									icon[forward]
-										$1
+								button[submit]
+									$1
 					`,
 					[
 						$("icons icon[forward] svg").cloneNode(true),
@@ -218,7 +217,7 @@ const renderMessages = (messages, conversation) => {
 			$textarea.on("focus", () => {
 			})
 
-			$("message-input-area send-button").on("click", send_message)
+			$("message-input-area button[submit]").on("click", send_message)
 			$textarea.on("keydown", (e) => {
 				if (e.key === "Enter" && !e.shiftKey) {
 					e.preventDefault()

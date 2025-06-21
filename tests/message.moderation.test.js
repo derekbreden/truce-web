@@ -32,7 +32,7 @@ const tests = {
 		// Try to send a spam message
 		$b("main-content-wrapper[active] textarea").value = "Buy my product! Great deals!"
 		
-		$b("main-content-wrapper[active] send-button").click()
+		$b("main-content-wrapper[active] button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify the spam error appears inline in the form
@@ -76,7 +76,7 @@ const tests = {
 		// Send a message that gets flagged but not blocked
 		$b("main-content-wrapper[active] textarea").value = "You're completely wrong about this!"
 		
-		$b("main-content-wrapper[active] send-button").click()
+		$b("main-content-wrapper[active] button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify the message was sent (flagged content is stored, not blocked)

@@ -45,7 +45,7 @@ const tests = {
 		
 		// Send message from User A to User B
 		$a("main-content-wrapper[active] textarea").value = "Hello User B, this is from User A"
-		$a("main-content-wrapper[active] send-button").click()
+		$a("main-content-wrapper[active] button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify that User B's conversations list now shows the conversation with User A
