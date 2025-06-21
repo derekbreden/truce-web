@@ -16,7 +16,7 @@ const createTestDatabase = () => {
     testDb.pragma("foreign_keys = ON")
     
     // Load schema
-    const schemaSQL = fs.readFileSync(path.join(__dirname, "test-schema.sql"), "utf8")
+    const schemaSQL = fs.readFileSync(path.join(__dirname, "test-data/test-schema.sql"), "utf8")
     const schemaStatements = schemaSQL.split(";").filter(stmt => stmt.trim())
     
     for (const stmt of schemaStatements) {
@@ -26,7 +26,7 @@ const createTestDatabase = () => {
     }
     
     // Load fixtures
-    const fixturesSQL = fs.readFileSync(path.join(__dirname, "test-fixtures.sql"), "utf8")
+    const fixturesSQL = fs.readFileSync(path.join(__dirname, "test-data/test-fixtures.sql"), "utf8")
     const fixtureStatements = fixturesSQL.split(";").filter(stmt => stmt.trim())
     
     for (const stmt of fixtureStatements) {

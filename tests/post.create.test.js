@@ -13,7 +13,7 @@ const tests = {
 		const fs = require("fs")
 		const path = require("path")
 		const processed_data_file = path.join(__dirname, "test-data", "1024_base64.txt")
-		const valid_png_base64 = fs.readFileSync(processed_data_file, "utf8")
+		const valid_png_base64 = await fs.promises.readFile(processed_data_file, "utf8")
 		const binary_string = window.atob(valid_png_base64)
 		const bytes = new Uint8Array(binary_string.length)
 		for (let i = 0; i < binary_string.length; i++) {
@@ -30,10 +30,11 @@ const tests = {
 				item: (i) => i === 0 ? file : null
 			}
 		})
-		$file_input.dispatchEvent(new window.Event('change', { bubbles: true }))
+		await $file_input.dispatchEvent(new window.Event('change', { bubbles: true }))
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify thumbnail has same image
+		await window.waitForElement("add-new[post] image-previews preview img")
 		assertEquals(
 			"data:image/png;base64," + valid_png_base64,
 			$("add-new[post] image-previews preview img").src,
@@ -66,15 +67,8 @@ const tests = {
 			$("main-content-2 posts post:first-child p span").textContent,
 			"New post should be rendered with correct body content",
 		)
-		
-		// Verify the image is displayed in the created post
-		assertEquals(
-			1,
-			$("main-content-2 posts post:first-child p[img]").length,
-			"New post should display the uploaded image"
-		)
 
-		// Verify round-trip data integrity
+		// Verify round-trip image is the same calling our endpoint that pulls it from S3
 		const $image_element = $("main-content-2 posts post:first-child p[img] img")
 		const image_response = await window.fetch($image_element.getAttribute("src"), { method: "GET" })
 		const response_data = await image_response.json()

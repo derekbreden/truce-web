@@ -113,13 +113,8 @@ const setupTestEnvironment = async (options) => {
 		async beforeParse(window) {
 			
 			// Replace window.Image with Canvas.Image for proper image support in tests
-			try {
-				const Canvas = require('canvas')
-				window.Image = Canvas.Image
-			} catch (e) {
-				// canvas package not installed - images won't load in tests
-				console.warn("Note: canvas package not available, image tests will fail")
-			}
+			const Canvas = require('canvas')
+			window.Image = Canvas.Image
 			
 			// Mock fetch
 			const mockFetchImplementation = async (url, fetchOptions) => {
@@ -379,6 +374,17 @@ const setupTestEnvironment = async (options) => {
 				getItem: () => null,
 				setItem: () => {},
 				removeItem: () => {}
+			}
+			window.waitForElement = (selector) => {
+				return new Promise((resolve, reject) => {
+					const checkElement = () => {
+						const element = window.document.querySelector(selector)
+						if (element) {
+							resolve(element)
+						}
+					}
+					window.originalSetTimeout(checkElement, 0)
+				})
 			}
 			// Store setup identifier for client logging
 			window._setup_id = options.setup_id
