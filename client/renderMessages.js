@@ -130,6 +130,13 @@ const renderMessages = (messages, conversation) => {
 				const message_body = $textarea.value.trim()
 				$textarea.value = ""
 				if (message_body && conversation) {
+					$("message-input-area").prepend(
+						$(
+							`
+								info Validating...
+							`,
+						),
+					)
 					fetch("/session", {
 						method: "POST",
 						body: JSON.stringify({
@@ -140,6 +147,7 @@ const renderMessages = (messages, conversation) => {
 					})
 					.then(response => response.json())
 					.then(data => {
+						$("message-input-area info")?.remove()
 						if (data.error) {
 							addMessageError(data.error)
 						} else {
@@ -149,6 +157,7 @@ const renderMessages = (messages, conversation) => {
 						}
 					})
 					.catch(error => {
+						$("message-input-area info")?.remove()
 						console.error("Error sending message:", error)
 						addMessageError("Network error sending message")
 					})
