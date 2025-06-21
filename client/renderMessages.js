@@ -261,35 +261,6 @@ const markMessagesAsRead = (messages) => {
 		console.error("Error marking messages as read:", error)
 	})
 
-	// Update conversations cache to set unread_count = 0 for current conversation
-	const conversation_id = state.active_conversation_id
-	if (conversation_id && state.cache["/conversations"]?.conversations) {
-		const conversation = state.cache["/conversations"].conversations.find(
-			conv => conv.conversation_id === conversation_id
-		)
-		if (conversation) {
-			conversation.unread_count = 0
-		}
-	}
-
-	// Update state.unread_count immediately to reflect the reduced count
-	const unreadNotifications = state.cache["/notifications"]?.notifications?.filter(n => !n.read) || []
-	state.unread_count = unreadNotifications.length
-
-	// Update UI indicators immediately
-	if (state.unread_count === 0) {
-		$("hamburger")?.removeAttribute("unread")
-		$("footer a[notifications]")?.removeAttribute("unread")
-	}
-
-	// Update notifications page header if currently on notifications page
-	if (state.path === "/notifications") {
-		const $unreadHeader = $("main-content h3")
-		if ($unreadHeader) {
-			$unreadHeader.textContent = state.unread_count > 0 ? `Unread (${state.unread_count})` : "Unread"
-		}
-	}
-
 	// Refresh unread counts from server to ensure accuracy
 	getUnreadCountUnseenCount()
 }
