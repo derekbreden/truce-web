@@ -254,7 +254,7 @@ state.ws.addEventListener("message", (event) => {
 })
 
 // Server sends updates
-req.sendWsMessage("UPDATE", post_id)
+req.sendWsMessage("UPDATE", {post_id: post_id})
 ```
 
 ## AI Integration

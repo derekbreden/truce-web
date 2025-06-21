@@ -49,17 +49,17 @@ module.exports = async (req, res) => {
 		}
 
 		// Check for blocked users
-		const other_user_ids = participant_user_ids.filter(id => id !== req.session.user_id)
+		const other_user_id = participant_user_ids.filter(id => id !== req.session.user_id)[0]
 		
 		const blocked_check = await req.client.query(
 			`
 			SELECT user_id_blocked
 			FROM blocked_users
 			WHERE 
-				(user_id_blocking = $1 AND user_id_blocked = ANY($2))
-				OR (user_id_blocked = $1 AND user_id_blocking = ANY($2))
+				(user_id_blocking = $1 AND user_id_blocked = $2)
+				OR (user_id_blocked = $1 AND user_id_blocking = $2)
 			`,
-			[req.session.user_id, other_user_ids],
+			[req.session.user_id, other_user_id],
 		)
 
 		if (blocked_check.rows.length > 0) {
@@ -232,19 +232,17 @@ module.exports = async (req, res) => {
 
 		// Wait for all notifications to be inserted
 		const message_notification_ids = {}
-		for (const user_id of other_user_ids) {
-			const insert_result = await req.client.query(
-				`
-				INSERT INTO message_notifications
-					(user_id, message_id)
-				VALUES
-					($1, $2)
-				RETURNING notification_id
-				`,
-				[user_id, message_id],
-			)
-			message_notification_ids[user_id] = insert_result.rows[0].notification_id
-		}
+		const insert_result = await req.client.query(
+			`
+			INSERT INTO message_notifications
+				(user_id, message_id)
+			VALUES
+				($1, $2)
+			RETURNING notification_id
+			`,
+			[other_user_id, message_id],
+		)
+		message_notification_ids[other_user_id] = insert_result.rows[0].notification_id
 
 		// Prepare push data
 		const push_data = {
@@ -261,16 +259,16 @@ module.exports = async (req, res) => {
 
 		// Send the push
 		await push.sendPush(
-			other_user_ids,
+			[other_user_id],
 			{}, // reply_notification_ids
 			message_notification_ids,
 			push_data,
 		)
 
 		// Send websocket update for real-time messaging
-		req.sendWsMessageToConversation("UPDATE", req.body.conversation_id)
+		// req.sendWsMessage("UPDATE", {conversation_id: req.body.conversation_id})
 		
 		// Also notify other participants if they're viewing conversations list
-		req.sendWsMessageToUsers("UPDATE", other_user_ids)
+		req.sendWsMessage("UPDATE", {user_id: other_user_id})
 	}
 }

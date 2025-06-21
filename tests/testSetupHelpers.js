@@ -283,9 +283,7 @@ const setupTestEnvironment = async (options) => {
 				const req = {
 					headers: headers || {},
 					body: body,
-					sendWsMessage: (message, post_id) => websocketModule.sendMessage(message, post_id),
-					sendWsMessageToConversation: (message, conversation_id) => websocketModule.sendMessageToConversation(message, conversation_id),
-					sendWsMessageToUsers: (message, user_ids) => websocketModule.sendMessageToUsers(message, user_ids)
+					sendWsMessage: (...args) => websocketModule.sendMessage(...args),
 				}
 				// Ensure headers are lowercase (HTTP standard)
 				if (req.headers.Authorization) {

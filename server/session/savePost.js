@@ -312,7 +312,7 @@ B) ${req.body.poll_2}`
 			}
 
 			// Send websocket update
-			req.sendWsMessage("UPDATE", post_id)
+			req.sendWsMessage("UPDATE", {post_id: post_id})
 
 			// Respond with success so the client reloads
 			res.end(

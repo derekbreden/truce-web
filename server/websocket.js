@@ -4,12 +4,6 @@ const pool = require("./pool")
 
 module.exports = {
 	pending_push_notifications: {},
-	clearConnectionProperties(ws_uuid) {
-		if (this.ws_active[ws_uuid]) {
-			delete this.ws_active[ws_uuid].active_post_id
-			delete this.ws_active[ws_uuid].active_conversation_id
-		}
-	},
 	async init(server) {
 		const wss = new WebSocketServer({ server })
 		this.ws_active = this.ws_active || {}
@@ -17,152 +11,119 @@ module.exports = {
 			const ws_uuid = crypto.randomUUID()
 			this.ws_active[ws_uuid] = ws
 			ws.on("error", () => {
-				// Flush any pending notifications for this user before cleanup
-				const user_id = this.ws_active[ws_uuid]?.user_id
-				if (user_id) {
-					delete this.ws_active[ws_uuid].user_id
-					this.flushPendingPushNotifications(user_id)
+				if (ws.user_id) {
+					this.flushPendingPushNotifications(ws.user_id)
 				}
 				delete this.ws_active[ws_uuid]
 			})
 			ws.on("close", () => {
-				// Flush any pending notifications for this user before cleanup
-				const user_id = this.ws_active[ws_uuid]?.user_id
-				if (user_id) {
-					delete this.ws_active[ws_uuid].user_id
-					this.flushPendingPushNotifications(user_id)
+				if (ws.user_id) {
+					this.flushPendingPushNotifications(ws.user_id)
 				}
 				delete this.ws_active[ws_uuid]
 			})
 			ws.on("message", async (buffer) => {
-				if (this.ws_active[ws_uuid]) {
-					const pool_client = await pool.pool.connect()
-					const message = JSON.parse(buffer.toString())
-					
-					// Handle user authentication for messaging
-					if (message.session_uuid) {
-						if (this.ws_active[ws_uuid].session_uuid !== message.session_uuid) {
-							this.ws_active[ws_uuid].session_uuid = message.session_uuid
-							const session_results = await pool_client.query(
-								`
-								SELECT
-									users.user_id
-								FROM sessions
-								LEFT JOIN user_sessions ON sessions.session_id = user_sessions.session_id
-								LEFT JOIN users ON user_sessions.user_id = users.user_id
-								WHERE sessions.session_uuid = $1
-								`,
-								[message.session_uuid],
-							)
-							if (this.ws_active[ws_uuid]) {
-								this.ws_active[ws_uuid].user_id = session_results.rows.length
-									? session_results.rows[0].user_id
-									: null
-							}
-						}
+				const pool_client = await pool.pool.connect()
+				const message = JSON.parse(buffer.toString())
+				
+				// Handle user authentication for messaging
+				if (message.session_uuid) {
+					if (ws.session_uuid !== message.session_uuid) {
+						ws.session_uuid = message.session_uuid
+						const session_results = await pool_client.query(
+							`
+							SELECT
+								users.user_id
+							FROM sessions
+							LEFT JOIN user_sessions ON sessions.session_id = user_sessions.session_id
+							LEFT JOIN users ON user_sessions.user_id = users.user_id
+							WHERE sessions.session_uuid = $1
+							`,
+							[message.session_uuid],
+						)
+						ws.user_id = session_results.rows.length
+							? session_results.rows[0].user_id
+							: null
 					}
-					
-					
-					// Handle instant alert acknowledgments
-					if (message.type === "INSTANT_ALERT_ACK" && this.ws_active[ws_uuid].user_id) {
-						const reply_notification_id = message.reply_notification_id || null
-						const message_notification_id = message.message_notification_id || null
-						this.acknowledgeNotification(this.ws_active[ws_uuid].user_id, reply_notification_id, message_notification_id)
-					}
-					
-					if (message.path) {
-						if (message.path.startsWith("/post/")) {
-							const post = await pool_client.query(
-								`
-									SELECT post_id
-									FROM posts
-									WHERE slug = $1
-								`,
-								[message.path.split("/")[2]],
-							)
-							this.clearConnectionProperties(ws_uuid)
-							if (this.ws_active[ws_uuid]) {
-								this.ws_active[ws_uuid].active_post_id = post.rows.length
-									? post.rows[0].post_id
-									: false
-							}
-						} else if (message.path.startsWith("/reply/")) {
-							const reply = await pool_client.query(
-								`
-									SELECT parent_post_id
-									FROM replies
-									WHERE reply_id = $1
-								`,
-								[message.path.split("/")[2]],
-							)
-							this.clearConnectionProperties(ws_uuid)
-							if (this.ws_active[ws_uuid]) {
-								this.ws_active[ws_uuid].active_post_id = reply.rows.length
-									? reply.rows[0].parent_post_id
-									: false
-							}
-						} else if (message.path.startsWith("/messages/")) {
-							// Handle conversation tracking for messaging
-							const conversation_id = message.path.split("/")[2]
-							
-							if (conversation_id && this.ws_active[ws_uuid].user_id) {
-								// Verify user is participant in this conversation
-								const conversation = await pool_client.query(
-									`
-										SELECT conversation_id
-										FROM conversation_users
-										WHERE conversation_id = $1 AND user_id = $2
-									`,
-									[conversation_id, this.ws_active[ws_uuid].user_id],
-								)
-								if (conversation.rows.length) {
-									this.ws_active[ws_uuid].active_conversation_id = Number(conversation_id)
-								}
-							}
-							if (this.ws_active[ws_uuid]) {
-								delete this.ws_active[ws_uuid].active_post_id
-							}
-						} else if (message.path === "/conversations") {
-							this.clearConnectionProperties(ws_uuid)
-						} else {
-							this.clearConnectionProperties(ws_uuid)
-						}
-					}
-					pool_client.release()
 				}
+
+				// Handle instant alert acknowledgments
+				if (message.type === "INSTANT_ALERT_ACK" && ws.user_id) {
+					const reply_notification_id = message.reply_notification_id || null
+					const message_notification_id = message.message_notification_id || null
+					this.acknowledgeNotification(ws.user_id, reply_notification_id, message_notification_id)
+				}
+
+				// Handle a path change message
+				if (message.path) {
+					delete ws.active_post_id
+
+					// Posts
+					if (message.path.startsWith("/post/")) {
+						const post = await pool_client.query(
+							`
+								SELECT post_id
+								FROM posts
+								WHERE slug = $1
+							`,
+							[message.path.split("/")[2]],
+						)
+						ws.active_post_id = post.rows.length
+							? post.rows[0].post_id
+							: false
+					
+					// Replies
+					} else if (message.path.startsWith("/reply/")) {
+						const reply = await pool_client.query(
+							`
+								SELECT parent_post_id
+								FROM replies
+								WHERE reply_id = $1
+							`,
+							[message.path.split("/")[2]],
+						)
+						ws.active_post_id = reply.rows.length
+							? reply.rows[0].parent_post_id
+							: false
+					}
+				}
+				pool_client.release()
 			})
 			ws.send("UPDATE")
 		})
 	},
-	sendMessage(message, post_id) {
+	sendMessage(message, options) {
 		Object.keys(this.ws_active).forEach((ws_uuid) => {
-			if (
-				!this.ws_active[ws_uuid].active_post_id
-				|| this.ws_active[ws_uuid].active_post_id === post_id
-			) {
-				this.ws_active[ws_uuid].send(message)
+
+			// post_id
+			if (options.post_id) {
+				if (
+					!this.ws_active[ws_uuid].active_post_id
+					|| this.ws_active[ws_uuid].active_post_id === options.post_id
+				) {
+					this.ws_active[ws_uuid].send(message)
+				}
 			}
-		})
-	},
-	sendMessageToConversation(message, conversation_id) {
-		Object.keys(this.ws_active).forEach((ws_uuid) => {
-			if (this.ws_active[ws_uuid].active_conversation_id === conversation_id) {
-				this.ws_active[ws_uuid].send(message)
+
+			// user_id
+			if (options.user_id) {
+				if (
+					!this.ws_active[ws_uuid].user_id
+					|| this.ws_active[ws_uuid].user_id === options.user_id
+				) {
+					this.ws_active[ws_uuid].send(message)
+				}
 			}
-		})
-	},
-	sendMessageToUser(message, user_id) {
-		Object.keys(this.ws_active).forEach((ws_uuid) => {
-			if (this.ws_active[ws_uuid].user_id === user_id) {
-				this.ws_active[ws_uuid].send(message)
-			}
-		})
-	},
-	sendMessageToUsers(message, user_ids) {
-		Object.keys(this.ws_active).forEach((ws_uuid) => {
-			if (user_ids.includes(this.ws_active[ws_uuid].user_id)) {
-				this.ws_active[ws_uuid].send(message)
-			}
+
+			// conversation_id
+			// if (options.conversation_id) {
+			// 	if (
+			// 		!this.ws_active[ws_uuid].active_conversation_id
+			// 		|| this.ws_active[ws_uuid].active_conversation_id === options.conversation_id
+			// 	) {
+			// 		this.ws_active[ws_uuid].send(message)
+			// 	}
+			// }
 		})
 	},
 	queuePushNotification(user_id, push_data) {
@@ -228,24 +189,10 @@ module.exports = {
 		}
 		return []
 	},
-	isUserActivelyViewing(user_id, conversation_id) {
-		// Check if user has an active WebSocket connection viewing this conversation
-		return Object.values(this.ws_active).some(ws => 
-			ws.user_id === user_id 
-			&& ws.active_conversation_id === Number(conversation_id)
-		)
-	},
 	hasActiveWebSocketConnection(user_id) {
 		// Check if user has ANY active WebSocket connection
 		return Object.values(this.ws_active).some(ws => 
 			ws.user_id === user_id
-		)
-	},
-	isUserActivelyViewingPost(user_id, post_id) {
-		// Check if user has an active WebSocket connection viewing this post
-		return Object.values(this.ws_active).some(ws => 
-			ws.user_id === user_id 
-			&& ws.active_post_id === Number(post_id)
 		)
 	},
 	sendInstantAlert(user_id, push_data) {
