@@ -99,19 +99,26 @@ const renderMessages = (messages, conversation) => {
 						messages
 						message-input-area
 							message-form
+								title-wrapper
+									label[image]
+										icon
+											$2
+										input[image][type=file][accept=image/*]
 								textarea[placeholder="Type a message..."]
 								send-button
 									icon[forward]
 										$1
 					`,
 					[
-						$("icons icon[forward] svg").cloneNode(true)
+						$("icons icon[forward] svg").cloneNode(true),
+						$("icons icon[image] svg").cloneNode(true)
 					]
 				)
 			)
 
 			// Set up message sending
 			const $textarea = $("main-content-wrapper[active] textarea")
+			const pngs = []
 			
 			const addMessageError = (error) => {
 				$("message-input-area error")?.remove()
@@ -125,11 +132,53 @@ const renderMessages = (messages, conversation) => {
 					),
 				)
 			}
+
+			const previewPngs = () => {
+				$("message-input-area image-previews")?.remove()
+				if (pngs.length) {
+					$("message-input-area title-wrapper").after(
+						$(
+							`
+							image-previews
+							`
+						)
+					)
+					pngs.forEach((png, i) => {
+						const $preview = $(
+							`
+							preview
+								remove-icon
+								img[src=$1]
+							`,
+							[png.url],
+						)
+						$preview.$("remove-icon").on("click", () => {
+							pngs.splice(i, 1)
+							previewPngs()
+						})
+						$("message-input-area image-previews").appendChild($preview)
+					})
+				}
+			}
+
+			$("message-input-area input[image]").on("change", () => {
+				Array.from($("message-input-area input[image]").files).forEach((file) => {
+					const reader = new FileReader()
+					reader.onload = ($event) => {
+						imageToPng($event.target.result, (png) => {
+							pngs.pop()
+							pngs.push(png)
+							previewPngs()
+						})
+					}
+					reader.readAsDataURL(file)
+				})
+			})
 			
 			const send_message = () => {
 				const message_body = $textarea.value.trim()
 				$textarea.value = ""
-				if (message_body && conversation) {
+				if ((message_body || pngs.length) && conversation) {
 					$("message-input-area").prepend(
 						$(
 							`
@@ -142,7 +191,7 @@ const renderMessages = (messages, conversation) => {
 						body: JSON.stringify({
 							conversation_id: conversation.conversation_id,
 							body: message_body,
-							pngs: []
+							pngs: pngs
 						})
 					})
 					.then(response => response.json())
@@ -152,6 +201,8 @@ const renderMessages = (messages, conversation) => {
 							addMessageError(data.error)
 						} else {
 							$("message-input-area error")?.remove()
+							pngs.splice(0, pngs.length)
+							previewPngs()
 							// Refresh messages
 							getMoreRecent()
 						}

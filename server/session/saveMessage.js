@@ -16,8 +16,10 @@ module.exports = async (req, res) => {
 		!res.writableEnded
 		&& req.session.user_id
 		&& req.body.conversation_id
-		&& req.body.body
-		&& req.body.pngs
+		&& (
+			req.body.body
+			|| req.body.pngs
+		)
 	) {
 		// Verify user is participant in this conversation and get other participants
 		const conversation_check = await req.client.query(

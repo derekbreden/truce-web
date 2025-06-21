@@ -50,6 +50,38 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Phase 4: User B sends a message to User A
+		// Read 1024x1024 PNG that will get resized to itself and return the same at the end
+		const fs = require("fs")
+		const path = require("path")
+		const processed_data_file = path.join(__dirname, "test-data", "1024_base64.txt")
+		const valid_png_base64 = await fs.promises.readFile(processed_data_file, "utf8")
+		const binary_string = window_user_b.atob(valid_png_base64)
+		const bytes = new Uint8Array(binary_string.length)
+		for (let i = 0; i < binary_string.length; i++) {
+			bytes[i] = binary_string.charCodeAt(i)
+		}
+		const file = new window_user_b.File([bytes], 'test.png', { type: 'image/png' })
+
+		// Add the image to the file input and trigger change
+		const $file_input = $b("main-content-wrapper[active] input[image]")
+		Object.defineProperty($file_input, 'files', {
+			value: {
+				0: file,
+				length: 1,
+				item: (i) => i === 0 ? file : null
+			}
+		})
+		await $file_input.dispatchEvent(new window_user_b.Event('change', { bubbles: true }))
+		await new Promise(resolve => setTimeout(resolve, 0))
+
+		// Verify thumbnail has same image
+		await window_user_b.waitForElement("main-content-wrapper[active] image-previews preview img")
+		assertEquals(
+			"data:image/png;base64," + valid_png_base64,
+			$b("main-content-wrapper[active] image-previews preview img").src,
+			"Should have thumbnail from canvas resize",
+		)
+
 		$b("main-content-wrapper[active] textarea").value = "Hello User A, this is a message from User B"
 		
 		$b("main-content-wrapper[active] send-button").click()
@@ -61,6 +93,12 @@ const tests = {
 			$b("main-content-wrapper[active] messages message:nth-child(1) message-content p span").textContent,
 			"User B should see their own sent message"
 		)
+
+		// Verify round-trip image is the same calling our endpoint that pulls it from S3
+		const $image_element = $b("main-content-wrapper[active] messages message:nth-child(1) message-content p[img] img")
+		const image_response = await window_user_b.fetch($image_element.getAttribute("src"), { method: "GET" })
+		const response_data = await image_response.json()
+		assertEquals(valid_png_base64, response_data, "Retrieved message image data should match input data")
 		
 		// Verify the instant alert banner appears for User A
 		assertEquals(
