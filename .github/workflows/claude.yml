@@ -9,6 +9,12 @@ on:
   pull_request_review:
     types: [submitted]
 
+permissions:
+  issues: write
+  pull-requests: write
+  contents: write
+  actions: read
+
 jobs:
   claude-response:
     runs-on: ubuntu-latest
@@ -20,7 +26,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0  # Full history for branch operations
       
-      - uses: anthropics/claude-code-action@beta
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          allowed_tools: "Bash(*),Edit,View,GlobTool,GrepTool,BatchTool,Write"  # Grant comprehensive permissions
