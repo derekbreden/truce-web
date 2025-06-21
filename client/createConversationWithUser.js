@@ -2,7 +2,7 @@ const createConversationWithUser = (user_id) => {
 	fetch("/session", {
 		method: "POST",
 		body: JSON.stringify({
-			participant_user_ids: [user_id]
+			other_user_id: user_id
 		}),
 	})
 	.then(response => response.json())
