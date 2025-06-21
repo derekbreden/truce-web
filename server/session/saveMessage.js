@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
 			return
 		}
 
-		const participant_user_ids = conversation_check.rows.map(row => row.user_id)
-		if (!participant_user_ids.includes(req.session.user_id)) {
+		const conversation_user_ids = conversation_check.rows.map(row => row.user_id)
+		if (!conversation_user_ids.includes(req.session.user_id)) {
 			res.end(
 				JSON.stringify({
 					error: "Access denied",
@@ -48,28 +48,8 @@ module.exports = async (req, res) => {
 			return
 		}
 
-		// Check for blocked users
-		const other_user_id = participant_user_ids.filter(id => id !== req.session.user_id)[0]
-		
-		const blocked_check = await req.client.query(
-			`
-			SELECT user_id_blocked
-			FROM blocked_users
-			WHERE 
-				(user_id_blocking = $1 AND user_id_blocked = $2)
-				OR (user_id_blocked = $1 AND user_id_blocking = $2)
-			`,
-			[req.session.user_id, other_user_id],
-		)
-
-		if (blocked_check.rows.length > 0) {
-			res.end(
-				JSON.stringify({
-					error: "Cannot send message to blocked user",
-				}),
-			)
-			return
-		}
+		// Get other user for notifications
+		const other_user_id = conversation_user_ids.filter(id => id !== req.session.user_id)[0]
 
 		// AI content moderation
 		const messages = []
