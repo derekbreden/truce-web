@@ -2582,8 +2582,7 @@ message-form {
 
 message-form textarea {
   flex: 1;
-  min-height: 40px;
-  max-height: 120px;
+  height: 60px;
   padding: 10px;
   border: 1px solid light-dark(#ddd, #333);
   border-radius: 2px;
@@ -2601,7 +2600,8 @@ message-form textarea:focus {
 
 send-button {
   flex-shrink: 0;
-  padding: 10px 20px;
+  height: 60px;
+  padding: 0 20px;
   background: light-dark(#fff, #1a1a1a);
   color: light-dark(#000, #f5f5f5);
   border: 1px solid light-dark(#ddd, #333);
@@ -2611,15 +2611,6 @@ send-button {
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s;
-}
-
-send-button:hover {
-  opacity: 0.7;
-}
-
-send-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 send-button svg {

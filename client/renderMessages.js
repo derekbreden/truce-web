@@ -112,11 +112,10 @@ const renderMessages = (messages, conversation) => {
 
 			// Set up message sending
 			const $textarea = $("main-content-wrapper[active] textarea")
-			const $sendButton = $("main-content-wrapper[active] send-button")
-			const $messageForm = $("main-content-wrapper[active] message-form")
 			
 			const addMessageError = (error) => {
-				$messageForm.appendChild(
+				$("message-input-area error")?.remove()
+				$("message-input-area").prepend(
 					$(
 						`
 						error
@@ -128,8 +127,8 @@ const renderMessages = (messages, conversation) => {
 			}
 			
 			const send_message = () => {
-				$messageForm.$("error")?.remove()
 				const message_body = $textarea.value.trim()
+				$textarea.value = ""
 				if (message_body && conversation) {
 					fetch("/session", {
 						method: "POST",
@@ -144,7 +143,7 @@ const renderMessages = (messages, conversation) => {
 						if (data.error) {
 							addMessageError(data.error)
 						} else {
-							$textarea.value = ""
+							$("message-input-area error")?.remove()
 							// Refresh messages
 							getMoreRecent()
 						}
@@ -155,13 +154,11 @@ const renderMessages = (messages, conversation) => {
 					})
 				}
 			}
-			
-			// Remove error when user focuses on textarea (same pattern as posts/replies)
+
 			$textarea.on("focus", () => {
-				$messageForm.$("error")?.remove()
 			})
 
-			$sendButton.on("click", send_message)
+			$("message-input-area send-button").on("click", send_message)
 			$textarea.on("keydown", (e) => {
 				if (e.key === "Enter" && !e.shiftKey) {
 					e.preventDefault()

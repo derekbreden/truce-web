@@ -244,9 +244,6 @@ module.exports = async (req, res) => {
 			message_notification_ids,
 			push_data,
 		)
-
-		// Send websocket update for real-time messaging
-		// req.sendWsMessage("UPDATE", {conversation_id: req.body.conversation_id})
 		
 		// Also notify other participants if they're viewing conversations list
 		req.sendWsMessage("UPDATE", {user_id: other_user_id})
