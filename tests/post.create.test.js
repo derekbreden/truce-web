@@ -9,32 +9,35 @@ const tests = {
 		const window = await setupTestEnvironment()
 		const { $ } = window
 		
-		// Add an image first
-		const $fileInput = $("add-new[post] input[image]")
-		const validPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
-		const binaryString = window.atob(validPngBase64)
-		const bytes = new Uint8Array(binaryString.length)
-		for (let i = 0; i < binaryString.length; i++) {
-			bytes[i] = binaryString.charCodeAt(i)
+		// Read 1024x1024 PNG that will get resized to itself and return the same at the end
+		const fs = require("fs")
+		const path = require("path")
+		const processed_data_file = path.join(__dirname, "test-data", "1024_base64.txt")
+		const valid_png_base64 = fs.readFileSync(processed_data_file, "utf8")
+		const binary_string = window.atob(valid_png_base64)
+		const bytes = new Uint8Array(binary_string.length)
+		for (let i = 0; i < binary_string.length; i++) {
+			bytes[i] = binary_string.charCodeAt(i)
 		}
 		const file = new window.File([bytes], 'test.png', { type: 'image/png' })
-		
-		Object.defineProperty($fileInput, 'files', {
+
+		// Add the image to the file input and trigger change
+		const $file_input = $("add-new[post] input[image]")
+		Object.defineProperty($file_input, 'files', {
 			value: {
 				0: file,
 				length: 1,
 				item: (i) => i === 0 ? file : null
 			}
 		})
-		
-		$fileInput.dispatchEvent(new window.Event('change', { bubbles: true }))
-		await new Promise(resolve => setTimeout(resolve, 10))
-		
-		// Verify image preview appears
+		$file_input.dispatchEvent(new window.Event('change', { bubbles: true }))
+		await new Promise(resolve => setTimeout(resolve, 0))
+
+		// Verify thumbnail has same image
 		assertEquals(
-			1,
-			$("add-new[post] image-previews preview").length,
-			"Should show one image preview"
+			"data:image/png;base64," + valid_png_base64,
+			$("add-new[post] image-previews preview img").src,
+			"Should have thumbnail from canvas resize",
 		)
 		
 		// Fill in the post form
@@ -70,6 +73,12 @@ const tests = {
 			$("main-content-2 posts post:first-child p[img]").length,
 			"New post should display the uploaded image"
 		)
+
+		// Verify round-trip data integrity
+		const $image_element = $("main-content-2 posts post:first-child p[img] img")
+		const image_response = await window.fetch($image_element.getAttribute("src"), { method: "GET" })
+		const response_data = await image_response.json()
+		assertEquals(valid_png_base64, response_data, "Retrieved image data should match input data")
 	},
 }
 

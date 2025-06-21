@@ -102,6 +102,7 @@ const setupTestEnvironment = async (options) => {
 	virtualConsole.on("warn", (...args) => {
 		console.warn(...args)
 	})
+	
 	// Load the index.html content
 	const dom = new JSDOM(finalIndexHtmlContent, {
 		runScripts: "dangerously", // Allow scripts added to the DOM to run
@@ -122,7 +123,7 @@ const setupTestEnvironment = async (options) => {
 			
 			// Mock fetch
 			const mockFetchImplementation = async (url, fetchOptions) => {
-				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers)
+				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers, url)
 				const response = await window.executeHandler(req, res)
 				return {
 					status: 200,
@@ -232,20 +233,56 @@ const setupTestEnvironment = async (options) => {
 					id: aiPath
 				}
 				
-				// Mock S3 client dependencies
+				// Mock S3 client dependencies with in-memory storage
 				const s3Path = require.resolve("@aws-sdk/client-s3")
+				global._s3_mock_storage = global._s3_mock_storage || {}
+				
+				// Define classes globally first
+				class MockPutObjectCommand {
+					constructor(params) {
+						this.Bucket = params.Bucket
+						this.Key = params.Key
+						this.Body = params.Body
+					}
+				}
+				
+				class MockGetObjectCommand {
+					constructor(params) {
+						this.Bucket = params.Bucket
+						this.Key = params.Key
+					}
+				}
+				
+				class MockDeleteObjectCommand {
+					constructor() {}
+				}
+				
 				require.cache[s3Path] = {
 					exports: {
 						S3Client: class MockS3Client {
 							constructor() {}
-							async send() { return { success: true } }
+							async send(command) { 
+								if (command instanceof MockPutObjectCommand) {
+									global._s3_mock_storage[command.Key] = command.Body
+									return { success: true }
+								} else if (command instanceof MockGetObjectCommand) {
+									const storedData = global._s3_mock_storage[command.Key]
+									if (storedData) {
+										return {
+											Body: {
+												transformToString: async () => storedData
+											}
+										}
+									} else {
+										throw new Error(`Key ${command.Key} not found in S3 mock storage`)
+									}
+								}
+								return { success: true }
+							}
 						},
-						PutObjectCommand: class MockPutObjectCommand {
-							constructor() {}
-						},
-						DeleteObjectCommand: class MockDeleteObjectCommand {
-							constructor() {}
-						}
+						PutObjectCommand: MockPutObjectCommand,
+						GetObjectCommand: MockGetObjectCommand,
+						DeleteObjectCommand: MockDeleteObjectCommand
 					},
 					loaded: true,
 					id: s3Path
@@ -287,9 +324,11 @@ const setupTestEnvironment = async (options) => {
 				websocketModule.init({ on: () => {} })
 			}
 			
-			window.createMockReqRes = function(body, headers) {
+			window.createMockReqRes = function(body, headers, url) {
 				const websocketModule = require("../server/websocket.js")
 				const req = {
+					url: url || "",
+					path: (url || "").split("/").filter(x => x).join("").split("?")[0], // Match server.js path extraction
 					headers: headers || {},
 					body: body,
 					sendWsMessage: (...args) => websocketModule.sendMessage(...args),
@@ -320,6 +359,15 @@ const setupTestEnvironment = async (options) => {
 			window.executeHandler = async function(req, res) {
 				// Set current setup ID for this execution
 				global.current_setup_id = options.setup_id
+				
+				// Route image requests to handleImage instead of handleSession
+				if (req.path.startsWith("image") && req.path.length > 20) {
+					const handleImage = require("../server/handleImage.js")
+					await handleImage(req, res)
+					return res.responseData // Return raw data for images, not JSON
+				}
+				
+				// All other requests go to handleSession
 				const handleSession = require("../server/handleSession.js")
 				await handleSession(req, res)
 				return JSON.parse(res.responseData)
