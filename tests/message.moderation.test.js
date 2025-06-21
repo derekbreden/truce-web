@@ -38,7 +38,7 @@ const tests = {
 		// Verify the spam error appears inline in the form
 		assertEquals(
 			"Spam This message contains promotional content",
-			$b("main-content-wrapper[active] message-form error").textContent,
+			$b("main-content-wrapper[active] message-input-area error").textContent,
 			"Should show inline spam error in message form"
 		)
 		
