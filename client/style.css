@@ -64,7 +64,16 @@
   --color-state-success: light-dark(var(--color-success), var(--color-success-dark));
   --color-state-info: light-dark(var(--color-info), var(--color-info-accent));
   
+  /* Additional semantic color combinations */
+  --color-success-text: light-dark(var(--color-success), var(--color-success-bg));
+  --color-success-bg-combo: light-dark(var(--color-success-bg), var(--color-success-dark));
+  --color-info-text: light-dark(var(--color-info), var(--color-info-bg));
+  --color-info-bg-combo: light-dark(var(--color-info-bg), var(--color-info-dark));
+  --color-info-bg-alt: light-dark(var(--color-info), var(--color-info-bg));
+  
   /* Standard Spacing Scale */
+  --space-3xs: 1px;  /* Tiny adjustments, fine borders */
+  --space-2xs: 3px;  /* Very small gaps, minor spacing */
   --space-xs: 5px;
   --space-sm: 10px;
   --space-md: 20px;
@@ -494,9 +503,9 @@ post[trimmed] p[img]+p[img] {
 p[quote] {
   padding: var(--space-sm);
   border-left: 2px solid #999;
-  border-left: 2px solid light-dark(#999, #333);
+  border-left: 2px solid var(--color-border-medium);
   background: var(--color-gray-lightest);
-  background: light-dark(#f5f5f5, #0c0c0c);
+  background: var(--color-bg-tertiary);
 }
 
 p[quote]+p[quote] {
@@ -511,7 +520,7 @@ p[italic] {
 }
 p[hr] {
   border-bottom: 1px solid #ddd;
-  border-bottom: 1px solid light-dark(#ddd, #333);
+  border-bottom: 1px solid var(--color-border-standard);
   font-size: 0;
 }
 
@@ -596,7 +605,7 @@ hamburger {
   top: calc(50% - 4px);
   left: -14px;
   background: var(--color-info);
-  background: light-dark(#48c, #04f);
+  background: var(--color-state-info);
   border-radius: 50%;
   height: 8px;
   width: 8px;
@@ -674,7 +683,7 @@ modal[image]>p[img] img {
 modal[image]>button {
   border-radius: 0;
   border: 1px solid #fff;
-  border: 1px solid light-dark(#fff, #000);
+  border: 1px solid var(--color-text-primary);
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
@@ -728,14 +737,14 @@ menu links a {
   align-items: center;
   padding: 5px 20px 5px 11px;
   border-bottom: 1px solid #999;
-  border-bottom: 1px solid light-dark(#999, #333);
+  border-bottom: 1px solid var(--color-border-medium);
   position: relative;
 }
 
 menu p[notice] {
   width: 280px;
   border-top: 1px solid #999;
-  border-top: 1px solid light-dark(#999, #333);
+  border-top: 1px solid var(--color-border-medium);
   padding: var(--space-sm) var(--space-md);
   margin-top: 0;
 }
@@ -809,7 +818,7 @@ toggle-wrapper toggle-button {
   width: 50px;
   border-radius: 16px;
   background: #ddd;
-  background: light-dark(#ddd, #666);
+  background: light-dark(var(--color-gray-light), var(--color-gray-darker));
   position: relative;
   transition: background .2s ease-in-out;
 }
@@ -821,14 +830,14 @@ toggle-wrapper toggle-button toggle-circle {
   background: var(--color-bg-primary);
   border-radius: 50%;
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: var(--space-3xs);
+  left: var(--space-3xs);
   transition: left .2s ease-in-out;
 }
 
 toggle-wrapper[active] toggle-button {
   background: var(--color-success);
-  background: light-dark(#4a5, #091);
+  background: var(--color-state-success);
 }
 
 toggle-wrapper[active] toggle-button toggle-circle {
@@ -862,7 +871,7 @@ a[big] {
   color: var(--color-white);
   color: light-dark(#fff, #f0fff0);
   background: var(--color-success);
-  background: light-dark(#4a5, #091);
+  background: var(--color-state-success);
   padding: var(--space-sm);
   font-weight: 700;
   letter-spacing: 1px;
@@ -887,7 +896,7 @@ textarea {
   border-radius: var(--border-radius-sm);
   border: 1px solid #000;
   background: var(--color-white);
-  border: 1px solid light-dark(#999, #333);
+  border: 1px solid var(--color-border-medium);
   background: var(--color-bg-primary);
   padding: var(--space-sm);
 }
@@ -909,9 +918,9 @@ button {
   border: 1px solid #000;
   background: var(--color-black);
   color: var(--color-white);
-  background: light-dark(#000, #f5f5f5);
-  border: 1px solid light-dark(#000, #fff);
-  color: light-dark(#fff, #000);
+  background: var(--color-text-secondary);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-primary);
   padding: var(--space-sm);
   font-weight: 700;
   letter-spacing: 1px;
@@ -930,7 +939,7 @@ button icon {
 
 button svg {
   fill: var(--color-white);
-  fill: light-dark(#fff, #000);
+  fill: var(--color-text-primary);
   height: var(--icon-xl);
   width: var(--icon-xl);
 }
@@ -941,7 +950,7 @@ button[alt] {
   border: 1px solid #999;
   background: var(--color-bg-secondary);
   color: var(--color-text-primary);
-  border: 1px solid light-dark(#999, #333);
+  border: 1px solid var(--color-border-medium);
 }
 
 button[alt] svg {
@@ -966,9 +975,9 @@ error {
   background: #fee;
   border: 1px solid #b66;
   color: #b66;
-  background: light-dark(#fee, #b66);
-  border: 1px solid light-dark(#b66, #b66);
-  color: light-dark(#b66, #fee);
+  background: light-dark(var(--color-error-bg), var(--color-error));
+  border: 1px solid var(--color-error);
+  color: light-dark(var(--color-error), var(--color-error-bg));
   border-radius: var(--border-radius-sm);
   max-width: 100%;
   display: flex;
@@ -999,8 +1008,8 @@ error::before {
   border-radius: 20px;
   background: #b66;
   color: #fee;
-  background: light-dark(#b66, #fee);
-  color: light-dark(#fee, #b66);
+  background: light-dark(var(--color-error), var(--color-error-bg));
+  color: light-dark(var(--color-error-bg), var(--color-error));
   font-size: 14px;
   font-weight: 700;
   height: 17px;
@@ -1027,16 +1036,16 @@ info {
   border-color: #48c;
   background: #e0f0ff;
   color: #48c;
-  border-color: light-dark(#48c, #04a);
-  background: light-dark(#e0f0ff, #04a);
-  color: light-dark(#48c, #e0f0ff);
+  border-color: light-dark(var(--color-info), var(--color-info-dark));
+  background: var(--color-info-bg-combo);
+  color: var(--color-info-text);
 }
 
 info::before {
   content: "i";
   background: var(--color-info);
-  background: light-dark(#48c, #e0f0ff);
-  color: light-dark(#e0f0ff, #04a);
+  background: var(--color-info-text);
+  color: var(--color-info-bg-combo);
 }
 
 
@@ -1044,17 +1053,17 @@ pass {
   border-color: #4a5;
   background: #f0fff0;
   color: #4a5;
-  border-color: light-dark(#4a5, #091);
-  background: light-dark(#f0fff0, #091);
-  color: light-dark(#4a5, #f0fff0);
+  border-color: var(--color-state-success);
+  background: var(--color-success-bg-combo);
+  color: var(--color-success-text);
 }
 
 pass::before {
   content: "✓";
   background: var(--color-success);
   color: #f0fff0;
-  background: light-dark(#4a5, #f0fff0);
-  color: light-dark(#f0fff0, #091);
+  background: var(--color-success-text);
+  color: var(--color-success-bg-combo);
 }
 
 error p {
@@ -1104,7 +1113,7 @@ password-help::before {
   border-radius: 20px;
   background: var(--color-info);
   color: #e0f0ff;
-  background: light-dark(#48c, #04a);
+  background: light-dark(var(--color-info), var(--color-info-dark));
   color: light-dark(#e0f0ff, #e0f0ff);
   font-weight: 600;
   height: 17px;
@@ -1238,12 +1247,12 @@ image-previews preview:last-child {
 
 image-previews preview remove-icon {
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: var(--space-3xs);
+  right: var(--space-3xs);
   display: flex;
   border-radius: 50%;
   background: var(--color-black);
-  background: light-dark(#000, #fff);
+  background: var(--color-border-strong);
   font-weight: 600;
   height: 25px;
   width: 25px;
@@ -1255,7 +1264,7 @@ image-previews preview remove-icon::after {
   position: absolute;
   width: 15px;
   border: 1px solid #fff;
-  border: 1px solid light-dark(#fff, #000);
+  border: 1px solid var(--color-text-primary);
   border-radius: 4px;
   transform: rotate(45deg);
   top: 11px;
@@ -1416,7 +1425,7 @@ back-forward-wrapper center-wrapper {
     left: -20px;
     right: -20px;
     border-top: 1px solid #ddd;
-    border-top: 1px solid light-dark(#ddd, #333);
+    border-top: 1px solid var(--color-border-standard);
   }
 }
 
@@ -1450,7 +1459,7 @@ expand-wrapper button {
   background: var(--color-white);
   border-color: var(--color-white);
   background: var(--color-bg-primary);
-  border-color: light-dark(#fff, #000);
+  border-color: var(--color-text-primary);
   position: relative;
   padding: 6px;
 }
@@ -1464,8 +1473,8 @@ back-wrapper button::before,
   content: "";
   border-top: 1.5px solid #000;
   border-left: 1.5px solid #000;
-  border-top: 1.5px solid light-dark(#000, #fff);
-  border-left: 1.5px solid light-dark(#000, #fff);
+  border-top: 1.5px solid var(--color-border-strong);
+  border-left: 1.5px solid var(--color-border-strong);
   border-right: 1.5px solid transparent;
   border-bottom: 1.5px solid transparent;
   height: 16px;
@@ -1665,7 +1674,7 @@ post author-topics author profile-picture svg {
 
 post author-topics author {
   display: flex;
-  gap: 3px;
+  gap: var(--space-2xs);
   align-items: center;
 }
 
@@ -1676,7 +1685,7 @@ post author-topics author by {
 
 post author-topics author name {
   display: flex;
-  gap: 3px;
+  gap: var(--space-2xs);
   align-items: center;
 }
 post author-topics author name span {
@@ -1706,7 +1715,7 @@ post author-topics topics {
 post author-topics topics topic {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-2xs);
 }
 
 post author-topics topics topic icon {
@@ -1752,7 +1761,7 @@ topics[topics-list][big] topic[topic=work] {
   margin-left: -4px;
 }
 topics[topics-list] topic[topic=religion] icon {
-  margin-top: 1px;
+  margin-top: var(--space-3xs);
 }
 topics[topics-list] topic[topic=parenting] icon,
 topics[topics-list] topic[topic=media] icon,
@@ -1760,7 +1769,7 @@ topics[topics-list] topic[topic=asks] icon {
   margin-top: 2px;
 }
 topics[topics-list] topic[topic=weather] icon {
-  margin-top: 3px;
+  margin-top: var(--space-2xs);
 }
 topics[topics-list] topic[topic=food] icon,
 topics[topics-list] topic[topic=health] icon {
@@ -1776,7 +1785,7 @@ topics[topics-list] topic[topic=polls] icon {
 topics[topics-list] topic topicname-subtitle {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: var(--space-3xs);
 }
 
 topics[topics-list] topic topicname {
@@ -1798,7 +1807,7 @@ topics[topics-list] topic topicname count {
   background: var(--color-black);
   color: #f5f5f5;
   border: 1px solid #000;
-  border: 1px solid light-dark(#000, #f5f5f5);
+  border: 1px solid var(--color-text-secondary);
   border-radius: var(--font-size-sm);
   padding: 1px 5px;
   min-width: 15px;
@@ -1880,7 +1889,7 @@ posts post::before {
   left: -20px;
   right: -20px;
   border-bottom: 1px solid #ddd;
-  border-bottom: 1px solid light-dark(#ddd, #333);
+  border-bottom: 1px solid var(--color-border-standard);
 }
 
 notifications notification::after {
@@ -1901,7 +1910,7 @@ posts-loading {
 
 posts-loading h2 {
   background: #ddd;
-  background: light-dark(#ddd, #333);
+  background: var(--color-border-standard);
   width: 80%;
   height: 32px;
 }
@@ -1919,8 +1928,8 @@ posts-loading p::after {
   width: 100%;
   border-top: 16px solid #ddd;
   border-bottom: 16px solid #ddd;
-  border-top: 16px solid light-dark(#ddd, #333);
-  border-bottom: 16px solid light-dark(#ddd, #333);
+  border-top: 16px solid var(--color-border-standard);
+  border-bottom: 16px solid var(--color-border-standard);
   height: 10px;
 }
 
@@ -1961,7 +1970,7 @@ post>h2>icon[more] svg {
 
 activity>[parent-reply] {
   background: var(--color-gray-lightest);
-  background: light-dark(#f5f5f5, #0c0c0c)
+  background: var(--color-bg-tertiary)
 }
 
 activity>[parent-reply] reply {
@@ -2390,7 +2399,7 @@ poll-vote-wrapper {
 
 poll-vote-wrapper>* {
   border: 1px solid #000;
-  border: 1px solid light-dark(#000, #fff);
+  border: 1px solid var(--color-border-strong);
   border-radius: 20px;
   min-height: 35px;
   padding: 0 var(--space-md);
@@ -2437,7 +2446,7 @@ poll-counts-estimated>* bg {
   left: 0;
   bottom: 0;
   background: var(--color-black);
-  background: light-dark(#000, #fff);
+  background: var(--color-border-strong);
   opacity: .2;
   border-radius: 5px;
 }
@@ -2528,7 +2537,7 @@ messages-container {
 
 conversation-header {
   flex-shrink: 0;
-  border-bottom: 1px solid light-dark(#ddd, #333);
+  border-bottom: 1px solid var(--color-border-standard);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2600,7 +2609,7 @@ message-info author {
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-2xs);
 }
 
 message-info author span {
@@ -2657,7 +2666,7 @@ edit-button svg {
 message-input-area {
   flex-shrink: 0;
   padding: var(--space-md) 0;
-  border-top: 1px solid light-dark(#ddd, #333);
+  border-top: 1px solid var(--color-border-standard);
 }
 
 message-form {
