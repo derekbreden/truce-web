@@ -4,10 +4,6 @@ const renderConversation = (conversation) => {
 		? last_message_body.slice(0, 60) + "..." 
 		: last_message_body
 
-	// Get other user (1-to-1 messaging)
-	const other_user_name = conversation.other_user_name || "Unknown User"
-	const participant_names = renderName(other_user_name, 0)
-
 	const time_ago = conversation.last_message_date 
 		? new Date(conversation.last_message_date).toLocaleString()
 		: new Date(conversation.create_date).toLocaleString()
@@ -26,7 +22,7 @@ const renderConversation = (conversation) => {
 		`,
 		[
 			unread_count > 0,
-			participant_names,
+			renderName(conversation.other_user_name, conversation.other_user_display_name_index),
 			time_ago,
 			short_body,
 			unread_count > 0 ? $(

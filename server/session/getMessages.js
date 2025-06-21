@@ -80,6 +80,7 @@ module.exports = async (req, res) => {
 				c.last_message_id,
 				ou.user_id as other_user_id,
 				ou.display_name as other_user_name,
+				ou.display_name_index as other_user_display_name_index,
 				CASE WHEN (ou.slug = '' OR ou.slug IS NULL) THEN ou.user_id::VARCHAR ELSE ou.slug END as other_user_slug,
 				ou.profile_picture_uuid as other_user_picture,
 				CASE WHEN ou.email <> '' AND ou.email IS NOT NULL THEN true ELSE false END as other_user_verified

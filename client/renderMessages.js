@@ -174,7 +174,7 @@ const renderMessages = (messages, conversation) => {
 
 		// Update conversation header with other user (1-to-1 messaging)
 		if (conversation && conversation.other_user_name) {
-			const other_user_name = renderName(conversation.other_user_name, 0)
+			const other_user_name = renderName(conversation.other_user_name, conversation.other_user_display_name_index)
 			
 			$("main-content-wrapper[active] conversation-header participants").replaceChildren(
 				$(
