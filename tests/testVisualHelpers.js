@@ -15,8 +15,8 @@ const captureVisual = (window, filename) => {
 	
 	// Save HTML temporarily, removing script tags to prevent JS re-execution
 	const html = window.document.documentElement.outerHTML
-	const htmlWithoutScripts = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-	fs.writeFileSync(htmlPath, htmlWithoutScripts)
+	const html_without_scripts = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+	fs.writeFileSync(htmlPath, html_without_scripts)
 	
 	// Capture screenshot with Chrome headless
 	const absoluteHtmlPath = path.resolve(htmlPath)
@@ -30,9 +30,9 @@ const captureVisual = (window, filename) => {
 			`--screenshot="${pngPath}"`,
 			`--window-size=1200,800 "file://${absoluteHtmlPath}"`,
 		].join(" "),
-		{ stdio: 'pipe' }
+		{ stdio: "pipe" }
 	)
-	execSync(`convert "${pngPath}" -crop 1200x720+0+0 "${pngPath}"`, { stdio: 'pipe' })
+	execSync(`convert "${pngPath}" -crop 1200x720+0+0 "${pngPath}"`, { stdio: "pipe" })
 	const end_time = new Date()
 	console.log(`Screenshot captured in ${end_time - start_time}ms`)
 	

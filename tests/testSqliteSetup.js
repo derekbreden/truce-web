@@ -66,7 +66,7 @@ const convertPostgresSQLToSQLite = (sql, params) => {
         }
         
         // Convert booleans to integers for SQLite compatibility
-        if (typeof paramValue === 'boolean') {
+        if (typeof paramValue === "boolean") {
             paramValue = paramValue ? 1 : 0
         }
         

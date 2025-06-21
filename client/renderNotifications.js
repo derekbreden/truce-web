@@ -31,7 +31,7 @@ const renderNotification = (notification) => {
 
 			// Mark as read
 			if (!notification.read) {
-				markAsRead(notification.notification_id, 'message')
+				markAsRead(notification.notification_id, "message")
 			}
 		})
 		return $notification
@@ -91,7 +91,7 @@ const renderNotification = (notification) => {
 
 				// Mark as read
 				if (!notification.read) {
-					markAsRead(notification.notification_id, 'reply')
+					markAsRead(notification.notification_id, "reply")
 				}
 			})
 			return $notification
@@ -516,7 +516,7 @@ const getUnreadCountUnseenCount = () => {
 						&& data.notification_id
 					) {
 						goToPath("/reply/" + data.reply_id)
-						markAsRead(data.notification_id, 'reply')
+						markAsRead(data.notification_id, "reply")
 
 						// Otherwise load the list of notifications
 					} else {
@@ -534,9 +534,9 @@ const getUnreadCountUnseenCount = () => {
 
 const markAsRead = (notification_id, notification_type) => {
 	const request_body = {}
-	if (notification_type === 'reply') {
+	if (notification_type === "reply") {
 		request_body.mark_reply_notifications_as_read = [notification_id]
-	} else if (notification_type === 'message') {
+	} else if (notification_type === "message") {
 		request_body.mark_message_notifications_as_read = [notification_id]
 	}
 	

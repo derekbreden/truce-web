@@ -60,18 +60,18 @@ const tests = {
 		for (let i = 0; i < binary_string.length; i++) {
 			bytes[i] = binary_string.charCodeAt(i)
 		}
-		const file = new window_user_b.File([bytes], 'test.png', { type: 'image/png' })
+		const file = new window_user_b.File([bytes], "test.png", { type: "image/png" })
 
 		// Add the image to the file input and trigger change
 		const $file_input = $b("main-content-wrapper[active] input[image]")
-		Object.defineProperty($file_input, 'files', {
+		Object.defineProperty($file_input, "files", {
 			value: {
 				0: file,
 				length: 1,
 				item: (i) => i === 0 ? file : null
 			}
 		})
-		await $file_input.dispatchEvent(new window_user_b.Event('change', { bubbles: true }))
+		await $file_input.dispatchEvent(new window_user_b.Event("change", { bubbles: true }))
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify thumbnail has same image

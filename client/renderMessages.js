@@ -301,7 +301,7 @@ const markMessagesAsRead = (messages) => {
 			const notifications = state.cache["/notifications"]?.notifications
 			if (notifications) {
 				notifications.forEach(notification => {
-					if (notification_ids.includes(notification.notification_id) && notification.notification_type === 'message') {
+					if (notification_ids.includes(notification.notification_id) && notification.notification_type === "message") {
 						notification.read = true
 						notification.seen = true
 					}

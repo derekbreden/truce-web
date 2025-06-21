@@ -1,8 +1,8 @@
-let testResults = []
+let test_results = []
 
 const assertEquals = (expected, actual, message) => {
 	const pass = expected === actual // Consider a deep equality check for objects/arrays if needed
-	testResults.push({
+	test_results.push({
 		pass,
 		message,
 		expected,
@@ -11,20 +11,19 @@ const assertEquals = (expected, actual, message) => {
 }
 
 const getTestResults = () => {
-	return [...testResults]
+	return [...test_results]
 }
 
 const clearTestResults = () => {
-	testResults = []
+	test_results = []
 }
 
-const runTests = async (testFileName, testFunctions, includeTimer) => {
+const runTests = async (test_file_name, test_functions) => {
 	clearTestResults()
-	const startTime = new Date()
-	console.log(`  ${testFileName}`)
+	console.log(`  ${test_file_name}`)
 
-	for (let i = 0; i < testFunctions.length; i++) {
-		const testFn = testFunctions[i]
+	for (let i = 0; i < test_functions.length; i++) {
+		const testFn = test_functions[i]
 		try {
 			const result = testFn()
 			if (result && typeof result.then === "function") {
@@ -35,20 +34,20 @@ const runTests = async (testFileName, testFunctions, includeTimer) => {
 			if (global._test_window?.length && process.env.CAPTURE_VISUALS === "true") {
 				try {
 					const { captureVisual } = require("./testVisualHelpers.js")
-					const testName = testFileName.replace('.test.js', '')
-					const functionName = testFn.name || `test${i + 1}`
+					const test_name = test_file_name.replace(".test.js", "")
+					const function_name = testFn.name || `test${i + 1}`
 					global._test_window.forEach(async (_test_window, index) => {
 						// Capture visual for each test window
-						await captureVisual(_test_window, `${testName}-${functionName}-${index}`)
+						await captureVisual(_test_window, `${test_name}-${function_name}-${index}`)
 					})
-				} catch (visualError) {
-					console.log(`Visual capture failed: ${visualError.message}`)
+				} catch (visual_error) {
+					console.log(`Visual capture failed: ${visual_error.message}`)
 				}
 			}
 		} catch (error) {
 			// If a test function itself throws an error, record it as a failure.
 			// This is a basic way to catch unexpected errors within a test.
-			testResults.push({
+			test_results.push({
 				pass: false,
 				message: `Test function "${testFn.name || "anonymous"}" threw an error:
     ${error.message}
@@ -59,29 +58,29 @@ const runTests = async (testFileName, testFunctions, includeTimer) => {
 		}
 	}
 
-	let passedCount = 0
-	let failedCount = 0
+	let passed_count = 0
+	let failed_count = 0
 
-	testResults.forEach((result) => {
+	test_results.forEach((result) => {
 		if (result.pass) {
 			// Individual passes are not super relevant information.
 			// We only want to see total passes and any failures.
 			// console.log(`\x1b[32mPASS:\x1b[0m ${result.message}`)
-			passedCount++
+			passed_count++
 		} else {
 			console.log(`    \x1b[31mFAIL:\x1b[0m ${result.message}`)
 			console.log(`      Expected: ${JSON.stringify(result.expected)}`)
 			console.log(`      Actual:   ${JSON.stringify(result.actual)}`)
-			failedCount++
+			failed_count++
 		}
 	})
 
-	console.log(`    \x1b[32mPASSED:\x1b[0m ${passedCount}`)
-	if (failedCount) {
-		console.log(`    \x1b[31mFAILED:\x1b[0m ${failedCount}`)
+	console.log(`    \x1b[32mPASSED:\x1b[0m ${passed_count}`)
+	if (failed_count) {
+		console.log(`    \x1b[31mFAILED:\x1b[0m ${failed_count}`)
 	}
 
-	if (failedCount > 0) {
+	if (failed_count > 0) {
 		console.log("  \x1b[31mSome tests failed. Exiting with status 1.\x1b[0m")
 		process.exit(1)
 	}

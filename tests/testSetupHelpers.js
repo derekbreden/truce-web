@@ -38,12 +38,12 @@ const setupTestEnvironment = async (options) => {
 
 				// Extra processing to remove "animation:" and "transition:" from CSS for cleaner screenshots
 				if (file.endsWith(".css")) {
-					let processedContent = fileContent.replace(/^.*(animation:|transition:).*$/gm, '')
+					let processed_content = fileContent.replace(/^.*(animation:|transition:).*$/gm, "")
 					// Add dark mode override if requested
 					if (process.env.DARK_MODE === "true") {
-						processedContent = `:root { color-scheme: dark !important; }\n` + processedContent
+						processed_content = `:root { color-scheme: dark !important; }\n` + processed_content
 					}
-					processedLines.push(processedContent)
+					processedLines.push(processed_content)
 				} else {
 					processedLines.push(fileContent)
 				}
@@ -106,7 +106,7 @@ const setupTestEnvironment = async (options) => {
 		async beforeParse(window) {
 			
 			// Replace window.Image with Canvas.Image for proper image support in tests
-			const Canvas = require('canvas')
+			const Canvas = require("canvas")
 			window.Image = Canvas.Image
 			
 			// Mock fetch
@@ -133,7 +133,7 @@ const setupTestEnvironment = async (options) => {
 						createTransport: () => ({
 							sendMail: (options, callback) => {
 								global.test_email_sent = options
-								if (callback) callback(null, { messageId: 'test-id' })
+								if (callback) callback(null, { messageId: "test-id" })
 							}
 						})
 					},
