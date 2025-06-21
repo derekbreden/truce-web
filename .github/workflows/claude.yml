@@ -13,6 +13,13 @@ jobs:
   claude-response:
     runs-on: ubuntu-latest
     steps:
+      # CRITICAL: Add this step to checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Full history for branch operations
+      
       - uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
