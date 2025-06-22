@@ -1,0 +1,173 @@
+[line-after]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -20px;
+  right: -20px;
+  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-border-standard);
+}
+
+@keyframes loading {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+detail[favorites] {
+  cursor: pointer;
+}
+
+detail[favorites] icon {
+  margin: -3px -1px -4px -7px;
+}
+
+detail[favorites][favorited] svg {
+  fill: #e48;
+  fill: light-dark(#e48, var(--color-favorite));
+}
+
+detail[replies] icon {
+  margin: -3px 3px -4px -3px;
+}
+
+detail[replies] svg {
+  height: 28px;
+  width: 28px;
+}
+
+detail[more] icon {
+  margin: -3px -6px -3px -1px;
+}
+
+detail[more] svg {
+  height: var(--icon-xl);
+  width: var(--icon-xl);
+}
+
+alert-wrapper {
+  position: fixed;
+  z-index: 1;
+  top: var(--header-height);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+alert-wrapper alert {
+  animation: slide-down 0.2s ease-in-out, slide-up 0.2s ease-in-out 4.8s forwards;
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: margin-top(0);
+    margin-bottom: 0;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    margin-bottom: -50px;
+  }
+}
+
+activity[explode-out] {
+  animation: explode-out .2s ease-in-out 0s forwards;
+}
+
+@keyframes explode-out {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);
+    ;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.1, 1.1);
+    ;
+  }
+}
+
+p[favorites-empty] {
+  overflow: visible;
+}
+
+p[favorites-empty] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2[topics] svg,
+h2[welcome] svg,
+h2[moderation] svg,
+h2[favorites] svg,
+h2[conversations-empty] svg,
+p[add-to-home] svg,
+p[favorites-empty] svg,
+p[conversations-empty] svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+  margin-bottom: -16px;
+}
+
+h2[moderation] svg {
+  width: 60px;
+  height: 60px;
+  margin-top: -16px;
+}
+
+h2[favorites] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2[favorites] svg {
+  margin: -12px -4px -8px -4px;
+}
+
+h2[favorites] svg:nth-child(2) {
+  margin-top: -9px;
+}
+
+p[add-to-home] {
+  overflow: visible;
+}
+
+p[add-to-home] svg {
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  margin-bottom: -6px;
+}

@@ -300,6 +300,11 @@ error p {
   margin-top: var(--space-xs);
 }
 
+info b {
+  margin-top: -1.5px;
+  margin-bottom: var(--space-xs);
+}
+
 p[right] {
   display: flex;
   justify-content: flex-end;

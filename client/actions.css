@@ -1,0 +1,48 @@
+action {
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  cursor: pointer;
+}
+
+action p {
+  margin: 0 0 0 5px;
+}
+
+action>icon {
+  cursor: pointer;
+  margin: 0 0 -4px 0;
+}
+
+action>icon svg {
+  height: 24px;
+  width: 24px;
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+}
+
+app-store-wrapper {
+  padding: 20px 0 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0;
+}
+
+app-store-wrapper img {
+  height: 40px;
+}
+
+app-store-wrapper img[white] {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  app-store-wrapper img[white] {
+    display: block;
+  }
+
+  app-store-wrapper img[black] {
+    display: none;
+  }
+}
