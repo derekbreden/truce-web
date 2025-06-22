@@ -1399,7 +1399,6 @@ expand-wrapper[collapse] {
   justify-content: center;
 }
 
-back-forward-wrapper,
 tab-wrapper {
   display: flex;
   justify-content: space-between;
@@ -1407,7 +1406,6 @@ tab-wrapper {
   padding-bottom: 15px;
 }
 
-back-forward-wrapper tab-item[active],
 tab-wrapper tab-item[active] {
   display: flex;
   align-items: center;
@@ -1416,12 +1414,10 @@ tab-wrapper tab-item[active] {
 }
 
 @media (max-width: 1000px) {
-  main-content-2 back-forward-wrapper,
   main-content-2 tab-wrapper {
     margin-top: var(--space-md);
   }
 
-  main-content-2 back-forward-wrapper:before,
   main-content-2 tab-wrapper:before {
     content: "";
     display: flex;
@@ -1436,7 +1432,6 @@ tab-wrapper tab-item[active] {
 
 mark-all-as-read-wrapper,
 read-more-wrapper,
-tab-item,
 tab-item {
   cursor: pointer;
   display: flex;
@@ -1459,7 +1454,6 @@ tab-item[right] {
 
 read-more-wrapper button,
 tab-item button,
-tab-item button,
 expand-wrapper button {
   background: var(--color-white);
   border-color: var(--color-white);
@@ -1469,7 +1463,6 @@ expand-wrapper button {
   padding: 6px;
 }
 
-tab-item button::before,
 tab-item button::before,
 [expand-left]::before,
 [expand-right]::before,
@@ -1568,12 +1561,10 @@ tab-item p {
 }
 
 main-content-2 read-more-wrapper p,
-main-content-2 tab-item p,
 main-content-2 tab-item p {
   margin: 0;
   text-align: center;
 }
-main-content-2 back-forward-wrapper,
 main-content-2 tab-wrapper {
   flex-wrap: wrap;
   gap: var(--space-sm);
@@ -1882,7 +1873,6 @@ topics[topics-list][big] {
 }
 
 tab-wrapper::after,
-back-forward-wrapper::after,
 activities[favorites] activity::after,
 notifications notification::after,
 users user:after,

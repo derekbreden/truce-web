@@ -1,13 +1,13 @@
 const updateDisplayName = (data) => {
 	// Workaround for back button not updating
-	if ($("back-forward-wrapper")) {
+	if ($("tab-wrapper")) {
 		const previous_path = state.path_history[state.path_history.length - 2]
 		if (previous_path === `/user/${state.user_slug}`) {
 			state.path_history[state.path_history.length - 2] =
 				`/user/${data.user_slug}`
 
 			// Best argument for using reactive framework right here?
-			$("back-forward-wrapper tab-item p").textContent = renderName(
+			$("tab-wrapper tab-item p").textContent = renderName(
 				data.display_name,
 				data.display_name_index,
 			)

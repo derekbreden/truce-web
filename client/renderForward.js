@@ -8,19 +8,19 @@ const renderForward = (parent_post) => {
 			`,
 			[parent_post.title],
 		)
-		if (!$("main-content-wrapper[active] back-forward-wrapper")) {
+		if (!$("main-content-wrapper[active] tab-wrapper")) {
 			$("main-content-wrapper[active] main-content").prepend(
 				$(
 					`
-					back-forward-wrapper
+					tab-wrapper
 					`,
 				),
 			)
 		}
-		$("main-content-wrapper[active] back-forward-wrapper")
+		$("main-content-wrapper[active] tab-wrapper")
 			.$("tab-item")
 			?.remove()
-		$("main-content-wrapper[active] back-forward-wrapper").appendChild($forward)
+		$("main-content-wrapper[active] tab-wrapper").appendChild($forward)
 		$forward.on("click", () => {
 			let new_path = `/post/${parent_post.slug}`
 			if (parent_post.slug === "Home") {

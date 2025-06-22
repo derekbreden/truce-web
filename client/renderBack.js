@@ -1,6 +1,6 @@
 const renderBack = () => {
 	// Always remove previous wrapper
-	$("main-content-wrapper[active] main-content back-forward-wrapper")?.remove()
+	$("main-content-wrapper[active] main-content tab-wrapper")?.remove()
 
 	// Sometimes add new wrapper
 	if (
@@ -18,7 +18,7 @@ const renderBack = () => {
 		}
 		const $back_forward = $(
 			`
-			back-forward-wrapper
+			tab-wrapper
 				tab-item
 					button[expand-left]
 					p $1

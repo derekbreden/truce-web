@@ -191,7 +191,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-				back-forward-wrapper
+				tab-wrapper
 					tab-item
 						button[expand-left]
 						p Terms and conditions
@@ -214,7 +214,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				[$("icons icon[welcome] svg").cloneNode(true)],
 			),
 		)
-		$("main-content-wrapper[active] main-content back-forward-wrapper").on(
+		$("main-content-wrapper[active] main-content tab-wrapper").on(
 			"click",
 			() => {
 				goToPath("/")

@@ -43,7 +43,7 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 100))
 
 		// Navigate to replies section if it exists
-		const $repliesButton = $("back-forward-wrapper [replies]")
+		const $repliesButton = $("tab-wrapper [replies]")
 		if ($repliesButton) {
 			$repliesButton.click()
 			await new Promise(resolve => setTimeout(resolve, 100))
