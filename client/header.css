@@ -1,0 +1,73 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--color-white);
+  border-bottom: 1px solid #000;
+  border-bottom: 1px solid var(--color-border-strong);
+  right: 0;
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: var(--z-header);
+}
+
+header h1 {
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-black);
+}
+
+header svg {
+  position: absolute;
+  z-index: 1;
+  height: 43px;
+  width: 43px;
+  left: calc(50% - 21.5px);
+}
+
+header::after {
+  content: "";
+  position: absolute;
+  background: var(--color-black);
+  z-index: 0;
+  left: var(--split-point);
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+hamburger {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+[unread]::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 4px);
+  left: -14px;
+  background: var(--color-info);
+  background: var(--color-state-info);
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+}
+
+hamburger[unread]::before {
+  left: -8px;
+}

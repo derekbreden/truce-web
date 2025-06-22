@@ -1,0 +1,146 @@
+menu-wrapper {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-menu-bg);
+  overflow-y: scroll;
+}
+
+menu-wrapper modal-bg {
+  position: fixed;
+  top: var(--header-height);
+}
+
+menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+  border-radius: 0 0 0 2px;
+  z-index: var(--z-menu);
+  border-left: 1px solid var(--color-gray-dark);
+  border-bottom: 1px solid var(--color-gray-dark);
+}
+
+menu signed-in,
+menu sign-in {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 15px 20px;
+  position: relative;
+  width: 280px;
+}
+
+menu signed-in>*,
+menu sign-in>* {
+  margin-bottom: var(--space-xs);
+}
+
+menu links {
+  display: flex;
+  flex-direction: column;
+}
+
+menu links a {
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  padding: 5px 20px 5px 11px;
+  border-bottom: 1px solid #999;
+  border-bottom: 1px solid var(--color-border-medium);
+  position: relative;
+}
+
+menu p[notice] {
+  width: 280px;
+  border-top: 1px solid #999;
+  border-top: 1px solid var(--color-border-medium);
+  padding: var(--space-sm) var(--space-md);
+  margin-top: 0;
+}
+
+menu links a icon {
+  height: var(--icon-menu);
+  width: var(--icon-menu);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+menu links a icon svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+}
+
+menu links a icon[topic] svg {
+  width: var(--icon-menu-topic);
+}
+
+menu links a icon[settings] svg {
+  width: var(--icon-menu-settings);
+}
+
+menu links a icon[notifications] svg {
+  width: var(--icon-menu-notifications);
+}
+
+menu links a p {
+  margin: 0 0 0 5px;
+}
+
+menu links a[unread]::before {
+  left: 6px;
+}
+
+toggle-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 20px 0 0 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+toggle-wrapper[disabled] {
+  opacity: var(--opacity-muted);
+  cursor: default;
+}
+
+toggle-wrapper toggle-button {
+  margin-left: 20px;
+  display: flex;
+  height: 30px;
+  width: 50px;
+  border-radius: 16px;
+  background: #ddd;
+  background: light-dark(var(--color-gray-light), var(--color-gray-darker));
+  position: relative;
+  transition: background .2s ease-in-out;
+}
+
+toggle-wrapper toggle-button toggle-circle {
+  height: 28px;
+  width: 28px;
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+  border-radius: 50%;
+  position: absolute;
+  top: var(--space-3xs);
+  left: var(--space-3xs);
+  transition: left .2s ease-in-out;
+}
+
+toggle-wrapper[active] toggle-button {
+  background: var(--color-success);
+  background: var(--color-state-success);
+}
+
+toggle-wrapper[active] toggle-button toggle-circle {
+  left: 21px;
+}
