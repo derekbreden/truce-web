@@ -55,6 +55,7 @@
   --color-bg-tertiary: light-dark(var(--color-gray-lightest), #0c0c0c);
   
   --color-text-primary: light-dark(var(--color-black), var(--color-white));
+  --color-text-primary-inverted: light-dark(var(--color-white), var(--color-black));
   --color-text-secondary: light-dark(var(--color-black), var(--color-gray-lightest));
   
   --color-border-standard: light-dark(var(--color-gray-light), var(--color-gray-dark));
@@ -683,7 +684,7 @@ modal[image]>p[img] img {
 modal[image]>button {
   border-radius: 0;
   border: 1px solid #fff;
-  border: 1px solid var(--color-text-primary);
+  border: 1px solid var(--color-text-primary-inverted);
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
@@ -915,12 +916,12 @@ button {
   font-size: var(--font-size-base);
   -webkit-appearance: none;
   border-radius: var(--border-radius-sm);
+  color: var(--color-white);
   border: 1px solid #000;
   background: var(--color-black);
-  color: var(--color-white);
   background: var(--color-text-secondary);
   border: 1px solid var(--color-border-strong);
-  color: var(--color-text-primary);
+  color: var(--color-text-primary-inverted);
   padding: var(--space-sm);
   font-weight: 700;
   letter-spacing: 1px;
@@ -939,7 +940,7 @@ button icon {
 
 button svg {
   fill: var(--color-white);
-  fill: var(--color-text-primary);
+  fill: var(--color-text-primary-inverted);
   height: var(--icon-xl);
   width: var(--icon-xl);
 }
@@ -1264,7 +1265,7 @@ image-previews preview remove-icon::after {
   position: absolute;
   width: 15px;
   border: 1px solid #fff;
-  border: 1px solid var(--color-text-primary);
+  border: 1px solid var(--color-text-primary-inverted);
   border-radius: 4px;
   transform: rotate(45deg);
   top: 11px;
