@@ -1,0 +1,132 @@
+topics[topics-list] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 20px;
+  padding-top: var(--space-md);
+}
+
+topics[topics-list] topic {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  width: calc(50% - 10px);
+  cursor: pointer;
+}
+
+topics[topics-list][big] topic {
+  width: unset;
+  cursor: unset;
+  margin-left: -3px;
+}
+
+topics[topics-list][big] topic[topic=politics],
+topics[topics-list][big] topic[topic=sports],
+topics[topics-list][big] topic[topic=science] {
+  margin-left: -5px;
+}
+
+topics[topics-list][big] topic[topic=media],
+topics[topics-list][big] topic[topic=religion],
+topics[topics-list][big] topic[topic=health],
+topics[topics-list][big] topic[topic=work] {
+  margin-left: -4px;
+}
+
+topics[topics-list] topic[topic=religion] icon {
+  margin-top: var(--space-3xs);
+}
+
+topics[topics-list] topic[topic=parenting] icon,
+topics[topics-list] topic[topic=media] icon,
+topics[topics-list] topic[topic=asks] icon {
+  margin-top: 2px;
+}
+
+topics[topics-list] topic[topic=weather] icon {
+  margin-top: var(--space-2xs);
+}
+
+topics[topics-list] topic[topic=food] icon,
+topics[topics-list] topic[topic=health] icon {
+  margin-top: -1px;
+}
+
+topics[topics-list] topic[topic=history] icon {
+  margin-top: -3px;
+}
+
+topics[topics-list] topic[topic=polls] icon {
+  margin-top: -5px;
+}
+
+topics[topics-list] topic topicname-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+topics[topics-list] topic topicname {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+topics[topics-list] topic topicname name {
+  font-size: 1.143rem;
+  font-weight: 600;
+}
+
+topics[topics-list][big] topic topicname name {
+  margin-top: -1px;
+  font-size: var(--font-size-lg);
+}
+
+topics[topics-list] topic topicname count {
+  background: var(--color-black);
+  color: #f5f5f5;
+  border: 1px solid #000;
+  border: 1px solid var(--color-text-secondary);
+  border-radius: var(--font-size-sm);
+  padding: 1px 5px;
+  min-width: 15px;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  line-height: var(--font-size-sm);
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  topics[topics-list] topic topicname count {
+    font-weight: 400;
+  }
+}
+
+topics[topics-list] topic subtitle {
+  font-size: var(--font-size-sm);
+}
+
+topics[topics-list][big] topic subtitle {
+  font-size: var(--font-size-base);
+}
+
+topics[topics-list] topic icon {
+  font-size: 0;
+}
+
+topics[topics-list] topic svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+  height: 40px;
+  width: 40px;
+}
+
+topics[topics-list][big] {
+  position: relative;
+  padding-bottom: var(--space-md);
+}
+
+h2[topics] svg {
+  width: var(--icon-xxl);
+  height: var(--icon-xxl);
+}

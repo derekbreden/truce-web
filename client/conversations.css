@@ -1,0 +1,313 @@
+/* Messaging Layout */
+messages-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-height) - var(--footer-height-base) - env(safe-area-inset-bottom)); /* Account for header and footer */
+  margin: 0 -20px -20px -20px; /* Counteract main-content padding */
+}
+
+conversation-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border-standard);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+conversation-header participants {
+  flex: 1;
+  margin: var(--space-md);
+}
+
+conversation-header participants h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin: 0;
+}
+
+messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow flex child to shrink */
+}
+
+message {
+  margin: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border-standard);
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm);
+}
+
+message + message {
+  margin-top: 0;
+}
+
+message-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-sm);
+}
+
+message-header profile-picture {
+  flex-shrink: 0;
+}
+
+message-header profile-picture image {
+  width: 25px;
+  height: 25px;
+}
+
+message-header profile-picture svg {
+  width: var(--icon-xxl);
+  height: var(--icon-xxl);
+  margin: -3px;
+  opacity: .5;
+}
+
+message-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+message-info author {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+message-info author span {
+  display: inline-block;
+}
+
+message-info author icon {
+  display: inline-flex;
+}
+
+message-info author icon svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  fill: currentColor;
+}
+
+message-info time-ago {
+  opacity: .5;
+}
+
+message-content {
+  margin-top: var(--space-sm);
+}
+
+message-content p {
+  margin: 0;
+}
+
+message-content p + p {
+  margin-top: var(--space-sm);
+}
+
+edit-button {
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+}
+
+message:hover edit-button {
+  opacity: 0.6;
+}
+
+edit-button:hover {
+  opacity: 1;
+}
+
+edit-button svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+message-input-area {
+  flex-shrink: 0;
+  padding: var(--space-md) 0;
+  border-top: 1px solid var(--color-border-standard);
+}
+
+message-form {
+  display: flex;
+  gap: var(--space-xs);
+  padding: 0 var(--space-xs);
+  align-items: flex-end;
+}
+
+message-form textarea {
+  flex: 1;
+  height: 60px;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border-standard);
+  border-radius: var(--border-radius-sm);
+  resize: none;
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  background: transparent;
+  font-family: inherit;
+}
+
+message-form title-wrapper svg {
+  margin: -5px -4px -9px -5px;
+}
+
+message-form button[submit] {
+  height: 60px;
+}
+
+empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-lg) var(--space-md);
+  opacity: 0.6;
+  flex: 1;
+}
+
+empty-state icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+empty-state h3 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+empty-state p {
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  max-width: 240px;
+}
+
+/* Conversation List Styles */
+conversations {
+  display: flex;
+  flex-direction: column;
+}
+
+conversation {
+  position: relative;
+  border: 1px solid var(--color-border-standard);
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+conversation:hover {
+  border-color: light-dark(var(--color-gray-medium), var(--color-gray-darker));
+}
+
+conversation profile-picture {
+  flex-shrink: 0;
+}
+
+conversation profile-picture image {
+  width: 40px;
+  height: 40px;
+}
+
+conversation profile-picture svg {
+  width: 50px;
+  height: 50px;
+  margin: -5px;
+  opacity: .5;
+}
+
+conversation-info {
+  flex: 1;
+  min-width: 0;
+}
+
+conversation-info participants {
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  display: block;
+  font-size: var(--font-size-md);
+}
+
+conversation-info last-message {
+  font-size: var(--font-size-sm);
+  opacity: .7;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+conversation-info time-ago {
+  font-size: var(--font-size-xs);
+  opacity: .5;
+  display: block;
+  margin-top: 2px;
+}
+
+conversation unread-indicator {
+  width: 8px;
+  height: 8px;
+  background: light-dark(var(--color-info), var(--color-info-dark));
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+conversation unread-count {
+  background: light-dark(var(--color-info), var(--color-info-dark));
+  color: light-dark(#fff, #fff);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  min-width: 16px;
+  text-align: center;
+  display: inline-block;
+  line-height: 1.2;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+h2[conversations-empty] icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2[conversations-empty] svg {
+  margin: -12px -4px -8px -4px;
+}
+
+p[conversations-empty] {
+  overflow: visible;
+}
+
+p[conversations-empty] svg {
+  margin: 0 4px -16px 4px;
+}
+
+conversations post {
+  padding-bottom: 21px;
+  position: relative;
+}

@@ -1,0 +1,30 @@
+users user {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) 0;
+  gap: 20px;
+}
+
+users author-name {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+users author-name name {
+  font-weight: 600;
+}
+
+users author-name icon {
+  font-size: 0;
+}
+
+users author-name icon svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+  height: var(--icon-lg);
+  width: var(--icon-lg);
+  margin-left: -5px;
+}
