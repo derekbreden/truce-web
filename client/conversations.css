@@ -1,10 +1,16 @@
-/* Messaging Layout */
+/* ================================
+   MESSAGING LAYOUT
+   ================================ */
 messages-container {
   display: flex;
   flex-direction: column;
   height: calc(100vh - var(--header-height) - var(--footer-height-base) - env(safe-area-inset-bottom)); /* Account for header and footer */
   margin: 0 -20px -20px -20px; /* Counteract main-content padding */
 }
+
+/* ================================
+   CONVERSATION HEADER
+   ================================ */
 
 conversation-header {
   flex-shrink: 0;
@@ -24,6 +30,10 @@ conversation-header participants h2 {
   font-weight: 600;
   margin: 0;
 }
+
+/* ================================
+   MESSAGES CONTAINER
+   ================================ */
 
 messages {
   flex: 1;
@@ -135,6 +145,10 @@ edit-button svg {
   height: var(--icon-sm);
 }
 
+/* ================================
+   MESSAGE INPUT AREA
+   ================================ */
+
 message-input-area {
   flex-shrink: 0;
   padding: var(--space-md) 0;
@@ -169,6 +183,10 @@ message-form button[submit] {
   height: 60px;
 }
 
+/* ================================
+   EMPTY STATE
+   ================================ */
+
 empty-state {
   display: flex;
   flex-direction: column;
@@ -199,7 +217,9 @@ empty-state p {
   max-width: 240px;
 }
 
-/* Conversation List Styles */
+/* ================================
+   CONVERSATION LIST STYLES
+   ================================ */
 conversations {
   display: flex;
   flex-direction: column;

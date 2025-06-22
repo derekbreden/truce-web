@@ -1,3 +1,7 @@
+/* ================================
+   FOOTER CONTAINER
+   ================================ */
+
 footer {
   display: none;
   position: fixed;
@@ -24,6 +28,10 @@ footer::after {
   right: 0;
   bottom: 0;
 }
+
+/* ================================
+   FOOTER NAVIGATION LINKS
+   ================================ */
 
 footer a {
   font-size: var(--font-size-sm);
@@ -67,6 +75,10 @@ footer a[unread]::before {
   top: calc(50% - 10px);
 }
 
+/* ================================
+   APP MODE LAYOUT ADJUSTMENTS
+   ================================ */
+
 body[app] main-content-wrapper {
   bottom: calc(64px + env(safe-area-inset-bottom));
 }
@@ -78,6 +90,10 @@ body[app] footer {
 body[app] main-content add-new:first-child {
   bottom: calc(84px + env(safe-area-inset-bottom));
 }
+
+/* ================================
+   FOOTER NAVIGATION DOTS
+   ================================ */
 
 footer dot {
   position: absolute;
