@@ -36,7 +36,8 @@ modal {
   background: var(--color-white);
   background: var(--color-bg-primary);
   border-radius: var(--border-radius-sm);
-  box-shadow: 0px 0px 5px var(--color-black);
+  box-shadow: light-dark(0px 0px 5px var(--color-black), none);
+  border: light-dark(none, 1px solid var(--color-gray-dark));
   max-width: 480px;
   width: calc(100% - 20px);
 }
@@ -51,13 +52,6 @@ modal input {
 
 modal p:first-child {
   margin-top: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  modal {
-    box-shadow: none;
-    border: 1px solid var(--color-gray-dark);
-  }
 }
 
 /* ================================

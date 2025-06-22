@@ -129,13 +129,7 @@ topics[topics-list] topic topicname count {
   text-align: center;
   font-size: var(--font-size-sm);
   line-height: var(--font-size-sm);
-  font-weight: 600;
-}
-
-@media (prefers-color-scheme: dark) {
-  topics[topics-list] topic topicname count {
-    font-weight: 400;
-  }
+  font-weight: light-dark(600, 400);
 }
 
 topics[topics-list] topic subtitle {

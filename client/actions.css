@@ -36,15 +36,8 @@ app-store-wrapper img {
 }
 
 app-store-wrapper img[white] {
-  display: none;
+  display: light-dark(none, block);
 }
-
-@media (prefers-color-scheme: dark) {
-  app-store-wrapper img[white] {
-    display: block;
-  }
-
-  app-store-wrapper img[black] {
-    display: none;
-  }
+app-store-wrapper img[black] {
+  display: light-dark(block, none);
 }

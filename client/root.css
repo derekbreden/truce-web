@@ -256,12 +256,12 @@ main-content-2 {
   position: relative;
 }
 
-@media (prefers-color-scheme: dark) and (min-width: 482px) {
+@media (min-width: 482px) {
 
   main-content,
   main-content-2 {
-    border-left: 1px solid var(--color-gray-dark);
-    border-right: 1px solid var(--color-gray-dark);
+    border-left: light-dark(none, 1px solid var(--color-gray-dark));
+    border-right: light-dark(none, 1px solid var(--color-gray-dark));
   }
 }
 
