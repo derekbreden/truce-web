@@ -19,7 +19,6 @@ const renderNotification = (notification) => {
 	          i $3
 	      read-more-wrapper
 	        button[expand-right]
-	      line-full
 	    `,
 			[
 				!notification.read,
@@ -69,7 +68,6 @@ const renderNotification = (notification) => {
 	        $6
 	      read-more-wrapper
 	        button[expand-right]
-	      line-full
 	    `,
 			[
 				!notification.read,

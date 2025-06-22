@@ -118,7 +118,6 @@ const renderActivities = (activities) => {
 						activity[reply]
 							h2 $1
 							$2
-							line-full
 					`,
 					[activity.parent_post_title, $reply_wrapper],
 				)
@@ -136,7 +135,6 @@ const renderActivities = (activities) => {
 					`
 						activity[post]
 							$1
-							line-full
 					`,
 					[$post],
 				)
