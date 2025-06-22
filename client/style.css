@@ -40,8 +40,6 @@
   --color-error-bg: #fee;      /* Error background */
   
   /* Interactive Colors */
-  --color-primary: #007AFF;    /* iOS-style primary blue */
-  --color-primary-dark: #0056b3; /* Darker blue variant */
   --color-favorite: #f48;      /* Favorite/heart color */
   
   /* Special Effects */
@@ -2801,13 +2799,13 @@ conversation-info time-ago {
 conversation unread-indicator {
   width: 8px;
   height: 8px;
-  background: light-dark(var(--color-primary), var(--color-primary-dark));
+  background: light-dark(var(--color-info), var(--color-info-dark));
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 conversation unread-count {
-  background: light-dark(var(--color-primary), var(--color-primary-dark));
+  background: light-dark(var(--color-info), var(--color-info-dark));
   color: light-dark(#fff, #fff);
   border-radius: 12px;
   font-size: 12px;
