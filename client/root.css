@@ -5,6 +5,50 @@
   src: url("/OpenSans-VariableFont_wdth_wght.ttf") format("truetype");
 }
 
+/* ================================
+   ANIMATIONS
+   ================================ */
+
+@keyframes slide-out-left {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slide-out-right {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+
 :root {
   color-scheme: light dark;
   
@@ -192,26 +236,6 @@ main-content-wrapper[inactive][clicked-back] {
   animation: slide-out-right 0.2s ease-in-out;
 }
 
-@keyframes slide-out-left {
-  0% {
-    transform: translateX(0%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-@keyframes slide-out-right {
-  0% {
-    transform: translateX(0%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 main-content-wrapper[active] {
   animation: slide-in-left 0.2s ease-in-out;
 }
@@ -222,26 +246,6 @@ main-content-wrapper[active][clicked-back] {
 
 main-content-wrapper[active][skip-state] {
   animation: none;
-}
-
-@keyframes slide-in-left {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(0%);
-  }
-}
-
-@keyframes slide-in-right {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(0%);
-  }
 }
 
 main-content,

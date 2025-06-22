@@ -1,4 +1,32 @@
 /* ================================
+   ANIMATIONS
+   ================================ */
+
+@keyframes flash-focus {
+  0% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+@keyframes flash-long-focus {
+  0% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  75% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+/* ================================
    CORE FORM CONTROLS
    ================================ */
 
@@ -485,28 +513,4 @@ add-new[reply] button {
 
 [flash-long-focus] {
   animation: flash-long-focus 2s ease-in 1;
-}
-
-@keyframes flash-focus {
-  0% {
-    box-shadow: 0 0 5px var(--color-focus);
-  }
-
-  100% {
-    box-shadow: none;
-  }
-}
-
-@keyframes flash-long-focus {
-  0% {
-    box-shadow: 0 0 5px var(--color-focus);
-  }
-
-  75% {
-    box-shadow: 0 0 5px var(--color-focus);
-  }
-
-  100% {
-    box-shadow: none;
-  }
 }
