@@ -79,11 +79,13 @@ const main = async () => {
 			? path.join(__dirname, "..", "baseline")
 			: path.join(__dirname, "..", "capture")
 		
-		if (fs.existsSync(targetCaptureDir)) {
-			const files = fs.readdirSync(targetCaptureDir)
-			files.forEach(file => {
-				fs.unlinkSync(path.join(targetCaptureDir, file))
-			})
+		if (captureBaselineMode === "capture") {
+			if (fs.existsSync(targetCaptureDir)) {
+				const files = fs.readdirSync(targetCaptureDir)
+				files.forEach(file => {
+					fs.unlinkSync(path.join(targetCaptureDir, file))
+				})
+			}
 		}
 		// Set environment variable for child processes
 		process.env.CAPTURE_VISUALS = "true"
