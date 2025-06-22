@@ -193,7 +193,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				`
 				tab-wrapper[line-after]
 					tab-item
-						button[expand-left]
+						icon[back]
 						p Terms and conditions
 				posts
 					post[line-after]

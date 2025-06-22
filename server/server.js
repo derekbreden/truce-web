@@ -82,13 +82,6 @@ module.exports = {
 						for (const line of lines) {
 							if (line.includes("<!--#include file=\"")) {
 								const file = line.split("\"")[1]
-
-								// Tests are skipped when not on the test path
-								const dir = file.split("/")[0]
-								if (dir === "tests" && req.path !== "test") {
-									continue
-								}
-
 								const file_content = await fs.readFile(file, encoding)
 								await parseData(file_content)
 							} else {
@@ -99,7 +92,7 @@ module.exports = {
 					await parseData(data)
 					res.end("", encoding)
 
-					// Return any other file as is
+				// Return any other file as is
 				} else {
 					res.end(data, encoding)
 				}

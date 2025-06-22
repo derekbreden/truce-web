@@ -124,27 +124,6 @@ message-content p + p {
   margin-top: var(--space-sm);
 }
 
-edit-button {
-  opacity: 0;
-  transition: opacity 0.2s;
-  cursor: pointer;
-  padding: 4px;
-  margin-left: auto;
-}
-
-message:hover edit-button {
-  opacity: 0.6;
-}
-
-edit-button:hover {
-  opacity: 1;
-}
-
-edit-button svg {
-  width: var(--icon-sm);
-  height: var(--icon-sm);
-}
-
 /* ================================
    MESSAGE INPUT AREA
    ================================ */
@@ -175,12 +154,22 @@ message-form textarea {
   font-family: inherit;
 }
 
-message-form title-wrapper svg {
-  margin: -5px -4px -9px -5px;
-}
-
 message-form button[submit] {
   height: 60px;
+}
+message-form title-wrapper icon {
+  cursor: pointer;
+  display: flex;
+  background-color: var(--color-text-primary);
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  margin: 0 0 -3px 0;
+}
+message-form button icon {
+  background-color: var(--color-bg-primary);
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  margin: 0 -8px 0 -6px;
 }
 
 /* ================================

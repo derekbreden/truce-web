@@ -20,7 +20,7 @@ const renderBack = () => {
 			`
 			tab-wrapper[line-after]
 				tab-item
-					button[expand-left]
+					icon[back]
 					p $1
 			`,
 			[

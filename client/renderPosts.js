@@ -381,7 +381,7 @@ const renderPosts = (posts, topic, user) => {
 						span Posts from subscriptions
 					tab-item
 						p All posts
-						button[expand-right]
+						icon[forward]
 				`,
 				[],
 			),
@@ -403,7 +403,7 @@ const renderPosts = (posts, topic, user) => {
 				`
 				tab-wrapper[line-after]
 					tab-item
-						button[expand-left]
+						icon[back]
 						p Posts from subscriptions
 					tab-item[active]
 						span All posts

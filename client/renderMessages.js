@@ -112,17 +112,12 @@ const renderMessages = (messages, conversation) => {
 							message-form
 								title-wrapper
 									label[image]
-										icon
-											$2
+										icon[image]
 										input[image][type=file][accept=image/*]
 								textarea[placeholder="Type a message..."]
 								button[submit]
-									$1
-					`,
-					[
-						$("icons icon[forward] svg").cloneNode(true),
-						$("icons icon[image] svg").cloneNode(true)
-					]
+									icon[forward]
+					`
 				)
 			)
 

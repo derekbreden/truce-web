@@ -60,8 +60,7 @@ tab-item[right] {
 
 /* Navigation buttons */
 read-more-wrapper button,
-tab-item button,
-expand-wrapper button {
+tab-item button {
   background: var(--color-white);
   border-color: var(--color-white);
   background: var(--color-bg-primary);
@@ -70,73 +69,16 @@ expand-wrapper button {
   padding: 6px;
 }
 
-/* Expand arrow indicators */
-tab-item button::before,
-[expand-left]::before,
-[expand-right]::before,
-[expand-down]::before,
-[expand-up]::before {
-  content: "";
-  border-top: 1.5px solid #000;
-  border-left: 1.5px solid #000;
-  border-top: 1.5px solid var(--color-border-strong);
-  border-left: 1.5px solid var(--color-border-strong);
-  border-right: 1.5px solid transparent;
-  border-bottom: 1.5px solid transparent;
-  height: 16px;
-  width: 16px;
-  position: absolute;
-  top: 3px;
-  left: calc(50% - 9px);
-  transform: rotate(45deg);
-  opacity: .5;
-}
-
-[expand-down]::before {
-  top: -10px;
-  transform: rotate(-135deg);
-}
-
-[expand-left]::before {
-  transform: rotate(-45deg);
-  height: 10px;
-  width: 10px;
-  top: 5px;
-  left: calc(50% - 10px);
-}
-
-[expand-right]::before {
-  transform: rotate(135deg);
-  height: 10px;
-  width: 10px;
-  top: 5px;
-  left: calc(50% - 3px);
-}
-
-read-more-wrapper [expand-right]::before,
-tab-item [expand-right]::before,
-tab-item [expand-right]::before,
-tab-item [expand-left]::before {
-  transform: rotate(-45deg);
-  top: 0;
-  left: 2px;
-  height: 10px;
-  width: 10px;
-}
-
-read-more-wrapper [expand-right]::before,
-tab-item [expand-right]::before,
-tab-item [expand-right]::before {
-  transform: rotate(135deg);
-  left: -4px;
+tab-item icon {
+  height: var(--icon-md);
+  width: var(--icon-md);
+  background-color: var(--color-gray-medium);
 }
 
 /* Navigation text styling */
 all-clear-wrapper p,
 read-more-wrapper p,
-tab-item p,
-tab-item p,
-expand-wrapper p {
+tab-item p {
   font-size: var(--font-size-sm);
   font-weight: 600;
   margin: 0 0 5px 0;
@@ -151,15 +93,6 @@ all-clear-wrapper p {
 
 read-more-wrapper p {
   margin: 0;
-}
-
-expand-wrapper[above-replies] p {
-  text-align: left;
-  margin: 0;
-}
-
-expand-wrapper button+p {
-  margin-top: var(--space-xs);
 }
 
 read-more-wrapper p,

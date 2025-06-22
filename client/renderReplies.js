@@ -64,10 +64,9 @@ const renderReplies = (replies) => {
 			// Collapse button
 			const $collapse_button = $(
 				`
-				expand-wrapper[collapse]
-					button[expand-left]
+				expand-wrapper
+					icon[collapse]
 					p $1
-					button[expand-right]
 				`,
 				[`Hide ${$child_replies.length} replies`],
 			)
@@ -101,10 +100,9 @@ const renderReplies = (replies) => {
 			// Expand button
 			const $expand_button = $(
 				`
-				expand-wrapper[expand]
-					button[expand-up]
+				expand-wrapper
+					icon[expand]
 					p $1
-					button[expand-down]
 				`,
 				[`Show ${$child_replies.length} hidden replies`],
 			)

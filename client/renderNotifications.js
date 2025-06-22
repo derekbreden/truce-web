@@ -18,7 +18,7 @@ const renderNotification = (notification) => {
 	          span messaged you
 	          i $3
 	      read-more-wrapper
-	        button[expand-right]
+	        icon[forward]
 	    `,
 			[
 				!notification.read,
@@ -67,7 +67,7 @@ const renderNotification = (notification) => {
 	          b $5
 	        $6
 	      read-more-wrapper
-	        button[expand-right]
+	        icon[forward]
 	    `,
 			[
 				!notification.read,

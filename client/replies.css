@@ -87,22 +87,25 @@ reply reply-wrapper p {
 expand-wrapper {
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  padding: 10px 0;
-  margin: 0 0 -10px 0;
-  position: relative;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+expand-wrapper icon {
+  height: var(--icon-xl);
+  width: var(--icon-xl);
+  background-color: var(--color-gray-medium);
+}
+
+expand-wrapper p {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--color-gray-medium);
 }
 
 expand-wrapper[above-replies] {
   cursor: default;
-  margin: 0 0 10px 0;
-}
-
-expand-wrapper[above-replies]:first-child {
-  margin: 10px 0 10px 0;
-}
-
-expand-wrapper[collapse] {
-  flex-direction: row;
-  justify-content: center;
+  margin-bottom: 10px;
 }

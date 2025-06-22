@@ -4,7 +4,7 @@ const renderForward = (parent_post) => {
 			`
 			tab-item[right]
 				p $1
-				button[expand-right]
+				icon[forward]
 			`,
 			[parent_post.title],
 		)
