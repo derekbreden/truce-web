@@ -19,7 +19,7 @@ const renderBack = () => {
 		const $back_forward = $(
 			`
 			back-forward-wrapper
-				back-wrapper
+				tab-item
 					button[expand-left]
 					p $1
 			`,
@@ -48,7 +48,7 @@ const renderBack = () => {
 			],
 		)
 		$("main-content-wrapper[active] main-content").prepend($back_forward)
-		$back_forward.$("back-wrapper").on("click", () => {
+		$back_forward.$("tab-item").on("click", () => {
 			state.path_index--
 			state.path_index--
 			state.path_history = state.path_history.slice(0, -2)

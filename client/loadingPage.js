@@ -192,7 +192,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				`
 				back-forward-wrapper
-					back-wrapper
+					tab-item
 						button[expand-left]
 						p Terms and conditions
 				posts

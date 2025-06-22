@@ -280,13 +280,13 @@ const renderPosts = (posts, topic, user) => {
 				$(
 					`
 					tab-wrapper
-						back-wrapper[posts]
+						tab-item[posts]
 							p Posts
-						back-wrapper[replies]
+						tab-item[replies]
 							p Replies
-						center-wrapper
+						tab-item[active]
 							span Subscribers
-						forward-wrapper[subscribed-to-users]
+						tab-item[subscribed-to-users]
 							p Subscribed to
 					`,
 					[],
@@ -297,13 +297,13 @@ const renderPosts = (posts, topic, user) => {
 				$(
 					`
 					tab-wrapper
-						back-wrapper[posts]
+						tab-item[posts]
 							p Posts
-						back-wrapper[replies]
+						tab-item[replies]
 							p Replies
-						back-wrapper[subscribers]
+						tab-item[subscribers]
 							p Subscribers
-						center-wrapper
+						tab-item[active]
 							span Subscribed to
 					`,
 					[],
@@ -314,13 +314,13 @@ const renderPosts = (posts, topic, user) => {
 				$(
 					`
 					tab-wrapper
-						back-wrapper[posts]
+						tab-item[posts]
 							p Posts
-						center-wrapper
+						tab-item[active]
 							span Replies
-						forward-wrapper[subscribers]
+						tab-item[subscribers]
 							p Subscribers
-						forward-wrapper[subscribed-to-users]
+						tab-item[subscribed-to-users]
 							p Subscribed to
 					`,
 					[],
@@ -331,13 +331,13 @@ const renderPosts = (posts, topic, user) => {
 				$(
 					`
 					tab-wrapper
-						center-wrapper
+						tab-item[active]
 							span Posts
-						forward-wrapper[replies]
+						tab-item[replies]
 							p Replies
-						forward-wrapper[subscribers]
+						tab-item[subscribers]
 							p Subscribers
-						forward-wrapper[subscribed-to-users]
+						tab-item[subscribed-to-users]
 							p Subscribed to
 					`,
 					[],
@@ -377,9 +377,9 @@ const renderPosts = (posts, topic, user) => {
 			$(
 				`
 				tab-wrapper
-					center-wrapper
+					tab-item[active]
 						span Posts from subscriptions
-					forward-wrapper
+					tab-item
 						p All posts
 						button[expand-right]
 				`,
@@ -387,7 +387,7 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts tab-wrapper forward-wrapper",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
@@ -402,17 +402,17 @@ const renderPosts = (posts, topic, user) => {
 			$(
 				`
 				tab-wrapper
-					back-wrapper
+					tab-item
 						button[expand-left]
 						p Posts from subscriptions
-					center-wrapper
+					tab-item[active]
 						span All posts
 				`,
 				[],
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts tab-wrapper back-wrapper",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(

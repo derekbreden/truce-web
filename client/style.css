@@ -1407,8 +1407,8 @@ tab-wrapper {
   padding-bottom: 15px;
 }
 
-back-forward-wrapper center-wrapper,
-tab-wrapper center-wrapper {
+back-forward-wrapper tab-item[active],
+tab-wrapper tab-item[active] {
   display: flex;
   align-items: center;
   font-weight: bold;
@@ -1436,8 +1436,8 @@ tab-wrapper center-wrapper {
 
 mark-all-as-read-wrapper,
 read-more-wrapper,
-forward-wrapper,
-back-wrapper {
+tab-item,
+tab-item {
   cursor: pointer;
   display: flex;
   flex-direction: row;
@@ -1452,14 +1452,14 @@ read-more-wrapper {
   white-space: nowrap;
 }
 
-forward-wrapper:only-child {
+tab-item[right] {
   justify-content: flex-end;
   flex: 1;
 }
 
 read-more-wrapper button,
-forward-wrapper button,
-back-wrapper button,
+tab-item button,
+tab-item button,
 expand-wrapper button {
   background: var(--color-white);
   border-color: var(--color-white);
@@ -1469,8 +1469,8 @@ expand-wrapper button {
   padding: 6px;
 }
 
-forward-wrapper button::before,
-back-wrapper button::before,
+tab-item button::before,
+tab-item button::before,
 [expand-left]::before,
 [expand-right]::before,
 [expand-down]::before,
@@ -1513,9 +1513,9 @@ back-wrapper button::before,
 }
 
 read-more-wrapper [expand-right]::before,
-forward-wrapper [expand-right]::before,
-back-wrapper [expand-right]::before,
-back-wrapper [expand-left]::before {
+tab-item [expand-right]::before,
+tab-item [expand-right]::before,
+tab-item [expand-left]::before {
   transform: rotate(-45deg);
   top: 0;
   left: 2px;
@@ -1524,16 +1524,16 @@ back-wrapper [expand-left]::before {
 }
 
 read-more-wrapper [expand-right]::before,
-back-wrapper [expand-right]::before,
-forward-wrapper [expand-right]::before {
+tab-item [expand-right]::before,
+tab-item [expand-right]::before {
   transform: rotate(135deg);
   left: -4px;
 }
 
 all-clear-wrapper p,
 read-more-wrapper p,
-forward-wrapper p,
-back-wrapper p,
+tab-item p,
+tab-item p,
 expand-wrapper p {
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -1561,15 +1561,15 @@ expand-wrapper button+p {
 }
 
 read-more-wrapper p,
-forward-wrapper p,
-back-wrapper p {
+tab-item p,
+tab-item p {
   margin: 0 5px;
   text-align: left;
 }
 
 main-content-2 read-more-wrapper p,
-main-content-2 forward-wrapper p,
-main-content-2 back-wrapper p {
+main-content-2 tab-item p,
+main-content-2 tab-item p {
   margin: 0;
   text-align: center;
 }
@@ -1580,7 +1580,7 @@ main-content-2 tab-wrapper {
 }
 
 read-more-wrapper p,
-forward-wrapper p {
+tab-item p {
   text-align: right;
 }
 

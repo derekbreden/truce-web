@@ -7,7 +7,7 @@ const updateDisplayName = (data) => {
 				`/user/${data.user_slug}`
 
 			// Best argument for using reactive framework right here?
-			$("back-forward-wrapper back-wrapper p").textContent = renderName(
+			$("back-forward-wrapper tab-item p").textContent = renderName(
 				data.display_name,
 				data.display_name_index,
 			)

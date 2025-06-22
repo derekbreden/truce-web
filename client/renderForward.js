@@ -2,7 +2,7 @@ const renderForward = (parent_post) => {
 	if (parent_post) {
 		const $forward = $(
 			`
-			forward-wrapper
+			tab-item[right]
 				p $1
 				button[expand-right]
 			`,
@@ -18,7 +18,7 @@ const renderForward = (parent_post) => {
 			)
 		}
 		$("main-content-wrapper[active] back-forward-wrapper")
-			.$("forward-wrapper")
+			.$("tab-item")
 			?.remove()
 		$("main-content-wrapper[active] back-forward-wrapper").appendChild($forward)
 		$forward.on("click", () => {
