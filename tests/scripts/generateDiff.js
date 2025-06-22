@@ -65,6 +65,13 @@ const main = async () => {
 
 			const diffPixels = parseInt(result.trim()) || 0
 			const status = diffPixels === 0 ? "✅ IDENTICAL" : `🔄 ${diffPixels} pixels different`
+
+			if (diffPixels === 0) {
+				// If identical, remove the diff file
+				if (fs.existsSync(diffPath)) {
+					fs.unlinkSync(diffPath)
+				}
+			}
 			
 			console.log(`${status}: ${baselineFile}`)
 			
@@ -99,6 +106,6 @@ const main = async () => {
 }
 
 main().catch(error => {
-	console.error("Error in compareVisualDiff:", error)
+	console.error("Error in generateDiff:", error)
 	process.exit(1)
 })

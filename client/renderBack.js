@@ -18,7 +18,7 @@ const renderBack = () => {
 		}
 		const $back_forward = $(
 			`
-			tab-wrapper
+			tab-wrapper[line-after]
 				tab-item
 					button[expand-left]
 					p $1

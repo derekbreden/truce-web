@@ -63,7 +63,7 @@ const renderConversations = (conversations) => {
 			$("main-content-wrapper[active] main-content conversations").appendChild(
 				$(
 					`
-					post[conversations-empty]
+					post[line-after][conversations-empty]
 						h2[conversations-empty]
 							span Messages
 							icon

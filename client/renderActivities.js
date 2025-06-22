@@ -6,7 +6,7 @@ const renderActivities = (activities) => {
 			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
-					post[favorites]
+					post[line-after][favorites]
 						h2[favorites]
 							span Favorites
 							icon
@@ -27,7 +27,7 @@ const renderActivities = (activities) => {
 			$("main-content-wrapper[active] posts").prepend(
 				$(
 					`
-					post[favorites]
+					post[line-after][favorites]
 						h2[favorites]
 							span Favorites
 							icon

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node tests/scripts/runAllTests.js",
     "lint": "eslint . --fix",
-    "capture-diff": "node tests/scripts/compareVisualDiff.js"
+    "capture-baseline": "npm test visual capture-baseline && npm test capture-baseline",
+    "capture-diff": "npm test visual capture && npm test capture && node tests/scripts/generateDiff.js"
   },
   "keywords": [],
   "author": "",

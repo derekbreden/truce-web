@@ -38,7 +38,7 @@ const renderPost = (post) => {
 	}
 	const $post = $(
 		`
-		post
+		post[line-after]
 			h2
 				$1
 				$2

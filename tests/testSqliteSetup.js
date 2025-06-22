@@ -126,8 +126,8 @@ const convertPostgresSQLToSQLite = (sql, params) => {
     // Convert PostgreSQL ILIKE to SQLite LIKE with COLLATE NOCASE
     convertedSQL = convertedSQL.replace(/ILIKE/g, "LIKE COLLATE NOCASE")
     
-    // Convert NOW() to datetime('now')
-    convertedSQL = convertedSQL.replace(/NOW\(\)/g, "datetime('now')")
+    // Convert NOW() to datetime('2025-06-01T00:00:00') for testing purposes
+    convertedSQL = convertedSQL.replace(/NOW\(\)/g, "datetime('2025-06-01T00:00:00')")
     
     // Convert COUNT(alias.*) to COUNT(*)
     convertedSQL = convertedSQL.replace(/COUNT\(\w+\.\*\)/g, "COUNT(*)")

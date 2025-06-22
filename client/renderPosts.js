@@ -106,7 +106,7 @@ const renderPosts = (posts, topic, user) => {
 		$("main-content-wrapper[active] main-content posts").prepend(
 			$(
 				`
-					post[user]
+					post[line-after][user]
 						h2[user]
 							author
 								span $1
@@ -230,7 +230,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
-					topics[topics-list][big]
+					topics[topics-list][big][line-after]
 						topic[topic=$1]
 							icon
 								$2
@@ -252,7 +252,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content posts").prepend(
 				$(
 					`
-					topics[topics-list][big]
+					topics[topics-list][big][line-after]
 						topic[topic=$1]
 							icon
 								$2
@@ -279,7 +279,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					tab-wrapper
+					tab-wrapper[line-after]
 						tab-item[posts]
 							p Posts
 						tab-item[replies]
@@ -296,7 +296,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					tab-wrapper
+					tab-wrapper[line-after]
 						tab-item[posts]
 							p Posts
 						tab-item[replies]
@@ -313,7 +313,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					tab-wrapper
+					tab-wrapper[line-after]
 						tab-item[posts]
 							p Posts
 						tab-item[active]
@@ -330,7 +330,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					tab-wrapper
+					tab-wrapper[line-after]
 						tab-item[active]
 							span Posts
 						tab-item[replies]
@@ -376,7 +376,7 @@ const renderPosts = (posts, topic, user) => {
 		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
-				tab-wrapper
+				tab-wrapper[line-after]
 					tab-item[active]
 						span Posts from subscriptions
 					tab-item
@@ -401,7 +401,7 @@ const renderPosts = (posts, topic, user) => {
 		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
-				tab-wrapper
+				tab-wrapper[line-after]
 					tab-item
 						button[expand-left]
 						p Posts from subscriptions

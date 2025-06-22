@@ -5,7 +5,7 @@
 CREATE TABLE sessions (
     session_id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_uuid CHAR(36) NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00'
 );
 
 -- Users table  
@@ -20,14 +20,14 @@ CREATE TABLE users (
     slug VARCHAR(70) DEFAULT '',
     bio VARCHAR(500) DEFAULT '',
     subscribed_to_users INT DEFAULT 0,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00'
 );
 
 -- User sessions table (links sessions to users)
 CREATE TABLE user_sessions (
     user_id INT NOT NULL,
     session_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     PRIMARY KEY (user_id, session_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (session_id) REFERENCES sessions(session_id)
@@ -38,7 +38,7 @@ CREATE TABLE reset_tokens (
     token_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     token_uuid CHAR(36) NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- An exception to the use real current time
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -59,10 +59,10 @@ CREATE TABLE posts (
     poll_3 VARCHAR(50) DEFAULT '',
     poll_4 VARCHAR(50) DEFAULT '',
     poll_expire_date DATETIME,
-    counts_max_create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    counts_max_create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     user_id INT NOT NULL,
     admin BOOLEAN DEFAULT 0,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 CREATE INDEX idx_posts_create_date ON posts(create_date);
@@ -76,9 +76,9 @@ CREATE TABLE replies (
     note VARCHAR(500) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
     favorite_count INT DEFAULT 0,
-    counts_max_create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    counts_max_create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     user_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (parent_post_id) REFERENCES posts(post_id),
     FOREIGN KEY (parent_reply_id) REFERENCES replies(reply_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -103,7 +103,7 @@ CREATE TABLE subscriptions (
     subscription_json VARCHAR(1024) DEFAULT '',
     fcm_token VARCHAR(1024) DEFAULT '',
     active BOOLEAN DEFAULT 1,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -114,7 +114,7 @@ CREATE TABLE notifications (
     reply_id INT,
     read BOOLEAN DEFAULT 0,
     seen BOOLEAN DEFAULT 0,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (reply_id) REFERENCES replies(reply_id)
 );
@@ -124,7 +124,7 @@ CREATE TABLE favorite_posts (
     favorite_post_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     post_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
@@ -134,7 +134,7 @@ CREATE TABLE favorite_replies (
     favorite_reply_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     reply_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (reply_id) REFERENCES replies(reply_id)
 );
@@ -144,7 +144,7 @@ CREATE TABLE flagged_replies (
     flagged_reply_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     reply_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (reply_id) REFERENCES replies(reply_id)
 );
@@ -154,7 +154,7 @@ CREATE TABLE flagged_posts (
     flagged_post_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     post_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
@@ -164,7 +164,7 @@ CREATE TABLE blocked_users (
     blocked_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id_blocked INT NOT NULL,
     user_id_blocking INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id_blocked) REFERENCES users(user_id),
     FOREIGN KEY (user_id_blocking) REFERENCES users(user_id)
 );
@@ -175,7 +175,7 @@ CREATE TABLE poll_votes (
     post_id INT NOT NULL,
     user_id INT NOT NULL,
     poll_choice INT NOT NULL CHECK (poll_choice BETWEEN 1 AND 4),
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (post_id) REFERENCES posts(post_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -201,7 +201,7 @@ CREATE TABLE subscribers (
     subscriber_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
     subscribed_to_user_id INT NOT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (subscribed_to_user_id) REFERENCES users(user_id)
 );
@@ -210,7 +210,7 @@ CREATE TABLE subscribers (
 CREATE TABLE conversations (
     conversation_id INTEGER PRIMARY KEY AUTOINCREMENT,
     last_message_id INT,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (last_message_id) REFERENCES messages(message_id)
 );
 
@@ -233,7 +233,7 @@ CREATE TABLE messages (
     body VARCHAR(8000) DEFAULT '',
     note VARCHAR(500) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -245,7 +245,7 @@ CREATE TABLE message_notifications (
     message_id INT NOT NULL,
     read BOOLEAN DEFAULT 0,
     seen BOOLEAN DEFAULT 0,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (message_id) REFERENCES messages(message_id)
 );
@@ -257,7 +257,7 @@ CREATE TABLE reply_notifications (
     reply_id INT NOT NULL,
     read BOOLEAN DEFAULT 0,
     seen BOOLEAN DEFAULT 0,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_date DATETIME DEFAULT '2025-06-01T00:00:00',
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (reply_id) REFERENCES replies(reply_id)
 );

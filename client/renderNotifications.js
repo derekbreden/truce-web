@@ -11,7 +11,7 @@ const renderNotification = (notification) => {
 		// Message notification rendering
 		const $notification = $(
 			`
-	    notification[unread=$1]
+	    notification[line-after][unread=$1]
 	      first-column
 	        summary
 	          b $2
@@ -57,7 +57,7 @@ const renderNotification = (notification) => {
 		)
 		const $notification = $(
 			`
-	    notification[unread=$1]
+	    notification[line-after][unread=$1]
 	      first-column
 	        summary
 	          b $2
@@ -108,7 +108,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          post
+          post[line-after]
             h2 Alerts
             p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.
         `,
@@ -119,7 +119,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          post
+          post[line-after]
             h2 Alerts
             p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a post or reply you have posted.
         `,
@@ -130,7 +130,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          post
+          post[line-after]
             h2 Alerts
             p You must enable notifications for this app in settings
         `,
@@ -141,7 +141,7 @@ const renderNotifications = (notifications) => {
 			$(
 				`
         posts[notifications-header]
-          post
+          post[line-after]
             h2 Alerts
             p[add-to-home]
               span To enable alerts, tap the

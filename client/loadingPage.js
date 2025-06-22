@@ -53,7 +53,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				`
 				posts
-					post
+					post[line-after]
 						h2[welcome]
 							span Terms and conditions
 							$1
@@ -79,7 +79,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					&& document.referrer !== "android-app://net.truce.twa/"
 						? $(
 								`
-								post
+								post[line-after]
 									app-store-wrapper
 										a[href=$1]
 											img[src=/play_store.png]
@@ -100,7 +100,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			$(
 				`
 				posts
-					post
+					post[line-after]
 						h2[moderation]
 							span Our Approach to Moderation
 							$1
@@ -191,12 +191,12 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$("main-content-wrapper[active] main-content").replaceChildren(
 			$(
 				`
-				tab-wrapper
+				tab-wrapper[line-after]
 					tab-item
 						button[expand-left]
 						p Terms and conditions
 				posts
-					post
+					post[line-after]
 						h2 Privacy Policy
 						p[bold] Information Collection
 						p We do not collect any personal data from users of our app. The email address and password you provide are used solely to facilitate account recovery.
@@ -226,7 +226,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		const $settings = $(
 			`
 			posts
-				post
+				post[line-after]
 					h2[settings]
 						span Account settings
 						button[profile][small][slug=$1]
@@ -234,7 +234,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								$2
 							span View profile
 					p You may change your profile picture or your display name here. You may also remove your account.
-				post
+				post[line-after]
 					p[bold] Profile picture
 					label[profile-picture][large]
 						image
@@ -245,7 +245,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						input[type=text][display-name][value=$4]
 					p[button]
 						button[save] Save display name
-				post
+				post[line-after]
 					p[bold] Remove account
 					p[button]
 						button[remove][alt] Remove Account

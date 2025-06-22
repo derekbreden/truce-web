@@ -1870,13 +1870,7 @@ topics[topics-list][big] {
   padding-bottom: var(--space-md);
 }
 
-tab-wrapper::after,
-activities[favorites] activity::after,
-notifications notification::after,
-users user:after,
-topics[topics-list][big]:after,
-conversations post::before,
-posts post::before {
+[line-after]::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -1886,22 +1880,8 @@ posts post::before {
   border-bottom: 1px solid var(--color-border-standard);
 }
 
-line-full {
-  display: flex;
-  height: 1px;
-  background: #ddd;
-  background: var(--color-border-standard);
-  margin: 0 -20px;
-}
-
-
 notifications notification::after {
   bottom: -10px;
-}
-
-notifications notification:last-child::after,
-notifications notification:has(+ h3)::after {
-  display: none;
 }
 
 posts-loading {

@@ -11,7 +11,7 @@ const renderUsers = (users) => {
 					users.map((user) =>
 						$(
 							`
-							user
+							user[line-after]
 								author-name[slug=$1]
 									author
 										profile-picture

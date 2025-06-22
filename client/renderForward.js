@@ -12,7 +12,7 @@ const renderForward = (parent_post) => {
 			$("main-content-wrapper[active] main-content").prepend(
 				$(
 					`
-					tab-wrapper
+					tab-wrapper[line-after]
 					`,
 				),
 			)

@@ -6,7 +6,7 @@ const renderTopics = (topics) => {
 		$(
 			`
 			posts
-				post
+				post[line-after]
 					h2[topics]
 						span Topics
 						$1
