@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node runAllTests.js",
-    "lint": "eslint . --fix"
+    "test": "node tests/scripts/runAllTests.js",
+    "lint": "eslint . --fix",
+    "capture-diff": "node tests/scripts/compareVisualDiff.js"
   },
   "keywords": [],
   "author": "",

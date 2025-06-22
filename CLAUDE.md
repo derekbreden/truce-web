@@ -8,11 +8,17 @@ Every line and every word considered carefully for deletion. Say only what is ab
 ## Development Commands
 
 ```bash
-npm test                       # Run all tests
+npm test                       # Run all functional tests
 npm test reply.create.test.js  # Run specific test file
 npm test capture               # Run all tests with visual capture (pngs you can read in /tests/capture/)
 npm test notifications.simple capture  # Run specific test with visual capture
 npm test message conversation capture  # Run multiple tests with visual capture
+
+# Visual Testing Commands
+npm test visual                # Run visual baseline tests
+npm test visual capture        # Run visual tests with screenshots in /tests/capture/
+npm test visual capture-baseline  # Store baseline images in /tests/baseline/
+npm run capture-diff           # Compare baseline vs capture images, generate diffs
 ```
 
 ## Project Architecture
@@ -188,9 +194,11 @@ $("posts post:nth-child(2) author").click() // post is where disambiguation need
 	`index.js`: Application entry point
 	`server/server.js`: HTTP server and client file concatenation
 	`client/flint.js`: Custom DOM manipulation library
-	`runAllTests.js`: Test runner
+	`tests/scripts/runAllTests.js`: Test runner
+	`tests/scripts/compareVisualDiff.js`: Visual diff comparison utility
 	`server/session/`: Session middleware functions
-	`tests/`: End-to-end Integration tests
+	`tests/functional/`: End-to-end Integration tests
+	`tests/visual/`: Visual baseline tests
 
 ## You are new
 When I am new to a code base, there are a few things I like to do:

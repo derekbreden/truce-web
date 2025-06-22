@@ -3,8 +3,9 @@ const path = require("path")
 const { execSync } = require("child_process")
 
 const captureVisual = (window, filename) => {
-	// Create capture directory if it doesn't exist
-	const outputDir = path.join(__dirname, "capture")
+	// Determine output directory: baseline if CAPTURE_BASELINE env var, otherwise capture
+	const dirName = process.env.CAPTURE_BASELINE ? "baseline" : "capture"
+	const outputDir = path.join(__dirname, dirName)
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir, { recursive: true })
 	}

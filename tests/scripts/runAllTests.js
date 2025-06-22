@@ -2,7 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const { spawn } = require("child_process")
 
-const testDir = path.join(__dirname, "tests")
+const testDir = path.join(__dirname, "..")
 
 const start_time = new Date()
 
@@ -65,24 +65,31 @@ const executeTestFile = (filePath) => {
 const main = async () => {
 	const allArgs = process.argv.splice(2)
 	const captureMode = allArgs.includes("capture")
+	const captureBaselineMode = allArgs.includes("capture-baseline")
 	const darkMode = allArgs.includes("dark")
 	const visualMode = allArgs.includes("visual")
-	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "dark" && arg !== "visual")
+	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "capture-baseline" && arg !== "dark" && arg !== "visual")
 	const pathArg = searchArgs.join(" ")
 	
 	let filesToRun = []
 
 	// Clean visual output directory if in capture mode
-	if (captureMode) {
-		const captureDir = path.join(__dirname, "tests", "capture")
-		if (fs.existsSync(captureDir)) {
-			const files = fs.readdirSync(captureDir)
+	if (captureMode || captureBaselineMode) {
+		const targetCaptureDir = captureBaselineMode 
+			? path.join(__dirname, "..", "baseline")
+			: path.join(__dirname, "..", "capture")
+		
+		if (fs.existsSync(targetCaptureDir)) {
+			const files = fs.readdirSync(targetCaptureDir)
 			files.forEach(file => {
-				fs.unlinkSync(path.join(captureDir, file))
+				fs.unlinkSync(path.join(targetCaptureDir, file))
 			})
 		}
 		// Set environment variable for child processes
 		process.env.CAPTURE_VISUALS = "true"
+		if (captureBaselineMode) {
+			process.env.CAPTURE_BASELINE = "true"
+		}
 	}
 	
 	// Set dark mode environment variable if requested
@@ -92,8 +99,8 @@ const main = async () => {
 
 	// Determine target directory: visual/ if "visual" arg, otherwise functional/
 	const targetDir = visualMode 
-		? path.join(__dirname, "tests", "visual")
-		: path.join(__dirname, "tests", "functional")
+		? path.join(__dirname, "..", "visual")
+		: path.join(__dirname, "..", "functional")
 
 	console.log(`--- Searching for test files in ${path.basename(targetDir)}/ ---`)
 	findTestFiles(targetDir, filesToRun)
