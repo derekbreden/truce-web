@@ -10,9 +10,12 @@ const captureVisual = (window, filename) => {
 		fs.mkdirSync(outputDir, { recursive: true })
 	}
 	
-	// Generate paths
-	const htmlPath = path.join(outputDir, `${filename}.html`)
-	const pngPath = path.join(outputDir, `${filename}.png`)
+	// Determine mode suffix
+	const mode = process.env.DARK_MODE === "true" ? "dark" : "light"
+	
+	// Generate paths with mode suffix
+	const htmlPath = path.join(outputDir, `${filename}-${mode}.html`)
+	const pngPath = path.join(outputDir, `${filename}-${mode}.png`)
 	
 	// Save HTML temporarily, removing script tags to prevent JS re-execution
 	const html = window.document.documentElement.outerHTML
