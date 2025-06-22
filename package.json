@@ -7,7 +7,7 @@
     "test": "node tests/scripts/runAllTests.js",
     "lint": "eslint . --fix",
     "capture-baseline": "npm test visual capture-baseline && npm test capture-baseline",
-    "capture-diff": "npm test visual capture && npm test capture && node tests/scripts/generateDiff.js"
+    "capture-diff": "func() { npm test visual capture \"$1\" && npm test capture \"$1\" && node tests/scripts/generateDiff.js \"$1\"; }; func"
   },
   "keywords": [],
   "author": "",

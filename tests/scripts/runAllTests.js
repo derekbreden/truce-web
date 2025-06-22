@@ -150,7 +150,7 @@ const main = async () => {
 	const duration = ((end_time - start_time) / 1000).toFixed(2)
 	console.log(`\n--- Test run completed ---`)
 	console.log(`  Duration: ${duration} seconds`)
-	if (results.passed > 0) {
+	if (results.failed === 0) {
 		console.log(`  \x1b[32mAll passed tests were successful!\x1b[0m`)
 	} else {
 		console.log(`  \x1b[31mNo tests passed successfully.\x1b[0m`)

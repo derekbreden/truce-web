@@ -6,6 +6,10 @@ const { execSync } = require("child_process")
  * Compare baseline and capture images, generate diffs
  */
 const main = async () => {
+	const allArgs = process.argv.splice(2)
+	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "capture-baseline" && arg !== "dark" && arg !== "visual")
+	const pathArg = searchArgs.join(" ")
+
 	const baselineDir = path.join(__dirname, "..", "capture-baseline")
 	const captureDir = path.join(__dirname, "..", "capture") 
 	const diffDir = path.join(__dirname, "..", "capture-diff")
@@ -35,8 +39,15 @@ const main = async () => {
 	}
 
 	// Get baseline files
-	const baselineFiles = fs.readdirSync(baselineDir).filter(f => f.endsWith('.png'))
+	let baselineFiles = fs.readdirSync(baselineDir).filter(f => f.endsWith('.png'))
 	const captureFiles = fs.readdirSync(captureDir).filter(f => f.endsWith('.png'))
+
+	// Filter based on pathArg
+	if (pathArg) {
+		const searchTerms = pathArg.split(" ")
+		baselineFiles = baselineFiles
+			.filter(filename => searchTerms.some(term => filename.includes(term)))
+	}
 
 	console.log(`\n📊 Visual Diff Report`)
 	console.log(`Baseline images: ${baselineFiles.length}`)
