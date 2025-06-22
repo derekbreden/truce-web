@@ -1,8 +1,8 @@
 const path = require("path")
 const {
 	setupTestEnvironment,
-} = require("./testSetupHelpers.js")
-const { assertEquals, runTests } = require("./testRunUtils.js")
+} = require("../testSetupHelpers.js")
+const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {
@@ -33,19 +33,19 @@ const tests = {
 			"Should show sign up / sign in button for logged out user",
 		)
 		
-		// Fill in new account credentials
-		$("menu sign-in input[type=email]").value = "newuser@example.com"
-		$("menu sign-in input[type=password]").value = "testpassword123"
+		// Fill in existing account credentials (from test fixtures)
+		$("menu sign-in input[type=email]").value = "existing@example.com"
+		$("menu sign-in input[type=password]").value = "existingpass123"
 		
-		// Submit the form to create account
+		// Submit the form to log in to existing account
 		$("menu sign-in button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		// Verify account creation success message
+		// Verify existing account login success message (NOT creation message)
 		assertEquals(
-			"You have created a new account",
+			"You have been signed in to your existing account",
 			$("modal[info] info").textContent.trim(),
-			"Should show account creation success message",
+			"Should show existing account login success message",
 		)
 		
 		// Close the modal
@@ -54,16 +54,23 @@ const tests = {
 		
 		// Verify user is now logged in
 		assertEquals(
-			"newuser@example.com",
+			"existing@example.com",
 			window.state.email,
 			"User should now have email set in state",
 		)
 		
-		// Verify user has a user_id (account was created)
+		// Verify user has the correct user_id (40 from test fixtures)
 		assertEquals(
-			true,
-			Boolean(window.state.user_id),
-			"User should have a user_id after account creation",
+			40,
+			window.state.user_id,
+			"User should have the existing user_id from fixtures",
+		)
+		
+		// Verify display name is set correctly
+		assertEquals(
+			"Existing User",
+			window.state.display_name,
+			"User should have the existing display name from fixtures",
 		)
 		
 		// Verify menu now shows logged-in state

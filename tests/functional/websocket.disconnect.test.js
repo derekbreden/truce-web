@@ -1,8 +1,8 @@
 const path = require("path")
 const {
 	setupTestEnvironment,
-} = require("./testSetupHelpers.js")
-const { assertEquals, runTests } = require("./testRunUtils.js")
+} = require("../testSetupHelpers.js")
+const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	websocketDisconnectFlushTest: async () => {

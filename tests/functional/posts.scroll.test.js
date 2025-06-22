@@ -1,6 +1,6 @@
 const path = require("path")
-const { setupTestEnvironment } = require("./testSetupHelpers.js")
-const { assertEquals, runTests } = require("./testRunUtils.js")
+const { setupTestEnvironment } = require("../testSetupHelpers.js")
+const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {

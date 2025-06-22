@@ -66,7 +66,8 @@ const main = async () => {
 	const allArgs = process.argv.splice(2)
 	const captureMode = allArgs.includes("capture")
 	const darkMode = allArgs.includes("dark")
-	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "dark")
+	const visualMode = allArgs.includes("visual")
+	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "dark" && arg !== "visual")
 	const pathArg = searchArgs.join(" ")
 	
 	let filesToRun = []
@@ -89,8 +90,13 @@ const main = async () => {
 		process.env.DARK_MODE = "true"
 	}
 
-	console.log("--- Searching for test files ---")
-	findTestFiles(testDir, filesToRun)
+	// Determine target directory: visual/ if "visual" arg, otherwise functional/
+	const targetDir = visualMode 
+		? path.join(__dirname, "tests", "visual")
+		: path.join(__dirname, "tests", "functional")
+
+	console.log(`--- Searching for test files in ${path.basename(targetDir)}/ ---`)
+	findTestFiles(targetDir, filesToRun)
 	if (pathArg) {
 		const searchTerms = pathArg.split(" ")
 		filesToRun = filesToRun

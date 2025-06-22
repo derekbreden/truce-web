@@ -1,8 +1,8 @@
 const path = require("path")
 const {
 	setupTestEnvironment,
-} = require("./testSetupHelpers.js")
-const { assertEquals, runTests } = require("./testRunUtils.js")
+} = require("../testSetupHelpers.js")
+const { assertEquals, runTests } = require("../testRunUtils.js")
 
 
 const tests = {
@@ -53,7 +53,7 @@ const tests = {
 		// Read 1024x1024 PNG that will get resized to itself and return the same at the end
 		const fs = require("fs")
 		const path = require("path")
-		const processed_data_file = path.join(__dirname, "data", "1024_base64.txt")
+		const processed_data_file = path.join(__dirname, "../data", "1024_base64.txt")
 		const valid_png_base64 = await fs.promises.readFile(processed_data_file, "utf8")
 		const binary_string = window_user_b.atob(valid_png_base64)
 		const bytes = new Uint8Array(binary_string.length)
