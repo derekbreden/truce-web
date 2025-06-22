@@ -5,6 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## CLAUDE.md Principles
 Every line and every word considered carefully for deletion. Say only what is absolutely necessary.
 
+## Progress Reporting Format
+
+When making changes, use this exact format:
+
+**What I changed:** [specific technical change]
+**What this accomplishes:** [specific outcome] 
+**What still needs work:** [remaining issues]
+**Ready for review:** Yes/No
+
+Never use completion language until "Ready for review: Yes"
+
 ## Development Commands
 
 ```bash
