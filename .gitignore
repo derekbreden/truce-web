@@ -130,5 +130,7 @@ dist
 .pnp.*
 .DS_Store
 
-# Test capture output
+# Test visual output
 tests/capture/
+tests/baseline/
+tests/diff/
