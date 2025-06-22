@@ -1,0 +1,95 @@
+notifications {
+  display: flex;
+  flex-direction: column;
+}
+
+notifications notification {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-md);
+  gap: var(--space-xs);
+  position: relative;
+}
+
+notifications notification first-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+notifications notification info[tiny] b {
+  font-weight: 600;
+}
+
+notifications notification summary {
+  font-size: var(--font-size-sm);
+}
+
+notifications notification summary b {
+  font-weight: 600;
+}
+
+notifications notification summary i {
+  margin: 0 3px 0 0;
+}
+
+notifications notification summary span {
+  margin: 0 3px;
+}
+
+notifications h3 {
+  margin-top: var(--space-md);
+}
+
+notifications notification+h3 {
+  margin-top: 30px;
+}
+
+notifications notification::after {
+  bottom: -10px;
+}
+
+activities {
+  display: flex;
+  flex-direction: column;
+}
+
+activities activity {
+  padding-bottom: 21px;
+  position: relative;
+}
+
+activities activity[post] info-wrapper {
+  display: flex;
+  margin-top: var(--space-sm);
+}
+
+activities activity {
+  display: flex;
+  flex-direction: column;
+}
+
+activity>h2 {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+activity>h2>span:last-child {
+  text-align: right;
+}
+
+activity>[parent-reply] {
+  background: var(--color-gray-lightest);
+  background: var(--color-bg-tertiary)
+}
+
+activity>[parent-reply] reply {
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+}

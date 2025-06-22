@@ -1,0 +1,50 @@
+[profile-picture] svg,
+profile-picture svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+}
+
+profile-picture image,
+[profile-picture] image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+profile-picture image img,
+[profile-picture] image img {
+  width: 100%;
+  height: 100%;
+}
+
+profile-picture image,
+[profile-picture] image {
+  width: 40px;
+  height: 40px;
+}
+
+profile-picture large image,
+[profile-picture][large] image {
+  width: 120px;
+  height: 120px;
+}
+
+[profile-picture][large] {
+  display: flex;
+  justify-content: center;
+  padding: 20px 20px 0 20px;
+}
+
+profile-picture svg {
+  height: 50px;
+  width: 50px;
+  margin: -5px;
+}
+
+[profile-picture][large] svg {
+  height: 150px;
+  width: 150px;
+  margin: -15px;
+}
