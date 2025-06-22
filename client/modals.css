@@ -1,3 +1,23 @@
+/* ================================
+   MODAL BACKGROUND OVERLAY
+   ================================ */
+
+modal-bg {
+  display: flex;
+  background: #00000077;
+  background: light-dark(var(--color-overlay-light), var(--color-overlay-dark));
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal-bg);
+}
+
+/* ================================
+   MODAL CONTAINER
+   ================================ */
+
 modal {
   display: flex;
   flex-direction: column;
@@ -5,6 +25,44 @@ modal {
   position: relative;
   width: 280px;
 }
+
+modal {
+  position: fixed;
+  flex-direction: column;
+  z-index: var(--z-modal);
+  top: var(--header-height);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0px 0px 5px var(--color-black);
+  max-width: 480px;
+  width: calc(100% - 20px);
+}
+
+modal>* {
+  margin-bottom: var(--space-xs);
+}
+
+modal input {
+  width: 100%;
+}
+
+modal p:first-child {
+  margin-top: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  modal {
+    box-shadow: none;
+    border: 1px solid var(--color-gray-dark);
+  }
+}
+
+/* ================================
+   IMAGE MODAL VARIANT
+   ================================ */
 
 modal[image] {
   width: 100%;
@@ -39,6 +97,10 @@ modal[image]>button {
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
+/* ================================
+   CONFIRMATION MODAL VARIANT
+   ================================ */
+
 modal[confirm] h2 {
   margin: 0;
   justify-content: flex-start;
@@ -61,50 +123,4 @@ modal[confirm] h2 icon svg {
 
 modal[confirm] button-wrapper {
   margin-top: var(--space-sm);
-}
-
-modal>* {
-  margin-bottom: var(--space-xs);
-}
-
-modal input {
-  width: 100%;
-}
-
-modal p:first-child {
-  margin-top: 0;
-}
-
-modal-bg {
-  display: flex;
-  background: #00000077;
-  background: light-dark(var(--color-overlay-light), var(--color-overlay-dark));
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: var(--z-modal-bg);
-}
-
-modal {
-  position: fixed;
-  flex-direction: column;
-  z-index: var(--z-modal);
-  top: var(--header-height);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-white);
-  background: var(--color-bg-primary);
-  border-radius: var(--border-radius-sm);
-  box-shadow: 0px 0px 5px var(--color-black);
-  max-width: 480px;
-  width: calc(100% - 20px);
-}
-
-@media (prefers-color-scheme: dark) {
-  modal {
-    box-shadow: none;
-    border: 1px solid var(--color-gray-dark);
-  }
 }

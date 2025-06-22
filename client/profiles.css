@@ -1,9 +1,11 @@
+/* Profile picture SVG styling */
 [profile-picture] svg,
 profile-picture svg {
   fill: var(--color-black);
   fill: var(--color-text-primary);
 }
 
+/* Profile picture image container */
 profile-picture image,
 [profile-picture] image {
   display: flex;

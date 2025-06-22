@@ -1,3 +1,4 @@
+/* Links */
 a,
 a:visited,
 a:active {
@@ -6,6 +7,25 @@ a:active {
   font-weight: 500;
 }
 
+a[big] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #4a5;
+  border: 1px solid var(--color-state-success);
+  color: var(--color-white);
+  color: light-dark(#fff, #f0fff0);
+  background: var(--color-success);
+  background: var(--color-state-success);
+  padding: var(--space-sm);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Headings */
 h2 {
   margin-top: var(--space-md);
   font-size: var(--font-size-lg);
@@ -14,23 +34,26 @@ h2 {
   justify-content: space-between;
   align-items: flex-start;
 }
+
+h2 button {
+  margin-left: 5px;
+}
+
 h2[user] author {
   display: flex;
   gap: var(--space-xs);
   align-items: center;
 }
+
 h2[user] author icon {
   font-size: 0;
 }
+
 h2[user] author icon svg {
   fill: var(--color-black);
   fill: var(--color-text-primary);
   height: var(--icon-xl);
   width: var(--icon-xl);
-}
-
-h2 button {
-  margin-left: 5px;
 }
 
 h3 {
@@ -41,15 +64,18 @@ h3 {
   align-items: center;
 }
 
+/* Reply-specific styling */
 reply h3 author {
   display: flex;
   gap: var(--space-sm);
   align-items: center;
   font-weight: 700;
 }
+
 reply h3 author icon {
   font-size: 0;
 }
+
 reply h3 author icon svg {
   fill: var(--color-black);
   fill: var(--color-text-primary);
@@ -71,6 +97,7 @@ reply>p {
   margin-left: var(--reply-indent);
   width: var(--reply-width);
 }
+
 reply>ol,
 reply>ul {
   margin: 10px 0 0 var(--list-indent-aligned);
@@ -88,6 +115,20 @@ reply h3 icon[more] svg {
   fill: var(--color-text-primary);
 }
 
+reply[trimmed] p img {
+  cursor: pointer;
+  height: 100px;
+}
+
+reply[trimmed] p[img] {
+  display: inline-flex;
+}
+
+reply[trimmed] p[img]+p[img] {
+  margin-left: 10px;
+}
+
+/* Paragraphs and content */
 audio,
 p {
   margin-top: var(--space-sm);
@@ -101,19 +142,6 @@ p {
 p img {
   max-width: 100%;
   border-radius: var(--border-radius-md);
-}
-
-reply[trimmed] p img {
-  cursor: pointer;
-  height: 100px;
-}
-
-reply[trimmed] p[img] {
-  display: inline-flex;
-}
-
-reply[trimmed] p[img]+p[img] {
-  margin-left: 10px;
 }
 
 p[quote] {
@@ -131,9 +159,11 @@ p[quote]+p[quote] {
 p[bold] {
   font-weight: 600;
 }
+
 p[italic] {
   font-style: italic;
 }
+
 p[hr] {
   border-bottom: 1px solid #ddd;
   border-bottom: 1px solid var(--color-border-standard);
@@ -143,22 +173,6 @@ p[hr] {
 p[ellipsis]+button {
   margin-top: var(--space-sm);
 }
-
-audio {
-  width: 100%;
-}
-
-ol,
-ul {
-  margin: 10px 0 0 17px;
-}
-
-ol {
-  list-style-type: square;
-}
-
-
-
 
 p[notice] {
   text-align: center;
@@ -175,28 +189,27 @@ p[notice] a {
   margin: 0 3px;
 }
 
-
-
-a[big] {
+p[right] {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  text-decoration: none;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid #4a5;
-  border: 1px solid var(--color-state-success);
-  color: var(--color-white);
-  color: light-dark(#fff, #f0fff0);
-  background: var(--color-success);
-  background: var(--color-state-success);
-  padding: var(--space-sm);
-  font-weight: 700;
-  letter-spacing: 1px;
+  justify-content: flex-end;
 }
 
+/* Lists */
+ol,
+ul {
+  margin: 10px 0 0 17px;
+}
 
+ol {
+  list-style-type: square;
+}
 
+/* Audio */
+audio {
+  width: 100%;
+}
+
+/* Status messages */
 pass,
 info,
 error {
@@ -278,7 +291,6 @@ info::before {
   color: var(--color-info-bg-combo);
 }
 
-
 pass {
   border-color: #4a5;
   background: #f0fff0;
@@ -303,9 +315,4 @@ error p {
 info b {
   margin-top: -1.5px;
   margin-bottom: var(--space-xs);
-}
-
-p[right] {
-  display: flex;
-  justify-content: flex-end;
 }

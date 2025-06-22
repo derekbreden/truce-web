@@ -1,3 +1,4 @@
+/* Replies container and structure */
 replies {
   display: flex;
   flex-direction: column;
@@ -7,6 +8,7 @@ replies[thread] {
   margin-top: var(--space-md);
 }
 
+/* Reply item styling */
 reply {
   display: flex;
   flex-direction: column;
@@ -16,6 +18,7 @@ reply {
   padding: var(--space-sm);
 }
 
+/* Reply spacing and layout */
 replies>reply {
   margin-bottom: var(--space-md);
 }
@@ -32,6 +35,25 @@ reply p {
   margin-top: var(--space-xs);
 }
 
+reply pass,
+reply info {
+  margin-top: var(--space-sm);
+}
+
+/* Reply wrapper container */
+reply-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-sm);
+  margin: 0 -10px -10px -10px;
+}
+
+reply-wrapper button {
+  margin: 0 10px 0 0;
+}
+
+/* Reply wrapper details */
 reply reply-wrapper detail {
   display: flex;
   align-items: center;
@@ -61,23 +83,7 @@ reply reply-wrapper p {
   font-weight: 600;
 }
 
-reply pass,
-reply info {
-  margin-top: var(--space-sm);
-}
-
-reply-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--space-sm);
-  margin: 0 -10px -10px -10px;
-}
-
-reply-wrapper button {
-  margin: 0 10px 0 0;
-}
-
+/* Expand wrapper variants */
 expand-wrapper {
   cursor: pointer;
   display: flex;

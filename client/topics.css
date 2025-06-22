@@ -1,3 +1,7 @@
+/* ================================
+   TOPICS LIST CONTAINER
+   ================================ */
+
 topics[topics-list] {
   display: flex;
   flex-wrap: wrap;
@@ -5,6 +9,15 @@ topics[topics-list] {
   gap: 20px;
   padding-top: var(--space-md);
 }
+
+topics[topics-list][big] {
+  position: relative;
+  padding-bottom: var(--space-md);
+}
+
+/* ================================
+   TOPIC ITEMS
+   ================================ */
 
 topics[topics-list] topic {
   display: flex;
@@ -20,6 +33,10 @@ topics[topics-list][big] topic {
   margin-left: -3px;
 }
 
+/* ================================
+   TOPIC-SPECIFIC MARGIN ADJUSTMENTS
+   ================================ */
+
 topics[topics-list][big] topic[topic=politics],
 topics[topics-list][big] topic[topic=sports],
 topics[topics-list][big] topic[topic=science] {
@@ -32,6 +49,10 @@ topics[topics-list][big] topic[topic=health],
 topics[topics-list][big] topic[topic=work] {
   margin-left: -4px;
 }
+
+/* ================================
+   TOPIC ICON ADJUSTMENTS
+   ================================ */
 
 topics[topics-list] topic[topic=religion] icon {
   margin-top: var(--space-3xs);
@@ -59,6 +80,21 @@ topics[topics-list] topic[topic=history] icon {
 topics[topics-list] topic[topic=polls] icon {
   margin-top: -5px;
 }
+
+topics[topics-list] topic icon {
+  font-size: 0;
+}
+
+topics[topics-list] topic svg {
+  fill: var(--color-black);
+  fill: var(--color-text-primary);
+  height: 40px;
+  width: 40px;
+}
+
+/* ================================
+   TOPIC TEXT CONTENT
+   ================================ */
 
 topics[topics-list] topic topicname-subtitle {
   display: flex;
@@ -110,21 +146,9 @@ topics[topics-list][big] topic subtitle {
   font-size: var(--font-size-base);
 }
 
-topics[topics-list] topic icon {
-  font-size: 0;
-}
-
-topics[topics-list] topic svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-  height: 40px;
-  width: 40px;
-}
-
-topics[topics-list][big] {
-  position: relative;
-  padding-bottom: var(--space-md);
-}
+/* ================================
+   TOPICS HEADER
+   ================================ */
 
 h2[topics] svg {
   width: var(--icon-xxl);

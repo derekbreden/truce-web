@@ -1,8 +1,18 @@
+/* Notifications container */
 notifications {
   display: flex;
   flex-direction: column;
 }
 
+notifications h3 {
+  margin-top: var(--space-md);
+}
+
+notifications notification+h3 {
+  margin-top: 30px;
+}
+
+/* Notification items */
 notifications notification {
   display: flex;
   flex-direction: row;
@@ -13,6 +23,10 @@ notifications notification {
   position: relative;
 }
 
+notifications notification::after {
+  bottom: -10px;
+}
+
 notifications notification first-column {
   display: flex;
   flex-direction: column;
@@ -20,6 +34,7 @@ notifications notification first-column {
   gap: var(--space-xs);
 }
 
+/* Notification content styling */
 notifications notification info[tiny] b {
   font-weight: 600;
 }
@@ -40,26 +55,18 @@ notifications notification summary span {
   margin: 0 3px;
 }
 
-notifications h3 {
-  margin-top: var(--space-md);
-}
-
-notifications notification+h3 {
-  margin-top: 30px;
-}
-
-notifications notification::after {
-  bottom: -10px;
-}
-
+/* Activities container */
 activities {
   display: flex;
   flex-direction: column;
 }
 
+/* Activity items */
 activities activity {
   padding-bottom: 21px;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 activities activity[post] info-wrapper {
@@ -67,11 +74,7 @@ activities activity[post] info-wrapper {
   margin-top: var(--space-sm);
 }
 
-activities activity {
-  display: flex;
-  flex-direction: column;
-}
-
+/* Activity headers */
 activity>h2 {
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-xs);
@@ -84,6 +87,7 @@ activity>h2>span:last-child {
   text-align: right;
 }
 
+/* Activity special styling */
 activity>[parent-reply] {
   background: var(--color-gray-lightest);
   background: var(--color-bg-tertiary)
