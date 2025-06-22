@@ -6,9 +6,9 @@ const { execSync } = require("child_process")
  * Compare baseline and capture images, generate diffs
  */
 const main = async () => {
-	const baselineDir = path.join(__dirname, "..", "baseline")
+	const baselineDir = path.join(__dirname, "..", "capture-baseline")
 	const captureDir = path.join(__dirname, "..", "capture") 
-	const diffDir = path.join(__dirname, "..", "diff")
+	const diffDir = path.join(__dirname, "..", "capture-diff")
 
 	// Create diff directory
 	if (!fs.existsSync(diffDir)) {
@@ -25,7 +25,7 @@ const main = async () => {
 
 	// Check if baseline and capture directories exist
 	if (!fs.existsSync(baselineDir)) {
-		console.log("❌ No baseline directory found. Run: npm test visual capture-baseline")
+		console.log("❌ No capture-baseline directory found. Run: npm test visual capture-baseline")
 		return
 	}
 

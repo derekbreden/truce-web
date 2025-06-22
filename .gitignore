@@ -132,5 +132,4 @@ dist
 
 # Test visual output
 tests/capture/
-tests/baseline/
-tests/diff/
+tests/capture-diff/

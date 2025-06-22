@@ -6,7 +6,7 @@ const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	websocketDisconnectFlushTest: async () => {
-		// Phase 1: User A checks baseline state
+		// Phase 1: User A checks state
 		const window_user_a = await setupTestEnvironment()
 		const { $: $a } = window_user_a
 		

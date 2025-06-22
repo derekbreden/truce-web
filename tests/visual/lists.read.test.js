@@ -19,7 +19,7 @@ const tests = {
 		
 		// Capture clean posts list state
 		if (process.env.CAPTURE_VISUALS) {
-			captureVisual(window, "posts-list-baseline")
+			captureVisual(window, "posts-list")
 		}
 	},
 	
@@ -35,7 +35,7 @@ const tests = {
 		
 		// Capture clean conversations list state
 		if (process.env.CAPTURE_VISUALS) {
-			captureVisual(window, "conversations-list-baseline")
+			captureVisual(window, "conversations-list")
 		}
 	},
 	
@@ -51,7 +51,7 @@ const tests = {
 		
 		// Capture clean notifications list state
 		if (process.env.CAPTURE_VISUALS) {
-			captureVisual(window, "notifications-list-baseline")
+			captureVisual(window, "notifications-list")
 		}
 	},
 	
@@ -67,7 +67,7 @@ const tests = {
 		
 		// Capture clean topics list state
 		if (process.env.CAPTURE_VISUALS) {
-			captureVisual(window, "topics-list-baseline")
+			captureVisual(window, "topics-list")
 		}
 	}
 }

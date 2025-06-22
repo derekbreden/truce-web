@@ -7,7 +7,7 @@ const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {
-		// Phase 1: User A checks baseline notifications
+		// Phase 1: User A checks notifications
 		const window_user_a = await setupTestEnvironment()
 		const { $: $a } = window_user_a
 		

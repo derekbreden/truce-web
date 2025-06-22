@@ -76,7 +76,7 @@ const main = async () => {
 	// Clean visual output directory if in capture mode
 	if (captureMode || captureBaselineMode) {
 		const targetCaptureDir = captureBaselineMode 
-			? path.join(__dirname, "..", "baseline")
+			? path.join(__dirname, "..", "capture-baseline")
 			: path.join(__dirname, "..", "capture")
 		
 		if (captureBaselineMode === "capture") {
