@@ -387,7 +387,7 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item:not([active])",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
@@ -412,7 +412,7 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item:not([active])",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
