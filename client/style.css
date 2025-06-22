@@ -1398,14 +1398,16 @@ expand-wrapper[collapse] {
   justify-content: center;
 }
 
-back-forward-wrapper {
+back-forward-wrapper,
+tab-wrapper {
   display: flex;
   justify-content: space-between;
   position: relative;
   padding-bottom: 15px;
 }
 
-back-forward-wrapper center-wrapper {
+back-forward-wrapper center-wrapper,
+tab-wrapper center-wrapper {
   display: flex;
   align-items: center;
   font-weight: bold;
@@ -1413,11 +1415,13 @@ back-forward-wrapper center-wrapper {
 }
 
 @media (max-width: 1000px) {
-  main-content-2 back-forward-wrapper {
+  main-content-2 back-forward-wrapper,
+  main-content-2 tab-wrapper {
     margin-top: var(--space-md);
   }
 
-  main-content-2 back-forward-wrapper:before {
+  main-content-2 back-forward-wrapper:before,
+  main-content-2 tab-wrapper:before {
     content: "";
     display: flex;
     position: absolute;
@@ -1568,7 +1572,8 @@ main-content-2 back-wrapper p {
   margin: 0;
   text-align: center;
 }
-main-content-2 back-forward-wrapper {
+main-content-2 back-forward-wrapper,
+main-content-2 tab-wrapper {
   flex-wrap: wrap;
   gap: var(--space-sm);
 }

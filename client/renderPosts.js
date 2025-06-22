@@ -281,7 +281,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					back-forward-wrapper
+					tab-wrapper
 						back-wrapper[posts]
 							p Posts
 						back-wrapper[replies]
@@ -298,7 +298,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					back-forward-wrapper
+					tab-wrapper
 						back-wrapper[posts]
 							p Posts
 						back-wrapper[replies]
@@ -315,7 +315,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					back-forward-wrapper
+					tab-wrapper
 						back-wrapper[posts]
 							p Posts
 						center-wrapper
@@ -332,7 +332,7 @@ const renderPosts = (posts, topic, user) => {
 			$("main-content-wrapper[active] main-content-2").prepend(
 				$(
 					`
-					back-forward-wrapper
+					tab-wrapper
 						center-wrapper
 							span Posts
 						forward-wrapper[replies]
@@ -348,25 +348,25 @@ const renderPosts = (posts, topic, user) => {
 		}
 		const this_user_slug = state.path.split("/")[2]
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [posts]",
+			"main-content-wrapper[active] main-content-2 tab-wrapper [posts]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}`)
 		})
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [replies]",
+			"main-content-wrapper[active] main-content-2 tab-wrapper [replies]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}/replies`)
 		})
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [subscribers]",
+			"main-content-wrapper[active] main-content-2 tab-wrapper [subscribers]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}/subscribers`)
 		})
 		$(
-			"main-content-wrapper[active] main-content-2 back-forward-wrapper [subscribed-to-users]",
+			"main-content-wrapper[active] main-content-2 tab-wrapper [subscribed-to-users]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}/subscribed_to_users`)
@@ -378,7 +378,7 @@ const renderPosts = (posts, topic, user) => {
 		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
-				back-forward-wrapper
+				tab-wrapper
 					center-wrapper
 						span Posts from subscriptions
 					forward-wrapper
@@ -389,7 +389,7 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts back-forward-wrapper forward-wrapper",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper forward-wrapper",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
@@ -403,7 +403,7 @@ const renderPosts = (posts, topic, user) => {
 		$("main-content-wrapper[active] main-content-2 posts").prepend(
 			$(
 				`
-				back-forward-wrapper
+				tab-wrapper
 					back-wrapper
 						button[expand-left]
 						p Posts from subscriptions
@@ -414,7 +414,7 @@ const renderPosts = (posts, topic, user) => {
 			),
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 posts back-forward-wrapper back-wrapper",
+			"main-content-wrapper[active] main-content-2 posts tab-wrapper back-wrapper",
 		).on("click", ($event) => {
 			$event.preventDefault()
 			localStorage.setItem(
