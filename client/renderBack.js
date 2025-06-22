@@ -22,6 +22,7 @@ const renderBack = () => {
 				back-wrapper
 					button[expand-left]
 					p $1
+				line-full
 			`,
 			[
 				previous_path === "/posts" || previous_path === "/posts/all"

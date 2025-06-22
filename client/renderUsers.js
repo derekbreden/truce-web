@@ -20,6 +20,7 @@ const renderUsers = (users) => {
 									name $3
 									$4
 								$5
+								line-full
 							`,
 							[
 								user.user_slug,

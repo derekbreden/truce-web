@@ -19,6 +19,7 @@ const renderConversation = (conversation) => {
 					time-ago $3
 				message-preview $4
 				$5
+			line-full
 		`,
 		[
 			unread_count > 0,

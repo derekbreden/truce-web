@@ -47,6 +47,7 @@ const renderPost = (post) => {
 			$5
 			$6
 			$7
+			line-full
 		`,
 		[
 			post.title,

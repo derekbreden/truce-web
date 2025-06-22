@@ -239,6 +239,7 @@ const renderPosts = (posts, topic, user) => {
 									name $3
 								subtitle $4
 						p There are no posts in this topic yet, head on over to the posts page to add one!
+						line-full
 					`,
 					[
 						topic.topic_name,
@@ -260,6 +261,7 @@ const renderPosts = (posts, topic, user) => {
 								topicname
 									name $3
 								subtitle $4
+						line-full
 					`,
 					[
 						topic.topic_name,
