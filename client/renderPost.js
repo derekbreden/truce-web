@@ -6,7 +6,6 @@ const getPostDisplayMode = () => {
 		|| state.path.startsWith("/user/")
 }
 
-const cloneIcon = (iconName) => $(`icons icon[${iconName}] svg`).cloneNode(true)
 
 const renderPost = (post) => {
 	const note = post.note || ""
@@ -41,22 +40,15 @@ const renderPost = (post) => {
 		post[line-after]
 			h2
 				$1
-				$2
+				icon[more]
+			$2
 			$3
 			$4
 			$5
 			$6
-			$7
 		`,
 		[
 			post.title,
-			$(
-				`
-				icon[more]
-					$1
-				`,
-				[cloneIcon("more")],
-			),
 			$(
 				`
 				author-topics
@@ -80,15 +72,17 @@ const renderPost = (post) => {
 								`,
 								["/image/" + post.profile_picture_uuid],
 							)
-						: cloneIcon("profile-picture"),
+						: $(
+							`
+							icon[profile-picture]
+							`
+						),
 					renderName(post.display_name, post.display_name_index),
 					post.user_verified
 						? $(
 								`
-								icon
-									$1
-								`,
-								[cloneIcon("verified")],
+								icon[verified]
+								`
 							)
 						: [],
 					(post.topics || "")
@@ -98,13 +92,11 @@ const renderPost = (post) => {
 							$(
 								`
 								topic[topic=$1]
-									icon
-										$2
-									span $3
+									icon[$1]
+									span $2
 								`,
 								[
 									topic,
-									cloneIcon(topic),
 									topic[0].toUpperCase() + topic.slice(1),
 								],
 							),
@@ -184,28 +176,40 @@ const renderPost = (post) => {
 				`
 				post-details[detail-wrapper]
 					detail[favorites][favorited=$1]
-						icon
-							$2
+						$2
 						p $3
 					detail[replies]
-						icon
-							$4
+						$4
 						p $5
 					detail[more]
-						icon
-							$6
+						icon[forward]
 				`,
 				[
 					post.favorited,
 					post.favorited
-						? cloneIcon("favorited")
-						: cloneIcon("favorites"),
+						? $(
+							`
+							icon[favorited]
+							`
+						)
+						: $(
+							`
+							icon[favorites]
+							`
+						),
 					post.favorite_count,
 					post.replyed
-						? cloneIcon("replyed")
-						: cloneIcon("reply"),
+						? $(
+							`
+							icon[replyed]
+							`
+						)
+						: $(
+							`
+							icon[reply]
+							`
+						),
 					post.reply_count,
-					cloneIcon("forward"),
 				],
 			),
 		],
@@ -327,19 +331,15 @@ const renderPost = (post) => {
 				modal[info]
 					action[edit]
 						icon[edit]
-							$1
 						p Edit
 					action[share]
 						icon[share]
-							$2
 						p Share Post
 					action[flag]
 						icon[flag]
-							$3
 						p Flag post
 					action[block]
 						icon[block]
-							$4
 						p Block user
 					button-wrapper
 						button[alt][cancel] Cancel
@@ -349,12 +349,6 @@ const renderPost = (post) => {
 						span to provide feedback or report inappropriate activity.
 				modal-bg
 			`,
-			[
-				cloneIcon("edit"),
-				cloneIcon("share"),
-				cloneIcon("flag"),
-				cloneIcon("block"),
-			],
 		)
 		const moreModalCancel = () => {
 			$more_modal.remove()
@@ -382,12 +376,10 @@ const renderPost = (post) => {
 						`
 						h2
 							icon[block]
-								$1
 							span Block user - are you sure?
 						p This will hide all content from this user.
 						p This action cannot be undone.
 						`,
-						[cloneIcon("block")],
 					),
 					() => {
 						markBlocked(post)
@@ -421,13 +413,11 @@ const renderPost = (post) => {
 				$(
 					`
 					h2
-						icon
-							$1
+						icon[flag]
 						span Flag post - are you sure?
 					p This will hide this post for everyone.
 					p This action cannot be undone.
 					`,
-					[cloneIcon("flag")],
 				),
 				() => {
 					markFlagged(post)

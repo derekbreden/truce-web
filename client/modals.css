@@ -108,11 +108,13 @@ modal[confirm] h2 icon[block] {
   margin: -4px 6px -4px -2px;
 }
 
-modal[confirm] h2 icon svg {
+modal[confirm] h2 icon {
   height: var(--icon-xxl);
   width: var(--icon-xxl);
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+  background-color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 modal[confirm] button-wrapper {

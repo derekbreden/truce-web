@@ -13,14 +13,14 @@ action p {
 action>icon {
   cursor: pointer;
   margin: 0 0 -4px 0;
-}
-
-action>icon svg {
   height: 24px;
   width: 24px;
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+  background-color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 
 /* App store badges */
 app-store-wrapper {
