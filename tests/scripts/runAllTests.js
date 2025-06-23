@@ -68,9 +68,16 @@ const main = async () => {
 	const captureBaselineMode = allArgs.includes("capture-baseline")
 	const darkMode = allArgs.includes("dark")
 	const visualMode = allArgs.includes("visual")
-	const searchArgs = allArgs.filter(arg => arg !== "capture" && arg !== "capture-baseline" && arg !== "dark" && arg !== "visual")
+	const dontDeleteMode = allArgs.includes("dont-delete")
+	const searchArgs = allArgs.filter(arg => 
+		arg !== "capture"
+		&& arg !== "capture-baseline"
+		&& arg !== "dark"
+		&& arg !== "visual"
+		&& arg !== "dont-delete"
+	)
 	const pathArg = searchArgs.join(" ")
-	
+
 	let filesToRun = []
 
 	// Clean visual output directory if in capture mode
@@ -79,7 +86,7 @@ const main = async () => {
 			? path.join(__dirname, "..", "capture-baseline")
 			: path.join(__dirname, "..", "capture")
 		
-		if (captureMode) {
+		if (captureMode && !dontDeleteMode) {
 			if (fs.existsSync(targetCaptureDir)) {
 				const files = fs.readdirSync(targetCaptureDir)
 				files.forEach(file => {
