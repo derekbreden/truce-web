@@ -125,8 +125,8 @@ h2[conversations-empty] icon {
   background-color: var(--color-text-primary);
   margin-bottom: -16px;
   display: flex;
-  height: var(--icon-xl);
-  width: var(--icon-xl);
+  height: var(--icon-menu);
+  width: var(--icon-menu);
 }
 
 h2[welcome] icon,
@@ -168,7 +168,7 @@ icon[inline] {
   height: var(--icon-xxl);
   width: var(--icon-xxl);
   background-color: var(--color-text-primary);
-  margin-bottom: -6px;
+  margin-bottom: -10px;
   display: inline-block;
 }
 

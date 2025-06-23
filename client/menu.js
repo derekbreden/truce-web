@@ -50,9 +50,6 @@ const showMenu = () => {
 					p Account settings
 			`,
 		)
-		$settings
-			.$("icon[settings]")
-			.appendChild($("icons icon[settings] svg").cloneNode(true))
 		$settings.on("click", ($event) => {
 			$event.preventDefault()
 			menuCancel()

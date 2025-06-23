@@ -9,11 +9,11 @@ const renderTopics = (topics) => {
 				post[line-after]
 					h2[topics]
 						span Topics
-						$1
+						icon[topic]
 					p Tap on a topic to see posts related to the topic.
 				topics[topics-list]
 			`,
-			[$("footer icon[topic] svg").cloneNode(true)],
+			[],
 		),
 	)
 	$("main-content-wrapper[active] main-content topics").replaceChildren(
@@ -21,17 +21,15 @@ const renderTopics = (topics) => {
 			$(
 				`
 				topic[topic=$1]
-					icon
-						$2
+					icon[$1]
 					topicname-subtitle
 						topicname
-							name $3
-							count $4
-						subtitle $5
+							name $2
+							count $3
+						subtitle $4
 				`,
 				[
 					topic.topic_name,
-					$(`icons icon[${topic.topic_name}] svg`).cloneNode(true),
 					topic.topic_name[0].toUpperCase() + topic.topic_name.slice(1),
 					topic.posts,
 					topic.subtitle,

@@ -66,16 +66,13 @@ const renderConversations = (conversations) => {
 					post[line-after][conversations-empty]
 						h2[conversations-empty]
 							span Messages
-							icon
-								$1
+							icon[mail]
 						p[conversations-empty]
 							span Click the
 							icon[mail][inline]
 							span on a user's profile to start a conversation with them.
 					`,
-					[
-						$("icons icon[mail] svg").cloneNode(true)
-					]
+					[]
 				)
 			)
 		} else {

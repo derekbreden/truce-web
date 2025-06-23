@@ -9,16 +9,13 @@ const renderActivities = (activities) => {
 					post[line-after][favorites]
 						h2[favorites]
 							span Favorites
-							icon
-								$1
+							icon[favorites]
 						p[favorites-empty]
 							span When you tap the favorite icon
 							icon[favorites][inline]
 							span on a post or reply, it will display here.
 					`,
-					[
-						$("icons icon[favorites] svg").cloneNode(true),
-					],
+					[],
 				),
 			)
 		} else {
@@ -29,16 +26,13 @@ const renderActivities = (activities) => {
 					post[line-after][favorites]
 						h2[favorites]
 							span Favorites
-							icon
-								$1
+							icon[favorites]
 						p[favorites-empty]
 							span When you tap the favorite icon
 							icon[favorites][inline]
 							span on a post or reply, it will display here.
 					`,
-					[
-						$("icons icon[favorites] svg").cloneNode(true),
-					],
+					[],
 				),
 			)
 		}

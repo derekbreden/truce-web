@@ -16,18 +16,16 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 	const $add_new = $(
 		`
     add-new[reply]
-      input[display-name][placeholder=Your name][maxlength=50][value=$2]
-      textarea[body][placeholder=Reply][rows=8][maxlength=8000] $3
+      input[display-name][placeholder=Your name][maxlength=50][value=$1]
+      textarea[body][placeholder=Reply][rows=8][maxlength=8000] $2
       title-wrapper
         label[image]
-          icon
-            $1
+          icon[image]
           input[image][type=file][accept=image/*]
-      button[submit] $4
+      button[submit] $3
       button[alt][cancel] Cancel
     `,
 		[
-			$("icons icon[image] svg").cloneNode(true),
 			...(reply
 				? [state.display_name, reply.body, "Save changes"]
 				: parent_reply
@@ -142,7 +140,11 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
                 `,
 								["/image/" + state.profile_picture_uuid],
 							)
-						: $("icons icon[profile-picture] svg").cloneNode(true),
+						: $(
+								`
+                icon[profile-picture]
+                `
+							),
 					state.display_name + ":",
 				],
 			)

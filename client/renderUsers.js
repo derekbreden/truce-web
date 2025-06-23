@@ -30,15 +30,17 @@ const renderUsers = (users) => {
 											`,
 											["/image/" + user.profile_picture_uuid],
 										)
-									: $("icons icon[profile-picture] svg").cloneNode(true),
+									: $(
+											`
+											icon[profile-picture]
+											`
+										),
 								renderName(user.display_name, user.display_name_index),
 								user.user_verified
 									? $(
 											`
-											icon
-												$1
-											`,
-											[$("icons icon[verified] svg").cloneNode(true)],
+											icon[verified]
+											`
 										)
 									: [],
 								state.user_id && Number(state.user_id) !== Number(user.user_id) ? (
@@ -47,24 +49,20 @@ const renderUsers = (users) => {
 												`
 												button[subscribe][small][userid=$1]
 													icon[subscribe]
-														$2
 													span Unsubscribe
 												`,
 												[
 													user.user_id,
-													$("icons icon[subscribe] svg").cloneNode(true),
 												],
 											)
 										: $(
 												`
 												button[subscribe][small][alt][userid=$1]
 													icon[subscribe]
-														$2
 													span Subscribe
 												`,
 												[
 													user.user_id,
-													$("icons icon[subscribe] svg").cloneNode(true),
 												],
 											)
 								) : [],

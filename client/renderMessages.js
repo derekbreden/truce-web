@@ -60,16 +60,18 @@ const renderMessage = (message) => {
 					`,
 					["/image/" + message.profile_picture_uuid]
 				)
-				: $("icons icon[profile-picture] svg").cloneNode(true),
+				: $(
+					`
+					icon[profile-picture]
+					`
+				),
 			message.user_slug,
 			renderName(message.display_name, message.display_name_index),
 			message.user_verified
 				? $(
 					`
-					icon
-						$1
-					`,
-					[$("icons icon[verified] svg").cloneNode(true)]
+					icon[verified]
+					`
 				)
 				: [],
 			time_ago,

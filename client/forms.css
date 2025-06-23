@@ -230,6 +230,17 @@ title-wrapper input {
   display: none;
 }
 
+title-wrapper icon {
+  background-color: var(--color-text-primary);
+  cursor: pointer;
+  height: var(--icon-footer);
+  width: var(--icon-footer);
+  margin: 0 -3px -5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 title-wrapper svg {
   fill: var(--color-black);
   fill: var(--color-text-primary);
@@ -384,6 +395,13 @@ poll-input-wrapper icon {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+poll-input-wrapper icon {
+  background-color: var(--color-text-primary);
+  height: var(--icon-xl);
+  width: var(--icon-xl);
+  margin: 0 -2px 0 -2px;
 }
 
 poll-input-wrapper svg {
