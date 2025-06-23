@@ -122,10 +122,8 @@ const renderPosts = (posts, topic, user) => {
 					user.user_verified
 						? $(
 								`
-								icon
-									$1
-								`,
-								[$("icons icon[verified] svg").cloneNode(true)],
+								icon[verified]
+								`
 							)
 						: [],
 					user.user_id === state.user_id
@@ -133,41 +131,33 @@ const renderPosts = (posts, topic, user) => {
 								`
 								button[edit][small][href=/settings]
 									icon[settings]
-										$1
 									span Edit
-								`,
-								[$("icons icon[settings] svg").cloneNode(true)],
+								`
 							)
 						: state.user_id ? $(
 								`
 								user-actions
 									button[message][small][userid=$1]
 										icon[mail]
-											$2
 										span Message
-									$3
+									$2
 								`,
 								[
 									user.user_id,
-									$("icons icon[mail] svg").cloneNode(true),
 									user.subscribed
 										? $(
 												`
 												button[subscribe][small]
 													icon[subscribe]
-														$1
 													span Unsubscribe
-												`,
-												[$("icons icon[subscribe] svg").cloneNode(true)],
+												`
 											)
 										: $(
 												`
 												button[subscribe][small][alt]
 													icon[subscribe]
-														$1
 													span Subscribe
-												`,
-												[$("icons icon[subscribe] svg").cloneNode(true)],
+												`
 											),
 								]
 							) : user.subscribed
@@ -175,19 +165,15 @@ const renderPosts = (posts, topic, user) => {
 									`
 									button[subscribe][small]
 										icon[subscribe]
-											$1
 										span Unsubscribe
-									`,
-									[$("icons icon[subscribe] svg").cloneNode(true)],
+									`
 								)
 							: $(
 									`
 									button[subscribe][small][alt]
 										icon[subscribe]
-											$1
 										span Subscribe
-									`,
-									[$("icons icon[subscribe] svg").cloneNode(true)],
+									`
 								),
 					user.profile_picture_uuid
 						? $(
@@ -196,7 +182,11 @@ const renderPosts = (posts, topic, user) => {
 								`,
 								["/image/" + user.profile_picture_uuid],
 							)
-						: $("icons icon[profile-picture] svg").cloneNode(true),
+						: $(
+							`
+							icon[profile-picture]
+							`
+						),
 					user.user_id === state.user_id
 						? $(
 								`
@@ -232,17 +222,15 @@ const renderPosts = (posts, topic, user) => {
 					`
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
-							icon
-								$2
+							icon[$1]
 							topicname-subtitle
 								topicname
-									name $3
-								subtitle $4
+									name $2
+								subtitle $3
 						p There are no posts in this topic yet, head on over to the posts page to add one!
 					`,
 					[
 						topic.topic_name,
-						$(`icons icon[${topic.topic_name}] svg`).cloneNode(true),
 						topic.topic_name[0].toUpperCase() + topic.topic_name.slice(1),
 						topic.subtitle,
 					],
@@ -254,16 +242,14 @@ const renderPosts = (posts, topic, user) => {
 					`
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
-							icon
-								$2
+							icon[$1]
 							topicname-subtitle
 								topicname
-									name $3
-								subtitle $4
+									name $2
+								subtitle $3
 					`,
 					[
 						topic.topic_name,
-						$(`icons icon[${topic.topic_name}] svg`).cloneNode(true),
 						topic.topic_name[0].toUpperCase() + topic.topic_name.slice(1),
 						topic.subtitle,
 					],
