@@ -67,16 +67,11 @@ message-header profile-picture {
   flex-shrink: 0;
 }
 
+message-header profile-picture icon,
 message-header profile-picture image {
-  width: 25px;
-  height: 25px;
-}
-
-message-header profile-picture svg {
   width: var(--icon-xxl);
   height: var(--icon-xxl);
-  margin: -3px;
-  opacity: .5;
+  display: flex;
 }
 
 message-info {
@@ -96,16 +91,6 @@ message-info author {
 
 message-info author span {
   display: inline-block;
-}
-
-message-info author icon {
-  display: inline-flex;
-}
-
-message-info author icon svg {
-  width: var(--icon-xs);
-  height: var(--icon-xs);
-  fill: currentColor;
 }
 
 message-info time-ago {
@@ -226,26 +211,6 @@ conversation {
   margin-top: var(--space-md);
 }
 
-conversation:hover {
-  border-color: light-dark(var(--color-gray-medium), var(--color-gray-darker));
-}
-
-conversation profile-picture {
-  flex-shrink: 0;
-}
-
-conversation profile-picture image {
-  width: 40px;
-  height: 40px;
-}
-
-conversation profile-picture svg {
-  width: 50px;
-  height: 50px;
-  margin: -5px;
-  opacity: .5;
-}
-
 conversation-info {
   flex: 1;
   min-width: 0;
@@ -296,27 +261,4 @@ conversation unread-count {
   position: absolute;
   top: 10px;
   right: 10px;
-}
-
-h2[conversations-empty] icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-h2[conversations-empty] svg {
-  margin: -12px -4px -8px -4px;
-}
-
-p[conversations-empty] {
-  overflow: visible;
-}
-
-p[conversations-empty] svg {
-  margin: 0 4px -16px 4px;
-}
-
-conversations post {
-  padding-bottom: 21px;
-  position: relative;
 }

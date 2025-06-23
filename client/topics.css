@@ -82,14 +82,10 @@ topics[topics-list] topic[topic=polls] icon {
 }
 
 topics[topics-list] topic icon {
-  font-size: 0;
-}
-
-topics[topics-list] topic svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-  height: 40px;
-  width: 40px;
+  display: flex;
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  background-color: var(--color-text-primary);
 }
 
 /* ================================
@@ -138,13 +134,4 @@ topics[topics-list] topic subtitle {
 
 topics[topics-list][big] topic subtitle {
   font-size: var(--font-size-base);
-}
-
-/* ================================
-   TOPICS HEADER
-   ================================ */
-
-h2[topics] svg {
-  width: var(--icon-xxl);
-  height: var(--icon-xxl);
 }

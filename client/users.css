@@ -21,11 +21,3 @@ users author-name name {
 users author-name icon {
   font-size: 0;
 }
-
-users author-name icon svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-  height: var(--icon-lg);
-  width: var(--icon-lg);
-  margin-left: -5px;
-}

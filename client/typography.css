@@ -49,13 +49,6 @@ h2[user] author icon {
   font-size: 0;
 }
 
-h2[user] author icon svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-  height: var(--icon-xl);
-  width: var(--icon-xl);
-}
-
 h3 {
   font-size: var(--font-size-base);
   font-weight: 600;

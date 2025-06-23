@@ -70,27 +70,13 @@ detail[favorites] icon {
   margin: -3px -1px -4px -7px;
 }
 
-detail[favorites][favorited] svg {
-  fill: #e48;
-  fill: light-dark(#e48, var(--color-favorite));
-}
-
-detail[replies] icon {
-  margin: -3px 3px -4px -3px;
-}
-
-detail[replies] svg {
-  height: 28px;
-  width: 28px;
+detail[favorites][favorited] icon {
+  background-color: #e48;
+  background-color: light-dark(#e48, var(--color-favorite));
 }
 
 detail[more] icon {
   margin: -3px -6px -3px -1px;
-}
-
-detail[more] svg {
-  height: var(--icon-xl);
-  width: var(--icon-xl);
 }
 
 /* ==================== Alert Wrapper ==================== */
@@ -117,47 +103,12 @@ activity[explode-out] {
 
 /* ==================== Empty States & Icons ==================== */
 
-h2[topics] icon,
-h2[welcome] icon,
-h2[moderation] icon,
-h2[favorites] icon,
-h2[conversations-empty] icon {
+h2 icon {
   background-color: var(--color-text-primary);
   margin-bottom: -16px;
   display: flex;
   height: var(--icon-menu);
   width: var(--icon-menu);
-}
-
-h2[welcome] icon,
-h2[moderation] icon {
-  width: 60px;
-  height: 60px;
-  margin-top: -16px;
-}
-
-h2[favorites] icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-h2[favorites] svg {
-  margin: -12px -4px -8px -4px;
-}
-
-h2[favorites] svg:nth-child(2) {
-  margin-top: -9px;
-}
-
-profile-picture icon[profile-picture] {
-  width: var(--icon-xl);
-  height: var(--icon-xl);
-  background-color: var(--color-text-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 p[add-to-home] {

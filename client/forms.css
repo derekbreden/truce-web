@@ -68,21 +68,15 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: var(--space-sm);
 }
 
 button icon {
-  font-size: 0;
-  margin: 0 5px 0 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-button svg {
-  fill: var(--color-white);
-  fill: var(--color-text-primary-inverted);
-  height: var(--icon-xl);
-  width: var(--icon-xl);
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  background-color: var(--color-text-primary-inverted);
+  margin: 0;
 }
 
 button[alt] {
@@ -94,9 +88,8 @@ button[alt] {
   border: 1px solid var(--color-border-medium);
 }
 
-button[alt] svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+button[alt] icon {
+  background-color: var(--color-text-primary);
 }
 
 button[small] {
@@ -236,18 +229,6 @@ title-wrapper icon {
   height: var(--icon-footer);
   width: var(--icon-footer);
   background-color: var(--color-text-primary);
-}
-
-title-wrapper svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-  cursor: pointer;
-}
-
-title-wrapper svg {
-  height: var(--icon-footer);
-  width: var(--icon-footer);
-  margin: 0 -3px -5px 5px;
 }
 
 display-name-wrapper b {
@@ -396,14 +377,6 @@ poll-input-wrapper icon {
 
 poll-input-wrapper icon {
   background-color: var(--color-text-primary);
-  height: var(--icon-xl);
-  width: var(--icon-xl);
-  margin: 0 -2px 0 -2px;
-}
-
-poll-input-wrapper svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
   height: var(--icon-xl);
   width: var(--icon-xl);
   margin: 0 -2px 0 -2px;
