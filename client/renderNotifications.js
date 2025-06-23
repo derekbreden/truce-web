@@ -145,10 +145,9 @@ const renderNotifications = (notifications) => {
             h2 Alerts
             p[add-to-home]
               span To enable alerts, tap the
-              $1
+              icon[share][inline]
               span icon on your browser and then tap "Add to Home Screen".
         `,
-				[$("icons icon[share] svg").cloneNode(true)],
 			),
 		)
 	}

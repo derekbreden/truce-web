@@ -70,11 +70,10 @@ const renderConversations = (conversations) => {
 								$1
 						p[conversations-empty]
 							span Click the
-							$2
+							icon[mail][inline]
 							span on a user's profile to start a conversation with them.
 					`,
 					[
-						$("icons icon[mail] svg").cloneNode(true),
 						$("icons icon[mail] svg").cloneNode(true)
 					]
 				)

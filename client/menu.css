@@ -95,22 +95,18 @@ menu links a icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--color-text-primary);
 }
 
-menu links a icon svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
-}
-
-menu links a icon[topic] svg {
+menu links a icon[topic] {
   width: var(--icon-menu-topic);
 }
 
-menu links a icon[settings] svg {
+menu links a icon[settings] {
   width: var(--icon-menu-settings);
 }
 
-menu links a icon[notifications] svg {
+menu links a icon[notifications] {
   width: var(--icon-menu-notifications);
 }
 

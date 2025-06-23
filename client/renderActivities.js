@@ -13,11 +13,10 @@ const renderActivities = (activities) => {
 								$1
 						p[favorites-empty]
 							span When you tap the favorite icon
-							$2
+							icon[favorites][inline]
 							span on a post or reply, it will display here.
 					`,
 					[
-						$("icons icon[favorites] svg").cloneNode(true),
 						$("icons icon[favorites] svg").cloneNode(true),
 					],
 				),
@@ -34,11 +33,10 @@ const renderActivities = (activities) => {
 								$1
 						p[favorites-empty]
 							span When you tap the favorite icon
-							$2
+							icon[favorites][inline]
 							span on a post or reply, it will display here.
 					`,
 					[
-						$("icons icon[favorites] svg").cloneNode(true),
 						$("icons icon[favorites] svg").cloneNode(true),
 					],
 				),

@@ -30,22 +30,6 @@ const showMenu = () => {
 		`,
 		[Boolean(state.unread_messages_count), Boolean(state.unread_count)],
 	)
-	$menu
-		.$("icon[welcome]")
-		.appendChild($("icons icon[welcome] svg").cloneNode(true))
-	$menu
-		.$("icon[posts]")
-		.appendChild($("footer icon[posts] svg").cloneNode(true))
-	$menu.$("icon[topic]").appendChild($("footer icon[topic] svg").cloneNode(true))
-	$menu
-		.$("icon[mail]")
-		.appendChild($("footer icon[mail] svg").cloneNode(true))
-	$menu
-		.$("icon[favorites]")
-		.appendChild($("icons icon[favorites] svg").cloneNode(true))
-	$menu
-		.$("icon[notifications]")
-		.appendChild($("footer icon[notifications] svg").cloneNode(true))
 	const menuCancel = () => {
 		$menu.remove()
 	}

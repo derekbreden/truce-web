@@ -170,6 +170,14 @@ p[add-to-home] svg {
   margin-bottom: -6px;
 }
 
+icon[inline] {
+  height: var(--icon-xxl);
+  width: var(--icon-xxl);
+  background-color: var(--color-text-primary);
+  margin-bottom: -6px;
+  display: inline-block;
+}
+
 [line-after]::after {
   content: "";
   position: absolute;

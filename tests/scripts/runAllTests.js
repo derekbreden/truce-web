@@ -79,7 +79,7 @@ const main = async () => {
 			? path.join(__dirname, "..", "capture-baseline")
 			: path.join(__dirname, "..", "capture")
 		
-		if (captureBaselineMode === "capture") {
+		if (captureMode) {
 			if (fs.existsSync(targetCaptureDir)) {
 				const files = fs.readdirSync(targetCaptureDir)
 				files.forEach(file => {
