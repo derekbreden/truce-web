@@ -60,14 +60,14 @@ footer a:nth-child(4) p {
 
 footer a icon {
   display: flex;
-  background-color: var(--color-text-primary);
+  background-color: var(--color-black);
   height: var(--icon-footer);
   width: var(--icon-footer);
 }
 
 footer a:nth-child(3) icon,
 footer a:nth-child(4) icon {
-  background-color: var(--color-text-primary-inverted);
+  background-color: var(--color-white);
 }
 
 footer a[unread]::before {

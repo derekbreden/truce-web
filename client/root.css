@@ -63,6 +63,7 @@
   --color-black: #000;
   --color-white: #fff;
   --color-gray-lightest: #f5f5f5;
+  --color-gray-darkest: #1c1d1c; /* Dark mode background */
   
   /* UI Gray Scale */
   --color-gray-light: #ddd;    /* Standard borders, subtle separators */
@@ -93,9 +94,9 @@
   
   /* Semantic Color Functions - Light/Dark Pairs */
   --color-bg-primary: light-dark(var(--color-white), var(--color-black));
-  --color-bg-secondary: light-dark(var(--color-gray-lightest), var(--color-black));
-  --color-bg-tertiary: light-dark(var(--color-gray-lightest), #0c0c0c);
-  
+  --color-bg-secondary: light-dark(var(--color-gray-lightest), var(--color-gray-darkest));
+  --color-bg-tertiary: light-dark(var(--color-gray-lightest), var(--color-gray-dark));
+
   --color-text-primary: light-dark(var(--color-black), var(--color-white));
   --color-text-primary-inverted: light-dark(var(--color-white), var(--color-black));
   --color-text-secondary: light-dark(var(--color-black), var(--color-gray-lightest));
@@ -258,15 +259,6 @@ main-content-2 {
   max-width: 480px;
   width: 100%;
   position: relative;
-}
-
-@media (min-width: 482px) {
-
-  main-content,
-  main-content-2 {
-    border-left: light-dark(none, 1px solid var(--color-gray-dark));
-    border-right: light-dark(none, 1px solid var(--color-gray-dark));
-  }
 }
 
 @media (max-width: 1000px) {
