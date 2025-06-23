@@ -56,7 +56,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					post[line-after]
 						h2[welcome]
 							span Terms and conditions
-							$1
+							icon[welcome]
 						p If you agree to:
 						ul
 							li Never escalate
@@ -71,10 +71,9 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 							span Objectionable content is defined as escalations, judgments, or name-calling.
 						p[notice][style="margin-top:5px;"]
 							span By clicking "Join the Discussion," you agree to these terms.
-					$2
+					$1
 				`,
 				[
-					$("icons icon[welcome] svg").cloneNode(true),
 					!window.webkit
 					&& document.referrer !== "android-app://net.truce.twa/"
 						? $(
@@ -103,7 +102,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					post[line-after]
 						h2[moderation]
 							span Our Approach to Moderation
-							$1
+							icon[communication]
 						p If you post:
 						ul
 							li An escalation
@@ -121,7 +120,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									author
 										profile-picture
 											image
-												$2
+												icon[profile-picture]
 										span John Doe:
 								p You are a fascist, who attended a fascist rally and supported a fascist leader.
 								info-wrapper
@@ -133,7 +132,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									author
 										profile-picture
 											image
-												$3
+												icon[profile-picture]
 										span Jane Doe:
 								p Sometimes violence is the answer.
 									info
@@ -144,7 +143,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 									author
 										profile-picture
 											image
-												$4
+												icon[profile-picture]
 										span Sam Smith:
 								p They are pure evil.
 									info
@@ -158,12 +157,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.
 				`,
-				[
-					$("icons icon[communication] svg").cloneNode(true),
-					$("icons icon[profile-picture] svg").cloneNode(true),
-					$("icons icon[profile-picture] svg").cloneNode(true),
-					$("icons icon[profile-picture] svg").cloneNode(true),
-				],
 			),
 		)
 
@@ -211,7 +204,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						p[bold] Contact
 						p For any questions, contact us at derek@truce.net
 				`,
-				[$("icons icon[welcome] svg").cloneNode(true)],
 			),
 		)
 		$("main-content-wrapper[active] main-content tab-wrapper").on(
@@ -230,19 +222,18 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					h2[settings]
 						span Account settings
 						button[profile][small][slug=$1]
-							icon
-								$2
+							icon[profile-picture]
 							span View profile
 					p You may change your profile picture or your display name here. You may also remove your account.
 				post[line-after]
 					p[bold] Profile picture
 					label[profile-picture][large]
 						image
-							$3
+							$2
 						input[image][type=file][accept=image/*]
 					p[bold] Display name
 					p[input]
-						input[type=text][display-name][value=$4]
+						input[type=text][display-name][value=$3]
 					p[button]
 						button[save] Save display name
 				post[line-after]
@@ -252,7 +243,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			`,
 			[
 				state.user_slug,
-				$("icons icon[profile-picture] svg").cloneNode(true),
 				state.profile_picture_uuid
 					? $(
 							`
@@ -260,7 +250,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 							`,
 							["/image/" + state.profile_picture_uuid],
 						)
-					: $("icons icon[profile-picture] svg").cloneNode(true),
+					: $(
+						`
+						icon[profile-picture]
+						`
+					),
 				state.display_name,
 			],
 		)

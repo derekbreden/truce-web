@@ -117,24 +117,20 @@ activity[explode-out] {
 
 /* ==================== Empty States & Icons ==================== */
 
-p[favorites-empty] {
-  overflow: visible;
-}
-
-h2[topics] svg,
-h2[welcome] svg,
-h2[moderation] svg,
-h2[favorites] svg,
-h2[conversations-empty] svg,
-p[add-to-home] svg,
-p[favorites-empty] svg,
-p[conversations-empty] svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+h2[topics] icon,
+h2[welcome] icon,
+h2[moderation] icon,
+h2[favorites] icon,
+h2[conversations-empty] icon {
+  background-color: var(--color-text-primary);
   margin-bottom: -16px;
+  display: flex;
+  height: var(--icon-xl);
+  width: var(--icon-xl);
 }
 
-h2[moderation] svg {
+h2[welcome] icon,
+h2[moderation] icon {
   width: 60px;
   height: 60px;
   margin-top: -16px;
@@ -154,14 +150,18 @@ h2[favorites] svg:nth-child(2) {
   margin-top: -9px;
 }
 
-p[add-to-home] {
-  overflow: visible;
+profile-picture icon[profile-picture] {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  background-color: var(--color-text-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-p[add-to-home] svg {
-  height: var(--icon-xxl);
-  width: var(--icon-xxl);
-  margin-bottom: -6px;
+p[add-to-home] {
+  overflow: visible;
 }
 
 icon[inline] {
