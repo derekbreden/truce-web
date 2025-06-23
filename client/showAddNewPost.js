@@ -23,22 +23,18 @@ e.g. ${post_prompts[post_prompts_index]}`
 	const $add_new = $(
 		`
 		add-new[post]
-			input[title][placeholder=Title][maxlength=140][value=$4]
+			input[title][placeholder=Title][maxlength=140][value=$2]
 			title-wrapper
 				label[poll]
-					icon
-						$1
+					icon[poll]
 				label[image]
-					icon
-						$2
+					icon[image]
 					input[image][type=file][multiple][accept=image/*]
-			textarea[body][placeholder=$3][rows=10][maxlength=8000] $5
-			button[submit] $6
+			textarea[body][placeholder=$1][rows=10][maxlength=8000] $3
+			button[submit] $4
 			button[alt][cancel] Cancel
 		`,
 		[
-			$("icons icon[poll] svg").cloneNode(true),
-			$("icons icon[image] svg").cloneNode(true),
 			content_placeholder,
 			...(post
 				? [post.title, post.body, "Save changes"]
@@ -48,7 +44,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 
 	let mode = "post"
 	if (state.version > 1) {
-		$add_new.$("[poll]").on("click", () => {
+		$add_new.$("label[poll]").on("click", () => {
 			if (mode === "post") {
 				mode = "poll"
 				$add_new.$("[body]").setAttribute("placeholder", "Question")
@@ -62,11 +58,10 @@ e.g. ${post_prompts[post_prompts_index]}`
 							poll-text
 								input[poll-2][placeholder=Choice 2][maxlength=50]
 							poll-text[add]
-								icon
-									$1
+								icon[add]
 								p Add choice
 						`,
-						[$("icons icon[add] svg").cloneNode(true)],
+						[],
 					),
 				)
 				$add_new.$("poll-text[add]").on("click", () => {
@@ -78,12 +73,10 @@ e.g. ${post_prompts[post_prompts_index]}`
 						poll-text
 							input[$1][placeholder=$2][maxlength=50]
 							icon[remove]
-								$3
 						`,
 						[
 							`poll-${choice_number}`,
 							`Choice ${choice_number}`,
-							$("icons icon[remove] svg").cloneNode(true),
 						],
 					)
 					$add_new.$("poll-text[add]").before($new_choice)

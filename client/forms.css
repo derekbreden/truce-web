@@ -231,14 +231,11 @@ title-wrapper input {
 }
 
 title-wrapper icon {
-  background-color: var(--color-text-primary);
+  display: flex;
   cursor: pointer;
   height: var(--icon-footer);
   width: var(--icon-footer);
-  margin: 0 -3px -5px 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--color-text-primary);
 }
 
 title-wrapper svg {
