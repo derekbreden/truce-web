@@ -60,25 +60,6 @@
   }
 }
 
-/* ==================== Detail Elements ==================== */
-
-detail[favorites] {
-  cursor: pointer;
-}
-
-detail[favorites] icon {
-  margin: -3px -1px -4px -7px;
-}
-
-detail[favorites][favorited] icon {
-  background-color: #e48;
-  background-color: light-dark(#e48, var(--color-favorite));
-}
-
-detail[more] icon {
-  margin: -3px -6px -3px -1px;
-}
-
 /* ==================== Alert Wrapper ==================== */
 
 alert-wrapper {

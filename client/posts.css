@@ -132,6 +132,7 @@ post[trimmed] p[img]+p[img] {
 post-details {
   margin: 0 -10px -10px -10px;
   display: flex;
+  align-items: center;
 }
 
 post-details detail {
@@ -143,14 +144,6 @@ post-details detail {
 post-details detail:not([favorited]),
 post-details detail[favorited] p {
   opacity: .5;
-}
-
-post-details detail[more] {
-  cursor: pointer;
-}
-
-post-details detail[replies] {
-  flex: 1;
 }
 
 post-details icon {
@@ -167,6 +160,35 @@ post-details p {
 
 post:not([trimmed]) detail[more] {
   display: none;
+}
+
+detail[favorites] {
+  cursor: pointer;
+}
+
+detail[favorites] icon {
+  margin: -3px -1px -4px -7px;
+}
+
+detail[favorites][favorited] icon {
+  background-color: #e48;
+  background-color: light-dark(#e48, var(--color-favorite));
+}
+
+post-details detail[more] {
+  cursor: pointer;
+}
+
+detail[more] icon {
+  margin: -2px -7px 0 -1px;
+}
+
+post-details detail[replies] {
+  flex: 1;
+}
+
+post-details detail[replies] icon {
+  margin: 0 3px -2px -4px
 }
 
 /* ================================
