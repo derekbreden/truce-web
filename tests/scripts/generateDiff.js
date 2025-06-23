@@ -39,8 +39,8 @@ const main = async () => {
 	}
 
 	// Get baseline files
-	let baselineFiles = fs.readdirSync(baselineDir).filter(f => f.endsWith('.png'))
-	const captureFiles = fs.readdirSync(captureDir).filter(f => f.endsWith('.png'))
+	let baselineFiles = fs.readdirSync(baselineDir).filter(f => f.endsWith(".png"))
+	const captureFiles = fs.readdirSync(captureDir).filter(f => f.endsWith(".png"))
 
 	// Filter based on pathArg
 	if (pathArg) {
@@ -71,7 +71,7 @@ const main = async () => {
 			// Use ImageMagick compare command to generate diff
 			const result = execSync(
 				`compare -metric AE "${baselinePath}" "${capturePath}" "${diffPath}" 2>&1 || true`,
-				{ encoding: 'utf8' }
+				{ encoding: "utf8" }
 			)
 
 			const diffPixels = parseInt(result.trim()) || 0
