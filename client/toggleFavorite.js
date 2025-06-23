@@ -62,11 +62,19 @@ const toggleFavorite = async (post_or_reply) => {
 	} else {
 		$favoritesDetail.removeAttribute("favorited")
 	}
-	const $favoritesSvg = $element.$(":scope > [detail-wrapper] detail[favorites] svg")
-	$favoritesSvg.replaceWith(
+	const $favoritesIcon = $element.$(":scope > [detail-wrapper] detail[favorites] icon")
+	$favoritesIcon.replaceWith(
 		post_or_reply.favorited
-			? $("icons icon[favorited] svg").cloneNode(true)
-			: $("icons icon[favorites] svg").cloneNode(true),
+			? $(
+				`
+				icon[favorited]
+				`
+			)
+			: $(
+				`
+				icon[favorites]
+				`
+			),
 	)
 	const $favoritesP = $element.$(":scope > [detail-wrapper] detail[favorites] p")
 	$favoritesP.textContent = post_or_reply.favorite_count
