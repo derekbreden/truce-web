@@ -39,10 +39,10 @@ const renderReply = (reply) => {
 							$2
 					span $3
 					$4
-				$5
+				icon[more]
+			$5
 			$6
 			$7
-			$8
 		`,
 		[
 			reply.user_slug,
@@ -53,24 +53,19 @@ const renderReply = (reply) => {
 						`,
 						["/image/" + reply.profile_picture_uuid],
 					)
-				: $("icons icon[profile-picture] svg").cloneNode(true),
+				: $(
+					`
+					icon[profile-picture]
+					`
+				),
 			renderName(reply.display_name, reply.display_name_index),
 			reply.user_verified
 				? $(
 						`
-						icon
-							$1
-						`,
-						[$("icons icon[verified] svg").cloneNode(true)],
+						icon[verified]
+						`
 					)
 				: [],
-			$(
-				`
-				icon[more]
-					$1
-				`,
-				[$("icons icon[more] svg").cloneNode(true)],
-			),
 			$reply_body,
 			reply.note
 				? $(
@@ -87,21 +82,26 @@ const renderReply = (reply) => {
 				`
 				reply-wrapper[detail-wrapper]
 					detail[favorites][favorited=$1]
-						icon
-							$2
+						$2
 						p $3
 					detail[more]
-						icon
-							$4
+						icon[forward]
 					button[small][reply] Reply
 				`,
 				[
 					reply.favorited,
 					reply.favorited
-						? $("icons icon[favorited] svg").cloneNode(true)
-						: $("icons icon[favorites] svg").cloneNode(true),
+						? $(
+							`
+							icon[favorited]
+							`
+						)
+						: $(
+							`
+							icon[favorites]
+							`
+						),
 					reply.favorite_count,
-					$("icons icon[forward] svg").cloneNode(true),
 				],
 			),
 		],
@@ -137,15 +137,12 @@ const renderReply = (reply) => {
 				modal[info]
 					action[edit]
 						icon[edit]
-							$1
 						p Edit
 					action[flag]
 						icon[flag]
-							$2
 						p Flag reply
 					action[block]
 						icon[block]
-							$3
 						p Block user
 					button-wrapper
 						button[alt][cancel] Cancel
@@ -155,11 +152,6 @@ const renderReply = (reply) => {
 						span to provide feedback or report inappropriate activity.
 				modal-bg
 			`,
-			[
-				$("icons icon[edit] svg").cloneNode(true),
-				$("icons icon[flag] svg").cloneNode(true),
-				$("icons icon[block] svg").cloneNode(true),
-			],
 		)
 		const moreModalCancel = () => {
 			$more_modal.remove()
@@ -187,12 +179,10 @@ const renderReply = (reply) => {
 						`
 						h2
 							icon[block]
-								$1
 							span Block user - are you sure?
 						p This will hide all content from this user.
 						p This action cannot be undone.
 						`,
-						[$("icons icon[block] svg").cloneNode(true)],
 					),
 					() => {
 						markBlocked(reply)
@@ -207,13 +197,11 @@ const renderReply = (reply) => {
 				$(
 					`
 					h2
-						icon
-							$1
+						icon[flag]
 						span Flag reply - are you sure?
 					p This will hide this reply for everyone.
 					p This action cannot be undone.
 					`,
-					[$("icons icon[flag] svg").cloneNode(true)],
 				),
 				() => {
 					markFlagged(reply)

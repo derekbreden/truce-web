@@ -74,14 +74,13 @@ reply h3 author {
 
 reply h3 author icon {
   font-size: 0;
-}
-
-reply h3 author icon svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+  background-color: var(--color-text-primary);
   height: var(--icon-lg);
   width: var(--icon-lg);
   margin-left: -5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 reply h3+p {
@@ -106,13 +105,12 @@ reply>ul {
 reply h3 icon[more] {
   margin: -4px 0 -8px 0;
   cursor: pointer;
-}
-
-reply h3 icon[more] svg {
   height: var(--icon-xxl);
   width: var(--icon-xxl);
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+  background-color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 reply[trimmed] p img {

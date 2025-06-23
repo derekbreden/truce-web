@@ -69,11 +69,7 @@ reply reply-wrapper detail icon {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-reply reply-wrapper svg {
-  fill: var(--color-black);
-  fill: var(--color-text-primary);
+  background-color: var(--color-text-primary);
   width: 32px;
   height: 32px;
 }
