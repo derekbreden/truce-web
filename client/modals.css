@@ -21,7 +21,7 @@ modal-bg {
 modal {
   display: flex;
   flex-direction: column;
-  padding: 20px 20px 15px 20px;
+  padding: var(--space-md) var(--space-md) 15px var(--space-md);
   position: relative;
   width: 280px;
 }
@@ -39,7 +39,7 @@ modal {
   box-shadow: light-dark(0px 0px 5px var(--color-black), none);
   border: light-dark(none, 1px solid var(--color-gray-dark));
   max-width: 480px;
-  width: calc(100% - 20px);
+  width: calc(100% - var(--space-md));
 }
 
 modal>* {
@@ -88,7 +88,7 @@ modal[image]>button {
   border-radius: 0;
   border: 1px solid #fff;
   border: 1px solid var(--color-text-primary-inverted);
-  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
 }
 
 /* ================================
@@ -109,12 +109,10 @@ modal[confirm] h2 icon[block] {
 }
 
 modal[confirm] h2 icon {
+  display: flex;
   height: var(--icon-xxl);
   width: var(--icon-xxl);
   background-color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 modal[confirm] button-wrapper {

@@ -28,8 +28,8 @@ main-content-2 tab-wrapper {
     display: flex;
     position: absolute;
     top: 0;
-    left: -20px;
-    right: -20px;
+    left: calc(-1 * var(--space-md));
+    right: calc(-1 * var(--space-md));
     border-top: 1px solid #ddd;
     border-top: 1px solid var(--color-border-standard);
   }
@@ -37,7 +37,6 @@ main-content-2 tab-wrapper {
 
 /* Navigation items */
 mark-all-as-read-wrapper,
-read-more-wrapper,
 tab-item {
   cursor: pointer;
   display: flex;
@@ -48,18 +47,12 @@ tab-item {
   position: relative;
 }
 
-read-more-wrapper {
-  margin: 0;
-  white-space: nowrap;
-}
-
 tab-item[right] {
   justify-content: flex-end;
   flex: 1;
 }
 
 /* Navigation buttons */
-read-more-wrapper button,
 tab-item button {
   background: var(--color-white);
   border-color: var(--color-white);
@@ -77,7 +70,6 @@ tab-item icon {
 
 /* Navigation text styling */
 all-clear-wrapper p,
-read-more-wrapper p,
 tab-item p {
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -91,24 +83,17 @@ all-clear-wrapper p {
   text-align: center;
 }
 
-read-more-wrapper p {
-  margin: 0;
-}
-
-read-more-wrapper p,
 tab-item p,
 tab-item p {
   margin: 0 5px;
   text-align: left;
 }
 
-main-content-2 read-more-wrapper p,
 main-content-2 tab-item p {
   margin: 0;
   text-align: center;
 }
 
-read-more-wrapper p,
 tab-item p {
   text-align: right;
 }

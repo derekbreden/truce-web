@@ -10,24 +10,22 @@ action p {
   margin: 0 0 0 5px;
 }
 
-action>icon {
+action > icon {
+  display: flex;
   cursor: pointer;
   margin: 0 0 -4px 0;
   height: 24px;
   width: 24px;
   background-color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 
 /* App store badges */
 app-store-wrapper {
-  padding: 20px 0 0 0;
+  padding: var(--space-md) 0 0 0;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: var(--space-md);
   font-size: 0;
 }
 
@@ -35,9 +33,14 @@ app-store-wrapper img {
   height: 40px;
 }
 
-app-store-wrapper img[white] {
-  display: light-dark(none, block);
+@media (prefers-color-scheme: dark) {
+  app-store-wrapper img[white] {
+    display: none;
+  }
 }
-app-store-wrapper img[black] {
-  display: light-dark(block, none);
+
+@media (prefers-color-scheme: light) {
+  app-store-wrapper img[black] {
+    display: none;
+  }
 }

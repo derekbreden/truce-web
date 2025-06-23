@@ -38,7 +38,7 @@ header h1 {
   font-weight: 600;
   display: flex;
   align-items: center;
-  margin: 0 20px;
+  margin: 0 var(--space-md);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

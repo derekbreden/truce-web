@@ -17,7 +17,7 @@ const renderNotification = (notification) => {
 	          b $2
 	          span messaged you
 	          i $3
-	      read-more-wrapper
+	      second-column
 	        icon[forward]
 	    `,
 			[
@@ -58,7 +58,7 @@ const renderNotification = (notification) => {
 		const $notification = $(
 			`
 	    notification[line-after][unread=$1]
-	      first-column
+	      column
 	        summary
 	          b $2
 	          span replied
@@ -66,7 +66,7 @@ const renderNotification = (notification) => {
 	          span $4
 	          b $5
 	        $6
-	      read-more-wrapper
+	      column
 	        icon[forward]
 	    `,
 			[

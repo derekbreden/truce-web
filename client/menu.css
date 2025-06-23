@@ -39,7 +39,7 @@ menu signed-in,
 menu sign-in {
   display: flex;
   flex-direction: column;
-  padding: 20px 20px 15px 20px;
+  padding: var(--space-md) var(--space-md) 15px var(--space-md);
   position: relative;
   width: 280px;
 }
@@ -71,7 +71,7 @@ menu links a {
   font-weight: 600;
   display: flex;
   align-items: center;
-  padding: 5px 20px 5px 11px;
+  padding: 5px var(--space-md) 5px 11px;
   border-bottom: 1px solid #999;
   border-bottom: 1px solid var(--color-border-medium);
   position: relative;
@@ -90,24 +90,10 @@ menu links a[unread]::before {
    ================================ */
 
 menu links a icon {
+  display: flex;
   height: var(--icon-menu);
   width: var(--icon-menu);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-color: var(--color-text-primary);
-}
-
-menu links a icon[topic] {
-  width: var(--icon-menu-topic);
-}
-
-menu links a icon[settings] {
-  width: var(--icon-menu-settings);
-}
-
-menu links a icon[notifications] {
-  width: var(--icon-menu-notifications);
 }
 
 /* ================================
@@ -118,7 +104,7 @@ toggle-wrapper {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 20px 0 0 0;
+  margin: var(--space-md) 0 0 0;
   font-weight: 600;
   cursor: pointer;
 }
@@ -129,7 +115,7 @@ toggle-wrapper[disabled] {
 }
 
 toggle-wrapper toggle-button {
-  margin-left: 20px;
+  margin-left: var(--space-md);
   display: flex;
   height: 30px;
   width: 50px;

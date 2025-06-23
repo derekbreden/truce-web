@@ -143,7 +143,7 @@ const renderMessages = (messages, conversation) => {
 			const previewPngs = () => {
 				$("message-input-area image-previews")?.remove()
 				if (pngs.length) {
-					$("message-input-area title-wrapper").after(
+					$("message-input-area").prepend(
 						$(
 							`
 							image-previews

@@ -42,9 +42,29 @@ const setupTestEnvironment = async (options) => {
 					// Force color scheme: dark if explicitly requested, otherwise light
 					if (file.endsWith("root.css")) {
 						if (process.env.DARK_MODE === "true") {
-							processed_content = `:root { color-scheme: dark !important; }\n` + processed_content
+							processed_content = `
+								:root {
+									color-scheme: dark !important;
+								}
+								app-store-wrapper img[white] {
+									display: none !important;
+								}
+								app-store-wrapper img[black] {
+									display: flex !important;
+								}
+							` + processed_content
 						} else {
-							processed_content = `:root { color-scheme: light !important; }\n` + processed_content
+							processed_content = `
+								:root {
+									color-scheme: light !important;
+								}
+								app-store-wrapper img[black] {
+									display: none !important;
+								}
+								app-store-wrapper img[white] {
+									display: flex !important;
+								}
+							` + processed_content
 						}
 					}
 					processedLines.push(processed_content)

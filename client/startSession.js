@@ -360,14 +360,6 @@ const getMoreRecent = () => {
 				// Set a min threshold of scroll to do anything
 				let min_threshold = 0
 
-				// For /posts specifically we have the add-new element that won't be shifted so we want to be (mostly) past it (~200px of it still showing means shift it away?)
-				if (current_path === "/posts" || state.path === "/posts/all") {
-					const $add_new = $("main-content > add-new:first-child")
-					if ($add_new) {
-						min_threshold = $add_new?.offsetTop + $add_new?.offsetHeight - 200
-					}
-				}
-
 				// If we are past the threshold, then maintain our position
 				if (scroll_top > min_threshold) {
 					$("main-content-wrapper[active]").scrollTop =

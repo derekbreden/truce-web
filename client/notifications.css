@@ -1,0 +1,59 @@
+/* Notifications container */
+notifications {
+  display: flex;
+  flex-direction: column;
+}
+
+notifications h3 {
+  margin-top: var(--space-md);
+}
+
+notifications notification+h3 {
+  margin-top: 30px;
+}
+
+/* Notification items */
+notifications notification {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  gap: var(--space-xs);
+  position: relative;
+	cursor: pointer;
+}
+
+notifications notification column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+notifications notification icon {
+	display: flex;
+	width: var(--icon-lg);
+	height: var(--icon-lg);
+	background-color: var(--color-text-primary);
+}
+
+/* Notification content styling */
+notifications notification info[tiny] b {
+  font-weight: 600;
+}
+
+notifications notification summary {
+  font-size: var(--font-size-sm);
+}
+
+notifications notification summary b {
+  font-weight: 600;
+}
+
+notifications notification summary i {
+  margin: 0 3px 0 0;
+}
+
+notifications notification summary span {
+  margin: 0 3px;
+}

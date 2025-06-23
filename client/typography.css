@@ -46,7 +46,7 @@ h2[user] author {
 }
 
 h2[user] author icon {
-  font-size: 0;
+  margin: 0;
 }
 
 h3 {
@@ -65,17 +65,6 @@ reply h3 author {
   font-weight: 700;
 }
 
-reply h3 author icon {
-  font-size: 0;
-  background-color: var(--color-text-primary);
-  height: var(--icon-lg);
-  width: var(--icon-lg);
-  margin-left: -5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 reply h3+p {
   margin-top: 0;
 }
@@ -92,18 +81,15 @@ reply>p {
 
 reply>ol,
 reply>ul {
-  margin: 10px 0 0 var(--list-indent-aligned);
+  margin: var(--space-sm) 0 0 var(--list-indent-aligned);
 }
 
 reply h3 icon[more] {
-  margin: -4px 0 -8px 0;
   cursor: pointer;
   height: var(--icon-xxl);
   width: var(--icon-xxl);
   background-color: var(--color-text-primary);
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 reply[trimmed] p img {
@@ -116,7 +102,7 @@ reply[trimmed] p[img] {
 }
 
 reply[trimmed] p[img]+p[img] {
-  margin-left: 10px;
+  margin-left: var(--space-sm);
 }
 
 /* Paragraphs and content */
@@ -188,7 +174,7 @@ p[right] {
 /* Lists */
 ol,
 ul {
-  margin: 10px 0 0 17px;
+  margin: var(--space-sm) 0 0 17px;
 }
 
 ol {
@@ -201,10 +187,9 @@ audio {
 }
 
 /* Status messages */
-pass,
 info,
 error {
-  padding: 10px 10px 10px 36px;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 36px;
   position: relative;
   background: #fee;
   border: 1px solid #b66;
@@ -229,13 +214,12 @@ info[tiny] {
   font-size: var(--font-size-sm);
 }
 
-pass::before,
 info::before,
 error::before {
   content: "!";
   position: absolute;
-  left: 10px;
-  top: 10px;
+  left: var(--space-sm);
+  top: var(--space-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,23 +264,6 @@ info::before {
   background: var(--color-info);
   background: var(--color-info-text);
   color: var(--color-info-bg-combo);
-}
-
-pass {
-  border-color: #4a5;
-  background: #f0fff0;
-  color: #4a5;
-  border-color: var(--color-state-success);
-  background: var(--color-success-bg-combo);
-  color: var(--color-success-text);
-}
-
-pass::before {
-  content: "✓";
-  background: var(--color-success);
-  color: #f0fff0;
-  background: var(--color-success-text);
-  color: var(--color-success-bg-combo);
 }
 
 error p {

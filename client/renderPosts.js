@@ -137,7 +137,7 @@ const renderPosts = (posts, topic, user) => {
 						: state.user_id ? $(
 								`
 								user-actions
-									button[message][small][userid=$1]
+									button[alt][message][small][userid=$1]
 										icon[mail]
 										span Message
 									$2

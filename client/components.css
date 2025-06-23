@@ -127,8 +127,8 @@ icon[inline] {
   content: "";
   position: absolute;
   bottom: 0;
-  left: -20px;
-  right: -20px;
+  left: calc(-1 * var(--space-md));
+  right: calc(-1 * var(--space-md));
   border-bottom: 1px solid #ddd;
   border-bottom: 1px solid var(--color-border-standard);
 }

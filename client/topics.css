@@ -6,7 +6,7 @@ topics[topics-list] {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 20px;
+  gap: var(--space-md);
   padding-top: var(--space-md);
 }
 
@@ -23,7 +23,7 @@ topics[topics-list] topic {
   display: flex;
   align-items: flex-start;
   gap: var(--space-sm);
-  width: calc(50% - 10px);
+  width: calc(50% - var(--space-sm));
   cursor: pointer;
 }
 

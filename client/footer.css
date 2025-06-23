@@ -15,7 +15,7 @@ footer {
   border-top: 1px solid #000;
   border-top: 1px solid var(--color-border-strong);
   z-index: var(--z-footer);
-  padding: 0 0 calc(10px + env(safe-area-inset-bottom)) 0;
+  padding: 0 0 calc(var(--space-sm) + env(safe-area-inset-bottom)) 0;
 }
 
 footer::after {
@@ -71,7 +71,7 @@ footer a:nth-child(4) icon {
 }
 
 footer a[unread]::before {
-  top: calc(50% - 10px);
+  top: calc(50% - var(--space-sm));
 }
 
 /* ================================
@@ -84,10 +84,6 @@ body[app] main-content-wrapper {
 
 body[app] footer {
   display: flex;
-}
-
-body[app] main-content add-new:first-child {
-  bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
 /* ================================
