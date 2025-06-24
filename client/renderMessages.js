@@ -335,13 +335,16 @@ const renderMessages = (messages, conversation) => {
 
 		// Restore our distance from bottom (even and ESPECIALLY, if it was 0)
 		$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight - scroll_distance_from_bottom
-		$("messages img").forEach($img => {
-			$img.on("load", () => {
-				$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight  - scroll_distance_from_bottom
-				state.rendering_messages--
+		const $images = $("messages img")
+		if ($images) {
+			$images.forEach($img => {
+				$img.on("load", () => {
+					$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight  - scroll_distance_from_bottom
+					state.rendering_messages--
+				})
+				state.rendering_messages++
 			})
-			state.rendering_messages++
-		})
+		}
 		state.rendering_messages--
 
 		// Store conversation ID for WebSocket updates
