@@ -103,10 +103,8 @@ const tests = {
 		)
 
 		// Verify round-trip image is the same calling our endpoint that pulls it from S3
-		const $image_element = $b("main-content-2 replies reply:nth-child(3) p[img] img")
-		const image_response = await window_user_b.fetch($image_element.getAttribute("src"), { method: "GET" })
-		const response_data = await image_response.json()
-		assertEquals(valid_png_base64, response_data, "Retrieved reply image data should match input data")
+		const response_data = $b("main-content-2 replies reply:nth-child(3) p[img] img").src
+		assertEquals("http://localhost/post/" + valid_png_base64, response_data, "Retrieved reply image data should match input data")
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(

@@ -136,7 +136,7 @@ const setupTestEnvironment = async (options) => {
 			// Mock fetch
 			const mockFetchImplementation = async (url, fetchOptions) => {
 				const { req, res } = window.createMockReqRes(fetchOptions.body, fetchOptions.headers, url)
-				const response = await window.executeHandler(req, res)
+				const response = await window.fetchExecuteHandler(req, res)
 				return {
 					status: 200,
 					json: async () => response
@@ -368,7 +368,8 @@ const setupTestEnvironment = async (options) => {
 				return { req, res }
 			}
 			
-			window.executeHandler = async function(req, res) {
+			// Direct fetch requests to the appropriate server side handler
+			window.fetchExecuteHandler = async function(req, res) {
 				// Set current setup ID for this execution
 				global.current_setup_id = options.setup_id
 				
@@ -384,8 +385,8 @@ const setupTestEnvironment = async (options) => {
 				await handleSession(req, res)
 				return JSON.parse(res.responseData)
 			}
-			
-			// Keep essential mocks
+
+			// Mock scrollIntoView, sessionStorage, and waitForElement
 			window.HTMLElement.prototype.scrollIntoView = () => {}
 			window.sessionStorage = {
 				getItem: () => null,
@@ -498,6 +499,35 @@ const setupTestEnvironment = async (options) => {
 		},
 	})
 	const { window } = dom
+
+	// Fetch load img tags from src
+	const observer = new window.MutationObserver((mutations) => {
+		mutations.forEach((mutation) => {
+			if (mutation.type === "childList") {
+				mutation.addedNodes.forEach((node) => {
+					if (node.tagName === "IMG" || node.querySelector("img")) {
+						if (node.tagName === "IMG") {
+							node = node
+						} else {
+							node = node.querySelector("img")
+						}
+						if (node.src.startsWith("http")) {
+							(async () => {
+								const image_response = await window.fetch(node.getAttribute("src"), { method: "GET" })
+								const response_data = await image_response.json()
+								node.src = response_data
+								node.dispatchEvent(new window.Event("load", { bubbles: true }))
+							})()
+						}
+					}
+				})
+			}
+		})
+	})
+	observer.observe(window.document.body, {
+		childList: true,
+		subtree: true,
+	})
 	
 	// Wait for DOM content to be loaded and scripts to execute
 	await new Promise(resolve => setTimeout(resolve, 0))
