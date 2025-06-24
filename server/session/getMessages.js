@@ -32,36 +32,40 @@ module.exports = async (req, res) => {
 
 		const messages_result = await req.client.query(
 			`
-			SELECT
-				m.create_date,
-				m.message_id,
-				m.body,
-				m.note,
-				m.image_uuids,
-				m.user_id,
-				u.display_name,
-				u.display_name_index,
-				CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
-				u.profile_picture_uuid,
-				CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
-				CASE WHEN m.user_id = $2 THEN true ELSE false END AS edit,
-				mn.notification_id,
-				mn.read as notification_read,
-				mn.seen as notification_seen
-			FROM messages m
-			INNER JOIN users u ON m.user_id = u.user_id
-			LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $2
-			LEFT JOIN message_notifications mn ON mn.message_id = m.message_id AND mn.user_id = $2
-			WHERE
-				m.conversation_id = $1
-				AND (
-					m.create_date > $3 OR $3 IS NULL
-				)
-				AND (
-					m.create_date < $4 OR $4 IS NULL
-				)
-				AND b.user_id_blocked IS NULL
-			ORDER BY m.create_date ASC
+			SELECT * FROM (
+				SELECT
+					m.create_date,
+					m.message_id,
+					m.body,
+					m.note,
+					m.image_uuids,
+					m.user_id,
+					u.display_name,
+					u.display_name_index,
+					CASE WHEN (u.slug = '' OR u.slug IS NULL) THEN u.user_id::VARCHAR ELSE u.slug END as user_slug,
+					u.profile_picture_uuid,
+					CASE WHEN u.email <> '' AND u.email IS NOT NULL THEN true ELSE false END AS user_verified,
+					CASE WHEN m.user_id = $2 THEN true ELSE false END AS edit,
+					mn.notification_id,
+					mn.read as notification_read,
+					mn.seen as notification_seen
+				FROM messages m
+				INNER JOIN users u ON m.user_id = u.user_id
+				LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $2
+				LEFT JOIN message_notifications mn ON mn.message_id = m.message_id AND mn.user_id = $2
+				WHERE
+					m.conversation_id = $1
+					AND (
+						m.create_date > $3 OR $3 IS NULL
+					)
+					AND (
+						m.create_date < $4 OR $4 IS NULL
+					)
+					AND b.user_id_blocked IS NULL
+				ORDER BY m.create_date DESC
+				LIMIT 20
+			) AS recent_messages
+			ORDER BY create_date ASC
 			`,
 			[
 				conversation_id,

@@ -58,12 +58,13 @@ const tests = {
 
 		// Check initial messages loaded - should show most recent messages
 		const initial_message_count = $("messages message").length
-		assertEquals(true, initial_message_count > 0, "Should have initial messages loaded")
+		assertEquals(20, initial_message_count, "Should load 20 messages initially")
 		
 		// Verify messages are in correct order (oldest to newest)
 		const first_message = $("messages message:first-child message-content").textContent.trim()
 		const last_message = $("messages message:last-child message-content").textContent.trim()
-		assertEquals(true, last_message.includes("Message 60"), "Last message should be the most recent")
+		assertEquals("Message 60 from User A", last_message, "Last message should be the most recent")
+		assertEquals("Message 41 from User B", first_message, "First message should be message 41 (20 messages from end)")
 		
 		// Store initial scroll position
 		const messages_container = $("messages")
@@ -73,14 +74,11 @@ const tests = {
 		assertEquals(messages_container.scrollHeight - messages_container.clientHeight, messages_container.scrollTop, "Messages should be scrolled to bottom initially")
 
 		// Now we need to scroll UP to load older messages
-		// Mock scrolling near the top
-		messages_container.scrollTop = 100 // Near top but not at 0
-		
-		// However, the scroll event is bound to main-content-wrapper, not messages
+		// Mock scrolling near the top to trigger loading older messages
 		const wrapper = $("main-content-wrapper[active]")
 		wrapper.scrollHeight = 2000
 		wrapper.clientHeight = 500
-		wrapper.scrollTop = 100 // Near top
+		wrapper.scrollTop = 100 // Near top - but this still triggers > threshold due to the bug
 		
 		// Trigger scroll on the wrapper
 		wrapper.dispatchEvent(new window.Event("scroll"))
@@ -89,15 +87,14 @@ const tests = {
 		// Check if more messages were loaded
 		const after_scroll_count = $("messages message").length
 		
-		// Debug: Let's check what's happening
-		console.warn("Initial message count:", initial_message_count)
-		console.warn("After scroll message count:", after_scroll_count)
-		console.warn("First message after scroll:", $("messages message:first-child message-content").textContent.trim())
-		
 		// The scroll position should be maintained (not jump to top)
 		// This is likely broken based on the code analysis
 		const new_scroll_height = messages_container.scrollHeight
 		const expected_scroll_top = messages_container.scrollTop + (new_scroll_height - initial_scroll_height)
+		
+		// Verify we loaded more messages
+		assertEquals(40, after_scroll_count, "Should have 40 messages after first scroll")
+		assertEquals("Message 21 from User B", $("messages message:first-child message-content").textContent.trim(), "First message should now be Message 21")
 		
 		// Test continuing to scroll up
 		wrapper.scrollTop = 50
@@ -105,22 +102,11 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 100))
 		
 		const final_count = $("messages message").length
-		console.warn("Final message count:", final_count)
+		assertEquals(60, final_count, "Should have all 60 messages after scrolling to top")
 		
-		// Try to reach the beginning (all 60 messages loaded)
-		wrapper.scrollTop = 10
-		wrapper.dispatchEvent(new window.Event("scroll"))
-		await new Promise(resolve => setTimeout(resolve, 100))
-		
-		// Should eventually have all 60 messages
-		const ultimate_count = $("messages message").length
-		console.warn("Ultimate message count:", ultimate_count)
-		console.warn("First message:", $("messages message:first-child message-content").textContent.trim())
-		console.warn("Last message:", $("messages message:last-child message-content").textContent.trim())
-		
-		// Verify message order is maintained
-		assertEquals(true, $("messages message:first-child message-content").textContent.includes("Message"), "First message should be oldest")
-		assertEquals(true, $("messages message:last-child message-content").textContent.includes("Message 60"), "Last message should still be most recent")
+		// Verify all messages loaded and in correct order
+		assertEquals("Message 1 from User B", $("messages message:first-child message-content").textContent.trim(), "First message should be Message 1")
+		assertEquals("Message 60 from User A", $("messages message:last-child message-content").textContent.trim(), "Last message should still be Message 60")
 	},
 }
 
