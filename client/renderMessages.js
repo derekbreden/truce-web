@@ -233,6 +233,80 @@ const renderMessages = (messages, conversation) => {
 				}
 			})
 
+			// Set up infinite scroll for loading older messages
+			const $messages_container = $("main-content-wrapper[active] messages")
+			$messages_container.on("scroll", () => {
+				// Never do anything if already loading something
+				if (state.loading_path) {
+					return
+				}
+
+				// Only handle scroll for messages pages
+				if (
+					state.path.startsWith("/messages/")
+					&& state.cache[state.path]
+					&& !state.cache[state.path].messages_finished
+				) {
+					// For messages, we want to load older messages when scrolling UP (toward top)
+					// So we should trigger when scrollTop is SMALL (near top)
+					const threshold = Math.max($messages_container.clientHeight * 0.5, 300) // Trigger when within half screen or 300px of top
+
+					// When we scroll near the top (small scrollTop), load older messages
+					if ($messages_container.scrollTop < threshold) {
+						// Find the oldest (min) create_date of what we have so far
+						const max_message_create_date = state.cache[state.path].messages.reduce(
+							(min, message) => {
+								return min < message.create_date ? min : message.create_date
+							},
+							new Date().toISOString(),
+						)
+
+						// Use that to load anything older than that (our min is the max of what we want returned)
+						state.loading_path = true
+						fetch("/session", {
+							method: "POST",
+							body: JSON.stringify({
+								path: state.path,
+								max_message_create_date,
+							}),
+						})
+							.then((response) => response.json())
+							.then((data) => {
+								// Stop when we reach the end (no more results returned)
+								if (data.messages && !data.messages.length) {
+									state.cache[state.path].messages_finished = true
+								}
+
+								// Track current scrollHeight and scrollTop for position preservation
+								const scroll_height = $messages_container.scrollHeight
+								const scroll_top = $messages_container.scrollTop
+
+								// Prepend what we found to the existing cache (older messages go first)
+								state.cache[state.path].messages.unshift(...data.messages)
+
+								// And re-render if any messages added
+								if (data.messages.length) {
+									renderMessages(state.cache[state.path].messages, state.cache[state.path].conversation)
+									
+									// Preserve scroll position after prepending messages
+									const min_threshold = 0
+									if (scroll_top > min_threshold) {
+										$messages_container.scrollTop = 
+											scroll_top + ($messages_container.scrollHeight - scroll_height)
+									}
+								}
+
+								state.loading_path = false
+							})
+							.catch((error) => {
+								state.loading_path = false
+								console.error(error)
+								state.most_recent_error = error
+								alertError("Network error loading more")
+							})
+					}
+				}
+			})
 
 		}
 
