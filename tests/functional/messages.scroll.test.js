@@ -29,7 +29,7 @@ const tests = {
 		
 		// Create 60 messages in the conversation, some with images
 		for (let i = 1; i <= 60; i++) {
-			const create_date = new Date(Date.now() - ((61 - i) * 1000 * 60))
+			const create_date = new Date(new Date("2023-02-01T00:00:00.000Z") - ((61 - i) * 1000 * 60))
 			const has_image = i % 10 === 0
 			
 			statements.push([
