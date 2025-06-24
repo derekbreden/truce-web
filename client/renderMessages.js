@@ -357,16 +357,16 @@ const renderMessages = (messages, conversation) => {
 
 const markMessagesAsRead = (messages) => {
 	// Only mark messages from other users as read that have notifications
-	const unreadMessages = messages.filter(message => 
+	const unnread_messages = messages.filter(message => 
 		message.user_id !== state.user_id && message.notification_id && !message.notification_read
 	)
 
-	if (unreadMessages.length === 0) {
+	if (unnread_messages.length === 0) {
 		return // Nothing to mark as read
 	}
 
 	// Collect all notification IDs to mark as read
-	const notification_ids = unreadMessages.map(message => message.notification_id)
+	const notification_ids = unnread_messages.map(message => message.notification_id)
 
 	// Mark all notifications as read in one request
 	fetch("/session", {
@@ -389,7 +389,7 @@ const markMessagesAsRead = (messages) => {
 				})
 			}
 			// Mark messages as read locally
-			unreadMessages.forEach(message => {
+			unnread_messages.forEach(message => {
 				message.notification_read = true
 				message.notification_seen = true
 			})
