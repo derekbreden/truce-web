@@ -7,16 +7,6 @@ const renderMessageImages = (image_uuids) => {
 			`,
 			["/image/" + image_uuid]
 		)
-		
-		// Add load event listener to scroll to bottom when image loads (if currently scrolled to bottom)
-		if ($("messages").scrollTop === ($("messages").scrollHeight - $("messages").clientHeight)) {
-			const $img = $image.$("img")
-			$img.on("load", () => {
-				if ($("messages")) {
-					$("messages").scrollTop = $("messages").scrollHeight
-				}
-			})
-		}
 
 		bindImageClick($image, image_uuid)
 		return $image
@@ -101,8 +91,21 @@ const renderMessages = (messages, conversation) => {
 	const skip_messages = !state.path.startsWith("/messages/")
 
 	if (!skip_messages) {
-		beforeDomUpdate()
-		if (!$("main-content-wrapper[active] messages-container")) {
+
+		// Default scroll distance from bottom to 0 for first load
+		let scroll_distance_from_bottom = 0
+
+		// If we have already rendered messages once
+		if ($("messages")) {
+
+			// We can calculate the distance from the bottom as:
+			scroll_distance_from_bottom =
+				$("messages").scrollHeight
+				- $("messages").scrollTop
+				- $("messages").clientHeight
+		
+		// Else this is the first render
+		} else {
 			$("main-content-wrapper[active] main-content").appendChild(
 				$(
 					`
@@ -222,9 +225,6 @@ const renderMessages = (messages, conversation) => {
 				}
 			}
 
-			$textarea.on("focus", () => {
-			})
-
 			$("message-input-area button[submit]").on("click", send_message)
 			$textarea.on("keydown", (e) => {
 				if (e.key === "Enter" && !e.shiftKey) {
@@ -234,10 +234,10 @@ const renderMessages = (messages, conversation) => {
 			})
 
 			// Set up infinite scroll for loading older messages
-			const $messages_container = $("main-content-wrapper[active] messages")
-			$messages_container.on("scroll", () => {
-				// Never do anything if already loading something
-				if (state.loading_path) {
+			const $messages = $("messages")
+			$messages.on("scroll", () => {
+				// Never do anything if already loading or rendering something
+				if (state.loading_path || state.rendering_messages) {
 					return
 				}
 
@@ -249,10 +249,11 @@ const renderMessages = (messages, conversation) => {
 				) {
 					// For messages, we want to load older messages when scrolling UP (toward top)
 					// So we should trigger when scrollTop is SMALL (near top)
-					const threshold = Math.max($messages_container.clientHeight * 0.5, 300) // Trigger when within half screen or 300px of top
+					const threshold = Math.max($messages.clientHeight * 1.5, 300)
 
 					// When we scroll near the top (small scrollTop), load older messages
-					if ($messages_container.scrollTop < threshold) {
+					if ($messages.scrollTop < threshold) {
+
 						// Find the oldest (min) create_date of what we have so far
 						const max_message_create_date = state.cache[state.path].messages.reduce(
 							(min, message) => {
@@ -272,14 +273,11 @@ const renderMessages = (messages, conversation) => {
 						})
 							.then((response) => response.json())
 							.then((data) => {
+
 								// Stop when we reach the end (no more results returned)
 								if (data.messages && !data.messages.length) {
 									state.cache[state.path].messages_finished = true
 								}
-
-								// Track current scrollHeight and scrollTop for position preservation
-								const scroll_height = $messages_container.scrollHeight
-								const scroll_top = $messages_container.scrollTop
 
 								// Prepend what we found to the existing cache (older messages go first)
 								state.cache[state.path].messages.unshift(...data.messages)
@@ -287,13 +285,6 @@ const renderMessages = (messages, conversation) => {
 								// And re-render if any messages added
 								if (data.messages.length) {
 									renderMessages(state.cache[state.path].messages, state.cache[state.path].conversation)
-									
-									// Preserve scroll position after prepending messages
-									const min_threshold = 0
-									if (scroll_top > min_threshold) {
-										$messages_container.scrollTop = 
-											scroll_top + ($messages_container.scrollHeight - scroll_height)
-									}
 								}
 
 								state.loading_path = false
@@ -301,14 +292,13 @@ const renderMessages = (messages, conversation) => {
 							.catch((error) => {
 								state.loading_path = false
 								console.error(error)
-								state.most_recent_error = error
 								alertError("Network error loading more")
 							})
 					}
 				}
 			})
-
 		}
+		// END - first render of messages container
 
 		// Update conversation header with other user (1-to-1 messaging)
 		if (conversation && conversation.other_user_name) {
@@ -323,6 +313,7 @@ const renderMessages = (messages, conversation) => {
 				)
 			)
 		}
+		state.rendering_messages = 1
 
 		// Render messages
 		const $messages = messages.map(renderMessage)
@@ -340,8 +331,18 @@ const renderMessages = (messages, conversation) => {
 			$("main-content-wrapper[active] messages").replaceChildren(
 				...$messages
 			)
-			$("main-content-wrapper[active] messages").scrollTop = $("main-content-wrapper[active] messages").scrollHeight
 		}
+
+		// Restore our distance from bottom (even and ESPECIALLY, if it was 0)
+		$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight - scroll_distance_from_bottom
+		$("messages img").forEach($img => {
+			$img.on("load", () => {
+				$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight  - scroll_distance_from_bottom
+				state.rendering_messages--
+			})
+			state.rendering_messages++
+		})
+		state.rendering_messages--
 
 		// Store conversation ID for WebSocket updates
 		if (conversation) {
@@ -350,8 +351,6 @@ const renderMessages = (messages, conversation) => {
 
 		// Mark messages from other users as read
 		markMessagesAsRead(messages)
-		
-		$("main-content-wrapper[active] messages").scrollTop = $("main-content-wrapper[active] messages").scrollHeight
 	}
 }
 
