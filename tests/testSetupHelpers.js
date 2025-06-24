@@ -511,8 +511,9 @@ const setupTestEnvironment = async (options) => {
 						} else {
 							node = node.querySelector("img")
 						}
-						if (node.src.startsWith("http")) {
+						if (node.src.startsWith("http") && !node.did_fetch) {
 							(async () => {
+								node.did_fetch = true
 								const image_response = await window.fetch(node.getAttribute("src"), { method: "GET" })
 								const response_data = await image_response.json()
 								node.src = response_data

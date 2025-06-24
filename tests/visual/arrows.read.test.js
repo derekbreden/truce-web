@@ -12,7 +12,7 @@ const tests = {
 
 		// Navigate to a specific post to trigger back/forward arrows
 		$("main-content-2 posts post:first-child h2").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Should now be on individual post page with navigation arrows
 		if (process.env.CAPTURE_VISUALS) {
@@ -26,7 +26,7 @@ const tests = {
 
 		// Navigate to notifications page
 		$("footer a[href='/notifications']").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Should show notifications with expand-right arrows
 		if (process.env.CAPTURE_VISUALS) {
@@ -40,13 +40,13 @@ const tests = {
 
 		// Navigate to a post that should have replies
 		$("main-content-2 posts post:first-child h2").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Navigate to replies section if it exists
 		const $repliesButton = $("tab-wrapper [replies]")
 		if ($repliesButton) {
 			$repliesButton.click()
-			await new Promise(resolve => setTimeout(resolve, 100))
+			await new Promise(resolve => setTimeout(resolve, 0))
 		}
 
 		// Look for expand/collapse arrows in reply threads
@@ -62,7 +62,7 @@ const tests = {
 		// Try to find a page with various expand directions
 		// First check notifications for expand-right
 		$("footer a[href='/notifications']").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		if (process.env.CAPTURE_VISUALS) {
 			captureVisual(window, "expand-directions-notifications")
@@ -70,11 +70,11 @@ const tests = {
 
 		// Navigate to posts and look for other expand directions
 		$("footer a[href='/posts']").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Go to first post
 		$("main-content-2 posts post:first-child h2").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		if (process.env.CAPTURE_VISUALS) {
 			captureVisual(window, "expand-directions-post")
@@ -87,11 +87,11 @@ const tests = {
 
 		// Start at posts
 		$("footer a[href='/posts']").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Navigate to a post to create back arrow
 		$("main-content-2 posts post:first-child h2").click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Capture back arrow state
 		if (process.env.CAPTURE_VISUALS) {
@@ -103,7 +103,7 @@ const tests = {
 		assertEquals(true, Boolean($userProfile), "Should find post author element")
 		
 		$userProfile.click()
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		if (process.env.CAPTURE_VISUALS) {
 			captureVisual(window, "user-profile-arrows")

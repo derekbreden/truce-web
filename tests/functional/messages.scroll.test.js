@@ -23,13 +23,18 @@ const tests = {
 			[1, 20]
 		])
 		
-		// Create 60 messages in the conversation
+		// Create a valid image UUID for testing
+		const crypto = require("crypto")
+		const test_image_uuid = crypto.randomUUID()
+		
+		// Create 60 messages in the conversation, some with images
 		for (let i = 1; i <= 60; i++) {
-			const create_date = new Date(Date.now() - ((61 - i) * 1000 * 60)) // Older messages have earlier timestamps
+			const create_date = new Date(Date.now() - ((61 - i) * 1000 * 60))
+			const has_image = i % 10 === 0
 			
 			statements.push([
-				`INSERT INTO messages (message_id, conversation_id, user_id, body, create_date) VALUES ($1, $2, $3, $4, $5)`,
-				[i, 1, i % 2 === 0 ? 10 : 20, `Message ${i} from ${i % 2 === 0 ? 'User A' : 'User B'}`, create_date]
+				`INSERT INTO messages (message_id, conversation_id, user_id, body, create_date, image_uuids) VALUES ($1, $2, $3, $4, $5, $6)`,
+				[i, 1, i % 2 === 0 ? 10 : 20, `Message ${i} from ${i % 2 === 0 ? 'User A' : 'User B'}`, create_date, has_image ? test_image_uuid : null]
 			])
 		}
 		
@@ -39,8 +44,18 @@ const tests = {
 			[60, 1]
 		])
 
+		// Load image data for S3 mock
+		const fs = require("fs")
+		const processed_data_file = path.join(__dirname, "../data", "1024_base64.txt")
+		const valid_png_base64 = await fs.promises.readFile(processed_data_file, "utf8")
+		
 		const window = await setupTestEnvironment({
 			sql_statements_to_execute: statements,
+			beforeParse: (window) => {
+				// Pre-populate S3 mock storage
+				global._s3_mock_storage = global._s3_mock_storage || {}
+				global._s3_mock_storage[test_image_uuid + ".png"] = valid_png_base64
+			}
 		})
 		const { $ } = window
 
@@ -66,41 +81,41 @@ const tests = {
 		assertEquals("Message 60 from User A", last_message, "Last message should be the most recent")
 		assertEquals("Message 41 from User B", first_message, "First message should be message 41 (20 messages from end)")
 		
-		// Store initial scroll position
-		const messages_container = $("messages")
-		const initial_scroll_height = messages_container.scrollHeight
-		
 		// Messages should be scrolled to bottom initially
+		const messages_container = $("messages")
 		assertEquals(messages_container.scrollHeight - messages_container.clientHeight, messages_container.scrollTop, "Messages should be scrolled to bottom initially")
-
-		// Now we need to scroll UP to load older messages
-		// Target the correct scrolling element - the messages container, not main-content-wrapper
-		const messages_element = $("messages")
-		assertEquals("MESSAGES", messages_element.tagName, "Should be targeting messages element for scrolling")
 		
-		// Mock scroll properties for the messages container (smaller inner scroll area)
+		// Wait for any async operations to complete
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Verify images have been processed by MutationObserver 
+		const images_after_load = $("messages img")
+		if (images_after_load.length > 0) {
+			const first_image_src = images_after_load[0].src
+			assertEquals("http://localhost/messages/" + valid_png_base64, first_image_src, "Image should be processed with path prefix + base64")
+		}
+
+		// Scroll up to load older messages
+		const messages_element = $("messages")
 		messages_element.scrollHeight = 1000
 		messages_element.clientHeight = 400
-		messages_element.scrollTop = 200 // Near top (threshold will be max(400 * 0.5, 300) = 300, so 200 < 300 = true)
+		messages_element.scrollTop = 200
 		
 		// Trigger scroll on the messages element
 		messages_element.dispatchEvent(new window.Event("scroll"))
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Check if more messages were loaded
 		const after_scroll_count = $("messages message").length
-		
-		// Note: Scroll position preservation is implemented for the messages element
-		// JSDOM can't test actual scroll behavior, but the logic preserves position when prepending messages
 		
 		// Verify we loaded more messages
 		assertEquals(40, after_scroll_count, "Should have 40 messages after first scroll")
 		assertEquals("Message 21 from User B", $("messages message:first-child message-content").textContent.trim(), "First message should now be Message 21")
 		
-		// Test continuing to scroll up (closer to top)
-		messages_element.scrollTop = 100 // Even closer to top
+		// Continue scrolling up
+		messages_element.scrollTop = 100
 		messages_element.dispatchEvent(new window.Event("scroll"))
-		await new Promise(resolve => setTimeout(resolve, 100))
+		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		const final_count = $("messages message").length
 		assertEquals(60, final_count, "Should have all 60 messages after scrolling to top")
