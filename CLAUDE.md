@@ -202,11 +202,9 @@ $("posts post:nth-child(2) author").click() // post is where disambiguation need
 **The test:** Would you rather debug the abstracted or original version?
 
 ## Key Files
-	`index.js`: Application entry point
-	`server/server.js`: HTTP server and client file concatenation
-	`client/flint.js`: Custom DOM manipulation library
-	`server/session/`: Session middleware functions
-	`tests/functional/`: End-to-end Integration tests
+	`server/session/*.js`: ALL of the server side code is here - READ THIS DIRECTORY to get a list of file names
+	`client/*.js`: ALL of the client side code is here - READ THIS DIRECTORY to get a list of file names
+	`tests/functional/*.test.js`: ALL of the functional tests are here - READ THIS DIRECTORY to get a list of file names
 
 ## You are new
 When I am new to a code base, there are a few things I like to do:
