@@ -1,6 +1,6 @@
 // Typing indicator state - local to this file
 const other_user_typing = {}
-const typing_indicator_timeouts = {}
+const other_user_typing_display_timeouts = {}
 
 const renderMessageImages = (image_uuids) => {
 	return image_uuids.reverse().map(image_uuid => {
@@ -258,12 +258,12 @@ const renderMessages = (messages, conversation) => {
 					typing_last_activity = now
 					
 					// Clear existing timeout
-					if (typing_timeout) {
-						clearTimeout(typing_timeout)
+					if (self_typing_inactivity_timeout) {
+						clearTimeout(self_typing_inactivity_timeout)
 					}
 					
 					// Set 3 second inactivity timeout
-					typing_timeout = setTimeout(() => {
+					self_typing_inactivity_timeout = setTimeout(() => {
 						stopTypingHeartbeats()
 					}, 3000)
 				}
@@ -479,21 +479,21 @@ const updateTypingIndicator = (user_id, is_typing) => {
 		other_user_typing[user_id] = true
 		
 		// Clear existing timeout for this user
-		if (typing_indicator_timeouts[user_id]) {
-			clearTimeout(typing_indicator_timeouts[user_id])
+		if (other_user_typing_display_timeouts[user_id]) {
+			clearTimeout(other_user_typing_display_timeouts[user_id])
 		}
 		
 		// Hide after 3 seconds of no activity
-		typing_indicator_timeouts[user_id] = setTimeout(() => {
+		other_user_typing_display_timeouts[user_id] = setTimeout(() => {
 			delete other_user_typing[user_id]
 			updateTypingIndicatorUI()
 		}, 3000)
 	} else {
 		// Hide typing indicator
 		delete other_user_typing[user_id]
-		if (typing_indicator_timeouts[user_id]) {
-			clearTimeout(typing_indicator_timeouts[user_id])
-			delete typing_indicator_timeouts[user_id]
+		if (other_user_typing_display_timeouts[user_id]) {
+			clearTimeout(other_user_typing_display_timeouts[user_id])
+			delete other_user_typing_display_timeouts[user_id]
 		}
 	}
 	

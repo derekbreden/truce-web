@@ -1,7 +1,7 @@
 // Typing indicator state - local to this file
 let typing_heartbeat_interval = null
 let typing_last_activity = 0
-let typing_timeout = null
+let self_typing_inactivity_timeout = null
 
 // Function to send typing heartbeat
 const sendTypingHeartbeat = (conversation_id) => {
@@ -40,9 +40,9 @@ const stopTypingHeartbeats = () => {
 		clearInterval(typing_heartbeat_interval)
 		typing_heartbeat_interval = null
 	}
-	if (typing_timeout) {
-		clearTimeout(typing_timeout)
-		typing_timeout = null
+	if (self_typing_inactivity_timeout) {
+		clearTimeout(self_typing_inactivity_timeout)
+		self_typing_inactivity_timeout = null
 	}
 }
 
