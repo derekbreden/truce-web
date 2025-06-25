@@ -144,19 +144,19 @@ module.exports = async (req, res) => {
         l.reply_id IS NULL
         AND b.user_id_blocked IS NULL
         ${
-					req.body.path === "/favorites"
-						? `
+	req.body.path === "/favorites"
+		? `
               AND combined.favorited = TRUE
               AND (combined.favorite_create_date < $2 OR $2 IS NULL)
               AND (combined.favorite_create_date > $3 OR $3 IS NULL)
               ORDER BY combined.favorite_create_date DESC
             `
-						: ``
-				}
+		: ``
+}
         ${
-					req.body.path.startsWith("/user/")
+	req.body.path.startsWith("/user/")
 					&& req.body.path.split("/")[3] === "replies"
-						? `
+		? `
               AND combined.type = 'reply'
               AND (combined.create_date < $2 OR $2 IS NULL)
               AND (combined.create_date > $3 OR $3 IS NULL)
@@ -164,8 +164,8 @@ module.exports = async (req, res) => {
               AND ${Number(req.body.path.split("/")[2]) ? `u.user_id = $4` : `u.slug = $4`}
               ORDER BY combined.create_date DESC
             `
-						: ``
-				}
+		: ``
+}
       LIMIT 30
       `,
 			[

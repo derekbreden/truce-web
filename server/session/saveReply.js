@@ -85,23 +85,23 @@ module.exports = async (req, res) => {
 			// Get base64 image urls from object store
 			const pngs = post.image_uuids
 				? (
-						await Promise.all(
-							post.image_uuids.split(",").map(async (image_uuid) => {
-								try {
-									const response = await object_client.send(
-										new GetObjectCommand({
-											Bucket: "truce.net",
-											Key: `${image_uuid}.png`,
-										}),
-									)
-									return await response.Body.transformToString()
-								} catch (error) {
-									console.error(error)
-									return null
-								}
-							}),
-						)
-					).filter((x) => x)
+					await Promise.all(
+						post.image_uuids.split(",").map(async (image_uuid) => {
+							try {
+								const response = await object_client.send(
+									new GetObjectCommand({
+										Bucket: "truce.net",
+										Key: `${image_uuid}.png`,
+									}),
+								)
+								return await response.Body.transformToString()
+							} catch (error) {
+								console.error(error)
+								return null
+							}
+						}),
+					)
+				).filter((x) => x)
 				: []
 
 			// Add a message for the post(s) being replyed on
@@ -166,25 +166,25 @@ module.exports = async (req, res) => {
 				// Get base64 image urls from object store
 				const pngs = reply_ancestor.image_uuids
 					? (
-							await Promise.all(
-								reply_ancestor.image_uuids
-									.split(",")
-									.map(async (image_uuid) => {
-										try {
-											const response = await object_client.send(
-												new GetObjectCommand({
-													Bucket: "truce.net",
-													Key: `${image_uuid}.png`,
-												}),
-											)
-											return await response.Body.transformToString()
-										} catch (error) {
-											console.error(error)
-											return null
-										}
-									}),
-							)
-						).filter((x) => x)
+						await Promise.all(
+							reply_ancestor.image_uuids
+								.split(",")
+								.map(async (image_uuid) => {
+									try {
+										const response = await object_client.send(
+											new GetObjectCommand({
+												Bucket: "truce.net",
+												Key: `${image_uuid}.png`,
+											}),
+										)
+										return await response.Body.transformToString()
+									} catch (error) {
+										console.error(error)
+										return null
+									}
+								}),
+						)
+					).filter((x) => x)
 					: []
 
 				// Add a message for each ancestor in the reply chain
@@ -475,7 +475,7 @@ module.exports = async (req, res) => {
 				req.body.display_name.length > 20
 					? req.body.display_name.slice(0, 20) + "..."
 					: req.body.display_name
-				} replied`,
+			} replied`,
 			body: req.body.body.length > 50
 				? req.body.body.slice(0, 50) + "..."
 				: req.body.body,

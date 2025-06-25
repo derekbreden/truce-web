@@ -177,28 +177,28 @@ const renderReplies = (replies) => {
 		...[
 			...(showReplyList
 				? [
-						state.active_add_new_reply?.is_root_1
-							? state.active_add_new_reply
-							: showAddNewReplyButton("1"),
-						$(
-							`
+					state.active_add_new_reply?.is_root_1
+						? state.active_add_new_reply
+						: showAddNewReplyButton("1"),
+					$(
+						`
 							expand-wrapper[above-replies]
 								p $1
 							`,
-							[
-								replies.length
+						[
+							replies.length
 									+ (replies.length === 1 ? " reply" : " replies"),
-							],
-						),
-					]
+						],
+					),
+				]
 				: []),
 			...$root_replies,
 			...(showReplyList && $root_replies.length
 				? [
-						state.active_add_new_reply?.is_root_2
-							? state.active_add_new_reply
-							: showAddNewReplyButton("2"),
-					]
+					state.active_add_new_reply?.is_root_2
+						? state.active_add_new_reply
+						: showAddNewReplyButton("2"),
+				]
 				: []),
 		],
 	)

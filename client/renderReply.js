@@ -48,11 +48,11 @@ const renderReply = (reply) => {
 			reply.user_slug,
 			reply.profile_picture_uuid
 				? $(
-						`
+					`
 						img[src=$1]
 						`,
-						["/image/" + reply.profile_picture_uuid],
-					)
+					["/image/" + reply.profile_picture_uuid],
+				)
 				: $(
 					`
 					icon[profile-picture]
@@ -61,22 +61,22 @@ const renderReply = (reply) => {
 			renderName(reply.display_name, reply.display_name_index),
 			reply.user_verified
 				? $(
-						`
+					`
 						icon[verified]
 						`
-					)
+				)
 				: [],
 			$reply_body,
 			reply.note
 				? $(
-						`
+					`
 						info-wrapper
 							info
 								b $1
 								span $2
 						`,
-						[note_title, note_body],
-					)
+					[note_title, note_body],
+				)
 				: [],
 			$(
 				`

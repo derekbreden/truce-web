@@ -135,16 +135,16 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				[
 					state.profile_picture_uuid
 						? $(
-								`
+							`
                 img[src=$1]
                 `,
-								["/image/" + state.profile_picture_uuid],
-							)
+							["/image/" + state.profile_picture_uuid],
+						)
 						: $(
-								`
+							`
                 icon[profile-picture]
                 `
-							),
+						),
 					state.display_name + ":",
 				],
 			)

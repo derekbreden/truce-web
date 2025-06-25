@@ -121,67 +121,67 @@ const renderPosts = (posts, topic, user) => {
 					renderName(user.display_name, user.display_name_index),
 					user.user_verified
 						? $(
-								`
+							`
 								icon[verified]
 								`
-							)
+						)
 						: [],
 					user.user_id === state.user_id
 						? $(
-								`
+							`
 								button[edit][small][href=/settings]
 									icon[settings]
 									span Edit
 								`
-							)
+						)
 						: state.user_id ? $(
-								`
+							`
 								user-actions
 									button[alt][message][small][userid=$1]
 										icon[mail]
 										span Message
 									$2
 								`,
-								[
-									user.user_id,
-									user.subscribed
-										? $(
-												`
+							[
+								user.user_id,
+								user.subscribed
+									? $(
+										`
 												button[subscribe][small]
 													icon[subscribe]
 													span Unsubscribe
 												`
-											)
-										: $(
-												`
+									)
+									: $(
+										`
 												button[subscribe][small][alt]
 													icon[subscribe]
 													span Subscribe
 												`
-											),
-								]
-							) : user.subscribed
+									),
+							]
+						) : user.subscribed
 							? $(
-									`
+								`
 									button[subscribe][small]
 										icon[subscribe]
 										span Unsubscribe
 									`
-								)
+							)
 							: $(
-									`
+								`
 									button[subscribe][small][alt]
 										icon[subscribe]
 										span Subscribe
 									`
-								),
+							),
 					user.profile_picture_uuid
 						? $(
-								`
+							`
 								img[src=$1]
 								`,
-								["/image/" + user.profile_picture_uuid],
-							)
+							["/image/" + user.profile_picture_uuid],
+						)
 						: $(
 							`
 							icon[profile-picture]
@@ -189,10 +189,10 @@ const renderPosts = (posts, topic, user) => {
 						),
 					user.user_id === state.user_id
 						? $(
-								`
+							`
 								input[image][type=file][accept=image/*]
 								`,
-							)
+						)
 						: [],
 				],
 			),

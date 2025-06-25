@@ -25,46 +25,46 @@ const renderUsers = (users) => {
 								user.user_slug,
 								user.profile_picture_uuid
 									? $(
-											`
+										`
 											img[src=$1]
 											`,
-											["/image/" + user.profile_picture_uuid],
-										)
+										["/image/" + user.profile_picture_uuid],
+									)
 									: $(
-											`
+										`
 											icon[profile-picture]
 											`
-										),
+									),
 								renderName(user.display_name, user.display_name_index),
 								user.user_verified
 									? $(
-											`
+										`
 											icon[verified]
 											`
-										)
+									)
 									: [],
 								state.user_id && Number(state.user_id) !== Number(user.user_id) ? (
 									user.subscribed
 										? $(
-												`
+											`
 												button[subscribe][small][userid=$1]
 													icon[subscribe]
 													span Unsubscribe
 												`,
-												[
-													user.user_id,
-												],
-											)
+											[
+												user.user_id,
+											],
+										)
 										: $(
-												`
+											`
 												button[subscribe][small][alt][userid=$1]
 													icon[subscribe]
 													span Subscribe
 												`,
-												[
-													user.user_id,
-												],
-											)
+											[
+												user.user_id,
+											],
+										)
 								) : [],
 							],
 						),

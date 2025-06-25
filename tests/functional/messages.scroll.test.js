@@ -34,7 +34,7 @@ const tests = {
 			
 			statements.push([
 				`INSERT INTO messages (message_id, conversation_id, user_id, body, create_date, image_uuids) VALUES ($1, $2, $3, $4, $5, $6)`,
-				[i, 1, i % 2 === 0 ? 10 : 20, `Message ${i} from ${i % 2 === 0 ? 'User A' : 'User B'}`, create_date, has_image ? test_image_uuid : null]
+				[i, 1, i % 2 === 0 ? 10 : 20, `Message ${i} from ${i % 2 === 0 ? "User A" : "User B"}`, create_date, has_image ? test_image_uuid : null]
 			])
 		}
 		

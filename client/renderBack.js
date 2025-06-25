@@ -41,9 +41,9 @@ const renderBack = () => {
 												+ previous_path.split("/")[2].slice(1)
 											: previous_path?.startsWith("/user/")
 												? renderName(
-														state.cache[previous_path].user.display_name,
-														state.cache[previous_path].user.display_name_index,
-													)
+													state.cache[previous_path].user.display_name,
+													state.cache[previous_path].user.display_name_index,
+												)
 												: "Back",
 			],
 		)

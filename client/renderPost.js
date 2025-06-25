@@ -67,11 +67,11 @@ const renderPost = (post) => {
 					post.user_slug,
 					post.profile_picture_uuid
 						? $(
-								`
+							`
 								img[src=$1]
 								`,
-								["/image/" + post.profile_picture_uuid],
-							)
+							["/image/" + post.profile_picture_uuid],
+						)
 						: $(
 							`
 							icon[profile-picture]
@@ -80,10 +80,10 @@ const renderPost = (post) => {
 					renderName(post.display_name, post.display_name_index),
 					post.user_verified
 						? $(
-								`
+							`
 								icon[verified]
 								`
-							)
+						)
 						: [],
 					(post.topics || "")
 						.split(",")
@@ -105,19 +105,19 @@ const renderPost = (post) => {
 			),
 			post.note
 				? $(
-						`
+					`
 						info-wrapper
 							info
 								b $1
 								span $2
 						`,
-						[note_title, note_body],
-					)
+					[note_title, note_body],
+				)
 				: [],
 			$post_body,
 			post.poll_1
 				? $(
-						`
+					`
 					poll-wrapper
 						poll-vote-wrapper
 							poll-1 $1
@@ -171,7 +171,7 @@ const renderPost = (post) => {
 					`,
 					[post.poll_1, post.poll_2, post.poll_3, post.poll_4],
 				)
-			: [],
+				: [],
 			$(
 				`
 				post-details[detail-wrapper]

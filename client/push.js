@@ -64,124 +64,124 @@ if (
 	window.addEventListener("push-permission-state", ($event) => {
 		if ($event && $event.detail) {
 			switch ($event.detail) {
-				case "notDetermined":
-					// permission not asked
-					state.fcm_push_active = false
-					state.fcm_push_not_determined = true
-					if (state.fcm_token && (state.email || state.session_uuid)) {
-						fetch("/session", {
-							method: "POST",
-							body: JSON.stringify({
-								fcm_subscription: state.fcm_token,
-								deactivate: true,
-							}),
+			case "notDetermined":
+				// permission not asked
+				state.fcm_push_active = false
+				state.fcm_push_not_determined = true
+				if (state.fcm_token && (state.email || state.session_uuid)) {
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							fcm_subscription: state.fcm_token,
+							deactivate: true,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data || !data.success) {
+								alertError("Server error saving subscription")
+							}
 						})
-							.then((response) => response.json())
-							.then((data) => {
-								if (!data || !data.success) {
-									alertError("Server error saving subscription")
-								}
-							})
-							.catch(() => {
-								alertError("Network error saving subscription")
-							})
-					}
-					break
-				case "denied":
-					// permission denied
-					state.fcm_push_denied = true
-					state.fcm_push_available = false
-					state.fcm_push_active = false
-					if (state.fcm_token && (state.email || state.session_uuid)) {
-						fetch("/session", {
-							method: "POST",
-							body: JSON.stringify({
-								fcm_subscription: state.fcm_token,
-								deactivate: true,
-							}),
+						.catch(() => {
+							alertError("Network error saving subscription")
 						})
-							.then((response) => response.json())
-							.then((data) => {
-								if (!data || !data.success) {
-									alertError("Server error saving subscription")
-								} else {
-									modalError(`You must enable notifications in settings.`)
-								}
-							})
-							.catch(() => {
-								alertError("Network error saving subscription")
-							})
-					}
-					break
-				case "authorized":
-				case "ephemeral":
-				case "provisional":
-					// permission granted
-					// state.fcm_push_active = true
-					// window.webkit.messageHandlers["push-token"].postMessage("push-token")
-					// getUnreadCountUnseenCount()
-					if (
-						state.fcm_token
+				}
+				break
+			case "denied":
+				// permission denied
+				state.fcm_push_denied = true
+				state.fcm_push_available = false
+				state.fcm_push_active = false
+				if (state.fcm_token && (state.email || state.session_uuid)) {
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							fcm_subscription: state.fcm_token,
+							deactivate: true,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data || !data.success) {
+								alertError("Server error saving subscription")
+							} else {
+								modalError(`You must enable notifications in settings.`)
+							}
+						})
+						.catch(() => {
+							alertError("Network error saving subscription")
+						})
+				}
+				break
+			case "authorized":
+			case "ephemeral":
+			case "provisional":
+				// permission granted
+				// state.fcm_push_active = true
+				// window.webkit.messageHandlers["push-token"].postMessage("push-token")
+				// getUnreadCountUnseenCount()
+				if (
+					state.fcm_token
 						&& (state.email || state.session_uuid)
 						&& state.fcm_push_active
-					) {
-						fetch("/session", {
-							method: "POST",
-							body: JSON.stringify({
-								fcm_subscription: state.fcm_token,
-								reactivate: true,
-							}),
-						})
-							.then((response) => response.json())
-							.then((data) => {
-								if (!data || !data.success) {
-									alertError("Server error saving subscription")
-									state.fcm_push_active = false
-								} else if (data.deactivated) {
-									state.fcm_push_active = false
-								} else {
-									state.fcm_push_active = true
-									getUnreadCountUnseenCount()
-									$("toggle-wrapper")?.setAttribute("active", "")
-								}
-							})
-							.catch(() => {
-								alertError("Network error saving subscription")
+				) {
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							fcm_subscription: state.fcm_token,
+							reactivate: true,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data || !data.success) {
+								alertError("Server error saving subscription")
 								state.fcm_push_active = false
-							})
-						// Check for server remembering state if we have forgotten it?
-					} else if (state.fcm_token && (state.email || state.session_uuid)) {
-						fetch("/session", {
-							method: "POST",
-							body: JSON.stringify({
-								fcm_subscription: state.fcm_token,
-							}),
+							} else if (data.deactivated) {
+								state.fcm_push_active = false
+							} else {
+								state.fcm_push_active = true
+								getUnreadCountUnseenCount()
+								$("toggle-wrapper")?.setAttribute("active", "")
+							}
 						})
-							.then((response) => response.json())
-							.then((data) => {
-								if (!data || !data.success) {
-									alertError("Server error saving subscription")
-									state.fcm_push_active = false
-								} else if (data.deactivated) {
-									state.fcm_push_active = false
-								} else {
-									state.fcm_push_active = true
-									getUnreadCountUnseenCount()
-									$("toggle-wrapper")?.setAttribute("active", "")
-								}
-							})
-							.catch(() => {
-								alertError("Network error saving subscription")
-							})
-					}
-					break
-				case "unknown":
-				default:
-					// something wrong
-					state.fcm_push_denied = true
-					state.fcm_push_available = false
-					state.fcm_push_active = false
-					break
+						.catch(() => {
+							alertError("Network error saving subscription")
+							state.fcm_push_active = false
+						})
+						// Check for server remembering state if we have forgotten it?
+				} else if (state.fcm_token && (state.email || state.session_uuid)) {
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							fcm_subscription: state.fcm_token,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data || !data.success) {
+								alertError("Server error saving subscription")
+								state.fcm_push_active = false
+							} else if (data.deactivated) {
+								state.fcm_push_active = false
+							} else {
+								state.fcm_push_active = true
+								getUnreadCountUnseenCount()
+								$("toggle-wrapper")?.setAttribute("active", "")
+							}
+						})
+						.catch(() => {
+							alertError("Network error saving subscription")
+						})
+				}
+				break
+			case "unknown":
+			default:
+				// something wrong
+				state.fcm_push_denied = true
+				state.fcm_push_available = false
+				state.fcm_push_active = false
+				break
 			}
 		}
 	})

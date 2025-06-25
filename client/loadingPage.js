@@ -77,7 +77,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 					!window.webkit
 					&& document.referrer !== "android-app://net.truce.twa/"
 						? $(
-								`
+							`
 								post[line-after]
 									app-store-wrapper
 										a[href=$1]
@@ -86,11 +86,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 											img[src=/app_store_black.svg][black]
 											img[src=/app_store_white.svg][white]
 								`,
-								[
-									"https://play.google.com/store/apps/details?id=net.truce.twa",
-									"https://apps.apple.com/us/app/truce/id6578447172",
-								],
-							)
+							[
+								"https://play.google.com/store/apps/details?id=net.truce.twa",
+								"https://apps.apple.com/us/app/truce/id6578447172",
+							],
+						)
 						: [],
 				],
 			),
@@ -245,11 +245,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				state.user_slug,
 				state.profile_picture_uuid
 					? $(
-							`
+						`
 							img[src=$1]
 							`,
-							["/image/" + state.profile_picture_uuid],
-						)
+						["/image/" + state.profile_picture_uuid],
+					)
 					: $(
 						`
 						icon[profile-picture]

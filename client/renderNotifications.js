@@ -77,25 +77,25 @@ const renderNotification = (notification) => {
 				short_title,
 				notification.note
 					? $(
-							`
+						`
 	          info[tiny][$1]
 	            b $2
 	          `,
-							[note_keyword, note_title],
-						)
+						[note_keyword, note_title],
+					)
 					: [],
 			],
 		)
-			$notification.on("click", () => {
-				goToPath("/reply/" + notification.reply_id)
+		$notification.on("click", () => {
+			goToPath("/reply/" + notification.reply_id)
 
-				// Mark as read
-				if (!notification.read) {
-					markAsRead(notification.notification_id, "reply")
-				}
-			})
-			return $notification
-		}
+			// Mark as read
+			if (!notification.read) {
+				markAsRead(notification.notification_id, "reply")
+			}
+		})
+		return $notification
+	}
 }
 
 const renderNotifications = (notifications) => {

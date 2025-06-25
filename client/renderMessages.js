@@ -215,24 +215,24 @@ const renderMessages = (messages, conversation) => {
 							pngs: pngs
 						})
 					})
-					.then(response => response.json())
-					.then(data => {
-						$("message-input-area info")?.remove()
-						if (data.error) {
-							addMessageError(data.error)
-						} else {
-							$("message-input-area error")?.remove()
-							pngs.splice(0, pngs.length)
-							previewPngs()
-							// Refresh messages
-							getMoreRecent()
-						}
-					})
-					.catch(error => {
-						$("message-input-area info")?.remove()
-						console.error("Error sending message:", error)
-						addMessageError("Network error sending message")
-					})
+						.then(response => response.json())
+						.then(data => {
+							$("message-input-area info")?.remove()
+							if (data.error) {
+								addMessageError(data.error)
+							} else {
+								$("message-input-area error")?.remove()
+								pngs.splice(0, pngs.length)
+								previewPngs()
+								// Refresh messages
+								getMoreRecent()
+							}
+						})
+						.catch(error => {
+							$("message-input-area info")?.remove()
+							console.error("Error sending message:", error)
+							addMessageError("Network error sending message")
+						})
 				}
 			}
 
@@ -444,29 +444,29 @@ const markMessagesAsRead = (messages) => {
 			mark_message_notifications_as_read: notification_ids
 		})
 	})
-	.then(response => response.json())
-	.then(data => {
-		if (data.success) {
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
 			// Update notifications cache to mark message notifications as read
-			const notifications = state.cache["/notifications"]?.notifications
-			if (notifications) {
-				notifications.forEach(notification => {
-					if (notification_ids.includes(notification.notification_id) && notification.notification_type === "message") {
-						notification.read = true
-						notification.seen = true
-					}
+				const notifications = state.cache["/notifications"]?.notifications
+				if (notifications) {
+					notifications.forEach(notification => {
+						if (notification_ids.includes(notification.notification_id) && notification.notification_type === "message") {
+							notification.read = true
+							notification.seen = true
+						}
+					})
+				}
+				// Mark messages as read locally
+				unnread_messages.forEach(message => {
+					message.notification_read = true
+					message.notification_seen = true
 				})
 			}
-			// Mark messages as read locally
-			unnread_messages.forEach(message => {
-				message.notification_read = true
-				message.notification_seen = true
-			})
-		}
-	})
-	.catch(error => {
-		console.error("Error marking messages as read:", error)
-	})
+		})
+		.catch(error => {
+			console.error("Error marking messages as read:", error)
+		})
 
 	// Refresh unread counts from server to ensure accuracy
 	getUnreadCountUnseenCount()

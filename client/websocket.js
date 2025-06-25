@@ -109,7 +109,7 @@ const handleInstantAlert = (data) => {
 // Handle typing indicators
 const handleTypingIndicator = (data) => {
 	// Only handle if user is currently viewing the conversation where typing is happening
-	if (data.conversation_id == state.active_conversation_id && data.user_id !== state.user_id) {
+	if (data.conversation_id === state.active_conversation_id && data.user_id !== state.user_id) {
 		// Call function in renderMessages.js to update UI
 		if (typeof updateTypingIndicator === "function") {
 			updateTypingIndicator(data.user_id, true)
@@ -120,7 +120,7 @@ const handleTypingIndicator = (data) => {
 // Handle message read receipts
 const handleMessageReadReceipt = (data) => {
 	// Only handle if user is currently viewing the conversation where the read receipt happened
-	if (data.conversation_id == state.active_conversation_id && data.user_id !== state.user_id) {
+	if (data.conversation_id === state.active_conversation_id && data.user_id !== state.user_id) {
 		// Update UI to show messages as read
 		if (typeof updateMessageReadStatus === "function") {
 			updateMessageReadStatus()

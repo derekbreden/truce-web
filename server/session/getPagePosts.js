@@ -59,8 +59,8 @@ module.exports = async (req, res) => {
           AND l.post_id IS NULL
           AND b.user_id_blocked IS NULL
           ${
-						req.body.path.startsWith("/topic/")
-							? `
+	req.body.path.startsWith("/topic/")
+		? `
                 AND p.post_id IN (
                   SELECT post_id
                   FROM post_topics
@@ -71,36 +71,36 @@ module.exports = async (req, res) => {
                   )
                 )
                 `
-							: ""
-					}
+		: ""
+}
           ${
-						req.body.path.startsWith("/user/")
-							? `
+	req.body.path.startsWith("/user/")
+		? `
                 AND p.user_id IN (
                   SELECT user_id
                   FROM users
                   WHERE 
                     ${
-											Number(req.body.path.split("/")[2])
-												? `user_id = $4`
-												: `slug = $4`
-										}
+	Number(req.body.path.split("/")[2])
+		? `user_id = $4`
+		: `slug = $4`
+}
                 )
                 `
-							: ""
-					}
+		: ""
+}
           ${
-						(req.body.path === "/posts" || req.body.path === "/posts")
+	(req.body.path === "/posts" || req.body.path === "/posts")
 						&& Number(req.session.subscribed_to_users) > 0
-							? `
+		? `
                 AND p.user_id IN (
                   SELECT subscribed_to_user_id
                   FROM subscribers
                   WHERE user_id = $1
                 )
                 `
-							: ""
-					}
+		: ""
+}
         ORDER BY p.create_date DESC
         LIMIT 20
         `,
