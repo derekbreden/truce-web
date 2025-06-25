@@ -19,8 +19,10 @@ Never use completion language until "Ready for review: Yes"
 ## Development Commands
 
 ```bash
-# Functional Tests
-npm test                               # Run all functional tests
+# Full test suite (completes in 8 seconds - comprehensive safety net)
+npm test                               # Run all tests
+
+# Specific tests for rapid iteration or debugging
 npm test reply.create.test.js          # Run specific test file
 
 # Capture screenshots for your own review
