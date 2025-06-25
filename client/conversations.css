@@ -97,6 +97,11 @@ message-info time-ago {
   opacity: .5;
 }
 
+message-header read-status {
+  opacity: .5;
+  align-self: flex-start;
+}
+
 message-content {
   margin-top: var(--space-sm);
 }

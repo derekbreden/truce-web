@@ -15,6 +15,17 @@ module.exports = async (req, res) => {
 		}
 		
 		if (req.body.mark_message_notifications_as_read) {
+			// Get conversation_id before updating notifications
+			const conversation_result = await req.client.query(
+				`
+				SELECT DISTINCT m.conversation_id
+				FROM message_notifications mn
+				INNER JOIN messages m ON m.message_id = mn.message_id
+				WHERE mn.notification_id = ANY($1::int[]) AND mn.user_id = $2
+				`,
+				[req.body.mark_message_notifications_as_read, req.session.user_id],
+			)
+			
 			await req.client.query(
 				`
         UPDATE message_notifications
@@ -23,6 +34,16 @@ module.exports = async (req, res) => {
         `,
 				[req.body.mark_message_notifications_as_read, req.session.user_id],
 			)
+			
+			// Send read receipt via WebSocket for each conversation
+			conversation_result.rows.forEach(row => {
+				req.sendWsMessage(JSON.stringify({
+					type: "MESSAGE_READ_RECEIPT",
+					conversation_id: row.conversation_id,
+					user_id: req.session.user_id
+				}), { conversation_id: row.conversation_id })
+			})
+			
 			res.end(JSON.stringify({ success: true }))
 		}
 

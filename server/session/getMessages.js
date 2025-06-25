@@ -48,11 +48,13 @@ module.exports = async (req, res) => {
 					CASE WHEN m.user_id = $2 THEN true ELSE false END AS edit,
 					mn.notification_id,
 					mn.read as notification_read,
-					mn.seen as notification_seen
+					mn.seen as notification_seen,
+					CASE WHEN m.user_id = $2 AND recipient_mn.read = true THEN true ELSE false END AS read_by_recipient
 				FROM messages m
 				INNER JOIN users u ON m.user_id = u.user_id
 				LEFT JOIN blocked_users b ON b.user_id_blocked = m.user_id AND b.user_id_blocking = $2
 				LEFT JOIN message_notifications mn ON mn.message_id = m.message_id AND mn.user_id = $2
+				LEFT JOIN message_notifications recipient_mn ON recipient_mn.message_id = m.message_id AND recipient_mn.user_id != $2 AND m.user_id = $2
 				WHERE
 					m.conversation_id = $1
 					AND (

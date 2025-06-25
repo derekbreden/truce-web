@@ -79,9 +79,11 @@ module.exports = {
 					})
 				}
 
+
 				// Handle a path change message
 				if (message.path) {
 					delete ws.active_post_id
+					delete ws.active_conversation_id
 
 					// Posts
 					if (message.path.startsWith("/post/")) {
@@ -110,6 +112,22 @@ module.exports = {
 						ws.active_post_id = reply.rows.length
 							? reply.rows[0].parent_post_id
 							: false
+
+					// Messages/Conversations
+					} else if (message.path.startsWith("/messages/")) {
+						const conversation_id = Number(message.path.split("/")[2])
+						// Verify user is participant in this conversation
+						const conversation_check = await pool_client.query(
+							`
+								SELECT conversation_id
+								FROM conversation_users
+								WHERE conversation_id = $1 AND user_id = $2
+							`,
+							[conversation_id, ws.user_id],
+						)
+						ws.active_conversation_id = conversation_check.rows.length
+							? conversation_id
+							: false
 					}
 				}
 				pool_client.release()
@@ -135,6 +153,16 @@ module.exports = {
 				if (
 					!this.ws_active[ws_uuid].user_id
 					|| this.ws_active[ws_uuid].user_id === options.user_id
+				) {
+					this.ws_active[ws_uuid].send(message)
+				}
+			}
+
+			// conversation_id
+			if (options.conversation_id) {
+				if (
+					!this.ws_active[ws_uuid].active_conversation_id
+					|| this.ws_active[ws_uuid].active_conversation_id === options.conversation_id
 				) {
 					this.ws_active[ws_uuid].send(message)
 				}

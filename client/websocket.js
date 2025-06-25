@@ -58,6 +58,8 @@ const reconnectWs = () => {
 				handleInstantAlert(data)
 			} else if (data.type === "TYPING_INDICATOR") {
 				handleTypingIndicator(data)
+			} else if (data.type === "MESSAGE_READ_RECEIPT") {
+				handleMessageReadReceipt(data)
 			}
 		}
 	})
@@ -111,6 +113,17 @@ const handleTypingIndicator = (data) => {
 		// Call function in renderMessages.js to update UI
 		if (typeof updateTypingIndicator === "function") {
 			updateTypingIndicator(data.user_id, true)
+		}
+	}
+}
+
+// Handle message read receipts
+const handleMessageReadReceipt = (data) => {
+	// Only handle if user is currently viewing the conversation where the read receipt happened
+	if (data.conversation_id == state.active_conversation_id && data.user_id !== state.user_id) {
+		// Update UI to show messages as read
+		if (typeof updateMessageReadStatus === "function") {
+			updateMessageReadStatus()
 		}
 	}
 }

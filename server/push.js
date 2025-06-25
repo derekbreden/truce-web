@@ -38,6 +38,18 @@ module.exports = {
 					)
 				}
 				if (message_notification_ids[user_id]) {
+
+					// Get conversation_id before updating notifications
+					const conversation_result = await pool_client.query(
+						`
+						SELECT m.conversation_id
+						FROM message_notifications mn
+						INNER JOIN messages m ON m.message_id = mn.message_id
+						WHERE mn.notification_id = $1 AND mn.user_id = $2
+						`,
+						[message_notification_ids[user_id], user_id],
+					)
+
 					await pool_client.query(
 						`
 						UPDATE message_notifications
@@ -46,6 +58,15 @@ module.exports = {
 						`,
 						[user_id, message_notification_ids[user_id]]
 					)
+					
+					// Send read receipt via WebSocket for each conversation
+					conversation_result.rows.forEach(row => {
+						websocket.sendMessage(JSON.stringify({
+							type: "MESSAGE_READ_RECEIPT",
+							conversation_id: row.conversation_id,
+							user_id: user_id
+						}), { conversation_id: row.conversation_id })
+					})
 				}
 				
 				const alert_data = { ...push_data }

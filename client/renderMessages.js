@@ -40,10 +40,12 @@ const renderMessage = (message) => {
 						span $4
 						$5
 					time-ago $6
+				read-status
+					span $7
 			message-content
-				$7
 				$8
 				$9
+				$10
 		`,
 		[
 			is_own_message ? "true" : "false",
@@ -69,6 +71,7 @@ const renderMessage = (message) => {
 				)
 				: [],
 			time_ago,
+			is_own_message ? getMessageReadStatus(message) : "",
 			message.note
 				? $(
 					`
@@ -387,6 +390,37 @@ const renderMessages = (messages, conversation) => {
 
 		// Mark messages from other users as read
 		markMessagesAsRead(messages)
+	}
+}
+
+const getMessageReadStatus = (message) => {
+	// For user's own messages, show read status based on whether recipient has read it
+	if (message.read_by_recipient) {
+		return "Read"
+	} else {
+		return "Sent"
+	}
+}
+
+const updateMessageReadStatus = () => {
+	// Update all messages from current user to show as read
+	const $ownMessages = $("main-content-wrapper[active] messages message[own='true']")
+	if ($ownMessages) {
+		$ownMessages.forEach($message => {
+			const $readStatus = $message.$("read-status span")
+			if ($readStatus) {
+				$readStatus.textContent = "Read"
+			}
+		})
+	}
+	
+	// Also update the cached message data
+	if (state.cache[state.path] && state.cache[state.path].messages) {
+		state.cache[state.path].messages.forEach(message => {
+			if (message.user_id === state.user_id) {
+				message.read_by_recipient = true
+			}
+		})
 	}
 }
 
