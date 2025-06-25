@@ -54,6 +54,31 @@ module.exports = {
 					this.acknowledgeNotification(ws.user_id, reply_notification_id, message_notification_id)
 				}
 
+				// Handle typing heartbeats
+				if (message.type === "TYPING_HEARTBEAT" && ws.user_id && message.conversation_id) {
+					// Get other participants in conversation
+					const conversation_users = await pool_client.query(
+						`
+						SELECT user_id
+						FROM conversation_users
+						WHERE conversation_id = $1 AND user_id != $2
+						`,
+						[message.conversation_id, ws.user_id]
+					)
+					
+					// Send typing indicator to other users
+					conversation_users.rows.forEach(row => {
+						this.sendMessage(
+							JSON.stringify({
+								type: "TYPING_INDICATOR",
+								conversation_id: message.conversation_id,
+								user_id: ws.user_id
+							}),
+							{ user_id: row.user_id }
+						)
+					})
+				}
+
 				// Handle a path change message
 				if (message.path) {
 					delete ws.active_post_id
@@ -114,16 +139,6 @@ module.exports = {
 					this.ws_active[ws_uuid].send(message)
 				}
 			}
-
-			// conversation_id
-			// if (options.conversation_id) {
-			// 	if (
-			// 		!this.ws_active[ws_uuid].active_conversation_id
-			// 		|| this.ws_active[ws_uuid].active_conversation_id === options.conversation_id
-			// 	) {
-			// 		this.ws_active[ws_uuid].send(message)
-			// 	}
-			// }
 		})
 	},
 	queuePushNotification(user_id, push_data) {

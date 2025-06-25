@@ -1,3 +1,7 @@
+// Typing indicator state - local to this file
+const other_user_typing = {}
+const typing_indicator_timeouts = {}
+
 const renderMessageImages = (image_uuids) => {
 	return image_uuids.reverse().map(image_uuid => {
 		const $image = $(
@@ -188,6 +192,10 @@ const renderMessages = (messages, conversation) => {
 			const send_message = () => {
 				const message_body = $textarea.value.trim()
 				$textarea.value = ""
+				
+				// Stop typing heartbeats when sending message
+				stopTypingHeartbeats()
+				
 				if ((message_body || pngs.length) && conversation) {
 					$("message-input-area").prepend(
 						$(
@@ -230,6 +238,31 @@ const renderMessages = (messages, conversation) => {
 				if (e.key === "Enter" && !e.shiftKey) {
 					e.preventDefault()
 					send_message()
+				}
+			})
+			
+			// Add typing detection
+			$textarea.on("input", () => {
+				if (conversation && conversation.conversation_id) {
+					const now = Date.now()
+					
+					// If first keystroke or been inactive for 3+ seconds, start heartbeats
+					if (!typing_heartbeat_interval || now - typing_last_activity > 3000) {
+						startTypingHeartbeats(conversation.conversation_id)
+					}
+					
+					// Update activity time (accessing the websocket.js variable)
+					typing_last_activity = now
+					
+					// Clear existing timeout
+					if (typing_timeout) {
+						clearTimeout(typing_timeout)
+					}
+					
+					// Set 3 second inactivity timeout
+					typing_timeout = setTimeout(() => {
+						stopTypingHeartbeats()
+					}, 3000)
 				}
 			})
 
@@ -403,5 +436,55 @@ const markMessagesAsRead = (messages) => {
 
 	// Refresh unread counts from server to ensure accuracy
 	getUnreadCountUnseenCount()
+}
+
+// Function to update typing indicator UI (called from websocket.js)
+const updateTypingIndicator = (user_id, is_typing) => {
+	if (is_typing) {
+		// Show typing indicator
+		other_user_typing[user_id] = true
+		
+		// Clear existing timeout for this user
+		if (typing_indicator_timeouts[user_id]) {
+			clearTimeout(typing_indicator_timeouts[user_id])
+		}
+		
+		// Hide after 3 seconds of no activity
+		typing_indicator_timeouts[user_id] = setTimeout(() => {
+			delete other_user_typing[user_id]
+			updateTypingIndicatorUI()
+		}, 3000)
+	} else {
+		// Hide typing indicator
+		delete other_user_typing[user_id]
+		if (typing_indicator_timeouts[user_id]) {
+			clearTimeout(typing_indicator_timeouts[user_id])
+			delete typing_indicator_timeouts[user_id]
+		}
+	}
+	
+	updateTypingIndicatorUI()
+}
+
+// Function to update the typing indicator UI
+const updateTypingIndicatorUI = () => {
+	const typing_users = Object.keys(other_user_typing)
+	const $indicator = $("typing-indicator")
+	
+	if (typing_users.length > 0 && state.cache[state.path]?.conversation) {
+		if (!$indicator) {
+			const other_user_name = state.cache[state.path].conversation.other_user_name
+			$("message-input-area").prepend(
+				$(
+					`
+					typing-indicator
+						span ${other_user_name} is typing...
+					`
+				)
+			)
+		}
+	} else {
+		$("typing-indicator")?.remove()
+	}
 }
 

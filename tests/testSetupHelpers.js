@@ -465,6 +465,10 @@ const setupTestEnvironment = async (options) => {
 				if (fn.toString().includes(`$("alert-wrapper")?.remove()`)) {
 					window.originalSetTimeout(fn, 0)
 
+				// Special case for stop typing timeout
+				} else if (fn.toString().includes(`updateTypingIndicatorUI`)) {
+					window.originalSetTimeout(fn, 0)
+
 				// Otherwise we call the setTimeout instantly
 				} else {
 					fn()

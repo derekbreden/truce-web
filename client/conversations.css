@@ -158,6 +158,28 @@ message-form button icon {
 }
 
 /* ================================
+   TYPING INDICATOR
+   ================================ */
+
+typing-indicator {
+  display: flex;
+  padding: var(--space-sm) var(--space-xs);
+  color: light-dark(var(--color-text-secondary), var(--color-text-secondary-dark));
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.5; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+/* ================================
    EMPTY STATE
    ================================ */
 
