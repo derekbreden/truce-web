@@ -102,7 +102,9 @@ post>h2>icon[more] {
    POST IMAGE HANDLING
    ================================ */
 
-post[trimmed] p img {
+post[trimmed] p img,
+reply[trimmed] p img,
+conversation p img {
   cursor: pointer;
   height: 100px;
 }
@@ -117,11 +119,15 @@ post[trimmed] p[img][total-images="1"] img {
   max-height: 300px;
 }
 
-post[trimmed] p[img] {
+post[trimmed] p[img],
+reply[trimmed] p[img],
+conversation p[img] {
   display: inline-flex;
 }
 
-post[trimmed] p[img]+p[img] {
+post[trimmed] p[img]+p[img],
+reply[trimmed] p[img]+p[img],
+conversation p[img]+p[img] {
   margin-left: var(--space-sm);
 }
 

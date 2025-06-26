@@ -92,18 +92,6 @@ reply h3 icon[more] {
   display: flex;
 }
 
-reply[trimmed] p img {
-  cursor: pointer;
-  height: 100px;
-}
-
-reply[trimmed] p[img] {
-  display: inline-flex;
-}
-
-reply[trimmed] p[img]+p[img] {
-  margin-left: var(--space-sm);
-}
 
 /* Paragraphs and content */
 audio,
