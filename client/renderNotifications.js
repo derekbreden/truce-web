@@ -8,6 +8,13 @@ const renderNotification = (notification) => {
 	const is_message = notification.notification_type === "message"
 	
 	if (is_message) {
+		// Determine display text for message notifications
+		let display_text = short_body
+		if (!notification.body && notification.image_uuids) {
+			const image_count = notification.image_uuids.split(",").filter(uuid => uuid).length
+			display_text = image_count > 1 ? `[${image_count} photos]` : `[Photo]`
+		}
+		
 		// Message notification rendering
 		const $notification = $(
 			`
@@ -23,7 +30,7 @@ const renderNotification = (notification) => {
 			[
 				!notification.read,
 				renderName(notification.display_name, notification.display_name_index),
-				`"${short_body}"`
+				`"${display_text}"`
 			],
 		)
 		$notification.on("click", () => {

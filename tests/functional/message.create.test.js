@@ -69,7 +69,8 @@ const tests = {
 				0: file,
 				length: 1,
 				item: (i) => i === 0 ? file : null
-			}
+			},
+			configurable: true  // Allow redefinition for second message
 		})
 		await $file_input.dispatchEvent(new window_user_b.Event("change", { bubbles: true }))
 		await new Promise(resolve => setTimeout(resolve, 0))
@@ -109,7 +110,7 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(
-			"Unread (2)",
+			"Unread (2)", 
 			$a("main-content notifications h3").textContent.trim(),
 			"User A should still have 2 unread notifications after User B's message (instant alert marks new message as read, but 2 reply notifications remain unread)",
 		)
@@ -124,6 +125,53 @@ const tests = {
 			$a("main-content notifications notification:nth-child(2) i").textContent,
 			"First unread notification should show first notification content",
 		)
+		
+		// Navigate User A to notifications page to check notification text
+		$a("footer a[href='/notifications']").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Verify text+image message notification shows text content (not [Photo])
+		// Message notification is in read section (marked read by instant alert)
+		assertEquals(
+			`"Hello User A, this is a message from User B"`,
+			$a("main-content-2 notifications notification:nth-child(2) i").textContent,
+			"Message with text+image should show text content in notification",
+		)
+		
+		// Phase 6: User B sends image-only message to test [Photo] notification text
+		$b("main-content-wrapper[active] textarea").value = ""
+		
+		// Redefine the files property for the second message (now possible with configurable: true)
+		Object.defineProperty($file_input, "files", {
+			value: {
+				0: file,
+				length: 1,
+				item: (i) => i === 0 ? file : null
+			},
+			configurable: true
+		})
+		
+		await $file_input.dispatchEvent(new window_user_b.Event("change", { bubbles: true }))
+		
+		// Wait for image processing to complete (FileReader + imageToPng is async)
+		await window_user_b.waitForElement("main-content-wrapper[active] image-previews preview img")
+		
+		$b("main-content-wrapper[active] button[submit]").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Navigate User A back to notifications to check new message
+		$a("footer a[href='/notifications']").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		
+		// Verify image-only message notification shows [Photo]
+		// Image-only message is the second read notification
+		assertEquals(
+			`"[Photo]"`,
+			$a("main-content-2 notifications notification:nth-child(2) i").textContent,
+			"Image-only message should show [Photo] in notification",
+		)
+		
 	},
 
 }

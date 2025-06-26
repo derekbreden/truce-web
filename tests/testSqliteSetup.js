@@ -2,6 +2,9 @@ const Database = require("better-sqlite3")
 const fs = require("fs")
 const path = require("path")
 
+// Test environment timestamp constant - used for deterministic test runs
+const TEST_BASE_TIMESTAMP = '2025-06-01T00:00:00'
+
 let testDb = null
 
 const createTestDatabase = () => {
@@ -16,7 +19,8 @@ const createTestDatabase = () => {
 	testDb.pragma("foreign_keys = ON")
     
 	// Load schema
-	const schemaSQL = fs.readFileSync(path.join(__dirname, "data/test-schema.sql"), "utf8")
+	let schemaSQL = fs.readFileSync(path.join(__dirname, "data/test-schema.sql"), "utf8")
+	schemaSQL = schemaSQL.replace(/TEST_TIMESTAMP/g, `'${TEST_BASE_TIMESTAMP}'`)
 	const schemaStatements = schemaSQL.split(";").filter(stmt => stmt.trim())
     
 	for (const stmt of schemaStatements) {
@@ -24,6 +28,30 @@ const createTestDatabase = () => {
 			testDb.exec(stmt)
 		}
 	}
+    
+	// Add triggers to auto-increment timestamps for messages to prevent identical create_date values
+	// This ensures getMoreRecent() timestamp filtering works correctly in tests
+	testDb.exec(`
+		CREATE TRIGGER messages_auto_increment_timestamp 
+		AFTER INSERT ON messages
+		WHEN NEW.create_date = '${TEST_BASE_TIMESTAMP}'
+		BEGIN
+			UPDATE messages 
+			SET create_date = '${TEST_BASE_TIMESTAMP.slice(0, -2)}' || PRINTF('%02d', NEW.message_id) || 'Z'
+			WHERE message_id = NEW.message_id;
+		END
+	`)
+	
+	testDb.exec(`
+		CREATE TRIGGER message_notifications_auto_increment_timestamp 
+		AFTER INSERT ON message_notifications
+		WHEN NEW.create_date = '${TEST_BASE_TIMESTAMP}'
+		BEGIN
+			UPDATE message_notifications 
+			SET create_date = '${TEST_BASE_TIMESTAMP.slice(0, -2)}' || PRINTF('%02d', NEW.message_id + 10) || 'Z'
+			WHERE notification_id = NEW.notification_id;
+		END
+	`)
     
 	// Load fixtures
 	const fixturesSQL = fs.readFileSync(path.join(__dirname, "data/test-fixtures.sql"), "utf8")
@@ -126,8 +154,8 @@ const convertPostgresSQLToSQLite = (sql, params) => {
 	// Convert PostgreSQL ILIKE to SQLite LIKE with COLLATE NOCASE
 	convertedSQL = convertedSQL.replace(/ILIKE/g, "LIKE COLLATE NOCASE")
     
-	// Convert NOW() to datetime('2025-06-01T00:00:00') for testing purposes
-	convertedSQL = convertedSQL.replace(/NOW\(\)/g, "datetime('2025-06-01T00:00:00')")
+	// Convert NOW() to TEST_BASE_TIMESTAMP
+	convertedSQL = convertedSQL.replace(/NOW\(\)/g, `datetime('${TEST_BASE_TIMESTAMP}')`)
     
 	// Convert COUNT(alias.*) to COUNT(*)
 	convertedSQL = convertedSQL.replace(/COUNT\(\w+\.\*\)/g, "COUNT(*)")
@@ -170,5 +198,6 @@ module.exports = {
 	createTestDatabase,
 	executeQuery,
 	getTestDatabase,
-	closeTestDatabase
+	closeTestDatabase,
+	TEST_BASE_TIMESTAMP
 }

@@ -177,6 +177,7 @@ module.exports = async (req, res) => {
             u.display_name_index,
             c.reply_id,
             LEFT(c.body, 51) as body,
+            NULL as image_uuids,
             LEFT(c.note, 21) as note,
             LEFT(a.title, 21) as title,
             CASE
@@ -219,6 +220,7 @@ module.exports = async (req, res) => {
             u.display_name_index,
             NULL as reply_id,
             LEFT(m.body, 51) as body,
+            m.image_uuids,
             NULL as note,
             NULL as title,
             NULL as reply_type,
@@ -263,6 +265,7 @@ module.exports = async (req, res) => {
             u.display_name_index,
             c.reply_id,
             LEFT(c.body, 51) as body,
+            NULL as image_uuids,
             LEFT(c.note, 21) as note,
             LEFT(a.title, 21) as title,
             CASE
@@ -305,6 +308,7 @@ module.exports = async (req, res) => {
             u.display_name_index,
             NULL as reply_id,
             LEFT(m.body, 51) as body,
+            m.image_uuids,
             NULL as note,
             NULL as title,
             NULL as reply_type,
