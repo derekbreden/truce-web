@@ -87,7 +87,12 @@ const renderActivities = (activities) => {
 		})
 		.map((activity) => {
 			if (activity.type === "reply") {
-				const $reply = renderReply(activity)
+				// Normalize activity data structure to match what renderReply expects
+				const reply_data = {
+					...activity,
+					reply_id: activity.id,
+				}
+				const $reply = renderReply(reply_data)
 				$reply.$("reply-wrapper button")?.remove()
 				let $reply_wrapper = $reply
 				if (activity.parent_reply_body) {
@@ -98,6 +103,7 @@ const renderActivities = (activities) => {
 						profile_picture_uuid: activity.parent_reply_profile_picture_uuid,
 						body: activity.parent_reply_body,
 						note: activity.parent_reply_note,
+						reply_id: "parent_" + activity.id, // Give it a unique ID
 					}
 					const $parent_reply = renderReply(parent_reply)
 					$parent_reply.setAttribute("parent-reply", "")

@@ -82,9 +82,11 @@ module.exports = async (req, res) => {
         `,
 				[req.session.user_id || 0, reply_id],
 			)
-			req.results.parent_post = {
-				title: post_result.rows[0].title,
-				slug: post_result.rows[0].slug,
+			if (post_result.rows.length > 0) {
+				req.results.parent_post = {
+					title: post_result.rows[0].title,
+					slug: post_result.rows[0].slug,
+				}
 			}
 			req.results.path = `/reply/${reply_id}`
 			req.results.replies.push(...reply_results.rows)

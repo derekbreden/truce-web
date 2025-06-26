@@ -18,7 +18,7 @@ const renderForward = (parent_post) => {
 			)
 		}
 		$("main-content-wrapper[active] tab-wrapper")
-			.$("tab-item")
+			.$("tab-item[right]")
 			?.remove()
 		$("main-content-wrapper[active] tab-wrapper").appendChild($forward)
 		$forward.on("click", () => {

@@ -228,7 +228,7 @@ const renderReplies = (replies) => {
 
 	// Highlight a reply in a thread we've navigated to specifically
 	if (state.path.startsWith("/reply")) {
-		const reply_id = state.path.split("/")[2]
+		const reply_id = Number(state.path.split("/")[2])
 		const reply = replies.find((c) => c.reply_id === reply_id)
 		if (reply.$reply.style.display === "none") {
 			reply.$reply.$expand_button.dispatchEvent(
