@@ -78,7 +78,7 @@ alert-wrapper alert {
   animation: slide-down 0.2s ease-in-out, slide-up 0.2s ease-in-out 4.8s forwards;
 }
 
-activity[explode-out] {
+favorite[explode-out] {
   animation: explode-out .2s ease-in-out 0s forwards;
 }
 

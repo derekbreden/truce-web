@@ -174,7 +174,7 @@ const renderFavorites = (favorites) => {
 			)
 		}
 	} else {
-		$("main-content-wrapper[active] main-content activities")?.replaceChildren(
+		$("main-content-wrapper[active] main-content favorites")?.replaceChildren(
 			...$favorites,
 		)
 	}

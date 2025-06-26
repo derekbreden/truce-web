@@ -46,11 +46,11 @@ const updateDisplayName = (data) => {
 				user.user_slug = state.user_slug
 			}
 		})
-		cache.activities?.forEach((activity) => {
-			if (activity.user_id === state.user_id) {
-				activity.display_name = state.display_name
-				activity.display_name_index = state.display_name_index
-				activity.user_slug = state.user_slug
+		cache.favorites?.forEach((favorite) => {
+			if (favorite.user_id === state.user_id) {
+				favorite.display_name = state.display_name
+				favorite.display_name_index = state.display_name_index
+				favorite.user_slug = state.user_slug
 			}
 		})
 		if (cache.user && cache.user.user_id === state.user_id) {
