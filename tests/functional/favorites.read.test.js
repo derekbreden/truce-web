@@ -40,6 +40,50 @@ const tests = {
 			$("main-content-wrapper activities activity[reply] p span").textContent,
 			"Should have a reply activity",
 		)
+
+		// Test navigation flow: favorites -> reply -> post -> back to reply -> back to favorites
+		$("main-content-wrapper activities activity[reply]").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Should be on reply page
+		assertEquals(
+			"/reply/100",
+			window.state.path,
+			"Should navigate to reply page",
+		)
+		
+		// Click forward button to go to post
+		$("tab-wrapper tab-item[right]").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Should be on post page
+		assertEquals(
+			"/post/user-bs-post",
+			window.state.path,
+			"Should navigate to post page via forward button",
+		)
+		
+		// Click back button to return to reply
+		$("tab-wrapper tab-item:not([right])").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Should be back on reply page
+		assertEquals(
+			"/reply/100",
+			window.state.path,
+			"Should return to reply page via back button",
+		)
+		
+		// Click back button to return to favorites
+		$("tab-wrapper tab-item:not([right])").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Should be back on favorites page
+		assertEquals(
+			"/favorites",
+			window.state.path,
+			"Should return to favorites page via back button",
+		)
 	},
 }
 
