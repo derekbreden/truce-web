@@ -133,3 +133,4 @@ dist
 # Test visual output
 tests/capture/
 tests/capture-diff/
+/.gemini
