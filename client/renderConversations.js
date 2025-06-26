@@ -1,8 +1,18 @@
 const renderConversation = (conversation) => {
-	const last_message_body = conversation.last_message_body || "No messages yet"
-	const short_body = last_message_body.length > 60 
-		? last_message_body.slice(0, 60) + "..." 
-		: last_message_body
+	let last_message_preview = conversation.last_message_body ?? "No messages yet"
+	
+	// Handle image-only messages
+	if (conversation.last_message_image_uuids && !conversation.last_message_body) {
+		const image_count = conversation.last_message_image_uuids.split(",").filter(uuid => uuid).length
+		last_message_preview = image_count > 1 ? `${image_count} photos` : "Photo"
+	} else if (conversation.last_message_image_uuids && conversation.last_message_body) {
+		// Message has both text and images
+		last_message_preview = conversation.last_message_body
+	}
+	
+	const short_body = last_message_preview.length > 60 
+		? last_message_preview.slice(0, 60) + "..." 
+		: last_message_preview
 
 	const time_ago = conversation.last_message_date 
 		? new Date(conversation.last_message_date).toLocaleString()
@@ -17,13 +27,20 @@ const renderConversation = (conversation) => {
 				participants-row
 					other-user-name $2
 					time-ago $3
-				message-preview $4
-				$5
+				message-preview 
+					$4
+					$5
+				$6
 		`,
 		[
 			unread_count > 0,
 			renderName(conversation.other_user_name, conversation.other_user_display_name_index),
 			time_ago,
+			conversation.last_message_image_uuids ? $(
+				`
+				icon[camera]
+				`
+			) : "",
 			short_body,
 			unread_count > 0 ? $(
 				`
