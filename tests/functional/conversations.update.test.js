@@ -60,6 +60,31 @@ const tests = {
 			$b("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").textContent,
 			"User B should see the message preview in conversations list"
 		)
+		
+		// Phase 4: Test navigation from conversations to messages
+		$b("main-content-wrapper[active] conversations conversation:nth-child(1)").click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		
+		// Verify we're on messages page
+		assertEquals(true, window_user_b.state.path.startsWith("/messages/"), "Should navigate to messages page")
+		
+		// Verify back button exists and shows "Conversations"
+		const $back_button = $b("main-content-wrapper[active] tab-wrapper tab-item icon[back]")?.parentElement
+		assertEquals(true, Boolean($back_button), "Back button should exist on messages page")
+		assertEquals("Conversations", $back_button.$("p").textContent, "Back button should say 'Conversations'")
+		
+		// Verify participant name is shown as compact tab-item on right
+		const $participant_tab = $b("main-content-wrapper[active] tab-wrapper tab-item[right]")
+		assertEquals(true, Boolean($participant_tab), "Participant tab should exist")
+		assertEquals("User A", $participant_tab.$("p").textContent, "Participant tab should show User A")
+		
+		// Verify no large conversation header exists
+		assertEquals(false, Boolean($b("conversation-header")), "Should not have large conversation header")
+		
+		// Test back navigation to conversations
+		$back_button.click()
+		await new Promise(resolve => setTimeout(resolve, 0))
+		assertEquals("/conversations", window_user_b.state.path, "Should return to conversations page")
 	},
 }
 

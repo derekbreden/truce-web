@@ -38,7 +38,7 @@ const renderBack = () => {
 										? "Favorites"
 										: previous_path?.startsWith("/topic/")
 											? previous_path.split("/")[2][0].toUpperCase()
-												+ previous_path.split("/")[2].slice(1)
+													+ previous_path.split("/")[2].slice(1)
 											: previous_path?.startsWith("/user/")
 												? renderName(
 													state.cache[previous_path].user.display_name,

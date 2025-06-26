@@ -4,31 +4,8 @@
 messages-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height) - var(--footer-height-base) - env(safe-area-inset-bottom)); /* Account for header and footer */
+  height: calc(100vh - var(--header-height) - var(--footer-height-base) - env(safe-area-inset-bottom) - 48px); /* Account for header, footer, and tab-wrapper */
   margin: 0 -20px -20px -20px; /* Counteract main-content padding */
-}
-
-/* ================================
-   CONVERSATION HEADER
-   ================================ */
-
-conversation-header {
-  flex-shrink: 0;
-  border-bottom: 1px solid var(--color-border-standard);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-conversation-header participants {
-  flex: 1;
-  margin: var(--space-md);
-}
-
-conversation-header participants h2 {
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin: 0;
 }
 
 /* ================================

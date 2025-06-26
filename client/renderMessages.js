@@ -117,8 +117,6 @@ const renderMessages = (messages, conversation) => {
 				$(
 					`
 					messages-container
-						conversation-header
-							participants
 						messages
 						message-input-area
 							message-form
@@ -336,18 +334,38 @@ const renderMessages = (messages, conversation) => {
 		}
 		// END - first render of messages container
 
-		// Update conversation header with other user (1-to-1 messaging)
+		// Always ensure messages has back navigation to conversations (regardless of path history)
+		if (!$("main-content-wrapper[active] main-content tab-wrapper")) {
+			const $messages_tab_wrapper = $(
+				`
+				tab-wrapper[line-after]
+					tab-item
+						icon[back]
+						p Conversations
+				`
+			)
+			$("main-content-wrapper[active] main-content").prepend($messages_tab_wrapper)
+			$messages_tab_wrapper.$("tab-item").on("click", () => {
+				goToPath("/conversations")
+			})
+		}
+
+		// Add participant name to tab-wrapper (only if not already there)
 		if (conversation && conversation.other_user_name) {
 			const other_user_name = renderName(conversation.other_user_name, conversation.other_user_display_name_index)
+			const $existing_tab_wrapper = $("main-content-wrapper[active] main-content tab-wrapper")
 			
-			$("main-content-wrapper[active] conversation-header participants").replaceChildren(
-				$(
+			// Only add if participant tab doesn't already exist
+			if ($existing_tab_wrapper && !$existing_tab_wrapper.$("tab-item[right]")) {
+				const $participant_tab = $(
 					`
-					h2 $1
+					tab-item[right]
+						p $1
 					`,
 					[other_user_name]
 				)
-			)
+				$existing_tab_wrapper.appendChild($participant_tab)
+			}
 		}
 		state.rendering_messages = 1
 
