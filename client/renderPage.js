@@ -20,8 +20,8 @@ const renderPage = (data) => {
 	// Render Replies
 	renderReplies(data.replies)
 
-	// Render Activities
-	renderActivities(data.activities)
+	// Render Favorites
+	renderFavorites(data.favorites)
 
 	// Render Notifications
 	renderNotifications(data.notifications)

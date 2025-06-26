@@ -32,18 +32,18 @@ const bindScrollEvent = () => {
 					},
 					new Date().toISOString(),
 				)
-				let max_create_date = state.cache[state.path].activities.reduce(
-					(min, activity) => {
-						return min < activity.create_date ? min : activity.create_date
+				let max_create_date = state.cache[state.path].favorites.reduce(
+					(min, favorite) => {
+						return min < favorite.create_date ? min : favorite.create_date
 					},
 					new Date().toISOString(),
 				)
 				if (state.path === "/favorites") {
-					max_create_date = state.cache[state.path].activities.reduce(
-						(min, activity) => {
-							return min < activity.favorite_create_date
+					max_create_date = state.cache[state.path].favorites.reduce(
+						(min, favorite) => {
+							return min < favorite.favorite_create_date
 								? min
-								: activity.favorite_create_date
+								: favorite.favorite_create_date
 						},
 						new Date().toISOString(),
 					)
@@ -67,7 +67,7 @@ const bindScrollEvent = () => {
 							|| (state.path.startsWith("/user")
 								&& state.path.split("/")[3] === "replies")
 						) {
-							if (data.activities && !data.activities.length) {
+							if (data.favorites && !data.favorites.length) {
 								state.cache[state.path].finished = true
 							}
 						} else {
@@ -78,7 +78,7 @@ const bindScrollEvent = () => {
 
 						// Append what we found to the existing cache
 						state.cache[state.path].posts.push(...data.posts)
-						state.cache[state.path].activities.push(...data.activities)
+						state.cache[state.path].favorites.push(...data.favorites)
 
 						// And re-render if any posts added
 						if (data.posts.length) {
@@ -88,9 +88,9 @@ const bindScrollEvent = () => {
 								state.cache[state.path].user,
 							)
 						}
-						// And re-render if any activities added
-						if (data.activities.length) {
-							renderActivities(state.cache[state.path].activities)
+						// And re-render if any favorites added
+						if (data.favorites.length) {
+							renderFavorites(state.cache[state.path].favorites)
 						}
 
 						state.loading_path = false

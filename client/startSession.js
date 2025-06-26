@@ -147,11 +147,11 @@ const getMoreRecent = () => {
 		return max > conversation_date ? max : conversation_date
 	}, "") : ""
 	
-	const client_max_activity_date = current_cache.activities.reduce((max, activity) => {
-		if (current_cache === "/favorites") {
-			return max > activity.favorite_create_date ? max : activity.favorite_create_date
+	const client_max_favorite_date = current_cache.favorites.reduce((max, favorite) => {
+		if (current_path === "/favorites") {
+			return max > favorite.favorite_create_date ? max : favorite.favorite_create_date
 		} else {
-			return max > activity.create_date ? max : activity.create_date
+			return max > favorite.create_date ? max : favorite.create_date
 		}
 	}, "")
 	
@@ -184,9 +184,9 @@ const getMoreRecent = () => {
 		},
 		new Date().toISOString(),
 	)
-	const min_create_date_for_counts_3 = current_cache.activities.reduce(
-		(min, activity) => {
-			return min < activity.create_date ? min : activity.create_date
+	const min_create_date_for_counts_3 = current_cache.favorites.reduce(
+		(min, favorite) => {
+			return min < favorite.create_date ? min : favorite.create_date
 		},
 		new Date().toISOString(),
 	)
@@ -210,11 +210,11 @@ const getMoreRecent = () => {
 		},
 		"",
 	)
-	const min_counts_create_date_3 = current_cache.activities.reduce(
-		(max, activity) => {
-			return max > activity.counts_max_create_date
+	const min_counts_create_date_3 = current_cache.favorites.reduce(
+		(max, favorite) => {
+			return max > favorite.counts_max_create_date
 				? max
-				: activity.counts_max_create_date
+				: favorite.counts_max_create_date
 		},
 		"",
 	)
@@ -228,11 +228,11 @@ const getMoreRecent = () => {
 	// Indicate if there are replies or posts cached on page
 	const has_replies = Boolean(
 		current_cache.replies.length
-			|| current_cache.activities.filter((a) => a.type === "reply").length,
+			|| current_cache.favorites.filter((a) => a.type === "reply").length,
 	)
 	const has_posts = Boolean(
 		current_cache.posts.length
-			|| current_cache.activities.filter((a) => a.type === "post").length,
+			|| current_cache.favorites.filter((a) => a.type === "post").length,
 	)
 
 	// Use that to load anything newer than that (our max is the min of what we want returned)
@@ -241,7 +241,7 @@ const getMoreRecent = () => {
 		method: "POST",
 		body: JSON.stringify({
 			path: current_path,
-			min_create_date: client_max_activity_date,
+			min_create_date: client_max_favorite_date,
 			min_reply_create_date: client_max_reply_date,
 			min_post_create_date: client_max_post_date,
 			min_notification_unread_create_date: client_max_notification_unread_date,
@@ -276,15 +276,15 @@ const getMoreRecent = () => {
 				renderNotifications(current_cache.notifications)
 			}
 
-			// Render activities if appropriate
-			if (data.activities?.length) {
-				current_cache.activities = current_cache.activities.filter((a) => {
-					return !data.activities.some((a2) => {
+			// Render favorites if appropriate
+			if (data.favorites?.length) {
+				current_cache.favorites = current_cache.favorites.filter((a) => {
+					return !data.favorites.some((a2) => {
 						return a.type === a2.type && a.id === a2.id
 					})
 				})
-				current_cache.activities.unshift(...data.activities)
-				renderActivities(current_cache.activities)
+				current_cache.favorites.unshift(...data.favorites)
+				renderFavorites(current_cache.favorites)
 			}
 
 			// Render replies if appropriate
@@ -350,7 +350,7 @@ const getMoreRecent = () => {
 
 			// Restore scroll position if we re-rendered anything
 			if (
-				data.activities?.length
+				data.favorites?.length
 				|| data.replies?.length
 				|| data.posts?.length
 				|| data.notifications?.length
@@ -375,9 +375,9 @@ const getMoreRecent = () => {
 					const found_post = current_cache.posts.find(
 						(post) => post.post_id === post_count.post_id,
 					)
-					const found_activity = current_cache.activities.find(
-						(activity) =>
-							activity.id === post_count.post_id && activity.type === "post",
+					const found_favorite = current_cache.favorites.find(
+						(favorite) =>
+							favorite.id === post_count.post_id && favorite.type === "post",
 					)
 
 					// Prepare the text for the markup
@@ -385,30 +385,30 @@ const getMoreRecent = () => {
 					const favorite_text = post_count.favorite_count
 
 					// If we found a match in the cache
-					if (found_post || found_activity) {
+					if (found_post || found_favorite) {
 						// Update the cached data
-						;(found_post || found_activity).reply_count =
+						;(found_post || found_favorite).reply_count =
 							post_count.reply_count
-						;(found_post || found_activity).favorite_count =
+						;(found_post || found_favorite).favorite_count =
 							post_count.favorite_count
 
 						// Update the markup
-						;(found_post || found_activity).$post.$(
+						;(found_post || found_favorite).$post.$(
 							"[replies] p"
 						).textContent = reply_text
-						;(found_post || found_activity).$post.$(
+						;(found_post || found_favorite).$post.$(
 							"[favorites] p",
 						).textContent = favorite_text
 
 						// Poll requires a complete re-render
 						if (
-							(found_post || found_activity).poll_1
+							(found_post || found_favorite).poll_1
 							&& post_count.poll_counts
 						) {
-							;(found_post || found_activity).poll_counts =
+							;(found_post || found_favorite).poll_counts =
 								post_count.poll_counts
-							;(found_post || found_activity).$post.replaceWith(
-								renderPost(found_post || found_activity),
+							;(found_post || found_favorite).$post.replaceWith(
+								renderPost(found_post || found_favorite),
 							)
 						}
 					}
@@ -421,19 +421,19 @@ const getMoreRecent = () => {
 					const found_reply = current_cache.replies.find(
 						(reply) => reply.reply_id === reply_count.reply_id,
 					)
-					const found_activity = current_cache.activities.find(
-						(activity) =>
-							activity.id === reply_count.reply_id
-							&& activity.type === "reply",
+					const found_favorite = current_cache.favorites.find(
+						(favorite) =>
+							favorite.id === reply_count.reply_id
+							&& favorite.type === "reply",
 					)
 					const favorite_text = reply_count.favorite_count
 					if (found_reply?.$reply?.$("[favorites] p")?.textContent) {
 						found_reply.favorite_count = reply_count.favorite_count
 						found_reply.$reply.$("[favorites] p").textContent = favorite_text
 					}
-					if (found_activity?.$reply?.$("[favorites] p")?.textContent) {
-						found_activity.favorite_count = reply_count.favorite_count
-						found_activity.$reply.$("[favorites] p").textContent = favorite_text
+					if (found_favorite?.$reply?.$("[favorites] p")?.textContent) {
+						found_favorite.favorite_count = reply_count.favorite_count
+						found_favorite.$reply.$("[favorites] p").textContent = favorite_text
 					}
 				})
 			}

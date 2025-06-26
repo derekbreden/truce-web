@@ -35,20 +35,20 @@ const toggleFavorite = async (post_or_reply) => {
 	}
 
 	// Remove from the active dom / cache if unfavorited
-	state.cache["/favorites"]?.activities?.forEach((activity, activity_index) => {
+	state.cache["/favorites"]?.favorites?.forEach((favorite, favorite_index) => {
 		if (
 			(post_or_reply.$reply
-				&& activity.type === "reply"
-				&& activity.id === reply_id)
+				&& favorite.type === "reply"
+				&& favorite.id === reply_id)
 			|| (post_or_reply.$post
-				&& activity.type === "post"
-				&& activity.id === post_id)
+				&& favorite.type === "post"
+				&& favorite.id === post_id)
 		) {
 			if (was_favorited) {
-				state.cache["/favorites"]?.activities?.splice(activity_index, 1)
-				activity.$activity.setAttribute("explode-out", "")
+				state.cache["/favorites"]?.favorites?.splice(favorite_index, 1)
+				favorite.$favorite.setAttribute("explode-out", "")
 				setTimeout(() => {
-					activity.$activity.remove()
+					favorite.$favorite.remove()
 				}, 200)
 			}
 		}

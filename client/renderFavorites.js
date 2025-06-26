@@ -1,7 +1,7 @@
-const renderActivities = (activities) => {
+const renderFavorites = (favorites) => {
 	// Empty favorites?
 	if (state.path === "/favorites") {
-		if (activities.length === 0) {
+		if (favorites.length === 0) {
 			$("post[favorites]")?.remove()
 			$("main-content-wrapper[active] posts").prepend(
 				$(
@@ -38,72 +38,72 @@ const renderActivities = (activities) => {
 		}
 	}
 
-	// Render activities
-	if (!$("main-content-wrapper[active] main-content activities")) {
+	// Render favorites
+	if (!$("main-content-wrapper[active] main-content favorites")) {
 		$("main-content-wrapper[active] main-content").appendChild(
 			$(
 				`
-				activities[favorites=$1]
+				favorites[favorites=$1]
 				`,
 				[state.path === "/favorites"],
 			),
 		)
 	}
-	if (!$("main-content-wrapper[active] main-content-2 activities")) {
+	if (!$("main-content-wrapper[active] main-content-2 favorites")) {
 		$("main-content-wrapper[active] main-content-2").appendChild(
 			$(
 				`
-				activities[favorites=$1]
+				favorites[favorites=$1]
 				`,
 				[state.path === "/favorites"],
 			),
 		)
 	}
 	const reply_ids_rendered = []
-	const $activities = activities
+	const $favorites = favorites
 		.sort(
 			(a, b) =>
 				new Date(b.favorite_create_date || b.create_date)
 				- new Date(a.favorite_create_date || a.create_date),
 		)
-		.filter((activity) => {
-			if (activity.type === "reply") {
+		.filter((favorite) => {
+			if (favorite.type === "reply") {
 				if (
-					reply_ids_rendered.includes(activity.id)
+					reply_ids_rendered.includes(favorite.id)
 					&& state.path !== "/favorites"
 				) {
 					return false
 				}
-				reply_ids_rendered.push(activity.id)
-				reply_ids_rendered.push(activity.parent_reply_id)
+				reply_ids_rendered.push(favorite.id)
+				reply_ids_rendered.push(favorite.parent_reply_id)
 			}
 			if (state.version > 1) {
 			} else {
-				if (activity.type === "post" && activity.poll_1) {
+				if (favorite.type === "post" && favorite.poll_1) {
 					return false
 				}
 			}
 			return true
 		})
-		.map((activity) => {
-			if (activity.type === "reply") {
-				// Normalize activity data structure to match what renderReply expects
+		.map((favorite) => {
+			if (favorite.type === "reply") {
+				// Normalize favorite data structure to match what renderReply expects
 				const reply_data = {
-					...activity,
-					reply_id: activity.id,
+					...favorite,
+					reply_id: favorite.id,
 				}
 				const $reply = renderReply(reply_data)
 				$reply.$("reply-wrapper button")?.remove()
 				let $reply_wrapper = $reply
-				if (activity.parent_reply_body) {
+				if (favorite.parent_reply_body) {
 					const parent_reply = {
-						display_name: activity.parent_reply_display_name,
-						display_name_index: activity.parent_reply_display_name_index,
-						user_slug: activity.parent_reply_user_slug,
-						profile_picture_uuid: activity.parent_reply_profile_picture_uuid,
-						body: activity.parent_reply_body,
-						note: activity.parent_reply_note,
-						reply_id: "parent_" + activity.id, // Give it a unique ID
+						display_name: favorite.parent_reply_display_name,
+						display_name_index: favorite.parent_reply_display_name_index,
+						user_slug: favorite.parent_reply_user_slug,
+						profile_picture_uuid: favorite.parent_reply_profile_picture_uuid,
+						body: favorite.parent_reply_body,
+						note: favorite.parent_reply_note,
+						reply_id: "parent_" + favorite.id, // Give it a unique ID
 					}
 					const $parent_reply = renderReply(parent_reply)
 					$parent_reply.setAttribute("parent-reply", "")
@@ -111,49 +111,49 @@ const renderActivities = (activities) => {
 					$parent_reply.appendChild($reply)
 					$reply_wrapper = $parent_reply
 				}
-				const $activity = $(
+				const $favorite = $(
 					`
-						activity[reply]
+						favorite[reply]
 							h2 $1
 							$2
 					`,
-					[activity.parent_post_title, $reply_wrapper],
+					[favorite.parent_post_title, $reply_wrapper],
 				)
-				$activity.on("click", ($event) => {
+				$favorite.on("click", ($event) => {
 					if ($event.target.tagName !== "A") {
 						$event.preventDefault()
-						goToPath("/reply/" + activity.id)
+						goToPath("/reply/" + favorite.id)
 					}
 				})
-				activity.$activity = $activity
-				return $activity
+				favorite.$favorite = $favorite
+				return $favorite
 			} else {
-				const $post = renderPost(activity)
-				const $activity = $(
+				const $post = renderPost(favorite)
+				const $favorite = $(
 					`
-						activity[post]
+						favorite[post]
 							$1
 					`,
 					[$post],
 				)
-				activity.$activity = $activity
-				return $activity
+				favorite.$favorite = $favorite
+				return $favorite
 			}
 		})
 	if (window.innerWidth > 1000 && state.path === "/favorites") {
-		const $activities_1 = $activities.filter((x, i) => i % 2 === 0)
-		const $activities_2 = $activities.filter((x, i) => i % 2 === 1)
-		$("main-content-wrapper[active] main-content activities")?.replaceChildren(
-			...$activities_1,
+		const $favorites_1 = $favorites.filter((x, i) => i % 2 === 0)
+		const $favorites_2 = $favorites.filter((x, i) => i % 2 === 1)
+		$("main-content-wrapper[active] main-content favorites")?.replaceChildren(
+			...$favorites_1,
 		)
 		$(
-			"main-content-wrapper[active] main-content-2 activities",
-		)?.replaceChildren(...$activities_2)
+			"main-content-wrapper[active] main-content-2 favorites",
+		)?.replaceChildren(...$favorites_2)
 	} else if (
 		state.path.startsWith("/user")
 		&& state.path.split("/")[3] === "replies"
 	) {
-		$("main-content-wrapper[active] main-content-2 activities").replaceChildren(
+		$("main-content-wrapper[active] main-content-2 favorites").replaceChildren(
 			$(
 				`
 				posts
@@ -161,9 +161,9 @@ const renderActivities = (activities) => {
 			),
 		)
 		$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
-			...$activities,
+			...$favorites,
 		)
-		if ($activities.length === 0) {
+		if ($favorites.length === 0) {
 			$("main-content-wrapper[active] main-content-2 posts").appendChild(
 				$(
 					`
@@ -175,11 +175,11 @@ const renderActivities = (activities) => {
 		}
 	} else {
 		$("main-content-wrapper[active] main-content activities")?.replaceChildren(
-			...$activities,
+			...$favorites,
 		)
 	}
 
-	$("activities [href]")?.forEach(($a) => {
+	$("favorites [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
 		if (new_path.startsWith("/")) {
 			$a.on("click", ($event) => {

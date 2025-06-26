@@ -1,24 +1,24 @@
-/* Activities container */
-activities {
+/* Favorites container */
+favorites {
   display: flex;
   flex-direction: column;
 }
 
-/* Activity items */
-activities activity {
+/* Favorite items */
+favorites favorite {
   padding-bottom: 21px;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
-activities activity[post] info-wrapper {
+favorites favorite[post] info-wrapper {
   display: flex;
   margin-top: var(--space-sm);
 }
 
-/* Activity headers */
-activity>h2 {
+/* Favorite headers */
+favorite>h2 {
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-xs);
   display: flex;
@@ -26,17 +26,17 @@ activity>h2 {
   gap: var(--space-md);
 }
 
-activity>h2>span:last-child {
+favorite>h2>span:last-child {
   text-align: right;
 }
 
-/* Activity special styling */
-activity>[parent-reply] {
+/* Favorite special styling */
+favorite>[parent-reply] {
   background: var(--color-gray-lightest);
   background: var(--color-bg-tertiary)
 }
 
-activity>[parent-reply] reply {
+favorite>[parent-reply] reply {
   background: var(--color-white);
   background: var(--color-bg-primary);
 }

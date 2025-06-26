@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
 				&& (req.body.path?.split("/")[3] === "replies" || req.body.path?.split("/")[3] === "replies")))
 	) {
 		req.results.path = req.body.path
-		const activity_results = await req.client.query(
+		const favorite_results = await req.client.query(
 			`
       WITH combined AS (
         SELECT 
@@ -177,6 +177,6 @@ module.exports = async (req, res) => {
 					: undefined,
 			].filter((x) => x !== undefined),
 		)
-		req.results.activities.push(...activity_results.rows)
+		req.results.favorites.push(...favorite_results.rows)
 	}
 }

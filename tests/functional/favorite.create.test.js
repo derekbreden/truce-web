@@ -17,7 +17,7 @@ const tests = {
 		// Verify the existing favorited post is "User B's Post"
 		assertEquals(
 			"User B's Post",
-			$("main-content-wrapper activities activity[post]:first-child post h2").textContent.trim(),
+			$("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
 			"First favorite should be 'User B's Post' from default cache",
 		)
 		
@@ -55,7 +55,7 @@ const tests = {
 		// Verify "User A's Post" now appears first in favorites (getMoreRecent was triggered)
 		assertEquals(
 			"User A's Post",
-			$("main-content-wrapper activities activity[post]:first-child post h2").textContent.trim(),
+			$("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
 			"Newly favorited 'User A's Post' should now appear first in favorites",
 		)
 	},
