@@ -210,37 +210,65 @@ conversation {
   padding: var(--space-sm);
   cursor: pointer;
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  flex-direction: column;
+  gap: var(--space-xs);
   margin-top: var(--space-md);
 }
 
 conversation-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
   flex: 1;
   min-width: 0;
 }
 
-conversation-info participants {
+conversation-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+conversation-header name {
+  display: flex;
+  gap: var(--space-2xs);
+  align-items: center;
   font-weight: 600;
-  margin-bottom: var(--space-xs);
-  display: block;
   font-size: var(--font-size-md);
 }
 
-conversation-info last-message {
+conversation name icon {
+  display: flex;
+  background-color: var(--color-text-primary);
+  height: var(--icon-md);
+  width: var(--icon-md);
+}
+
+conversation-header name span {
+  display: inline-block;
+}
+
+conversation-header time-ago {
   font-size: var(--font-size-sm);
-  opacity: .7;
-  display: block;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+message-preview {
+  font-size: var(--font-size-md);
+  opacity: 0.7;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-conversation-info time-ago {
-  font-size: var(--font-size-xs);
-  opacity: .5;
-  display: block;
-  margin-top: 2px;
 }
 
 conversation unread-indicator {
@@ -265,4 +293,11 @@ conversation unread-count {
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+/* Message thumbnail images in conversation list */
+conversation-details p[img] {
+  margin-top: var(--space-xs);
+  display: flex;
+  gap: var(--space-xs);
 }

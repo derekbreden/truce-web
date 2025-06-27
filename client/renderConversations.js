@@ -20,15 +20,40 @@ const renderConversation = (conversation) => {
 		`
 		conversation[unread=$1]
 			conversation-info
-				participants-row
-					other-user-name $2
-					time-ago $3
-				message-preview $4
-				$5
+				profile-picture
+					image
+						$2
+				conversation-details
+					conversation-header
+						name
+							span $3
+							$4
+						time-ago $5
+					message-preview $6
+			$7
 		`,
 		[
 			unread_count > 0,
+			conversation.other_user_picture
+				? $(
+					`
+					img[src=$1]
+					`,
+					["/image/" + conversation.other_user_picture]
+				)
+				: $(
+					`
+					icon[profile-picture]
+					`
+				),
 			renderName(conversation.other_user_name, conversation.other_user_display_name_index),
+			conversation.other_user_verified
+				? $(
+					`
+					icon[verified]
+					`
+				)
+				: [],
 			time_ago,
 			short_body,
 			unread_count > 0 ? $(
@@ -52,7 +77,7 @@ const renderConversation = (conversation) => {
 				[image_uuids.length, "/image/" + image_uuid],
 			)
 			// Don't bind image click for thumbnails in conversation list
-			$conversation.$("participants-row").after($image)
+			$conversation.$("conversation-details").appendChild($image)
 		}
 	}
 

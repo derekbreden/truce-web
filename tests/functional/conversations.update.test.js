@@ -51,7 +51,7 @@ const tests = {
 		// Verify that User B's conversations list now shows the conversation with User A
 		assertEquals(
 			"User A", 
-			$b("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").textContent,
+			$b("main-content-wrapper[active] conversations conversation:nth-child(1) conversation-header name span").textContent,
 			"User B should see conversation with User A after websocket UPDATE"
 		)
 		

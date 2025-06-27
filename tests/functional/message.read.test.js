@@ -54,7 +54,7 @@ const tests = {
 		// Verify we can see the conversation with User B in the list
 		assertEquals(
 			"User B",
-			$("main-content-wrapper[active] conversations conversation:nth-child(1) other-user-name").textContent,
+			$("main-content-wrapper[active] conversations conversation:nth-child(1) conversation-header name span").textContent,
 			"Should see conversation with User B in list",
 		)
 		
