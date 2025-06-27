@@ -1,6 +1,7 @@
 const path = require("path")
 const { setupTestEnvironment } = require("../testSetupHelpers.js")
 const { assertEquals, runTests } = require("../testRunUtils.js")
+const { TEST_BASE_TIMESTAMP } = require("../testSqliteSetup.js")
 
 const tests = {
 	testFlow: async () => {
@@ -12,7 +13,7 @@ const tests = {
 		// Create 55 conversations between User A (10) and User B (20)
 		for (let i = 1; i <= 55; i++) {
 			const conversation_id = i
-			const create_date = new Date(Date.now() - (i * 1000 * 60 * 60)) // Each conversation is 1 hour older
+			const create_date = new Date(new Date(TEST_BASE_TIMESTAMP) - (i * 1000 * 60 * 60)) // Each conversation is 1 hour older
 			
 			// Create conversation (without last_message_id initially due to foreign key constraint)
 			statements.push([

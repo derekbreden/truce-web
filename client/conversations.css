@@ -223,7 +223,6 @@ conversation-info {
   min-width: 0;
 }
 
-
 conversation-details {
   flex: 1;
   min-width: 0;
@@ -254,9 +253,6 @@ conversation name icon {
   width: var(--icon-md);
 }
 
-conversation-header name span {
-  display: inline-block;
-}
 
 conversation-header time-ago {
   font-size: var(--font-size-sm);
