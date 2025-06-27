@@ -128,7 +128,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
         display-name-wrapper
           b
             profile-picture
-              image
+              profile-image
                 $1
             span $2
         `,

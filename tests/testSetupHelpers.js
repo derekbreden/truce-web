@@ -520,7 +520,7 @@ const setupTestEnvironment = async (options) => {
 								node.did_fetch = true
 								const image_response = await window.fetch(node.getAttribute("src"), { method: "GET" })
 								const response_data = await image_response.json()
-								node.src = response_data
+								node.src = `data:image/png;base64,${response_data}`
 								node.dispatchEvent(new window.Event("load", { bubbles: true }))
 							})()
 						}

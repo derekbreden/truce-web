@@ -15,7 +15,7 @@ const renderUsers = (users) => {
 								author-name[slug=$1]
 									author
 										profile-picture
-											image
+											profile-image
 												$2
 									name $3
 									$4

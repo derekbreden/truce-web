@@ -35,7 +35,7 @@ const renderReply = (reply) => {
 			h3
 				author[slug=$1]
 					profile-picture
-						image
+						profile-image
 							$2
 					span $3
 					$4

@@ -97,7 +97,7 @@ const tests = {
 
 		// Verify round-trip image is the same calling our endpoint that pulls it from S3
 		const response_data = $b("main-content-wrapper[active] messages message:nth-child(1) message-content p[img] img").src
-		assertEquals("http://localhost/messages/" + valid_png_base64, response_data, "Retrieved message image data should match input data")
+		assertEquals("data:image/png;base64," + valid_png_base64, response_data, "Retrieved message image data should match input data")
 		
 		// Verify the instant alert banner appears for User A
 		assertEquals(

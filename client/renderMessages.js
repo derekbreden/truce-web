@@ -33,7 +33,7 @@ const renderMessage = (message) => {
 		message[own=$1]
 			message-header
 				profile-picture
-					image
+					profile-image
 						$2
 				message-info
 					author[slug=$3]

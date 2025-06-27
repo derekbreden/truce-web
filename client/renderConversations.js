@@ -21,7 +21,7 @@ const renderConversation = (conversation) => {
 		conversation[unread=$1]
 			conversation-info
 				profile-picture
-					image
+					profile-image
 						$2
 				conversation-details
 					conversation-header

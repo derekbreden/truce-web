@@ -45,7 +45,7 @@ message-header profile-picture {
 }
 
 message-header profile-picture icon,
-message-header profile-picture image {
+message-header profile-picture profile-image {
   width: var(--icon-xxl);
   height: var(--icon-xxl);
   display: flex;

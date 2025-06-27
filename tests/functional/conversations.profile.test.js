@@ -30,7 +30,7 @@ const tests = {
 		// Verify profile picture is displayed (User B has no profile picture, so should show icon)
 		assertEquals(
 			true,
-			Boolean($a("conversations conversation:nth-child(1) profile-picture image icon[profile-picture]")),
+			Boolean($a("conversations conversation:nth-child(1) profile-picture profile-image icon[profile-picture]")),
 			"Should show profile picture icon for User B"
 		)
 		

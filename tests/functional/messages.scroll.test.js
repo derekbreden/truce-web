@@ -92,7 +92,7 @@ const tests = {
 		const images_after_load = $("messages img")
 		if (images_after_load.length > 0) {
 			const first_image_src = images_after_load[0].src
-			assertEquals("http://localhost/messages/" + valid_png_base64, first_image_src, "Image should be processed with path prefix + base64")
+			assertEquals("data:image/png;base64," + valid_png_base64, first_image_src, "Image should be processed with path prefix + base64")
 		}
 
 		// Scroll up to load older messages

@@ -70,7 +70,7 @@ const tests = {
 
 		// Verify round-trip image is the same calling our endpoint that pulls it from S3
 		const response_data = $("main-content-2 posts post:first-child p[img] img").src
-		assertEquals("http://localhost/" + valid_png_base64, response_data, "Retrieved image data should match input data")
+		assertEquals("data:image/png;base64," + valid_png_base64, response_data, "Retrieved image data should match input data")
 	},
 }
 

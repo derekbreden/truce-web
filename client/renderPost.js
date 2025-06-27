@@ -54,7 +54,7 @@ const renderPost = (post) => {
 				author-topics
 					author[slug=$1]
 						profile-picture
-							image
+							profile-image
 								$2
 						by by
 						name

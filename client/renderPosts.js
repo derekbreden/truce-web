@@ -113,7 +113,7 @@ const renderPosts = (posts, topic, user) => {
 								$2
 							$3
 						label[profile-picture][large]
-							image
+							profile-image
 								$4
 							$5
 					`,

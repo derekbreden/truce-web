@@ -119,7 +119,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											image
+											profile-image
 												icon[profile-picture]
 										span John Doe:
 								p You are a fascist, who attended a fascist rally and supported a fascist leader.
@@ -131,7 +131,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											image
+											profile-image
 												icon[profile-picture]
 										span Jane Doe:
 								p Sometimes violence is the answer.
@@ -142,7 +142,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											image
+											profile-image
 												icon[profile-picture]
 										span Sam Smith:
 								p They are pure evil.
@@ -228,7 +228,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				post[line-after]
 					p[bold] Profile picture
 					label[profile-picture][large]
-						image
+						profile-image
 							$2
 						input[image][type=file][accept=image/*]
 					p[bold] Display name
