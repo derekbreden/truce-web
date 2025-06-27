@@ -20,20 +20,22 @@ const renderConversation = (conversation) => {
 		`
 		conversation[unread=$1]
 			conversation-info
-				profile-picture
-					profile-image
-						$2
+				author[slug=$2]
+					profile-picture
+						profile-image
+							$3
 				conversation-details
 					conversation-header
 						name
-							span $3
-							$4
-						time-ago $5
-					message-preview $6
-			$7
+							span $4
+							$5
+						time-ago $6
+					message-preview $7
+			$8
 		`,
 		[
 			unread_count > 0,
+			conversation.other_user_slug,
 			conversation.other_user_picture
 				? $(
 					`
