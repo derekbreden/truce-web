@@ -52,7 +52,6 @@ if (state.path === "/") {
 		state.path = localStorage.getItem(
 			`${window.local_storage_key}:last_root_path`,
 		)
-			.replace(/topic/g, "post")
 			.replace(/comments/g, "replies")
 			.replace(/comment/g, "reply")
 		state.path_index++
