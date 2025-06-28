@@ -3,7 +3,7 @@ const modalConfirm = (message, callback) => {
 	const $modal = $(
 		`
 		modal-wrapper
-			modal[confirm]
+			modal[confirm][center-x]
 				$1
 				button-wrapper
 					button[confirm][close] Yes, I am sure
@@ -30,7 +30,7 @@ const modalInfo = (message) => {
 	const $modal = $(
 		`
 		modal-wrapper
-			modal[info]
+			modal[info][center-x]
 				info $1
 				button[close] Okay
 			modal-bg
@@ -51,7 +51,7 @@ const modalError = (message) => {
 	const $modal = $(
 		`
 		modal-wrapper
-			modal[error]
+			modal[error][center-x]
 				error $1
 				button[close] Okay
 			modal-bg
@@ -86,7 +86,7 @@ const alertInfo = (message) => {
 		$alert.style.zIndex = -1
 		const $alert_wrapper = $(
 			`
-			alert-wrapper
+			alert-wrapper[center-x]
 				$1
 			`,
 			[$alert],
@@ -116,7 +116,7 @@ const alertError = (message) => {
 		$alert.style.zIndex = -1
 		const $alert_wrapper = $(
 			`
-			alert-wrapper
+			alert-wrapper[center-x]
 				$1
 			`,
 			[$alert],

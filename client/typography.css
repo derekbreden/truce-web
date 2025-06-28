@@ -3,7 +3,7 @@
  * This codebase uses semantic attributes extensively:
  * 
  * Visual state: [muted], [disabled], [faint], [active], [unread]
- * Layout: [ellipsis], [center], [circular], [big], [small], [tiny]
+ * Layout: [ellipsis], [center], [center-x], [circular], [big], [small], [tiny]
  * Content type: [quote], [notice], [bold], [italic], [hr], [img]
  * Component state: [reply], [confirm], [inline], [more], [favorites]
  * 
@@ -153,6 +153,12 @@ conversation {
 /* Circular indicators */
 [unread]::before {
   border-radius: 50%;
+}
+
+/* Horizontal centering */
+[center-x] {
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 reply h3 icon[more] {

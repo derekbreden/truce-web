@@ -328,7 +328,7 @@ const renderPost = (post) => {
 		const $more_modal = $(
 			`
 			modal-wrapper
-				modal[info]
+				modal[info][center-x]
 					action[edit]
 						icon[edit]
 						p Edit

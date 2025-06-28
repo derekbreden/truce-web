@@ -299,7 +299,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			const $remove_modal = $(
 				`
 					modal-wrapper
-						modal[info]
+						modal[info][center-x]
 							error
 								b Warning
 								p This will permanently remove your account. This action cannot be undone.

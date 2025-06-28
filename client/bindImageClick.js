@@ -3,7 +3,7 @@ const bindImageClick = ($image, image_uuid) => {
 		$event.stopPropagation()
 		const $modal = $(
 			`
-			modal[image]
+			modal[image][center-x]
 				p[img]
 					img[src=$1]
 				button[close] Done

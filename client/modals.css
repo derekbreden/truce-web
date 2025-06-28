@@ -31,8 +31,6 @@ modal {
   flex-direction: column;
   z-index: var(--z-modal);
   top: var(--header-height);
-  left: 50%;
-  transform: translateX(-50%);
   background: var(--color-white);
   background: var(--color-bg-primary);
   border-radius: var(--border-radius-sm);
