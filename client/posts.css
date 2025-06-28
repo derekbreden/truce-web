@@ -54,7 +54,6 @@ post author-topics author name span {
   font-weight: 700;
 }
 
-
 post author-topics topics {
   display: flex;
   align-items: center;
