@@ -161,6 +161,12 @@ conversation {
   transform: translateX(-50%);
 }
 
+/* Full width positioning */
+[full-width] {
+  left: 0;
+  right: 0;
+}
+
 reply h3 icon[more] {
   cursor: pointer;
   display: flex;

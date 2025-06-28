@@ -7,7 +7,7 @@ const bindImageClick = ($image, image_uuid) => {
 				p[img]
 					img[src=$1]
 				button[close] Done
-			modal-bg
+			modal-bg[full-width]
 			`,
 			["/image/" + image_uuid],
 		)

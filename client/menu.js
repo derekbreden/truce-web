@@ -5,8 +5,8 @@ const showMenu = () => {
 	}
 	const $menu = $(
 		`
-		menu-wrapper
-			modal-bg
+		menu-wrapper[full-width]
+			modal-bg[full-width]
 			menu
 				links
 					a[href=/]

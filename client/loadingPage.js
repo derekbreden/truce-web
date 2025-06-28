@@ -11,7 +11,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	$("body").appendChild(
 		$(
 			`
-			main-content-wrapper[active][skip-state=$1][clicked-back=$2]
+			main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
 				main-content
 				main-content-2
 			`,
@@ -313,7 +313,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 							button-wrapper
 								button[remove] Remove
 								button[alt][cancel] Cancel
-						modal-bg
+						modal-bg[full-width]
 					`,
 			)
 			const removeModalCancel = () => {

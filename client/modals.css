@@ -8,8 +8,6 @@ modal-bg {
   background: light-dark(var(--color-overlay-light), var(--color-overlay-dark));
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
   bottom: 0;
   z-index: var(--z-modal-bg);
 }

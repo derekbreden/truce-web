@@ -211,8 +211,6 @@ body {
 
 main-content-wrapper {
   position: absolute;
-  left: 0;
-  right: 0;
   top: var(--header-height);
   bottom: 0;
   overflow-y: scroll;

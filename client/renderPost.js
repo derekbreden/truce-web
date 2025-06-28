@@ -347,7 +347,7 @@ const renderPost = (post) => {
 						span Email us at
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.
-				modal-bg
+				modal-bg[full-width]
 			`,
 		)
 		const moreModalCancel = () => {
