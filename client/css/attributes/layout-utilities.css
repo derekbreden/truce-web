@@ -3,8 +3,8 @@
    ================================
    
    Positioning, sizing, and layout controls:
-   [center], [ellipsis], [circular], [big], [small], [tiny], [right], 
-   [center-x], [full-width], [flex-column]
+   [center], [ellipsis], [big], [small], [tiny], [right], 
+   [full-width], [flex-column]
 */
 
 /* Text alignment */
@@ -25,18 +25,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* Circular elements */
-[circular] {
-  border-radius: 50%;
-}
-
-/* Horizontal centering */
-[center-x] {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 /* Full width positioning */
 [full-width] {
   left: 0;
@@ -47,33 +35,6 @@
 [flex-column] {
   display: flex;
   flex-direction: column;
-}
-
-/* Size variants for info elements */
-info[small] {
-  padding: 5px 5px 5px 26px;
-  font-size: var(--font-size-sm);
-}
-
-info[tiny] {
-  padding: 1px 3px 1px 19px;
-  font-size: var(--font-size-sm);
-}
-
-info[small]::before {
-  height: var(--icon-xs);
-  width: var(--icon-xs);
-  left: 5px;
-  top: 5px;
-  font-size: 11px;
-}
-
-info[tiny]::before {
-  height: 11px;
-  width: 11px;
-  left: 3px;
-  top: 2.5px;
-  font-size: 9px;
 }
 
 /* Big link styling */

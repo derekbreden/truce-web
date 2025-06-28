@@ -80,6 +80,7 @@ hamburger {
   background: var(--color-state-info);
   height: 8px;
   width: 8px;
+  border-radius: 50%;
 }
 
 hamburger[unread]::before {

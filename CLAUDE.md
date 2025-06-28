@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
 
 ## CSS Architecture
 **Start here**: Read `client/typography.css` header comment for CSS patterns.
-**Semantic attributes**: `[muted]`, `[ellipsis]`, `[center]`, `[circular]` replace complex selectors
+**Semantic attributes**: `[muted]`, `[ellipsis]`, `[center]` replace complex selectors
 **Discovery**: Use `rg "[attribute]"` to find usage examples across codebase
 
 ## Code Conventions

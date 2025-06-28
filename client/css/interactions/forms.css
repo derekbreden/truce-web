@@ -288,6 +288,7 @@ image-previews preview remove-icon {
   font-weight: 600;
   height: 25px;
   width: 25px;
+  border-radius: 50%;
 }
 
 image-previews preview remove-icon::before,

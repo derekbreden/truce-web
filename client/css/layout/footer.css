@@ -97,6 +97,7 @@ footer dot {
   height: 4px;
   width: 4px;
   right: 0;
+  border-radius: 50%;
 }
 
 footer dot[index="0"] {

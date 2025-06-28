@@ -21,19 +21,6 @@
   opacity: var(--opacity-muted);
 }
 
-/* Unread indicator styling */
-[unread]::before {
-  content: "";
-  position: absolute;
-  top: calc(50% - 4px);
-  left: -14px;
-  background: var(--color-info);
-  background: var(--color-state-info);
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-}
-
 /* Notice paragraph styling with muted children */
 p[notice] {
   font-size: var(--font-size-sm);

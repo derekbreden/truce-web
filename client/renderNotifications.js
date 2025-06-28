@@ -305,7 +305,7 @@ const renderMarkAllAsRead = () => {
       toggle-wrapper[disabled=$1][active=$2]
         toggle-text Turn on notifications
         toggle-button
-          toggle-circle[circular]
+          toggle-circle
       `,
 			[
 				!state.push_available && !state.fcm_push_available,

@@ -35,7 +35,7 @@ const renderReply = (reply) => {
 			h3
 				author[slug=$1]
 					profile-picture
-						profile-image[circular]
+						profile-image
 							$2
 					span $3
 					$4
@@ -134,7 +134,7 @@ const renderReply = (reply) => {
 		const $more_modal = $(
 			`
 			modal-wrapper
-				modal[info][center-x]
+				modal[info]
 					action[edit]
 						icon[edit]
 						p Edit

@@ -3,7 +3,7 @@ const showForgotPassword = () => {
 	const $modal = $(
 		`
 		modal-bg[full-width]
-		modal[password-help][center-x]
+		modal[password-help]
 			input[type=email][placeholder=Email][autocomplete=email][maxlength=255]
 			button[submit] Reset password
 			button[alt][cancel] Cancel
@@ -81,7 +81,7 @@ const showResetPassword = () => {
 	const $modal = $(
 		`
 		modal-bg[full-width]
-		modal[password-reset][center-x]
+		modal[password-reset]
 			input[type=password][placeholder=New password][autocomplete=new-password][maxlength=255]
 			button[submit] Set password
 			button[alt][cancel] Cancel
