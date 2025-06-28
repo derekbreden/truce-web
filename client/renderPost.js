@@ -60,7 +60,7 @@ const renderPost = (post) => {
 						name
 							span[muted] $3
 							$4
-					topics
+					topics[muted]
 						$5
 				`,
 				[

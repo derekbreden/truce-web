@@ -60,7 +60,6 @@ post author-topics topics {
   gap: var(--space-sm);
   flex-wrap: wrap;
   justify-content: flex-end;
-  opacity: .5;
 }
 
 post author-topics topics topic {
