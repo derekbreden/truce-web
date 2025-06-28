@@ -112,7 +112,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						ul
 							li A label will be applied
 							li The label will be explained
-						replies
+						replies[flex-column]
 							expand-wrapper[above-replies]
 								p Examples
 							reply
