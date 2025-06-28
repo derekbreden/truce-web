@@ -1,3 +1,18 @@
+/* CSS ARCHITECTURE - START HERE
+ * 
+ * This codebase uses semantic attributes extensively:
+ * 
+ * Visual state: [muted], [disabled], [faint], [active], [unread]
+ * Layout: [ellipsis], [center], [circular], [big], [small], [tiny]
+ * Content type: [quote], [notice], [bold], [italic], [hr], [img]
+ * Component state: [reply], [confirm], [inline], [more], [favorites]
+ * 
+ * This file consolidates cross-component patterns.
+ * Individual files handle component-specific styling.
+ * Use rg "\[attribute\]" to find usage patterns.
+ * Use rg "element\[attribute\]" for specific combinations.
+ */
+
 /* Links */
 a,
 a:visited,
