@@ -31,7 +31,7 @@ const renderReply = (reply) => {
 
 	let $reply = $(
 		`
-		reply
+		reply[flex-column]
 			h3
 				author[slug=$1]
 					profile-picture

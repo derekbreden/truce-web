@@ -1,18 +1,12 @@
 /* Replies container and structure */
-replies {
-  display: flex;
-  flex-direction: column;
-}
+replies {}
 
 replies[thread] {
   margin-top: var(--space-md);
 }
 
 /* Reply item styling */
-reply {
-  display: flex;
-  flex-direction: column;
-}
+reply {}
 
 /* Reply spacing and layout */
 replies>reply {

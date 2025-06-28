@@ -90,8 +90,6 @@ topics[topics-list] topic icon {
    ================================ */
 
 topics[topics-list] topic topicname-subtitle {
-  display: flex;
-  flex-direction: column;
   gap: var(--space-3xs);
 }
 

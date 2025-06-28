@@ -1,8 +1,5 @@
 /* Notifications container */
-notifications {
-  display: flex;
-  flex-direction: column;
-}
+notifications {}
 
 notifications h3 {
   margin-top: var(--space-md);
@@ -25,8 +22,6 @@ notifications notification {
 }
 
 notifications notification column {
-  display: flex;
-  flex-direction: column;
   align-items: flex-start;
   gap: var(--space-xs);
 }

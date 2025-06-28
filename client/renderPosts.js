@@ -223,7 +223,7 @@ const renderPosts = (posts, topic, user) => {
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
 							icon[$1]
-							topicname-subtitle
+							topicname-subtitle[flex-column]
 								topicname
 									name $2
 								subtitle $3
@@ -243,7 +243,7 @@ const renderPosts = (posts, topic, user) => {
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
 							icon[$1]
-							topicname-subtitle
+							topicname-subtitle[flex-column]
 								topicname
 									name $2
 								subtitle $3

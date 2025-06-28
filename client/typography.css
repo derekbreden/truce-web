@@ -3,7 +3,7 @@
  * This codebase uses semantic attributes extensively:
  * 
  * Visual state: [muted], [disabled], [faint], [active], [unread]
- * Layout: [ellipsis], [center], [center-x], [circular], [big], [small], [tiny]
+ * Layout: [ellipsis], [center], [center-x], [circular], [big], [small], [tiny], [flex-column], [full-width]
  * Content type: [quote], [notice], [bold], [italic], [hr], [img]
  * Component state: [reply], [confirm], [inline], [more], [favorites]
  * 
@@ -165,6 +165,12 @@ conversation {
 [full-width] {
   left: 0;
   right: 0;
+}
+
+/* Flex column layout */
+[flex-column] {
+  display: flex;
+  flex-direction: column;
 }
 
 reply h3 icon[more] {
