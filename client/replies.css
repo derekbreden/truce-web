@@ -12,10 +12,6 @@ replies[thread] {
 reply {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-gray-light);
-  border: 1px solid var(--color-border-standard);
-  border-radius: var(--border-radius-sm);
-  padding: var(--space-sm);
 }
 
 /* Reply spacing and layout */
@@ -60,10 +56,6 @@ reply reply-wrapper detail {
   padding: var(--space-sm);
 }
 
-reply reply-wrapper detail:not([favorites]),
-reply reply-wrapper detail[favorites] p {
-  opacity: .5;
-}
 
 reply reply-wrapper detail icon {
   display: flex;

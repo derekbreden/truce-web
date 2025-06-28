@@ -97,9 +97,6 @@ p[add-to-home] {
 }
 
 icon[inline] {
-  height: var(--icon-xxl);
-  width: var(--icon-xxl);
-  background-color: var(--color-text-primary);
   margin-bottom: -10px;
   display: inline-block;
 }
