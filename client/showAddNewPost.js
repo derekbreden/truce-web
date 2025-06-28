@@ -174,7 +174,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 				const $preview = $(
 					`
 					preview
-						remove-icon
+						remove-icon[circular]
 						img[src=$1]
 					`,
 					[png.url],
