@@ -1,0 +1,50 @@
+/* ================================
+   VISUAL STATE ATTRIBUTES
+   ================================
+   
+   Visual appearance modifiers that don't change layout:
+   [muted], [faint], [active], [disabled], [unread]
+*/
+
+/* Muted opacity for secondary content */
+[muted] {
+  opacity: var(--opacity-muted);
+}
+
+/* Faint elements */
+[faint] {
+  opacity: var(--opacity-muted);
+}
+
+/* Active/disabled states inherit from existing buttons/forms */
+[disabled] {
+  opacity: var(--opacity-muted);
+}
+
+/* Unread indicator styling */
+[unread]::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 4px);
+  left: -14px;
+  background: var(--color-info);
+  background: var(--color-state-info);
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+}
+
+/* Notice paragraph styling with muted children */
+p[notice] {
+  font-size: var(--font-size-sm);
+}
+
+p[notice] span {
+  opacity: var(--opacity-muted);
+}
+
+p[notice] a {
+  opacity: var(--opacity-muted);
+  font-weight: 600;
+  margin: 0 3px;
+}

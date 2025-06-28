@@ -1,0 +1,94 @@
+/* ================================
+   LAYOUT UTILITY ATTRIBUTES
+   ================================
+   
+   Positioning, sizing, and layout controls:
+   [center], [ellipsis], [circular], [big], [small], [tiny], [right], 
+   [center-x], [full-width], [flex-column]
+*/
+
+/* Text alignment */
+[center] {
+  text-align: center;
+}
+
+[right] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Text truncation with ellipsis */
+[ellipsis] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Circular elements */
+[circular] {
+  border-radius: 50%;
+}
+
+/* Horizontal centering */
+[center-x] {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Full width positioning */
+[full-width] {
+  left: 0;
+  right: 0;
+}
+
+/* Flex column layout */
+[flex-column] {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Size variants for info elements */
+info[small] {
+  padding: 5px 5px 5px 26px;
+  font-size: var(--font-size-sm);
+}
+
+info[tiny] {
+  padding: 1px 3px 1px 19px;
+  font-size: var(--font-size-sm);
+}
+
+info[small]::before {
+  height: var(--icon-xs);
+  width: var(--icon-xs);
+  left: 5px;
+  top: 5px;
+  font-size: 11px;
+}
+
+info[tiny]::before {
+  height: 11px;
+  width: 11px;
+  left: 3px;
+  top: 2.5px;
+  font-size: 9px;
+}
+
+/* Big link styling */
+a[big] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-decoration: none;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid #4a5;
+  border: 1px solid var(--color-state-success);
+  color: var(--color-white);
+  color: light-dark(#fff, #f0fff0);
+  background: var(--color-success);
+  background: var(--color-state-success);
+  padding: var(--space-sm);
+  font-weight: 700;
+  letter-spacing: 1px;
+}

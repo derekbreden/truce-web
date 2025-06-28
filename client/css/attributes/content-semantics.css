@@ -1,0 +1,72 @@
+/* ================================
+   CONTENT SEMANTIC ATTRIBUTES
+   ================================
+   
+   Content type and meaning indicators:
+   [quote], [notice], [bold], [italic], [hr], [img]
+*/
+
+/* Quote styling */
+p[quote] {
+  padding: var(--space-sm);
+  border-left: 2px solid #999;
+  border-left: 2px solid var(--color-border-medium);
+  background: var(--color-gray-lightest);
+  background: var(--color-bg-tertiary);
+}
+
+p[quote]+p[quote] {
+  margin-top: 0;
+}
+
+/* Text formatting */
+p[bold] {
+  font-weight: 600;
+}
+
+p[italic] {
+  font-style: italic;
+}
+
+/* Horizontal rule styling */
+p[hr] {
+  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--color-border-standard);
+  font-size: 0;
+}
+
+/* Image styling */
+p img {
+  max-width: 100%;
+  border-radius: var(--border-radius-md);
+}
+
+/* Base paragraph styling */
+audio,
+p {
+  margin-top: var(--space-sm);
+}
+
+p {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+p[ellipsis]+button {
+  margin-top: var(--space-sm);
+}
+
+/* Audio elements */
+audio {
+  width: 100%;
+}
+
+/* Lists */
+ol,
+ul {
+  margin: var(--space-sm) 0 0 17px;
+}
+
+ol {
+  list-style-type: square;
+}

@@ -1,0 +1,125 @@
+:root {
+  color-scheme: light dark;
+  
+  /* Layout & Spacing */
+  --header-height: 44px;
+  --footer-height-base: 64px;
+  --split-point: 50%; /* For header/footer visual split effect */
+  
+  /* Color System */
+  
+  /* Core Brand Colors */
+  --color-black: #000;
+  --color-white: #fff;
+  --color-gray-lightest: #f5f5f5;
+  --color-gray-darkest: #1c1d1c; /* Dark mode background */
+  
+  /* UI Gray Scale */
+  --color-gray-light: #ddd;    /* Standard borders, subtle separators */
+  --color-gray-medium: #999;   /* Muted elements, medium borders */
+  --color-gray-dark: #333;     /* Dark mode borders, strong contrast */
+  --color-gray-darker: #666;   /* Darker gray for hover states */
+  
+  /* Semantic State Colors */
+  --color-success: #4a5;       /* Primary success green */
+  --color-success-dark: #091;  /* Dark mode success */
+  --color-success-bg: #f0fff0; /* Success background */
+  
+  --color-info: #48c;          /* Primary info blue */
+  --color-info-dark: #04a;     /* Dark mode info */
+  --color-info-accent: #04f;   /* Dark mode accent blue */
+  --color-info-bg: #e0f0ff;    /* Info background */
+  
+  --color-error: #b66;         /* Primary error red-brown */
+  --color-error-bg: #fee;      /* Error background */
+  
+  /* Interactive Colors */
+  --color-favorite: #f48;      /* Favorite/heart color */
+  
+  /* Special Effects */
+  --color-focus: #0061fe;      /* Flash focus blue */
+  --color-overlay-light: #00000077; /* Light mode modal overlay */
+  --color-overlay-dark: #000000cc;  /* Dark mode modal overlay */
+  
+  /* Semantic Color Functions - Light/Dark Pairs */
+  --color-bg-primary: light-dark(var(--color-white), var(--color-black));
+  --color-bg-secondary: light-dark(var(--color-gray-lightest), var(--color-gray-darkest));
+  --color-bg-tertiary: light-dark(var(--color-gray-lightest), var(--color-gray-dark));
+
+  --color-text-primary: light-dark(var(--color-black), var(--color-white));
+  --color-text-primary-inverted: light-dark(var(--color-white), var(--color-black));
+  --color-text-secondary: light-dark(var(--color-black), var(--color-gray-lightest));
+  
+  --color-border-standard: light-dark(var(--color-gray-light), var(--color-gray-dark));
+  --color-border-medium: light-dark(var(--color-gray-medium), var(--color-gray-dark));
+  --color-border-strong: light-dark(var(--color-black), var(--color-white));
+  
+  --color-state-success: light-dark(var(--color-success), var(--color-success-dark));
+  --color-state-info: light-dark(var(--color-info), var(--color-info-accent));
+  
+  /* Additional semantic color combinations */
+  --color-success-text: light-dark(var(--color-success), var(--color-success-bg));
+  --color-success-bg-combo: light-dark(var(--color-success-bg), var(--color-success-dark));
+  --color-info-text: light-dark(var(--color-info), var(--color-info-bg));
+  --color-info-bg-combo: light-dark(var(--color-info-bg), var(--color-info-dark));
+  --color-info-bg-alt: light-dark(var(--color-info), var(--color-info-bg));
+  
+  /* Standard Spacing Scale */
+  --space-3xs: 1px;  /* Tiny adjustments, fine borders */
+  --space-2xs: 3px;  /* Very small gaps, minor spacing */
+  --space-xs: 5px;
+  --space-sm: 10px;
+  --space-md: 20px;
+  --space-lg: 40px;
+  
+  /* Reply & List Indentation System */
+  --reply-indent: 50px; /* Base indent to clear avatar */
+  --reply-width: calc(100% - var(--reply-indent));
+  --reply-nested-indent: 40px; /* Nested reply indentation */
+  --list-indent-base: 17px; /* Standard list indentation */
+  --list-indent-aligned: 67px; /* Lists in replies, aligned with text (50px + 17px) */
+  
+  /* Icon Size System - Consistent visual weights */
+  --icon-xs: 14px; /* Message info icons */
+  --icon-sm: 16px; /* Edit buttons */
+  --icon-md: 18px; /* Post author topic icons */
+  --icon-lg: 22px; /* Reply author icons */
+  --icon-xl: 26px; /* H2 user icons, button icons */
+  --icon-xxl: 30px; /* Modal icons, settings icons */
+  --icon-menu: 36px; /* Menu link icons */
+  --icon-footer: 34px; /* Footer icons */
+  
+  /* Icon Size Variants - Menu specific adjustments for visual consistency */
+  --icon-menu-topic: 28px; /* Topics icon - narrower for visual balance */
+  --icon-menu-settings: 30px; /* Settings icon - slightly smaller */
+  --icon-menu-notifications: 32px; /* Notifications icon - wider for visual balance */
+  
+  /* Profile Picture Sizes */
+  --profile-xs: 25px; /* Small inline profiles */
+  --profile-sm: 40px; /* Default profile size */
+  --profile-md: 50px; /* Larger profile contexts */
+  --profile-lg: 120px; /* Large profile display */
+  --profile-xl: 150px; /* Maximum profile size */
+  
+  /* Standard Design Tokens */
+  --border-radius-sm: 2px; /* Buttons, inputs, modals */
+  --border-radius-md: 10px; /* Images */
+  --opacity-muted: 0.5; /* Disabled/faint elements */
+  --transition-standard: 0.2s ease-in-out; /* Standard animations */
+  
+  /* Typography Scale */
+  --font-size-xs: .714rem; /* Very small text, timestamps */
+  --font-size-sm: .786rem; /* Small text, notices */
+  --font-size-md: .857rem; /* Medium text between small and base */
+  --font-size-base: 1rem; /* Body text */
+  --font-size-xl: 1.25rem; /* Medium headings */
+  --font-size-lg: 1.286rem; /* Large headings */
+  
+  /* Z-index Layering System */
+  --z-footer: 1;
+  --z-header: 2;
+  --z-menu-bg: 3;
+  --z-modal-bg: 4;
+  --z-modal: 5;
+  --z-menu: 6;
+}
