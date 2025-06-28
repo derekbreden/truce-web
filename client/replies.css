@@ -1,13 +1,9 @@
 /* Replies container and structure */
-replies {}
-
 replies[thread] {
   margin-top: var(--space-md);
 }
 
 /* Reply item styling */
-reply {}
-
 /* Reply spacing and layout */
 replies>reply {
   margin-bottom: var(--space-md);

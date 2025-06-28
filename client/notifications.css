@@ -1,6 +1,4 @@
 /* Notifications container */
-notifications {}
-
 notifications h3 {
   margin-top: var(--space-md);
 }
