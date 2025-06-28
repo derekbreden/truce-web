@@ -32,9 +32,6 @@ notifications notification column {
 }
 notifications notification icon {
 	display: flex;
-	width: var(--icon-lg);
-	height: var(--icon-lg);
-	background-color: var(--color-text-primary);
 }
 
 /* Notification content styling */
