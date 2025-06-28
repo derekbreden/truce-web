@@ -39,8 +39,8 @@ const renderMessage = (message) => {
 					author[slug=$3]
 						span $4
 						$5
-					time-ago $6
-				read-status
+					time-ago[muted] $6
+				read-status[muted]
 					span $7
 			message-content
 				$8

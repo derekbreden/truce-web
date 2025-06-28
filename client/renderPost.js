@@ -56,9 +56,9 @@ const renderPost = (post) => {
 						profile-picture
 							profile-image
 								$2
-						by by
+						by[muted] by
 						name
-							span $3
+							span[muted] $3
 							$4
 					topics
 						$5
@@ -81,7 +81,7 @@ const renderPost = (post) => {
 					post.user_verified
 						? $(
 							`
-								icon[verified]
+								icon[verified][muted]
 								`
 						)
 						: [],
@@ -177,11 +177,11 @@ const renderPost = (post) => {
 				post-details[detail-wrapper]
 					detail[favorites][favorited=$1]
 						$2
-						p $3
-					detail[replies]
+						p[muted] $3
+					detail[replies][muted]
 						$4
 						p $5
-					detail[more]
+					detail[more][muted]
 						icon[forward]
 				`,
 				[
@@ -343,7 +343,7 @@ const renderPost = (post) => {
 						p Block user
 					button-wrapper
 						button[alt][cancel] Cancel
-					p[notice]
+					p[notice][center]
 						span Email us at
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.
