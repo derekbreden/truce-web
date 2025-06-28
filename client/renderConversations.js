@@ -29,8 +29,8 @@ const renderConversation = (conversation) => {
 						name
 							span $4
 							$5
-						time-ago $6
-					message-preview $7
+						time-ago[muted] $6
+					message-preview[ellipsis] $7
 			$8
 		`,
 		[

@@ -44,10 +44,6 @@ menu sign-in {
   width: 280px;
 }
 
-menu signed-in>*,
-menu sign-in>* {
-  margin-bottom: var(--space-xs);
-}
 
 menu p[notice] {
   width: 280px;
@@ -131,7 +127,6 @@ toggle-wrapper toggle-button toggle-circle {
   width: 28px;
   background: var(--color-white);
   background: var(--color-bg-primary);
-  border-radius: 50%;
   position: absolute;
   top: var(--space-3xs);
   left: var(--space-3xs);

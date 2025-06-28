@@ -84,11 +84,64 @@ reply>ul {
   margin: var(--space-sm) 0 0 var(--list-indent-aligned);
 }
 
-reply h3 icon[more] {
-  cursor: pointer;
+/* Common icon styles */
+reply h3 icon[more],
+icon[inline],
+modal[confirm] h2 icon,
+message-form title-wrapper icon,
+topics[topics-list] topic icon,
+post>h2>icon[more] {
   height: var(--icon-xxl);
   width: var(--icon-xxl);
   background-color: var(--color-text-primary);
+}
+
+conversation name icon,
+post author-topics author name icon {
+  height: var(--icon-md);
+  width: var(--icon-md);
+  background-color: var(--color-text-primary);
+}
+
+notifications notification icon {
+  height: var(--icon-lg);
+  width: var(--icon-lg);
+  background-color: var(--color-text-primary);
+}
+
+/* Common container styles */
+reply,
+message,
+conversation {
+  border: 1px solid var(--color-border-standard);
+  border-radius: var(--border-radius-sm);
+  padding: var(--space-sm);
+}
+
+/* Text truncation with ellipsis */
+[ellipsis] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Centered text */
+[center] {
+  text-align: center;
+}
+
+/* Circular elements */
+[circular] {
+  border-radius: 50%;
+}
+
+/* Circular indicators */
+[unread]::before {
+  border-radius: 50%;
+}
+
+reply h3 icon[more] {
+  cursor: pointer;
   display: flex;
 }
 
@@ -140,16 +193,15 @@ p[ellipsis]+button {
 }
 
 p[notice] {
-  text-align: center;
   font-size: var(--font-size-sm);
 }
 
-p[notice] span,
-p[notice] a {
+p[notice] span {
   opacity: var(--opacity-muted);
 }
 
 p[notice] a {
+  opacity: var(--opacity-muted);
   font-weight: 600;
   margin: 0 3px;
 }
@@ -260,5 +312,13 @@ error p {
 
 info b {
   margin-top: -1.5px;
+  margin-bottom: var(--space-xs);
+}
+
+/* Common child element spacing */
+modal>*,
+add-new>*,
+menu signed-in>*,
+menu sign-in>* {
   margin-bottom: var(--space-xs);
 }

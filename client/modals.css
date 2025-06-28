@@ -42,10 +42,6 @@ modal {
   width: calc(100% - var(--space-md));
 }
 
-modal>* {
-  margin-bottom: var(--space-xs);
-}
-
 modal input {
   width: 100%;
 }
@@ -101,18 +97,12 @@ modal[confirm] h2 {
 }
 
 modal[confirm] h2 icon {
+  display: flex;
   margin: -4px 6px -4px -5px;
 }
 
 modal[confirm] h2 icon[block] {
   margin: -4px 6px -4px -2px;
-}
-
-modal[confirm] h2 icon {
-  display: flex;
-  height: var(--icon-xxl);
-  width: var(--icon-xxl);
-  background-color: var(--color-text-primary);
 }
 
 modal[confirm] button-wrapper {

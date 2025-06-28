@@ -98,7 +98,6 @@ footer dot {
   background: var(--color-black);
   height: 4px;
   width: 4px;
-  border-radius: 50%;
   right: 0;
 }
 

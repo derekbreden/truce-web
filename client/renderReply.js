@@ -35,7 +35,7 @@ const renderReply = (reply) => {
 			h3
 				author[slug=$1]
 					profile-picture
-						profile-image
+						profile-image[circular]
 							$2
 					span $3
 					$4
@@ -83,8 +83,8 @@ const renderReply = (reply) => {
 				reply-wrapper[detail-wrapper]
 					detail[favorites][favorited=$1]
 						$2
-						p $3
-					detail[more]
+						p[muted] $3
+					detail[more][muted]
 						icon[forward]
 					button[small][reply] Reply
 				`,
@@ -146,7 +146,7 @@ const renderReply = (reply) => {
 						p Block user
 					button-wrapper
 						button[alt][cancel] Cancel
-					p[notice]
+					p[notice][center]
 						span Email us at
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.

@@ -65,11 +65,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						p Then, please join us in this Truce.
 						p
 							a[big][href=/posts] Join the Discussion
-						p[notice]
+						p[notice][center]
 							span To be clear, there is no tolerance for objectionable content or abusive users.
-						p[notice][style="margin-top:5px;"]
+						p[notice][center][style="margin-top:5px;"]
 							span Objectionable content is defined as escalations, judgments, or name-calling.
-						p[notice][style="margin-top:5px;"]
+						p[notice][center][style="margin-top:5px;"]
 							span By clicking "Join the Discussion," you agree to these terms.
 					$1
 				`,
@@ -119,7 +119,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											profile-image
+											profile-image[circular]
 												icon[profile-picture]
 										span John Doe:
 								p You are a fascist, who attended a fascist rally and supported a fascist leader.
@@ -131,7 +131,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											profile-image
+											profile-image[circular]
 												icon[profile-picture]
 										span Jane Doe:
 								p Sometimes violence is the answer.
@@ -142,7 +142,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 								h3
 									author
 										profile-picture
-											profile-image
+											profile-image[circular]
 												icon[profile-picture]
 										span Sam Smith:
 								p They are pure evil.
@@ -150,9 +150,9 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 										b Judgment
 										p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
 				posts
-					p[notice]
+					p[notice][center]
 						a[href="/privacy"] Privacy Policy
-					p[notice]
+					p[notice][center]
 						span Email us at
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.
@@ -228,7 +228,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				post[line-after]
 					p[bold] Profile picture
 					label[profile-picture][large]
-						profile-image
+						profile-image[circular]
 							$2
 						input[image][type=file][accept=image/*]
 					p[bold] Display name
