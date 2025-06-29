@@ -1,20 +1,2 @@
-# Explicitly mark binary files - no text detection at all
-tests/capture-baseline/*.png binary
-*.png binary
-*.jpg binary  
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.pdf binary
-
-# Explicitly mark text files
-*.js text
-*.css text
-*.html text
-*.md text
-*.txt text
-*.json text
-*.sql text
-*.yml text
-*.yaml text
-*.xml text
+# Auto detect text files and perform LF normalization
+* text=auto
