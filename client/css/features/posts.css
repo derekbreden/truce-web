@@ -36,10 +36,6 @@ post author-topics author {
   align-items: center;
 }
 
-[muted] {
-  opacity: .5;
-}
-
 post author-topics author by {
   margin-left: 2px;
 }

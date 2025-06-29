@@ -1,4 +1,25 @@
 /* ================================
+   CSS ARCHITECTURE - START HERE
+   ================================
+   
+   This codebase uses semantic attributes extensively to create
+   self-documenting, maintainable CSS. Attributes are grouped by purpose:
+   
+   • Visual state: [muted], [disabled], [faint], [active], [unread]
+   • Layout: [ellipsis], [center], [center-x], [circular], [big], [small], [tiny], [flex-column], [full-width]  
+   • Content type: [quote], [notice], [bold], [italic], [hr], [img]
+   • Component state: [reply], [confirm], [inline], [more], [favorites]
+   
+   Use `rg "[attribute]"` to find usage examples across the codebase.
+   
+   CSS is organized hierarchically:
+   1. Foundation (fonts, tokens, animations)
+   2. Layout (base styles, header, footer, navigation) 
+   3. Attributes (this directory - semantic modifiers)
+   4. Features (posts, conversations, notifications, etc.)
+   5. Interactions (forms, modals, actions, components)
+   
+   ================================
    VISUAL STATE ATTRIBUTES
    ================================
    
