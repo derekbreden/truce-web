@@ -97,4 +97,16 @@ jobs:
           # Optional: Custom environment variables for Claude
           # claude_env: |
           #   NODE_ENV: test
+          mcp_config: |
+            {
+              "mcpServers": {
+                "github-file-ops": {
+                  "command": "npx",
+                  "args": [
+                    "-y",
+                    "github:dioptre/claude-code-action#main"
+                  ]
+                }
+              }
+            }
 
