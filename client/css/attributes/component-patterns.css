@@ -7,9 +7,7 @@
 */
 
 /* Base link styling */
-a,
-a:visited,
-a:active {
+a {
   color: var(--color-black);
   color: var(--color-text-secondary);
   font-weight: 500;
