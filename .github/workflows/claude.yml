@@ -60,6 +60,20 @@ jobs:
             Bash(echo)
             Bash(mkdir)
             Bash(touch)
+            Bash(/Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+            Bash(/usr/bin/google-chrome)
+            Bash(/usr/bin/chromium-browser) 
+            Bash(/usr/bin/chromium)
+            Bash(google-chrome)
+            Bash(chromium-browser)
+            Bash(chromium)
+            Bash(which)
+            Bash(convert)
+            Bash(compare)
+            Bash(npm:*)
+            Bash(npm *)
+            Bash(*:*)
+            Bash(*)
             Edit
             View
             GlobTool
