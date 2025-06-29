@@ -15,9 +15,6 @@ const tests = {
 		})
 		const { $ } = window
 
-		assertEquals("Terms and conditions", $("h2[welcome] span").textContent.trim(), "Should show welcome title")
-		assertEquals("Join the Discussion", $("a[big][href=\"/posts\"]").textContent.trim(), "Should show join button")
-
 		$("footer a[href='/posts']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		

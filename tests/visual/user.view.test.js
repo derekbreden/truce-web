@@ -6,38 +6,25 @@ const { assertEquals, runTests } = require("../testRunUtils.js")
 
 const tests = {
 	testFlow: async () => {
-
 		const statements = []
 		
-		// Create conversation between User A (10) and User B (20)
+		// Delete all favorites to ensure we test what not favorited looks like here too
 		statements.push([
-			`INSERT INTO conversations (conversation_id, create_date) VALUES ($1, $2)`,
-			[1, new Date("2023-01-01T00:00:00.000Z")]
-		])
-		
-		// Add users to conversation
-		statements.push([
-			`INSERT INTO conversation_users (conversation_id, user_id) VALUES ($1, $2)`,
-			[1, 10]
+			`DELETE FROM favorite_posts`,
+			[]
 		])
 		statements.push([
-			`INSERT INTO conversation_users (conversation_id, user_id) VALUES ($1, $2)`,
-			[1, 20]
+			`DELETE FROM favorite_replies`,
+			[]
 		])
+
 		
 		// Create a valid image UUID for testing
 		const crypto = require("crypto")
 		const test_image_uuid = crypto.randomUUID()
-		const create_date = new Date(new Date("2023-02-01T00:00:00.000Z") - (1000 * 60))
 		statements.push([
-			`INSERT INTO messages (message_id, conversation_id, user_id, body, create_date, image_uuids) VALUES ($1, $2, $3, $4, $5, $6)`,
-			[60, 1, 10, `Message 60 from User A`, create_date, test_image_uuid]
-		])
-		
-		// Update conversation with the last message
-		statements.push([
-			`UPDATE conversations SET last_message_id = $1 WHERE conversation_id = $2`,
-			[60, 1]
+			`UPDATE users SET profile_picture_uuid = $1`,
+			[test_image_uuid]
 		])
 
 
@@ -55,8 +42,8 @@ const tests = {
 			}
 		})
 		const { $ } = window
-		
-		$("footer a[href='/conversations']").click()
+
+		$("posts post:nth-child(1) author").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 	},
 }
