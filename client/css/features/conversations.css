@@ -150,40 +150,6 @@ typing-indicator {
 }
 
 /* ================================
-   EMPTY STATE
-   ================================ */
-
-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-lg) var(--space-md);
-  opacity: 0.6;
-  flex: 1;
-}
-
-empty-state icon {
-  width: 40px;
-  height: 40px;
-  margin-bottom: var(--space-md);
-  opacity: 0.5;
-}
-
-empty-state h3 {
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin-bottom: var(--space-sm);
-}
-
-empty-state p {
-  font-size: var(--font-size-md);
-  line-height: 1.4;
-  max-width: 240px;
-}
-
-/* ================================
    CONVERSATION LIST STYLES
    ================================ */
 conversations {
