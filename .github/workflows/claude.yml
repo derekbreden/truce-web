@@ -74,9 +74,11 @@ jobs:
             Bash(md5sum:*)
             Bash(md5sum *)
             Bash(npm)
-            Bash(git)
             Bash(npm:*)
             Bash(npm *)
+            Bash(git)
+            Bash(git:*)
+            Bash(git *)
             Bash(*:*)
             Bash(*)
             Edit
