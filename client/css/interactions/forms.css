@@ -71,6 +71,7 @@ button {
   gap: var(--space-sm);
 }
 
+h2 button icon,
 button icon {
   display: flex;
   height: var(--icon-xxl);
