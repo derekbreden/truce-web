@@ -71,7 +71,8 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		} else if (next_sequence !== -1 && previous_sequence === -1) {
 			// Find the main page they were at most recently
 			const most_recent_sequence_page = state.path_history
-				.toReversed()
+				.slice()
+				.reverse()
 				.find((p) => path_sequence.includes(p))
 
 			// If they are going to that same one, or one further back in the sequence, animate back
