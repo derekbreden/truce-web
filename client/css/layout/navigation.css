@@ -1,79 +1,76 @@
-/* Tab wrapper and navigation */
+/* ================================
+   TAB WRAPPER CONTAINER
+   ================================ */
+
 tab-wrapper {
+  position: relative;
   display: flex;
   justify-content: space-between;
-  position: relative;
   padding-bottom: 15px;
 }
 
 tab-wrapper tab-item[active] {
   display: flex;
   align-items: center;
-  font-weight: bold;
   margin: 15px 0 0 0;
+  font-weight: bold;
 }
 
 main-content-2 tab-wrapper {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
 }
 
-@media (max-width: 1000px) {
-  main-content-2 tab-wrapper {
-    margin-top: var(--space-md);
-  }
-
-  main-content-2 tab-wrapper:before {
-    content: "";
-    display: flex;
-    position: absolute;
-    top: 0;
-    left: calc(-1 * var(--space-md));
-    right: calc(-1 * var(--space-md));
-    border-top: 1px solid #ddd;
-    border-top: 1px solid var(--color-border-standard);
-  }
-}
+/* ================================
+   TAB ITEMS
+   ================================ */
 
 /* Navigation items */
 mark-all-as-read-wrapper,
 tab-item {
-  cursor: pointer;
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 15px 0 0 0;
   min-height: 18px;
-  position: relative;
+  margin: 15px 0 0 0;
+  cursor: pointer;
 }
 
 tab-item[right] {
   flex: 1;
 }
 
-/* Navigation buttons */
+/* ================================
+   TAB BUTTONS & ICONS
+   ================================ */
+
 tab-item button {
-  background: var(--color-white);
-  border-color: var(--color-white);
-  background: var(--color-bg-primary);
-  border-color: transparent;
   position: relative;
   padding: 6px;
+  border-color: var(--color-white);
+  border-color: transparent;
+  background: var(--color-white);
+  background: var(--color-bg-primary);
 }
 
 tab-item icon {
-  height: var(--icon-md);
   width: var(--icon-md);
+  height: var(--icon-md);
   background-color: var(--color-gray-medium);
 }
 
-/* Navigation text styling */
+/* ================================
+   TAB TEXT STYLING
+   ================================ */
+
 all-clear-wrapper p,
 tab-item p {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
   margin: 0 0 5px 0;
   opacity: .5;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
   text-align: center;
 }
 
@@ -96,3 +93,25 @@ main-content-2 tab-item p {
 tab-item p {
   text-align: right;
 }
+
+/* ================================
+   RESPONSIVE LAYOUT
+   ================================ */
+
+@media (max-width: 1000px) {
+  main-content-2 tab-wrapper {
+    margin-top: var(--space-md);
+  }
+
+  main-content-2 tab-wrapper:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: calc(-1 * var(--space-md));
+    left: calc(-1 * var(--space-md));
+    display: flex;
+    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--color-border-standard);
+  }
+}
+

@@ -24,16 +24,16 @@ posts post info-wrapper {
 post author-topics {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-sm);
+  align-items: center;
   gap: var(--space-md);
   margin: var(--space-sm) 0 0 0;
-  align-items: center;
+  font-size: var(--font-size-sm);
 }
 
 post author-topics author {
   display: flex;
-  gap: var(--space-2xs);
   align-items: center;
+  gap: var(--space-2xs);
 }
 
 post author-topics author by {
@@ -42,8 +42,8 @@ post author-topics author by {
 
 post author-topics author name {
   display: flex;
-  gap: var(--space-2xs);
   align-items: center;
+  gap: var(--space-2xs);
 }
 
 post author-topics author name span {
@@ -52,10 +52,10 @@ post author-topics author name span {
 
 post author-topics topics {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 post author-topics topics topic {

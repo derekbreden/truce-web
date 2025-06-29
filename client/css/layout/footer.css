@@ -3,28 +3,28 @@
    ================================ */
 
 footer {
-  display: none;
   position: fixed;
   bottom: 0;
-  background: var(--color-white);
-  height: calc(64px + env(safe-area-inset-bottom));
+  z-index: var(--z-footer);
+  display: none;
   justify-content: space-around;
   align-items: center;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding: 0 0 calc(var(--space-sm) + env(safe-area-inset-bottom)) 0;
   border-top: 1px solid #000;
   border-top: 1px solid var(--color-border-strong);
-  z-index: var(--z-footer);
-  padding: 0 0 calc(var(--space-sm) + env(safe-area-inset-bottom)) 0;
+  background: var(--color-white);
 }
 
 footer::after {
   content: "";
   position: absolute;
-  background: var(--color-black);
-  z-index: 0;
-  left: var(--split-point);
   top: 0;
   right: 0;
   bottom: 0;
+  left: var(--split-point);
+  z-index: 0;
+  background: var(--color-black);
 }
 
 /* ================================
@@ -32,23 +32,23 @@ footer::after {
    ================================ */
 
 footer a {
-  font-size: var(--font-size-sm);
-  text-decoration: none;
-  font-weight: 600;
-  display: flex;
-  flex-direction: column;
-  width: 34px;
-  overflow: visible;
-  align-items: center;
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 34px;
+  overflow: visible;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 footer a p {
   margin: 0;
   max-width: unset;
-  font-size: var(--font-size-sm);
   color: var(--color-black);
+  font-size: var(--font-size-sm);
 }
 
 footer a:nth-child(3) p,
@@ -58,9 +58,9 @@ footer a:nth-child(4) p {
 
 footer a icon {
   display: flex;
-  background-color: var(--color-black);
-  height: var(--icon-footer);
   width: var(--icon-footer);
+  height: var(--icon-footer);
+  background-color: var(--color-black);
 }
 
 footer a:nth-child(3) icon,
@@ -90,14 +90,14 @@ body[app] footer {
 
 footer dot {
   position: absolute;
-  z-index: 1;
-  transition: right .2s ease-in-out, background .2s ease-in-out;
   top: 54px;
-  background: var(--color-black);
-  height: 4px;
-  width: 4px;
   right: 0;
+  z-index: 1;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
+  background: var(--color-black);
+  transition: right .2s ease-in-out, background .2s ease-in-out;
 }
 
 footer dot[index="0"] {

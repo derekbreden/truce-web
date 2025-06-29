@@ -4,61 +4,61 @@
 
 input,
 textarea {
-  font-size: var(--font-size-base);
   width: 240px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid #000;
-  background: var(--color-white);
-  border: 1px solid var(--color-border-medium);
-  background: var(--color-bg-primary);
   padding: var(--space-sm);
+  border: 1px solid #000;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+  font-size: var(--font-size-base);
 }
 
 input:focus,
 textarea:focus {
   outline: none;
   border-color: var(--color-black);
-  caret-color: var(--color-black);
   border-color: var(--color-text-primary);
+  caret-color: var(--color-black);
   caret-color: var(--color-text-primary);
 }
 
 button {
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  -webkit-appearance: none;
-  border-radius: var(--border-radius-sm);
-  color: var(--color-white);
-  border: 1px solid #000;
-  background: var(--color-black);
-  background: var(--color-text-secondary);
-  border: 1px solid var(--color-border-strong);
-  color: var(--color-text-primary-inverted);
-  padding: var(--space-sm);
-  font-weight: 700;
-  letter-spacing: 1px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--space-sm);
+  padding: var(--space-sm);
+  border: 1px solid #000;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-black);
+  background: var(--color-text-secondary);
+  color: var(--color-white);
+  color: var(--color-text-primary-inverted);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  -webkit-appearance: none;
 }
 
 h2 button icon,
 button icon {
   display: flex;
-  height: var(--icon-xxl);
   width: var(--icon-xxl);
-  background-color: var(--color-text-primary-inverted);
+  height: var(--icon-xxl);
   margin: 0;
+  background-color: var(--color-text-primary-inverted);
 }
 
 button[alt] {
-  background: var(--color-gray-lightest);
-  color: var(--color-black);
   border: 1px solid #999;
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
   border: 1px solid var(--color-border-medium);
+  background: var(--color-gray-lightest);
+  background: var(--color-bg-secondary);
+  color: var(--color-black);
+  color: var(--color-text-primary);
 }
 
 button[alt] icon {
@@ -94,9 +94,9 @@ button-wrapper button {
    ================================ */
 
 add-new {
-  padding: var(--space-md) 0 0 0;
   display: flex;
   flex-direction: column;
+  padding: var(--space-md) 0 0 0;
 }
 
 
@@ -152,16 +152,16 @@ title-wrapper input {
 
 title-wrapper icon {
   display: flex;
-  cursor: pointer;
-  height: var(--icon-footer);
   width: var(--icon-footer);
+  height: var(--icon-footer);
   background-color: var(--color-text-primary);
+  cursor: pointer;
 }
 
 display-name-wrapper b {
   display: flex;
-  gap: var(--space-sm);
   align-items: center;
+  gap: var(--space-sm);
   font-weight: 700;
 }
 
@@ -219,22 +219,22 @@ image-prompt+img {
 }
 
 image-previews {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  position: relative;
 }
 
 image-previews preview {
-  border-radius: var(--border-radius-sm);
-  overflow: hidden;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
   width: calc(25% - (15px / 4));
-  margin-right: 5px;
   height: 100px;
+  margin-right: 5px;
+  overflow: hidden;
+  border-radius: var(--border-radius-sm);
 }
 
 add-new[reply] image-previews {
@@ -256,12 +256,12 @@ image-previews preview remove-icon {
   top: var(--space-3xs);
   right: var(--space-3xs);
   display: flex;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
   background: var(--color-black);
   background: var(--color-border-strong);
   font-weight: 600;
-  height: 25px;
-  width: 25px;
-  border-radius: 50%;
 }
 
 image-previews preview remove-icon::before,
@@ -298,18 +298,18 @@ poll-input-wrapper {
 
 poll-input-wrapper icon {
   display: flex;
-  background-color: var(--color-text-primary);
-  height: var(--icon-xl);
   width: var(--icon-xl);
+  height: var(--icon-xl);
   margin: 0 -2px 0 -2px;
+  background-color: var(--color-text-primary);
 }
 
 poll-input-wrapper poll-text {
   display: flex;
-  gap: 8px;
   justify-content: flex-start;
   align-items: center;
   min-height: 30px;
+  gap: 8px;
 }
 
 poll-input-wrapper poll-text[add],

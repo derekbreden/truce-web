@@ -1,4 +1,7 @@
-/* Action items */
+/* ================================
+   ACTION ITEMS
+   ================================ */
+
 action {
   display: flex;
   align-items: center;
@@ -12,20 +15,23 @@ action p {
 
 action > icon {
   display: flex;
-  cursor: pointer;
-  margin: 0 0 -4px 0;
-  height: 24px;
   width: 24px;
+  height: 24px;
+  margin: 0 0 -4px 0;
   background-color: var(--color-text-primary);
+  cursor: pointer;
 }
 
 
-/* App store badges */
+/* ================================
+   APP STORE BADGES
+   ================================ */
+
 app-store-wrapper {
-  padding: var(--space-md) 0 0 0;
   display: flex;
   justify-content: center;
   gap: var(--space-md);
+  padding: var(--space-md) 0 0 0;
   font-size: 0;
 }
 
