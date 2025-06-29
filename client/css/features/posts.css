@@ -153,9 +153,11 @@ detail[favorites] {
 
 detail[favorites] icon {
   margin: -3px -1px -4px -7px;
+  opacity: var(--opacity-muted);
 }
 
 detail[favorites][favorited] icon {
+  opacity: 1;
   background-color: #e48;
   background-color: light-dark(#e48, var(--color-favorite));
 }
