@@ -42,14 +42,12 @@ jobs:
           
           # Direct prompt for automated review (no @claude mention needed)
           direct_prompt: |
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
-            
-            Be constructive and helpful in your feedback.
+            Please review this pull request and answer these questions:
+              1. Does this make our code more or less readable and digestable? In what ways?
+              2. Will this make future changes easier or harder? Which will it make harder? Which will it make easier?
+              3. If this were your repo, that you owned, and your reputation was at stake for, would you want this merged?
+
+            Please run `npm test` to ensure all tests pass.
           
           # Optional: Customize review based on file types
           # direct_prompt: |
