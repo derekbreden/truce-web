@@ -1,4 +1,6 @@
-/* Notifications container */
+/* ================================
+   NOTIFICATIONS CONTAINER
+   ================================ */
 notifications h3 {
   margin-top: var(--space-md);
 }
@@ -7,16 +9,19 @@ notifications notification+h3 {
   margin-top: 30px;
 }
 
-/* Notification items */
+/* ================================
+   NOTIFICATION ITEMS
+   ================================ */
+
 notifications notification {
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-sm) 0;
   gap: var(--space-xs);
-  position: relative;
-	cursor: pointer;
+  padding: var(--space-sm) 0;
+  cursor: pointer;
 }
 
 notifications notification column {
@@ -27,7 +32,9 @@ notifications notification icon {
 	display: flex;
 }
 
-/* Notification content styling */
+/* ================================
+   NOTIFICATION CONTENT
+   ================================ */
 notifications notification info[tiny] b {
   font-weight: 600;
 }

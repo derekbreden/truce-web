@@ -1,12 +1,14 @@
-/* Profile picture image container */
+/* ================================
+   PROFILE PICTURE CONTAINER
+   ================================ */
 profile-picture profile-image,
 [profile-picture] profile-image {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   width: 40px;
   height: 40px;
+  overflow: hidden;
   border-radius: 50%;
 }
 
@@ -29,13 +31,13 @@ profile-picture large profile-image,
 }
 
 profile-picture icon {
-  height: calc(120%);
-  width: calc(120%);
-  margin: -5px;
-  width: 100%;
-  opacity: .5;
-  background-color: var(--color-text-primary);
   display: flex;
+  width: calc(120%);
+  width: 100%;
+  height: calc(120%);
+  margin: -5px;
+  background-color: var(--color-text-primary);
+  opacity: .5;
 }
 
 h2[user] user-actions {

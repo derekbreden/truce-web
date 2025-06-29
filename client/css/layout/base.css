@@ -1,17 +1,21 @@
+/* ================================
+   BASE RESET & DOCUMENT SETUP
+   ================================ */
+
 * {
-  font-family: Open Sans, Courier New;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: Open Sans, Courier New;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 html {
-  font: 14px Open Sans, Courier New;
   height: 100%;
   width: 100%;
   overflow: hidden;
   touch-action: none;
+  font: 14px Open Sans, Courier New;
 }
 
 @supports (font: -apple-system-body) {
@@ -23,31 +27,35 @@ html {
 body {
   height: 100%;
   width: 100%;
-  font-size: var(--font-size-base);
-  background: var(--color-white);
-  color: var(--color-black);
-  background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
   overflow: hidden;
   touch-action: none;
+  background: var(--color-white);
+  background: var(--color-bg-primary);
+  color: var(--color-black);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }
+
+/* ================================
+   MAIN LAYOUT STRUCTURE
+   ================================ */
 
 main-content-wrapper {
   position: absolute;
   top: var(--header-height);
   bottom: 0;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  width: 100%;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-lg);
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
   background: var(--color-gray-lightest);
   background: var(--color-bg-secondary);
-  flex-direction: row;
-  -webkit-overflow-scrolling: touch;
   transition: top 0.2s ease-in-out;
-  width: 100%;
 }
 
 main-content-wrapper[inactive] {
@@ -70,22 +78,27 @@ main-content-wrapper[active][skip-state] {
   animation: none;
 }
 
+/* Content containers */
 main-content,
 main-content-2 {
+  position: relative;
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 var(--space-md) var(--space-md) var(--space-md);
   background: var(--color-white);
   background: var(--color-bg-primary);
-  flex-direction: column;
-  padding: 0 var(--space-md) var(--space-md) var(--space-md);
-  max-width: 480px;
-  width: 100%;
-  position: relative;
 }
+
+/* ================================
+   RESPONSIVE LAYOUT
+   ================================ */
 
 @media (max-width: 1000px) {
   main-content-wrapper {
-    flex-wrap: nowrap;
     flex-direction: column;
+    flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
     gap: 0;
@@ -96,6 +109,7 @@ main-content-2 {
   }
 }
 
+/* Utility elements */
 icons {
   display: none;
 }

@@ -1,5 +1,5 @@
 /* ================================
-   ANIMATIONS
+   SLIDE ANIMATIONS
    ================================ */
 
 @keyframes slide-out-left {
@@ -43,7 +43,7 @@
 }
 
 /* ================================
-   TYPING INDICATOR
+   OPACITY ANIMATIONS
    ================================ */
 
 @keyframes pulse {
@@ -54,11 +54,6 @@
     opacity: 1; 
   }
 }
-
-
-/* ================================
-   COMPONENTS
-   ================================ */
 
 @keyframes loading {
   0% {
@@ -84,6 +79,10 @@
   }
 }
 
+/* ================================
+   POSITION ANIMATIONS
+   ================================ */
+
 @keyframes slide-down {
   0% {
     transform: translateY(-100%);
@@ -106,6 +105,10 @@
   }
 }
 
+/* ================================
+   SCALE ANIMATIONS
+   ================================ */
+
 @keyframes explode-out {
   0% {
     opacity: 1;
@@ -121,7 +124,7 @@
 }
 
 /* ================================
-   FORMS
+   FOCUS ANIMATIONS
    ================================ */
 
 @keyframes flash-focus {

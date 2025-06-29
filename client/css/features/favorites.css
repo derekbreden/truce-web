@@ -1,15 +1,20 @@
-/* Favorites container */
+/* ================================
+   FAVORITES CONTAINER
+   ================================ */
 favorites {
   display: flex;
   flex-direction: column;
 }
 
-/* Favorite items */
+/* ================================
+   FAVORITE ITEMS
+   ================================ */
+
 favorites favorite {
-  padding-bottom: 21px;
   position: relative;
   display: flex;
   flex-direction: column;
+  padding-bottom: 21px;
 }
 
 favorites favorite[post] info-wrapper {
@@ -17,20 +22,25 @@ favorites favorite[post] info-wrapper {
   margin-top: var(--space-sm);
 }
 
-/* Favorite headers */
+/* ================================
+   FAVORITE HEADERS
+   ================================ */
+
 favorite>h2 {
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-xs);
   display: flex;
   justify-content: space-between;
   gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-sm);
 }
 
 favorite>h2>span:last-child {
   text-align: right;
 }
 
-/* Favorite special styling */
+/* ================================
+   FAVORITE SPECIAL STYLING
+   ================================ */
 favorite>[parent-reply] {
   background: var(--color-gray-lightest);
   background: var(--color-bg-tertiary)
