@@ -1,11 +1,10 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Explicitly mark binary files first to prevent auto-detection issues
+*.png -text -diff -filter
+*.jpg -text -diff -filter  
+*.jpeg -text -diff -filter
+*.gif -text -diff -filter
+*.ico -text -diff -filter
+*.pdf -text -diff -filter
 
-# Explicitly mark binary files as binary to prevent corruption
-# Also exclude from LFS processing to prevent filter corruption  
-*.png -text -filter
-*.jpg -text -filter
-*.jpeg -text -filter
-*.gif -text -filter
-*.ico -text -filter
-*.pdf -text -filter
+# Auto detect text files and perform LF normalization for remaining files
+* text=auto
