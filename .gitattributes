@@ -1,10 +1,20 @@
-# Explicitly mark binary files first to prevent auto-detection issues
-*.png -text -diff -filter
-*.jpg -text -diff -filter  
-*.jpeg -text -diff -filter
-*.gif -text -diff -filter
-*.ico -text -diff -filter
-*.pdf -text -diff -filter
+# Explicitly mark binary files - no text detection at all
+tests/capture-baseline/*.png binary
+*.png binary
+*.jpg binary  
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
 
-# Auto detect text files and perform LF normalization for remaining files
-* text=auto
+# Explicitly mark text files
+*.js text
+*.css text
+*.html text
+*.md text
+*.txt text
+*.json text
+*.sql text
+*.yml text
+*.yaml text
+*.xml text
