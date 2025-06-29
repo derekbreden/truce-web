@@ -1,1 +1,10 @@
-# .gitattributes cleared to prevent text normalization of binary PNG files
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Explicitly mark binary files as binary to prevent corruption
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
