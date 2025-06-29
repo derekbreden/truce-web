@@ -41,3 +41,109 @@
     transform: translateX(0%);
   }
 }
+
+/* ================================
+   TYPING INDICATOR
+   ================================ */
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.5; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+
+/* ================================
+   COMPONENTS
+   ================================ */
+
+@keyframes loading {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: margin-top(0);
+    margin-bottom: 0;
+  }
+
+  100% {
+    transform: translateY(-100%);
+    margin-bottom: -50px;
+  }
+}
+
+@keyframes explode-out {
+  0% {
+    opacity: 1;
+    transform: scale(1, 1);
+    ;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.1, 1.1);
+    ;
+  }
+}
+
+/* ================================
+   FORMS
+   ================================ */
+
+@keyframes flash-focus {
+  0% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+@keyframes flash-long-focus {
+  0% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  75% {
+    box-shadow: 0 0 5px var(--color-focus);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
