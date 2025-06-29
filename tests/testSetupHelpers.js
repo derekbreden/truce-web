@@ -40,7 +40,7 @@ const setupTestEnvironment = async (options) => {
 				if (file.endsWith(".css")) {
 					let processed_content = fileContent.replace(/^.*(animation:|transition:).*$/gm, "")
 					// Force color scheme: dark if explicitly requested, otherwise light
-					if (file.endsWith("root.css")) {
+					if (file.endsWith("base.css")) {
 						if (process.env.DARK_MODE === "true") {
 							processed_content = `
 								:root {
