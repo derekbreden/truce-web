@@ -1,9 +1,4 @@
 /* Notifications container */
-notifications {
-  display: flex;
-  flex-direction: column;
-}
-
 notifications h3 {
   margin-top: var(--space-md);
 }
@@ -25,16 +20,11 @@ notifications notification {
 }
 
 notifications notification column {
-  display: flex;
-  flex-direction: column;
   align-items: flex-start;
   gap: var(--space-xs);
 }
 notifications notification icon {
 	display: flex;
-	width: var(--icon-lg);
-	height: var(--icon-lg);
-	background-color: var(--color-text-primary);
 }
 
 /* Notification content styling */

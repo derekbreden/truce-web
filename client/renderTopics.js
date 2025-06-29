@@ -22,7 +22,7 @@ const renderTopics = (topics) => {
 				`
 				topic[topic=$1]
 					icon[$1]
-					topicname-subtitle
+					topicname-subtitle[flex-column]
 						topicname
 							name $2
 							count $3

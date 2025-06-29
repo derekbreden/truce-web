@@ -83,9 +83,6 @@ topics[topics-list] topic[topic=polls] icon {
 
 topics[topics-list] topic icon {
   display: flex;
-  height: var(--icon-xxl);
-  width: var(--icon-xxl);
-  background-color: var(--color-text-primary);
 }
 
 /* ================================
@@ -93,8 +90,6 @@ topics[topics-list] topic icon {
    ================================ */
 
 topics[topics-list] topic topicname-subtitle {
-  display: flex;
-  flex-direction: column;
   gap: var(--space-3xs);
 }
 

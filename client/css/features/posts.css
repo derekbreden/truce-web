@@ -38,7 +38,6 @@ post author-topics author {
 
 post author-topics author by {
   margin-left: 2px;
-  opacity: .5;
 }
 
 post author-topics author name {
@@ -49,15 +48,6 @@ post author-topics author name {
 
 post author-topics author name span {
   font-weight: 700;
-  opacity: .5;
-}
-
-post author-topics author name icon {
-  display: flex;
-  opacity: .5;
-  background-color: var(--color-text-primary);
-  height: var(--icon-md);
-  width: var(--icon-md);
 }
 
 post author-topics topics {
@@ -66,7 +56,6 @@ post author-topics topics {
   gap: var(--space-sm);
   flex-wrap: wrap;
   justify-content: flex-end;
-  opacity: .5;
 }
 
 post author-topics topics topic {
@@ -87,15 +76,9 @@ post author-topics topics topic icon {
    ================================ */
 
 post>h2>icon[more] {
+  display: flex;
   margin: -4px 0 -8px 0;
   cursor: pointer;
-}
-
-post>h2>icon[more] {
-  display: flex;
-  height: var(--icon-xxl);
-  width: var(--icon-xxl);
-  background-color: var(--color-text-primary);
 }
 
 /* ================================
@@ -147,10 +130,6 @@ post-details detail {
   padding: var(--space-sm);
 }
 
-post-details detail:not([favorited]),
-post-details detail[favorited] p {
-  opacity: .5;
-}
 
 post-details icon {
   display: flex;

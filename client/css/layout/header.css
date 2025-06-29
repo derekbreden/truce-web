@@ -5,8 +5,6 @@
 header {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
   height: var(--header-height);
   background: var(--color-white);
   border-bottom: 1px solid #000;
@@ -39,9 +37,6 @@ header h1 {
   display: flex;
   align-items: center;
   margin: 0 var(--space-md);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   color: var(--color-black);
 }
 
@@ -83,9 +78,9 @@ hamburger {
   left: -14px;
   background: var(--color-info);
   background: var(--color-state-info);
-  border-radius: 50%;
   height: 8px;
   width: 8px;
+  border-radius: 50%;
 }
 
 hamburger[unread]::before {

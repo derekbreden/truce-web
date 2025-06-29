@@ -8,7 +8,7 @@ const modalConfirm = (message, callback) => {
 				button-wrapper
 					button[confirm][close] Yes, I am sure
 					button[cancel][close][alt] Cancel
-			modal-bg
+			modal-bg[full-width]
 		`,
 		[message],
 	)
@@ -33,7 +33,7 @@ const modalInfo = (message) => {
 			modal[info]
 				info $1
 				button[close] Okay
-			modal-bg
+			modal-bg[full-width]
 		`,
 		[message],
 	)
@@ -54,7 +54,7 @@ const modalError = (message) => {
 			modal[error]
 				error $1
 				button[close] Okay
-			modal-bg
+			modal-bg[full-width]
 		`,
 		[message],
 	)

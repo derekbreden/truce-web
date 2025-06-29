@@ -65,7 +65,7 @@ const renderNotification = (notification) => {
 		const $notification = $(
 			`
 	    notification[line-after][unread=$1]
-	      column
+	      column[flex-column]
 	        summary
 	          b $2
 	          span replied
@@ -73,7 +73,7 @@ const renderNotification = (notification) => {
 	          span $4
 	          b $5
 	        $6
-	      column
+	      column[flex-column]
 	        icon[forward]
 	    `,
 			[
@@ -197,7 +197,7 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content").appendChild(
 			$(
 				`
-        notifications
+        notifications[flex-column]
         `,
 			),
 		)
@@ -206,7 +206,7 @@ const renderNotifications = (notifications) => {
 		$("main-content-wrapper[active] main-content-2").appendChild(
 			$(
 				`
-        notifications
+        notifications[flex-column]
         `,
 			),
 		)

@@ -6,8 +6,6 @@ footer {
   display: none;
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
   background: var(--color-white);
   height: calc(64px + env(safe-area-inset-bottom));
   justify-content: space-around;
@@ -98,8 +96,8 @@ footer dot {
   background: var(--color-black);
   height: 4px;
   width: 4px;
-  border-radius: 50%;
   right: 0;
+  border-radius: 50%;
 }
 
 footer dot[index="0"] {

@@ -5,8 +5,8 @@ const showMenu = () => {
 	}
 	const $menu = $(
 		`
-		menu-wrapper
-			modal-bg
+		menu-wrapper[full-width]
+			modal-bg[full-width]
 			menu
 				links
 					a[href=/]
@@ -210,7 +210,7 @@ const showMenu = () => {
 	$menu.$("menu").appendChild(
 		$(
 			`
-			p[notice]
+			p[notice][center]
 				span Email us at
 				a[href="mailto:derek@truce.net"] derek@truce.net
 				span to provide feedback or report inappropriate activity.

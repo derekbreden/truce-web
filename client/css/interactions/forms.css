@@ -126,9 +126,6 @@ add-new {
   flex-direction: column;
 }
 
-add-new>* {
-  margin-bottom: var(--space-xs);
-}
 
 add-new>*:last-child {
   margin-bottom: 0;
@@ -286,12 +283,12 @@ image-previews preview remove-icon {
   top: var(--space-3xs);
   right: var(--space-3xs);
   display: flex;
-  border-radius: 50%;
   background: var(--color-black);
   background: var(--color-border-strong);
   font-weight: 600;
   height: 25px;
   width: 25px;
+  border-radius: 50%;
 }
 
 image-previews preview remove-icon::before,

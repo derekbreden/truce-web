@@ -168,7 +168,7 @@ const renderReplies = (replies) => {
 		$(target).appendChild(
 			$(
 				`
-				replies
+				replies[flex-column]
 				`,
 			),
 		)

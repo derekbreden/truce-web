@@ -70,6 +70,12 @@ module.exports = async (req, res) => {
 
 **YOU HAVE NEVER SEEN THIS BEFORE**: Full production code paths exercised with zero network/timing constraints. 24 complex multi-user scenarios complete in 8 seconds.
 
+## CSS Architecture
+**Start here**: Read CSS architecture comment in `client/css/attributes/` files
+**Organization**: CSS divided into foundation → layout → attributes → features → interactions
+**Semantic attributes**: `[muted]`, `[ellipsis]`, `[center]` replace complex selectors
+**Discovery**: Use `rg "[attribute]"` to find usage examples across codebase
+
 ## Code Conventions
 
 ### JavaScript Style

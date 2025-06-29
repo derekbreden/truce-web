@@ -48,7 +48,6 @@ tab-item {
 }
 
 tab-item[right] {
-  justify-content: flex-end;
   flex: 1;
 }
 

@@ -4,10 +4,10 @@ profile-picture profile-image,
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
   overflow: hidden;
   width: 40px;
   height: 40px;
+  border-radius: 50%;
 }
 
 profile-picture profile-image img,

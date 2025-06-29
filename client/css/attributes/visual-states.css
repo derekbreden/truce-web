@@ -1,0 +1,58 @@
+/* ================================
+   CSS ARCHITECTURE - START HERE
+   ================================
+   
+   This codebase uses semantic attributes extensively to create
+   self-documenting, maintainable CSS. Attributes are grouped by purpose:
+   
+   • Visual state: [muted], [disabled], [faint], [active], [unread]
+   • Layout: [ellipsis], [center], [center-x], [circular], [big], [small], [tiny], [flex-column], [full-width]  
+   • Content type: [quote], [notice], [bold], [italic], [hr], [img]
+   • Component state: [reply], [confirm], [inline], [more], [favorites]
+   
+   Use `rg "[attribute]"` to find usage examples across the codebase.
+   
+   CSS is organized hierarchically:
+   1. Foundation (fonts, tokens, animations)
+   2. Layout (base styles, header, footer, navigation) 
+   3. Attributes (this directory - semantic modifiers)
+   4. Features (posts, conversations, notifications, etc.)
+   5. Interactions (forms, modals, actions, components)
+   
+   ================================
+   VISUAL STATE ATTRIBUTES
+   ================================
+   
+   Visual appearance modifiers that don't change layout:
+   [muted], [faint], [active], [disabled], [unread]
+*/
+
+/* Muted opacity for secondary content */
+[muted] {
+  opacity: var(--opacity-muted);
+}
+
+/* Faint elements */
+[faint] {
+  opacity: var(--opacity-muted);
+}
+
+/* Active/disabled states inherit from existing buttons/forms */
+[disabled] {
+  opacity: var(--opacity-muted);
+}
+
+/* Notice paragraph styling with muted children */
+p[notice] {
+  font-size: var(--font-size-sm);
+}
+
+p[notice] span {
+  opacity: var(--opacity-muted);
+}
+
+p[notice] a {
+  opacity: var(--opacity-muted);
+  font-weight: 600;
+  margin: 0 3px;
+}

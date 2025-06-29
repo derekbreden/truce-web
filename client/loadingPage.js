@@ -11,7 +11,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	$("body").appendChild(
 		$(
 			`
-			main-content-wrapper[active][skip-state=$1][clicked-back=$2]
+			main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
 				main-content
 				main-content-2
 			`,
@@ -65,11 +65,11 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						p Then, please join us in this Truce.
 						p
 							a[big][href=/posts] Join the Discussion
-						p[notice]
+						p[notice][center]
 							span To be clear, there is no tolerance for objectionable content or abusive users.
-						p[notice][style="margin-top:5px;"]
+						p[notice][center][style="margin-top:5px;"]
 							span Objectionable content is defined as escalations, judgments, or name-calling.
-						p[notice][style="margin-top:5px;"]
+						p[notice][center][style="margin-top:5px;"]
 							span By clicking "Join the Discussion," you agree to these terms.
 					$1
 				`,
@@ -112,7 +112,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						ul
 							li A label will be applied
 							li The label will be explained
-						replies
+						replies[flex-column]
 							expand-wrapper[above-replies]
 								p Examples
 							reply
@@ -150,9 +150,9 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 										b Judgment
 										p Labeling anyone as "pure evil" is a critical judgment that hinders respectful dialogue and constructive conversation.
 				posts
-					p[notice]
+					p[notice][center]
 						a[href="/privacy"] Privacy Policy
-					p[notice]
+					p[notice][center]
 						span Email us at
 						a[href="mailto:derek@truce.net"] derek@truce.net
 						span to provide feedback or report inappropriate activity.
@@ -313,7 +313,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 							button-wrapper
 								button[remove] Remove
 								button[alt][cancel] Cancel
-						modal-bg
+						modal-bg[full-width]
 					`,
 			)
 			const removeModalCancel = () => {
