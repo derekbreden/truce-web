@@ -2,9 +2,10 @@
 * text=auto
 
 # Explicitly mark binary files as binary to prevent corruption
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.pdf binary
+# Also exclude from LFS processing to prevent filter corruption
+*.png binary -filter
+*.jpg binary -filter
+*.jpeg binary -filter
+*.gif binary -filter
+*.ico binary -filter
+*.pdf binary -filter
