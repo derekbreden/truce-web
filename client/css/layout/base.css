@@ -1,5 +1,5 @@
 * {
-  font-family: Open Sans, Arial;
+  font-family: Open Sans, Courier New;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 }
 
 html {
-  font: 14px Open Sans, Arial;
+  font: 14px Open Sans, Courier New;
   height: 100%;
   width: 100%;
   overflow: hidden;

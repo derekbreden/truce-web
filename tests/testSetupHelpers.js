@@ -66,6 +66,14 @@ const setupTestEnvironment = async (options) => {
 								}
 							` + processed_content
 						}
+						processed_content = `
+							* {
+								font-optical-sizing: none !important;
+								font-variation-settings: normal !important;
+								-webkit-font-smoothing: none !important;
+								text-rendering: geometricPrecision !important;
+							}
+						` + processed_content
 					}
 					processedLines.push(processed_content)
 				} else {

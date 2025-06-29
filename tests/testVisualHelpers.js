@@ -85,6 +85,12 @@ const captureVisual = async (window, filename) => {
 			"--no-sandbox",
 			"--force-device-scale-factor=1",
 			"--hide-scrollbars",
+			"--font-render-hinting=none",
+			"--disable-lcd-text",  // Disable subpixel anti-aliasing
+			"--disable-font-subpixel-positioning",  // Force pixel-aligned text
+			"--disable-webkit-text-subpixel-positioning",
+			"--force-color-profile=sRGB",  // Force consistent color profile
+			"--disable-features=AcceleratedSmallCanvases",  // Disable canvas acceleration
 			`--screenshot="${pngPath}"`,
 			`--window-size=1200,800 "file://${absoluteHtmlPath}"`,
 		].join(" "),
