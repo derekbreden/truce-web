@@ -9,7 +9,6 @@
 /* Quote styling */
 p[quote] {
   padding: var(--space-sm);
-  border-left: 2px solid #999;
   border-left: 2px solid var(--color-border-medium);
   background: var(--color-gray-lightest);
   background: var(--color-bg-tertiary);
@@ -30,7 +29,6 @@ p[italic] {
 
 /* Horizontal rule styling */
 p[hr] {
-  border-bottom: 1px solid #ddd;
   border-bottom: 1px solid var(--color-border-standard);
   font-size: 0;
 }

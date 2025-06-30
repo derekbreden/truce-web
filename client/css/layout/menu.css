@@ -25,7 +25,6 @@ menu {
   border-left: 1px solid var(--color-gray-dark);
   border-bottom: 1px solid var(--color-gray-dark);
   border-radius: 0 0 0 2px;
-  background: var(--color-white);
   background: var(--color-bg-primary);
 }
 
@@ -47,7 +46,6 @@ menu p[notice] {
   width: 280px;
   margin-top: 0;
   padding: var(--space-sm) var(--space-md);
-  border-top: 1px solid #999;
   border-top: 1px solid var(--color-border-medium);
 }
 
@@ -65,7 +63,6 @@ menu links a {
   display: flex;
   align-items: center;
   padding: 5px var(--space-md) 5px 11px;
-  border-bottom: 1px solid #999;
   border-bottom: 1px solid var(--color-border-medium);
   font-weight: 600;
   text-decoration: none;
@@ -115,7 +112,6 @@ toggle-wrapper toggle-button {
   height: 30px;
   margin-left: var(--space-md);
   border-radius: 16px;
-  background: #ddd;
   background: light-dark(var(--color-gray-light), var(--color-gray-darker));
   transition: background .2s ease-in-out;
 }
@@ -127,13 +123,11 @@ toggle-wrapper toggle-button toggle-circle {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--color-white);
   background: var(--color-bg-primary);
   transition: left .2s ease-in-out;
 }
 
 toggle-wrapper[active] toggle-button {
-  background: var(--color-success);
   background: var(--color-state-success);
 }
 

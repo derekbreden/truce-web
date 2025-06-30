@@ -3,13 +3,12 @@
    ================================ */
 
 modal-bg {
-  display: flex;
-  background: #00000077;
-  background: light-dark(var(--color-overlay-light), var(--color-overlay-dark));
   position: absolute;
   top: 0;
   bottom: 0;
   z-index: var(--z-modal-bg);
+  display: flex;
+  background: light-dark(var(--color-overlay-light), var(--color-overlay-dark));
 }
 
 /* ================================
@@ -17,23 +16,19 @@ modal-bg {
    ================================ */
 
 modal {
+  position: fixed;
+  top: var(--header-height);
+  left: 50%;
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column;
-  padding: var(--space-md) var(--space-md) 15px var(--space-md);
-  position: relative;
-  width: 280px;
-  position: fixed;
-  flex-direction: column;
-  z-index: var(--z-modal);
-  top: var(--header-height);
-  background: var(--color-white);
-  background: var(--color-bg-primary);
-  border-radius: var(--border-radius-sm);
-  box-shadow: light-dark(0px 0px 5px var(--color-black), none);
-  border: light-dark(none, 1px solid var(--color-gray-dark));
-  max-width: 480px;
   width: calc(100% - var(--space-md));
-  left: 50%;
+  max-width: 480px;
+  padding: var(--space-md) var(--space-md) 15px var(--space-md);
+  border: light-dark(none, 1px solid var(--color-gray-dark));
+  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-primary);
+  box-shadow: light-dark(0px 0px 5px var(--color-black), none);
   transform: translateX(-50%);
 }
 
@@ -76,10 +71,9 @@ modal[image]>p[img] img {
 }
 
 modal[image]>button {
-  border-radius: 0;
-  border: 1px solid #fff;
-  border: 1px solid var(--color-text-primary-inverted);
   padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+  border: 1px solid var(--color-text-primary-inverted);
+  border-radius: 0;
 }
 
 /* ================================

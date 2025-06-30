@@ -6,10 +6,8 @@ input,
 textarea {
   width: 240px;
   padding: var(--space-sm);
-  border: 1px solid #000;
   border: 1px solid var(--color-border-medium);
   border-radius: var(--border-radius-sm);
-  background: var(--color-white);
   background: var(--color-bg-primary);
   font-size: var(--font-size-base);
 }
@@ -17,9 +15,7 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--color-black);
   border-color: var(--color-text-primary);
-  caret-color: var(--color-black);
   caret-color: var(--color-text-primary);
 }
 
@@ -29,12 +25,9 @@ button {
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm);
-  border: 1px solid #000;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--border-radius-sm);
-  background: var(--color-black);
   background: var(--color-text-secondary);
-  color: var(--color-white);
   color: var(--color-text-primary-inverted);
   font-size: var(--font-size-base);
   font-weight: 700;
@@ -53,11 +46,8 @@ button icon {
 }
 
 button[alt] {
-  border: 1px solid #999;
   border: 1px solid var(--color-border-medium);
-  background: var(--color-gray-lightest);
   background: var(--color-bg-secondary);
-  color: var(--color-black);
   color: var(--color-text-primary);
 }
 
@@ -186,8 +176,6 @@ password-help::before {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: var(--color-info);
-  color: #e0f0ff;
   background: light-dark(var(--color-info), var(--color-info-dark));
   color: light-dark(#e0f0ff, #e0f0ff);
   font-weight: 600;
@@ -259,7 +247,6 @@ image-previews preview remove-icon {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: var(--color-black);
   background: var(--color-border-strong);
   font-weight: 600;
 }
@@ -268,13 +255,12 @@ image-previews preview remove-icon::before,
 image-previews preview remove-icon::after {
   content: "";
   position: absolute;
+  top: 11px;
+  left: 4px;
   width: 15px;
-  border: 1px solid #fff;
   border: 1px solid var(--color-text-primary-inverted);
   border-radius: 4px;
   transform: rotate(45deg);
-  top: 11px;
-  left: 4px;
 }
 
 image-previews preview remove-icon::after {
@@ -333,17 +319,16 @@ poll-vote-wrapper {
 }
 
 poll-vote-wrapper>* {
-  border: 1px solid #000;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 20px;
-  min-height: 35px;
-  padding: 0 var(--space-md);
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  min-height: 35px;
+  padding: 0 var(--space-md);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 20px;
+  text-align: center;
   font-weight: 600;
+  cursor: pointer;
 }
 
 poll-wrapper p[results] {
@@ -380,10 +365,9 @@ poll-counts-estimated>* bg {
   top: 0;
   left: 0;
   bottom: 0;
-  background: var(--color-black);
+  border-radius: 5px;
   background: var(--color-border-strong);
   opacity: .2;
-  border-radius: 5px;
 }
 
 poll-counts-actual>* text {

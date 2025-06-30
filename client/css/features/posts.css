@@ -158,7 +158,6 @@ detail[favorites] icon {
 
 detail[favorites][favorited] icon {
   opacity: 1;
-  background-color: #e48;
   background-color: light-dark(#e48, var(--color-favorite));
 }
 
@@ -190,10 +189,9 @@ posts-loading {
 }
 
 posts-loading h2 {
-  background: #ddd;
-  background: var(--color-border-standard);
   width: 80%;
   height: 32px;
+  background: var(--color-border-standard);
 }
 
 posts-loading p {
@@ -207,11 +205,9 @@ posts-loading p::after {
   content: "";
   display: block;
   width: 100%;
-  border-top: 16px solid #ddd;
-  border-bottom: 16px solid #ddd;
+  height: var(--space-sm);
   border-top: 16px solid var(--color-border-standard);
   border-bottom: 16px solid var(--color-border-standard);
-  height: var(--space-sm);
 }
 
 posts-loading p::after {
