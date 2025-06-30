@@ -29,15 +29,9 @@ jobs:
         with:
           fetch-depth: 1
 
-      # Install ImageMagick for visual diff generation
-      - name: Install ImageMagick
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick
-
       - name: Run Claude Code
         id: claude
-        uses: derekbreden/claude-code-action@beta
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           
