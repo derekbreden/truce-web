@@ -8,11 +8,11 @@ Full-stack integration testing that runs the complete application stack in JSDOM
 
 **Complete Environment Simulation**
 - Full Node.js backend with business logic
-- Complete client-side JavaScript with real DOM
-- In-memory PostgreSQL-compatible database
-- Bidirectional WebSocket communication
-- Real image processing with Canvas API
-- Multi-user concurrent testing with isolated sessions
+- Complete client-side JavaScript with real DOM (`testSetupHelpers.js`)
+- In-memory PostgreSQL-compatible database with deterministic timestamps
+- Bidirectional WebSocket communication with typing indicators and instant alerts
+- Real image processing with Canvas API and base64 data handling
+- Multi-user concurrent testing with isolated sessions via `beforeParse` hooks
 
 ## Key Components
 
@@ -25,18 +25,21 @@ Creates complete application environment with:
 - User session initialization
 
 ### PostgreSQL-to-SQLite Translation
-Real-time SQL translation handling:
-- Array parameter syntax (`ANY($1::int[])`)
-- PostgreSQL functions (`STRING_AGG`, `NOW()`, `INTERVAL`)
-- Case-insensitive search (`ILIKE`)
-- JSON operations
+Real-time SQL translation in `testSqliteSetup.js` handling:
+- Array parameter flattening: `ANY($1::int[])` → `IN (?, ?, ?)` with parameter expansion
+- PostgreSQL functions: `STRING_AGG` → `GROUP_CONCAT`, `NOW()` → deterministic timestamps
+- Case-insensitive search: `ILIKE` → `LIKE COLLATE NOCASE`
+- Complex UPDATE-FROM subqueries converted to SQLite-compatible syntax
+- Automatic triggers for deterministic timestamp generation across related tables
 
 ### Mock External Services
-Mock only external boundaries, preserve internal logic:
-- S3 upload with real image processing
-- OpenAI with configurable test responses
-- Email sending with template verification
-- All application logic runs in production mode
+Mock only external boundaries (`testSetupHelpers.js`), preserve internal logic:
+- **S3**: In-memory storage with `PutObjectCommand`/`GetObjectCommand` simulation
+- **OpenAI**: Configurable responses per test setup with AI content moderation flows
+- **WebSocket**: Bidirectional client-server communication with real typing indicators
+- **Email**: Template verification with `nodemailer` mock storing sent emails in `global.test_email_sent`
+- **Images**: Full Canvas API processing with base64 encoding/decoding and resize operations
+- All application logic runs in production mode with zero network calls
 
 ## Test Patterns
 
@@ -71,12 +74,24 @@ assertEquals(true, Boolean($("typing-indicator")))
 
 ## Visual Debugging
 
-Any test can generate screenshots:
+Any test can generate screenshots for debugging display and styling issues:
 ```bash
-npm test message.typing capture
+npm test message.typing capture          # Single test with screenshots
+npm test capture                         # All tests with screenshots  
+npm test notifications.simple capture    # Multiple tests with visual capture
 ```
 
-Generates PNG files showing exact UI state during test execution.
+**Screenshot Details:**
+- Automatically captured at key test points via `testVisualHelpers.js`
+- Saved to `tests/capture/` with naming pattern: `{testname}-{function}-{index}-{theme}.png`
+- Directory cleared each run to prevent leftover files
+- Light/dark theme variants captured based on `DARK_MODE` environment variable
+- Canvas-rendered with font smoothing disabled for pixel-perfect consistency
+
+**Use Cases:**
+- Debug layout bugs and styling issues hard to catch without visual verification  
+- Verify UI state during complex multi-user interactions (typing indicators, alerts)
+- Compare against baseline screenshots in `tests/capture-baseline/` for regression testing
 
 ## Performance Characteristics
 
@@ -89,15 +104,41 @@ Generates PNG files showing exact UI state during test execution.
 
 ## Test Coverage
 
-Tests cover complete user journeys:
-- Post creation with AI moderation
-- Real-time messaging with typing indicators
-- User authentication and session management
-- Multi-user interactions and blocking
-- Image upload and processing pipelines
+Tests cover complete user journeys with real production code paths:
+
+**Real-Time Communication:**
+- WebSocket typing indicators (`message.typing.test.js`): User A types → heartbeat sent → User B sees indicator
+- Message delivery with instant alerts and read receipts
+- Multi-user conversation state synchronization
+
+**Content Creation & Moderation:**
+- Post creation with AI content flagging and spam detection (`message.moderation.test.js`)
+- Image upload with Canvas processing, S3 storage, and retrieval  
+- Reply threading with notification systems
+
+**User Interactions:**
+- Authentication flows with session management and password resets
+- User blocking with UI state updates across multiple user sessions
+- Profile picture handling with image processing pipeline
+
+**Navigation & State Management:**
+- Deep linking with client-side routing and browser history
+- Infinite scroll loading with database pagination
+- Cross-page state persistence and WebSocket path tracking
+
+Each test exercises the complete stack from UI interaction → client-side JS → HTTP/WebSocket → database → response → UI update.
 
 ## Why This Matters
 
 **Traditional testing forces a choice: speed or confidence.**
 
 This architecture delivers both - comprehensive integration testing that's fast enough to run on every code change, changing developer behavior from "skip the tests" to "tests as safety net."
+
+**Key Innovation:**
+Rather than mocking application code or using test databases that behave differently from production, this approach runs 100% of the actual production codebase in an accelerated environment. Every function call, database query, WebSocket message, and UI update that happens in production also happens in tests - just without network latency, disk I/O, or external service delays.
+
+**Developer Impact:**
+- Tests complete in seconds, not minutes, encouraging frequent execution
+- Visual debugging with screenshots provides immediate feedback on UI issues
+- Multi-user scenarios can be debugged by examining both user perspectives simultaneously
+- Production bugs are caught by tests because the same code paths execute in both environments

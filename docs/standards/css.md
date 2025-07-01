@@ -1,5 +1,7 @@
 # CSS Standards
 
+Coding conventions for CSS development in this project.
+
 ## Property Order
 
 Properties within each CSS rule should follow this consistent order:
@@ -16,6 +18,30 @@ Properties within each CSS rule should follow this consistent order:
 10. **Other**: vendor prefixes, `content`, etc.
 
 **Rationale**: Position affects document flow first, then layout determines element behavior, then size affects everything else, then spacing affects surrounding elements, then visual styling, then interactive enhancements.
+
+## Naming Conventions
+
+**Attributes over Classes**: Use semantic HTML attributes instead of CSS classes:
+```css
+/* Preferred */
+[muted] { opacity: var(--opacity-muted); }
+[center] { text-align: center; }
+
+/* Avoid */
+.muted { opacity: var(--opacity-muted); }
+.center { text-align: center; }
+```
+
+**Custom Elements**: Use semantic element names for components:
+```css
+/* Component containers */
+posts { display: flex; flex-direction: column; }
+conversation { /* component styling */ }
+notification { /* component styling */ }
+
+/* Avoid generic divs */
+.post-container { /* less semantic */ }
+```
 
 ## Comment Standards
 
@@ -41,12 +67,13 @@ No section header needed - let the selectors speak for themselves.
 3. Prioritize natural reading flow over rigid categorization
 4. Group by purpose/function, not just by selector type
 
-## Design Tokens
+## File Organization
 
-Use CSS custom properties from `design-tokens.css`:
-- **Colors**: Use semantic tokens like `var(--color-text-primary)` over hardcoded values
-- **Spacing**: Use `var(--space-*)` scale instead of arbitrary pixel values  
-- **Typography**: Use `var(--font-size-*)` scale for consistent sizing
-- **Icons**: Use `var(--icon-*)` sizes for consistent visual weight
+CSS files are organized by purpose in 5 directories:
+- `foundation/` - Variables, tokens, base styles
+- `layout/` - Structural layout elements  
+- `attributes/` - Semantic attribute definitions
+- `features/` - Component-specific styling
+- `interactions/` - Form and modal behaviors
 
-**Exception**: Intentional design choices like header/footer split backgrounds should not use theme-responsive tokens.
+Place new styles in the most specific applicable directory.

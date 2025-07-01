@@ -1,43 +1,70 @@
-# CSS-UI Reference Guide
+# CSS UI Reference Guide
 
-This reference documents the custom HTML elements and semantic attributes used throughout the application. It serves as a quick lookup for understanding the CSS selector patterns.
+Quick lookup for custom HTML elements and semantic attributes.
 
-## When to Regenerate
+## Custom HTML Elements
 
-This guide should be regenerated when comprehensive CSS mapping is needed by:
-1. Reading all CSS files in `client/css/` directory
-2. Extracting custom element selectors (non-standard HTML elements)
-3. Documenting semantic attribute patterns
-4. Mapping component hierarchies and relationships
+| Element | Purpose | Key Children |
+|---------|---------|--------------|
+| `posts` | Post container | `post` |
+| `post` | Individual post | `author-topics`, `post-details` |
+| `replies` | Reply container | `reply` |
+| `reply` | Individual reply | `reply-wrapper` |
+| `conversations` | Conversation list | `conversation` |
+| `conversation` | Individual conversation | `conversation-info`, `unread-count` |
+| `messages` | Message list | `message` |
+| `message` | Individual message | `message-header`, `message-content` |
+| `notifications` | Notification list | `notification` |
+| `notification` | Individual notification | `icon`, `summary` |
+| `favorites` | Favorites list | `favorite` |
+| `users` | User list | `user` |
+| `topics` | Topic container | `topic` |
+| `modal` | Modal dialog | `modal-bg` |
+| `action` | Action item | `icon`, `p` |
+| `profile-picture` | Profile image | `profile-image` |
 
-## Current Quick Reference
+## Semantic Attributes
 
-### Common Semantic Attributes
-- `[center]` - Center alignment and flexbox centering
-- `[ellipsis]` - Text truncation with ellipsis
-- `[muted]` - Reduced opacity for secondary content
-- `[right]` - Right-aligned flex container
-- `[full-width]` - Full-width positioning
-- `[flex-column]` - Vertical flex layout
+| Attribute | Purpose | Common Usage |
+|-----------|---------|--------------|
+| `[center]` | Center alignment | Text centering, flex centering |
+| `[right]` | Right alignment | Flex end alignment |
+| `[muted]` | Reduced opacity | Secondary text, disabled states |
+| `[ellipsis]` | Text truncation | Long text overflow |
+| `[active]` | Selected state | Navigation, buttons |
+| `[disabled]` | Disabled state | Form controls |
+| `[favorited]` | Favorited state | Heart icons, saved items |
+| `[trimmed]` | Collapsed content | Expandable posts/replies |
+| `[large]` | Large variant | Profile pictures, buttons |
+| `[inline]` | Inline display | Icons within text |
+| `[img]` | Image container | Content with images |
+| `[line-after]` | Bottom border | Section separators |
 
-### Common Custom Elements
-- `posts` - Post container
-- `post` - Individual post
-- `reply` - Reply to post
-- `conversation` - Conversation item
-- `message` - Individual message
-- `modal` - Modal dialog
-- `menu` - Navigation menu
+## Quick Search Commands
 
-### Interactive States
-- `[trimmed]` - Collapsed/expandable content
-- `[favorited]` - Favorited state styling
-- `[active]` - Active/selected state
-- `[disabled]` - Disabled state
-- `[unread]` - Unread indicator
+```bash
+# Find element styling
+rg "posts\s*{" client/css/
+rg "conversation\s*{" client/css/
 
-## Usage
+# Find attribute usage  
+rg "\[muted\]" client/css/
+rg "\[center\]" client/css/
 
-**For development**: Use this as a quick reference for existing patterns. When in doubt, search the CSS files directly.
+# Find specific components
+rg "modal" client/css/
+rg "notification" client/css/
+```
 
-**For comprehensive mapping**: This stub should be replaced with a complete analysis of all CSS selectors when detailed documentation is needed.
+## Common Patterns
+
+**Combine attributes for complex layouts:**
+```html
+<div center muted>Centered secondary text</div>
+<section [trimmed] [active]>Collapsed active section</section>
+```
+
+**State management through attribute presence:**
+- Toggle `[favorited]` for favorite state
+- Toggle `[active]` for selection state  
+- Toggle `[trimmed]` for content expansion
