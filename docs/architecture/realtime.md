@@ -14,10 +14,10 @@
 
 ### Implementation
 ```javascript
-// Server side - when content changes (savePost.js:315)
+// Server side - when content changes (savePost.js)
 req.sendWsMessage("UPDATE", { post_id: post_id })
 
-// Client side - WebSocket handler (websocket.js:52-54)
+// Client side - WebSocket handler (websocket.js)
 ws.addEventListener("message", (event) => {
     if (event.data === "UPDATE") {
         getMoreRecent()  // Makes HTTP call to fetch fresh data
@@ -102,7 +102,7 @@ const reconnectWs = () => {
 ```
 
 ### Server-Side Context Tracking
-Server tracks what each client is viewing for targeted updates (`websocket.js:83-132`):
+Server tracks what each client is viewing for targeted updates (`websocket.js`):
 
 ```javascript
 // Posts/replies - extract from URL slug
@@ -122,7 +122,7 @@ if (message.path.startsWith("/messages/")) {
 }
 ```
 
-**Smart Targeting Logic (`websocket.js:138-171`):**
+**Smart Targeting Logic (`websocket.js`):**
 - **post_id**: Send to clients viewing that post OR clients with no `active_post_id` set
 - **user_id**: Send to that specific user OR clients with no `user_id` set
 - **conversation_id**: Send to clients in that conversation OR clients with no `active_conversation_id` set
@@ -131,7 +131,7 @@ This allows both authenticated and anonymous users to receive relevant updates.
 
 ## Data Freshness via HTTP
 
-The `getMoreRecent()` function (`startSession.js:122-255`) makes intelligent HTTP requests:
+The `getMoreRecent()` function (`startSession.js`) makes intelligent HTTP requests:
 
 ```javascript
 fetch("/session", {

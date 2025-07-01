@@ -8,7 +8,7 @@ Full-stack integration testing that runs the complete application stack in JSDOM
 
 **Complete Environment Simulation**
 - Full Node.js backend with business logic
-- Complete client-side JavaScript with real DOM (`testSetupHelpers.js:132-571`)
+- Complete client-side JavaScript with real DOM (`testSetupHelpers.js`)
 - In-memory PostgreSQL-compatible database with deterministic timestamps
 - Bidirectional WebSocket communication with typing indicators and instant alerts
 - Real image processing with Canvas API and base64 data handling
@@ -25,7 +25,7 @@ Creates complete application environment with:
 - User session initialization
 
 ### PostgreSQL-to-SQLite Translation
-Real-time SQL translation in `testSqliteSetup.js:69-167` handling:
+Real-time SQL translation in `testSqliteSetup.js` handling:
 - Array parameter flattening: `ANY($1::int[])` → `IN (?, ?, ?)` with parameter expansion
 - PostgreSQL functions: `STRING_AGG` → `GROUP_CONCAT`, `NOW()` → deterministic timestamps
 - Case-insensitive search: `ILIKE` → `LIKE COLLATE NOCASE`
@@ -33,7 +33,7 @@ Real-time SQL translation in `testSqliteSetup.js:69-167` handling:
 - Automatic triggers for deterministic timestamp generation across related tables
 
 ### Mock External Services
-Mock only external boundaries (`testSetupHelpers.js:158-344`), preserve internal logic:
+Mock only external boundaries (`testSetupHelpers.js`), preserve internal logic:
 - **S3**: In-memory storage with `PutObjectCommand`/`GetObjectCommand` simulation
 - **OpenAI**: Configurable responses per test setup with AI content moderation flows
 - **WebSocket**: Bidirectional client-server communication with real typing indicators
