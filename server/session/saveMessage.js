@@ -169,6 +169,7 @@ module.exports = async (req, res) => {
 
 		// Add new images
 		const image_uuids = []
+		const image_dimensions = []
 		for (const png of req.body.pngs) {
 			const image_uuid = crypto.randomUUID()
 			try {
@@ -180,6 +181,7 @@ module.exports = async (req, res) => {
 					}),
 				)
 				image_uuids.push(image_uuid)
+				image_dimensions.push(png.width, png.height)
 			} catch (error) {
 				console.error(error)
 			}
@@ -187,10 +189,10 @@ module.exports = async (req, res) => {
 		await req.client.query(
 			`
 			UPDATE messages
-			SET image_uuids = $1
-			WHERE message_id = $2
+			SET image_uuids = $1, image_dimensions = $2
+			WHERE message_id = $3
 			`,
-			[image_uuids.join(","), message_id],
+			[image_uuids.join(","), image_dimensions.join(","), message_id],
 		)
 
 		// Update conversation's last_message_id

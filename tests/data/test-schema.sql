@@ -50,6 +50,7 @@ CREATE TABLE posts (
     note VARCHAR(500) DEFAULT '',
     slug VARCHAR(140) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
+    image_dimensions VARCHAR(31) DEFAULT '',
     reply_count INT DEFAULT 0,
     favorite_count INT DEFAULT 0,
     poll_counts VARCHAR(50) DEFAULT '',
@@ -75,6 +76,7 @@ CREATE TABLE replies (
     body VARCHAR(8000) DEFAULT '',
     note VARCHAR(500) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
+    image_dimensions VARCHAR(31) DEFAULT '',
     favorite_count INT DEFAULT 0,
     counts_max_create_date DATETIME DEFAULT TEST_TIMESTAMP,
     user_id INT NOT NULL,
@@ -233,6 +235,7 @@ CREATE TABLE messages (
     body VARCHAR(8000) DEFAULT '',
     note VARCHAR(500) DEFAULT '',
     image_uuids VARCHAR(147) DEFAULT '',
+    image_dimensions VARCHAR(31) DEFAULT '',
     create_date DATETIME DEFAULT TEST_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)

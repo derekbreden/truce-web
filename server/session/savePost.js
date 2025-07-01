@@ -179,6 +179,7 @@ B) ${req.body.poll_2}`
 
 			// Add new images
 			const image_uuids = []
+			const image_dimensions = []
 			for (const png of req.body.pngs) {
 				const image_uuid = crypto.randomUUID()
 				try {
@@ -190,6 +191,7 @@ B) ${req.body.poll_2}`
 						}),
 					)
 					image_uuids.push(image_uuid)
+					image_dimensions.push(png.width, png.height)
 				} catch (error) {
 					console.error(error)
 				}
@@ -197,10 +199,10 @@ B) ${req.body.poll_2}`
 			await req.client.query(
 				`
         UPDATE posts
-        SET image_uuids = $1
-        WHERE post_id = $2
+        SET image_uuids = $1, image_dimensions = $2
+        WHERE post_id = $3
         `,
-				[image_uuids.join(","), post_id],
+				[image_uuids.join(","), image_dimensions.join(","), post_id],
 			)
 
 			// Remove existing poll votes

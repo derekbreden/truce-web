@@ -376,6 +376,7 @@ module.exports = async (req, res) => {
 
 		// Add new images
 		const image_uuids = []
+		const image_dimensions = []
 		for (const png of req.body.pngs) {
 			const image_uuid = crypto.randomUUID()
 			try {
@@ -387,6 +388,7 @@ module.exports = async (req, res) => {
 					}),
 				)
 				image_uuids.push(image_uuid)
+				image_dimensions.push(png.width, png.height)
 			} catch (error) {
 				console.error(error)
 			}
@@ -394,10 +396,10 @@ module.exports = async (req, res) => {
 		await req.client.query(
 			`
       UPDATE replies
-      SET image_uuids = $1
-      WHERE reply_id = $2
+      SET image_uuids = $1, image_dimensions = $2
+      WHERE reply_id = $3
       `,
-			[image_uuids.join(","), reply_id],
+			[image_uuids.join(","), image_dimensions.join(","), reply_id],
 		)
 
 		// Update the post reply_count and counts_max_create_date
