@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentation
+
+Read `docs/index.md` first for organized documentation covering standards, architecture, and reference guides.
+
 ## CLAUDE.md Principles
 Every line and every word considered carefully for deletion. Say only what is absolutely necessary.
 
