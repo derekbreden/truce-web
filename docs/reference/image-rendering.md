@@ -17,20 +17,28 @@ This document comprehensively maps all image rendering locations and their assoc
 
 **Applied CSS Rules:**
 
-| Selector | Properties | Context | File |
-|----------|------------|---------|------|
-| `p img` | `max-width: 100%; border-radius: var(--border-radius-md);` | Base rule for all images | `content-semantics.css` |
-| `post[trimmed] p img, reply[trimmed] p img, conversation p img` | `cursor: pointer; height: 100px;` | Trimmed post view | `posts.css:88-93` |
-| `post[trimmed] p[img][total-images="1"]` | `width: 100%; justify-content: center;` | Single image container | `posts.css:95-98` |
-| `post[trimmed] p[img][total-images="1"] img` | `height: unset; max-height: 300px;` | Single image override | `posts.css:100-103` |
-| `post[trimmed] p[img], reply[trimmed] p[img], conversation p[img]` | `display: inline-flex;` | Image container display | `posts.css:105-109` |
-| `post[trimmed] p[img]+p[img], reply[trimmed] p[img]+p[img], conversation p[img]+p[img]` | `margin-left: var(--space-sm);` | Multiple image spacing | `posts.css:111-115` |
+| Context | Selector | Properties | File |
+|---------|----------|------------|------|
+| **Base** | `p img` | `max-width: 100%; border-radius: var(--border-radius-md);` | `content-semantics.css` |
+| **Base** | `p` | `margin-top: var(--space-sm);` | Base spacing |
+| **Base** | `p` | `max-width: 100%; overflow: hidden;` | Container constraints |
+| **Trimmed** | `post[trimmed] p img, reply[trimmed] p img, conversation p img` | `cursor: pointer; height: 100px;` | `posts.css:88-93` |
+| **Trimmed Single** | `post[trimmed] p[img][total-images="1"]` | `width: 100%; justify-content: center;` | `posts.css:95-98` |
+| **Trimmed Single** | `post[trimmed] p[img][total-images="1"] img` | `height: unset; max-height: 300px;` | `posts.css:100-103` |
+| **Trimmed Multi** | `post[trimmed] p[img], reply[trimmed] p[img], conversation p[img]` | `display: inline-flex;` | `posts.css:105-109` |
+| **Trimmed Multi** | `post[trimmed] p[img]+p[img], reply[trimmed] p[img]+p[img], conversation p[img]+p[img]` | `margin-left: var(--space-sm);` | `posts.css:111-115` |
 
 **Key Behaviors:**
-- **Trimmed context**: Fixed 100px height, clickable cursor
-- **Single image special case**: Centered, max-height 300px instead of fixed 100px
-- **Multiple images**: Horizontal spacing between images
-- **Full post context**: No height restrictions, images size naturally with max-width 100%
+
+| Context | Layout Pattern | Height | Spacing |
+|---------|---------------|--------|---------|
+| **Full Posts** | Vertical stacking: separate `<p img>` blocks | Natural (max-width: 100%) | `margin-top: var(--space-sm)` between containers |
+| **Trimmed Posts (Multi)** | Horizontal flexbox: `inline-flex` containers | Fixed 100px | `margin-left: var(--space-sm)` between containers, wraps when needed |
+| **Trimmed Posts (Single)** | Centered container | max-height 300px (not fixed) | N/A |
+
+**Critical Layout Difference:**
+- **Full posts**: Each image in separate block container, stack vertically
+- **Trimmed posts**: Images in flex containers, flow horizontally with wrapping
 
 ### 2. Reply Images (`renderReply.js:214-227`)
 
@@ -159,8 +167,19 @@ This document comprehensively maps all image rendering locations and their assoc
 
 ## Masonry Implementation Considerations
 
-1. **Height Override Required**: Most images have fixed 100px height that will need dimension-based override
-2. **Single Image Exception**: Already uses aspect-ratio-friendly max-height approach
-3. **Container Layout**: `inline-flex` containers support masonry column layouts
-4. **Profile Pictures**: Separate circular system, not affected by masonry
-5. **Image Previews**: Fixed-height preview system, separate from content images
+### Masonry Candidates (Feed Pages)
+- **Main posts feed**: Trimmed posts with 100px height constraint and wrapping
+- **Favorites page**: Mixed trimmed posts and replies with 100px height constraint
+- **Topic pages**: Already use alternating column layout
+
+### Not Masonry Candidates
+- **Full post context**: Single post detail pages, vertical stacking optimal
+- **Message images**: Always 100px height, conversation context
+- **Profile pictures**: Circular system, separate layout concerns
+- **Image previews**: Upload interface, fixed grid layout
+
+### Technical Complexity
+- **Trimmed context wrapping**: Width varies by aspect ratio (1024×100 → 1024px wide, 100×1024 → 0.1px wide)
+- **Mixed content**: Favorites page combines posts and replies with different indentation
+- **Row height calculation**: Need to determine total height when images wrap to multiple rows
+- **Stored dimensions**: Use image_dimensions data to calculate widths from 100px height constraint
