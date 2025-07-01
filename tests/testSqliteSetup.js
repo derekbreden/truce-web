@@ -3,7 +3,7 @@ const fs = require("fs")
 const path = require("path")
 
 // Test environment timestamp constant - used for deterministic test runs
-const TEST_BASE_TIMESTAMP = '2025-06-01T00:00:00'
+const TEST_BASE_TIMESTAMP = "2025-06-01T00:00:00"
 
 let testDb = null
 
