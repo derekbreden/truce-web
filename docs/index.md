@@ -1,33 +1,52 @@
 # Documentation
 
-This documentation is organized into three main categories:
+This documentation covers a **social media platform** with several non-standard architectural approaches that differentiate it from typical web applications.
 
 ## Standards
 Development conventions and coding standards to ensure consistency across the codebase.
 
-- **[CSS Standards](standards/css.md)** - Property ordering, comments, design tokens
-- **[JavaScript Standards](standards/javascript.md)** - Naming conventions, client-side patterns, Flint.js usage
-- **[Database Standards](standards/database.md)** - SQL style, schema patterns, ID conventions
+- **[CSS Standards](standards/css.md)** - Semantic attribute system, custom elements, design token architecture
+- **[JavaScript Standards](standards/javascript.md)** - Non-standard module system, global state management, Flint.js patterns
+- **[Database Standards](standards/database.md)** - Denormalization strategy, UUID conventions, aggressive counter caching
 
 ## Architecture  
-High-level system design and technical approaches.
+High-level system design and technical approaches unique to this platform.
 
-- **[Testing Architecture](architecture/testing.md)** - Full-stack integration testing approach
-- **[Client-Side Modules](architecture/client-modules.md)** - Non-standard global module system
-- **[Real-Time Features](architecture/realtime.md)** - WebSocket UPDATE notification patterns
+- **[Testing Architecture](architecture/testing.md)** - Complete application simulation in JSDOM with 24 scenarios in 8 seconds
+- **[Client-Side Modules](architecture/client-modules.md)** - Server-side includes creating global scope across all client files
+- **[Real-Time Features](architecture/realtime.md)** - WebSocket integration with bidirectional communication patterns
 
 ## Reference
 Quick reference guides for working with specific systems.
 
-- **[API Endpoints](reference/api-endpoints.md)** - Server endpoints and authentication requirements
-- **[CSS-UI Guide](reference/css-ui-guide.md)** - Custom elements and semantic attributes reference
+- **[API Endpoints](reference/api-endpoints.md)** - Single `/session` route with middleware chain processing
+- **[CSS-UI Guide](reference/css-ui-guide.md)** - Complete inventory of 30+ custom elements and semantic attributes
+
+## Key Architectural Patterns
+
+This codebase implements several **non-standard patterns** that require understanding before making changes:
+
+### Non-Standard Module System
+All client JavaScript files are concatenated via server-side includes, creating a **global scope** where all `const`/`let` declarations are shared. No traditional imports/exports exist.
+
+### Semantic CSS Architecture  
+CSS uses **custom HTML elements** (`<posts>`, `<conversation>`, `<message>`) and **semantic attributes** (`[muted]`, `[center]`, `[favorited]`) instead of CSS classes.
+
+### Single API Endpoint
+All server communication flows through **one `/session` endpoint** with a middleware chain that processes multiple operations per request based on request body content.
+
+### Aggressive Client Caching
+The client maintains an **aggressive caching layer** with `counts_max_create_date` timestamps to minimize server requests while keeping real-time data synchronized.
+
+### Complete Test Simulation
+Tests simulate the **entire application stack** in JSDOM with perfect mocking of external dependencies while exercising 100% of actual code paths.
 
 ## For AI Assistants
 
 These documents are designed to be:
-- **Concise** - Quick to read and understand
-- **Practical** - Focused on actionable patterns and standards  
+- **Comprehensive** - Cover all architectural decisions and their rationale
+- **Practical** - Focus on actionable patterns with working examples  
 - **Stable** - Based on established patterns, not implementation details
-- **Organized** - Easy to find relevant information
+- **Code-First** - Derived from deep analysis of actual implementation
 
-When working on this codebase, read the relevant standards and architecture docs first to understand the project's unique approaches and conventions.
+**Critical for new contributors**: This codebase uses non-standard approaches throughout. Reading the architecture and standards documentation is essential before making any changes, as conventional web development patterns may not apply.
