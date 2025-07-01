@@ -1,4 +1,4 @@
-# CSS Organization Standards
+# CSS Standards
 
 ## Property Order
 
@@ -40,3 +40,13 @@ No section header needed - let the selectors speak for themselves.
 2. Avoid creating sections for isolated rulesets  
 3. Prioritize natural reading flow over rigid categorization
 4. Group by purpose/function, not just by selector type
+
+## Design Tokens
+
+Use CSS custom properties from `design-tokens.css`:
+- **Colors**: Use semantic tokens like `var(--color-text-primary)` over hardcoded values
+- **Spacing**: Use `var(--space-*)` scale instead of arbitrary pixel values  
+- **Typography**: Use `var(--font-size-*)` scale for consistent sizing
+- **Icons**: Use `var(--icon-*)` sizes for consistent visual weight
+
+**Exception**: Intentional design choices like header/footer split backgrounds should not use theme-responsive tokens.
