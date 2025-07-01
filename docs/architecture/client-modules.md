@@ -19,12 +19,21 @@ This project uses a unique client-side architecture that differs from standard J
 ### File Structure
 ```
 client/
-├── js/
-│   ├── core.js           # Core utilities and setup
-│   ├── navigation.js     # Routing and navigation
-│   ├── posts.js         # Post-related functionality
-│   ├── conversations.js # Messaging features
-│   └── ...              # Other feature files
+├── flint.js              # Global $ function (selector + template engine)
+├── startSession.js       # Session initialization and fetch wrapper
+├── goToPath.js          # Client-side routing and navigation
+├── renderPage.js        # Main UI orchestration function
+├── renderPosts.js       # Post list rendering
+├── renderMessages.js    # Real-time messaging UI
+├── modals.js           # Modal dialog functions
+├── websocket.js        # WebSocket communication
+├── css/                # Organized CSS architecture
+│   ├── foundation/     # Design tokens, fonts, animations
+│   ├── layout/         # Base, header, footer, navigation
+│   ├── attributes/     # Semantic attribute classes
+│   ├── features/       # Post, conversation, profile styles
+│   └── interactions/   # Forms, modals, actions
+└── ...                 # 40+ other specialized files
 ```
 
 ## Development Patterns
@@ -39,10 +48,10 @@ client/
 - Use IIFE (Immediately Invoked Function Expressions) for initialization
 - Leverage DOM events for coordination between files
 
-### Dependencies
-- Files load in order defined by server concatenation
-- Earlier files can define utilities used by later files
-- No explicit dependency management
+### File Organization
+- Files are organized by functionality: core utilities, navigation, rendering, actions
+- Loading order is for organization, not dependencies
+- Application initialization happens after all files are loaded
 
 ## Benefits
 
@@ -54,17 +63,32 @@ client/
 ## Considerations
 
 - **Global pollution**: All variables share global namespace
-- **Load order**: File order matters for dependencies
+- **Organization**: File order is for readability, not dependencies
 - **Testing**: Requires special handling in test environment
 - **Scaling**: May become unwieldy with very large codebases
 
 ## Flint.js Integration
 
-The global `$()` function from Flint.js is available everywhere:
+The global `$()` function from Flint.js provides two modes:
+
+**Selector Mode** (jQuery-like element selection):
 ```javascript
-// Works in any client file
 const $button = $("button")
 const $posts = $("posts post")
+```
+
+**Template Mode** (indentation-based element creation):
+```javascript
+const $modal = $(
+  `
+  modal-wrapper
+    modal[confirm]
+      $1
+      button-wrapper
+        button[confirm][close] Yes, I am sure
+  `,
+  [message],
+)
 ```
 
 ## Best Practices
