@@ -165,21 +165,35 @@ This document comprehensively maps all image rendering locations and their assoc
 - **`content-semantics.css`**: Base `p img` rules
 - **`replies.css`**: Reply indentation affecting images
 
-## Masonry Implementation Considerations
+## Image Dimension Implementation
 
-### Masonry Candidates (Feed Pages)
-- **Main posts feed**: Trimmed posts with 100px height constraint and wrapping
-- **Favorites page**: Mixed trimmed posts and replies with 100px height constraint
-- **Topic pages**: Already use alternating column layout
+### Images That Need Dimension Attributes
 
-### Not Masonry Candidates
-- **Full post context**: Single post detail pages, vertical stacking optimal
-- **Message images**: Always 100px height, conversation context
-- **Profile pictures**: Circular system, separate layout concerns
-- **Image previews**: Upload interface, fixed grid layout
+**Goal**: Set width/height attributes to prevent content shift when images load.
 
-### Technical Complexity
-- **Trimmed context wrapping**: Width varies by aspect ratio (1024×100 → 1024px wide, 100×1024 → 0.1px wide)
-- **Mixed content**: Favorites page combines posts and replies with different indentation
-- **Row height calculation**: Need to determine total height when images wrap to multiple rows
-- **Stored dimensions**: Use image_dimensions data to calculate widths from 100px height constraint
+#### Fixed Height Images (100px)
+- **Contexts**: `post[trimmed] p img`, `reply[trimmed] p img`, `conversation p img`
+- **Calculation**: `width = (naturalWidth / naturalHeight) * 100px`
+- **Implementation**: Parse stored dimensions, calculate width, set both attributes
+
+#### Variable Height Images (max-height 300px)  
+- **Context**: `post[trimmed] p[total-images="1"] img`
+- **Calculation**: Scale to fit within max-height constraint
+- **Implementation**: Calculate both width and height to maintain aspect ratio
+
+#### No Dimension Setting Needed
+- **Profile pictures**: Fill fixed circular containers
+- **Image previews**: Upload interface with fixed sizing
+- **Full post images**: Natural sizing with max-width constraint
+
+### Implementation Pattern
+
+```javascript
+// In renderPost.js, renderReply.js, renderMessages.js
+const dimensions = parseDimensions(storedDimensions)
+const [width, height] = calculateRenderedDimensions(dimensions, context)
+img.width = width
+img.height = height
+```
+
+This prevents content shift without requiring complex layout calculations.

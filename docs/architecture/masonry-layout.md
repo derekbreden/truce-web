@@ -1,139 +1,78 @@
-# Masonry Layout Implementation Analysis
+# Image Dimension Setting for Content Stability
 
-Analysis of the specific challenges and requirements for implementing masonry layout in feed contexts.
+Preventing content shift by setting image dimensions based on stored data.
 
-## Masonry Target Contexts
+## Current Goal
 
-### 1. Main Posts Feed (`/posts`)
-- **Content**: Trimmed posts only
-- **Current Layout**: Vertical list with wrapping multi-image posts
-- **Masonry Goal**: Distribute posts across columns based on content height
+**Set image width/height attributes to prevent content shift when images load.**
 
-### 2. Favorites Page (`/favorites`) 
-- **Content**: Mixed trimmed posts and trimmed replies
-- **Current Layout**: Vertical list, already has alternating column CSS on topic pages
-- **Masonry Goal**: Distribute mixed content across columns
-- **Complexity**: Posts and replies have different indentation/width
+We have image dimensions stored for all images. The next step is to calculate the actual rendered width/height and set those values on `<img>` elements so there's no layout shift when images finish loading.
 
-### 3. Topic Pages (`/topic/*`)
-- **Content**: Trimmed posts only
-- **Current Layout**: Already uses alternating column layout
-- **Masonry Goal**: May already be solved, need to verify
+## Stored Image Data
 
-## Critical Problems to Solve
+**Database**: `image_dimensions` column contains comma-separated dimensions: `"1024,100,512,512,..."`
+**Processing**: Images processed to max 1024px on longest side via `imageToPng()`
 
-### Problem 1: Multi-Image Height Calculation
+## Image Contexts That Need Dimensions
 
-**Current Behavior**: 
-- Images forced to 100px height in trimmed contexts
-- Width calculated from aspect ratio: `width = (naturalWidth / naturalHeight) * 100`
-- Very wide images (1024×100) become 1024px wide
-- Very tall images (100×1024) become ~10px wide
-- Images wrap to new rows when total width exceeds container
+### 1. Trimmed Posts (`post[trimmed] p img`)
+- **CSS**: `height: 100px` fixed height
+- **Width calculation**: `width = (naturalWidth / naturalHeight) * 100`
+- **Implementation**: Calculate width from stored dimensions, set both width and height attributes
 
-**What We Need**:
-- Calculate total content height when images wrap
-- Determine row count and spacing between rows
-- Account for `margin-top: var(--space-sm)` between image containers
+### 2. Trimmed Replies (`reply[trimmed] p img`) 
+- **CSS**: `height: 100px` fixed height (same as posts)
+- **Width calculation**: Same as posts
+- **Implementation**: Same as posts
 
-**What We Know**:
-- Stored dimensions in `image_dimensions` column: "1024,100,512,512,..."
-- Images processed to max 1024px on longest side via `imageToPng()`
-- CSS: `height: 100px` on images, `margin-left: var(--space-sm)` between containers
+### 3. Single Images (`post[trimmed] p[total-images="1"] img`)
+- **CSS**: `height: unset; max-height: 300px`
+- **Width calculation**: Maintain aspect ratio, scale to fit max-height
+- **Implementation**: Calculate both width and height to fit within max-height constraint
 
-**What We Don't Know**:
-- Exact container width for wrap calculations
-- Space between wrapped rows
-- How margins/padding affect total height
+### 4. Message Images (`conversation p img`)
+- **CSS**: `height: 100px` fixed height
+- **Width calculation**: Same as trimmed posts
+- **Implementation**: Same as trimmed posts
 
-### Problem 2: Mixed Content Heights (Favorites Page)
+### 5. Profile Pictures
+- **CSS**: Fixed circular containers (40px or 120px)
+- **Implementation**: Images fill container, no dimension calculation needed
 
-**Current Behavior**:
-- Posts and replies mixed in single feed
-- Different indentation: `reply>p` has `margin-left: var(--reply-indent); width: var(--reply-width)`
-- Both use same trimmed image rules
+## Implementation Approach
 
-**What We Need**:
-- Height calculation for both post and reply content
-- Account for reply indentation reducing available width
-- Handle different content widths in same masonry layout
+### Simple Strategy
+1. **Parse stored dimensions** from database
+2. **Calculate rendered dimensions** based on CSS context
+3. **Set width/height attributes** on `<img>` elements during rendering
+4. **Let CSS handle the rest** - no layout calculations needed
 
-**What We Know**:
-- Both posts and replies use `post[trimmed] p img` and `reply[trimmed] p img` → `height: 100px`
-- Reply containers have width constraints
+### Calculation Examples
 
-**What We Don't Know**:
-- Exact reply indentation values
-- How width differences affect image wrapping
-- Whether replies need separate masonry calculation
+```javascript
+// For 100px height contexts (trimmed posts/replies/messages)
+const [naturalWidth, naturalHeight] = storedDimensions
+const renderedWidth = (naturalWidth / naturalHeight) * 100
+const renderedHeight = 100
 
-### Problem 3: Text Content Height
+// For single images with max-height 300px
+const maxHeight = 300
+const scale = Math.min(1, maxHeight / naturalHeight)
+const renderedWidth = naturalWidth * scale  
+const renderedHeight = naturalHeight * scale
+```
 
-**Current Behavior**:
-- Text content trimmed to ~500 characters on favorites page
-- Unknown height calculation for text blocks
+### Benefits
+- **No content shift** when images load
+- **Simple implementation** - just set attributes during rendering
+- **No complex calculations** about wrapping or layout
+- **Works with existing CSS** - let CSS handle positioning/flow
 
-**What We Need**:
-- Reliable text height calculation
-- Account for line breaks, padding, margins
-- Handle text + image combinations
+## Next Steps
 
-**What We Know**:
-- Text trimming happens in `renderReply.js` and `renderPost.js`
-- Uses `characters_used < 500` limit
+1. **Add dimension calculation** to image rendering functions
+2. **Set width/height attributes** on all `<img>` elements
+3. **Test that content remains stable** during image loading
+4. **Verify responsive behavior** still works correctly
 
-**What We Don't Know**:
-- Line height calculations
-- Text container CSS that affects height
-- Font size and spacing variations
-
-### Problem 4: Container Width Detection
-
-**What We Need**:
-- Accurate container width for image wrapping calculations
-- Account for different contexts (posts vs replies)
-- Handle responsive width changes
-
-**What We Don't Know**:
-- How to reliably detect container width
-- Whether width changes require recalculation
-- Mobile vs desktop width differences
-
-## Technical Approach Questions
-
-### Height Calculation Strategy
-1. **Static Analysis**: Calculate heights from stored dimensions + CSS rules
-2. **Runtime Measurement**: Render content and measure actual heights
-3. **Hybrid**: Static calculation with runtime verification
-
-### Image Processing Pipeline
-1. **When**: Calculate heights during feed rendering vs pre-calculate
-2. **Where**: Client-side calculation vs server-side preparation
-3. **Caching**: Store calculated heights vs recalculate each time
-
-### Layout Distribution
-1. **Algorithm**: Simple alternating vs height-based optimal distribution
-2. **Reflow**: How to handle dynamic content loading (infinite scroll)
-3. **Responsive**: How to handle width changes
-
-## Evidence Needed
-
-### Container Measurements
-- Exact pixel widths for post and reply containers
-- Margin/padding values that affect available width
-- How `var(--space-sm)` resolves to pixel values
-
-### Image Wrapping Behavior  
-- Precise wrap points for different aspect ratios
-- Row heights with wrapped images
-- Spacing between wrapped rows
-
-### Text Height Patterns
-- Actual rendered heights for different text lengths
-- Line height and font size values
-- Padding/margin around text blocks
-
-### Performance Constraints
-- How many items need height calculation
-- Acceptable calculation time for feed rendering
-- Memory usage for storing calculated heights
+This approach solves the content shift problem without requiring complex masonry layout calculations.
