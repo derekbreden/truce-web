@@ -14,10 +14,10 @@
 
 ### Implementation
 ```javascript
-// Server side - when content changes
+// Server side - when content changes (savePost.js)
 req.sendWsMessage("UPDATE", { post_id: post_id })
 
-// Client side - WebSocket handler
+// Client side - WebSocket handler (websocket.js)
 ws.addEventListener("message", (event) => {
     if (event.data === "UPDATE") {
         getMoreRecent()  // Makes HTTP call to fetch fresh data
@@ -57,9 +57,15 @@ if (message.session_uuid) {
 {
     type: "INSTANT_ALERT",
     push_data: { title: "New Reply", body: "..." },
-    reply_notification_id: 123
+    reply_notification_id: 123,
+    message_notification_id: 456
 }
 ```
+
+**Acknowledgment Flow:**
+- Client receives instant alert and shows notification banner
+- Client sends `INSTANT_ALERT_ACK` with notification IDs
+- Server removes notification from push queue to prevent duplicate push notifications
 
 ### Typing Indicators  
 ```javascript
@@ -69,6 +75,11 @@ if (message.session_uuid) {
     user_id: 789
 }
 ```
+
+**Real-time Flow:**
+- User types → sends `TYPING_HEARTBEAT` every 1.5 seconds
+- Server forwards `TYPING_INDICATOR` to conversation participants  
+- Client shows/hides typing indicator with 3-second timeout
 
 **Note**: These are exceptions to the main pattern. Most real-time updates use the UPDATE → HTTP pattern.
 
@@ -91,38 +102,63 @@ const reconnectWs = () => {
 ```
 
 ### Server-Side Context Tracking
-Server tracks what each client is viewing for targeted updates:
+Server tracks what each client is viewing for targeted updates (`websocket.js`):
 
 ```javascript
-// Posts/replies
+// Posts/replies - extract from URL slug
 if (message.path.startsWith("/post/")) {
-    ws.active_post_id = extractPostId(message.path)
+    const post = await pool_client.query(`SELECT post_id FROM posts WHERE slug = $1`, 
+        [message.path.split("/")[2]])
+    ws.active_post_id = post.rows.length ? post.rows[0].post_id : false
 }
 
-// Conversations  
+// Conversations - verify user participation
 if (message.path.startsWith("/messages/")) {
-    ws.active_conversation_id = extractConversationId(message.path)
+    const conversation_id = Number(message.path.split("/")[2])
+    const access_check = await pool_client.query(
+        `SELECT conversation_id FROM conversation_users WHERE conversation_id = $1 AND user_id = $2`,
+        [conversation_id, ws.user_id])
+    ws.active_conversation_id = access_check.rows.length ? conversation_id : false
 }
 ```
 
+**Smart Targeting Logic (`websocket.js`):**
+- **post_id**: Send to clients viewing that post OR clients with no `active_post_id` set
+- **user_id**: Send to that specific user OR clients with no `user_id` set
+- **conversation_id**: Send to clients in that conversation OR clients with no `active_conversation_id` set
+
+This allows both authenticated and anonymous users to receive relevant updates.
+
 ## Data Freshness via HTTP
 
-The `getMoreRecent()` function makes intelligent HTTP requests:
+The `getMoreRecent()` function (`startSession.js`) makes intelligent HTTP requests:
 
 ```javascript
 fetch("/session", {
-    method: "POST",
+    method: "POST", 
     body: JSON.stringify({
         path: current_path,
         min_post_create_date: client_max_post_date,
         min_reply_create_date: client_max_reply_date,
         min_message_create_date: client_max_message_date,
+        min_notification_unread_create_date: client_max_notification_unread_date,
+        min_notification_read_create_date: client_max_notification_read_date,
+        min_conversation_last_activity_date: client_max_conversation_last_activity_date,
+        min_counts_create_date,  // For reply/favorite counts
         // ... other timestamps
     })
 })
 ```
 
-Server responds with only data newer than client timestamps, enabling efficient incremental updates.
+**Smart Incremental Updates:**
+- Client sends timestamps for ALL content types but **path determines which queries run**:
+  - `/post/[slug]` → Posts and replies queries (uses `min_post_create_date`, `min_reply_create_date`)
+  - `/messages/[id]` → Messages query (uses `min_message_create_date`)
+  - `/notifications` → Notifications query (uses notification timestamps)
+  - `/conversations` → Conversations query (uses `min_conversation_last_activity_date`)
+- Server returns only items newer than relevant timestamps for that path
+- Client merges new items, removes duplicates, and re-renders
+- Preserves scroll position and flashes new content
 
 ## Why This Pattern
 
