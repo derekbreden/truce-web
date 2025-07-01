@@ -5,9 +5,9 @@ This documentation covers a **social media platform** with several non-standard 
 ## Standards
 Development conventions and coding standards to ensure consistency across the codebase.
 
-- **[CSS Standards](standards/css.md)** - Semantic attribute system, custom elements, design token architecture
-- **[JavaScript Standards](standards/javascript.md)** - Non-standard module system, global state management, Flint.js patterns
-- **[Database Standards](standards/database.md)** - Denormalization strategy, UUID conventions, aggressive counter caching
+- **[CSS Standards](standards/css.md)** - Property ordering, naming conventions, file organization
+- **[JavaScript Standards](standards/javascript.md)** - Naming conventions, code style, DOM patterns  
+- **[Database Standards](standards/database.md)** - SQL style, schema patterns, data type conventions
 
 ## Architecture  
 High-level system design and technical approaches unique to this platform.
@@ -19,8 +19,8 @@ High-level system design and technical approaches unique to this platform.
 ## Reference
 Quick reference guides for working with specific systems.
 
-- **[API Endpoints](reference/api-endpoints.md)** - Single `/session` route with middleware chain processing
-- **[CSS-UI Guide](reference/css-ui-guide.md)** - Complete inventory of 30+ custom elements and semantic attributes
+- **[API Endpoints](reference/api-endpoints.md)** - Request/response formats for all endpoints
+- **[CSS-UI Guide](reference/css-ui-guide.md)** - Quick lookup tables for custom elements and semantic attributes
 
 ## Key Architectural Patterns
 

@@ -1,13 +1,10 @@
 # API Endpoints Reference
 
-## API Architecture Overview
+## API Overview
 
-All endpoints are handled through a **single `/session` route** with middleware chain processing:
-- **Middleware pattern**: 20+ middleware functions process each request sequentially  
-- **Request accumulation**: Middleware adds results to `req.results` object
-- **Path-based routing**: `req.body.path` determines which middleware executes
-- **Session validation**: Optional authentication via `session_uuid` cookie/header
-- **Denormalized counters**: Updates trigger count recalculation with `counts_max_create_date`
+**Single Endpoint**: All requests go to `POST /session`  
+**Authentication**: Optional via `session_uuid` cookie/header  
+**Routing**: `req.body.path` determines response content
 
 ## Session Requirements
 
