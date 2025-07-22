@@ -1,15 +1,15 @@
 const loadingPage = (first_render, skip_state, clicked_back) => {
 	if (!first_render) {
 		if (clicked_back) {
-			$("main-content-wrapper[active]").setAttribute("clicked-back", "")
+			$old("main-content-wrapper[active]").setAttribute("clicked-back", "")
 		} else {
-			$("main-content-wrapper[active]").removeAttribute("clicked-back")
+			$old("main-content-wrapper[active]").removeAttribute("clicked-back")
 		}
-		$("main-content-wrapper[active]").setAttribute("inactive", "")
-		$("main-content-wrapper[active]").removeAttribute("active")
+		$old("main-content-wrapper[active]").setAttribute("inactive", "")
+		$old("main-content-wrapper[active]").removeAttribute("active")
 	}
-	$("body").appendChild(
-		$(
+	$old("body").appendChild(
+		$old(
 			`
 			main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
 				main-content
@@ -20,12 +20,12 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	)
 	bindScrollEvent()
 	setTimeout(() => {
-		$("main-content-wrapper[inactive]")?.remove()
+		$old("main-content-wrapper[inactive]")?.remove()
 	}, 250)
-	// $("[add-new-reply]")?.remove()
+	// $old("[add-new-reply]")?.remove()
 	if (!first_render) {
-		$("main-content-wrapper[active] main-content").appendChild(
-			$(
+		$old("main-content-wrapper[active] main-content").appendChild(
+			$old(
 				`
 				posts-loading
 					h2
@@ -37,10 +37,10 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	}
 	if (state.path === "/posts" || state.path === "/posts/all") {
 		if (!state.active_add_new_post?.is_root) {
-			$(
+			$old(
 				"main-content-wrapper[active] main-content > add-new:first-child",
 			)?.remove()
-			$("main-content-wrapper[active] main-content").prepend(showAddNewPost())
+			$old("main-content-wrapper[active] main-content").prepend(showAddNewPost())
 		}
 	}
 
@@ -49,8 +49,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 
 	// Welcome page
 	if (state.path === "/") {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
 				posts
 					post[line-after]
@@ -76,7 +76,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				[
 					!window.webkit
 					&& document.referrer !== "android-app://net.truce.twa/"
-						? $(
+						? $old(
 							`
 								post[line-after]
 									app-store-wrapper
@@ -95,8 +95,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				],
 			),
 		)
-		$("main-content-wrapper[active] main-content-2").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content-2").replaceChildren(
+			$old(
 				`
 				posts
 					post[line-after]
@@ -160,7 +160,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			),
 		)
 
-		$("main-content-wrapper[active")
+		$old("main-content-wrapper[active")
 			.$("[href]")
 			.forEach(($el) => {
 				$el.on("click", ($event) => {
@@ -181,8 +181,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 
 	// Privacy page
 	if (state.path === "/privacy") {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
 				tab-wrapper[line-after]
 					tab-item
@@ -206,7 +206,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				`,
 			),
 		)
-		$("main-content-wrapper[active] main-content tab-wrapper").on(
+		$old("main-content-wrapper[active] main-content tab-wrapper").on(
 			"click",
 			() => {
 				goToPath("/")
@@ -215,7 +215,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	}
 
 	if (state.path === "/settings") {
-		const $settings = $(
+		const $settings = $old(
 			`
 			posts
 				post[line-after]
@@ -244,13 +244,13 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			[
 				state.user_slug,
 				state.profile_picture_uuid
-					? $(
+					? $old(
 						`
 							img[src=$1]
 							`,
 						["/image/" + state.profile_picture_uuid],
 					)
-					: $(
+					: $old(
 						`
 						icon[profile-picture]
 						`
@@ -264,9 +264,9 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 				goToPath(`/user/${$button.getAttribute("slug")}`)
 			})
 		})
-		$("main-content-wrapper[active] main-content").replaceChildren($settings)
+		$old("main-content-wrapper[active] main-content").replaceChildren($settings)
 
-		$("main-content-wrapper[active] [profile-picture] input[image]")?.on(
+		$old("main-content-wrapper[active] [profile-picture] input[image]")?.on(
 			"change",
 			editProfilePicture,
 		)
@@ -296,7 +296,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		})
 		$settings.$("[remove]").on("click", ($event) => {
 			$event.preventDefault()
-			const $remove_modal = $(
+			const $remove_modal = $old(
 				`
 					modal-wrapper
 						modal[info]
@@ -333,7 +333,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						if (!data || !data.success) {
 							modalError("Server error removing account")
 						} else {
-							$("modal-wrapper")?.remove()
+							$old("modal-wrapper")?.remove()
 							modalInfo("Account removed")
 							state.user_id = ""
 							state.display_name = ""
@@ -351,8 +351,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			})
 			$remove_modal.$("[cancel]").on("click", removeModalCancel)
 			$remove_modal.$("modal-bg").on("click", removeModalCancel)
-			$("modal-wrapper")?.remove()
-			$("body").appendChild($remove_modal)
+			$old("modal-wrapper")?.remove()
+			$old("body").appendChild($remove_modal)
 		})
 	}
 }

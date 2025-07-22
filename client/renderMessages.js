@@ -4,7 +4,7 @@ const other_user_typing_display_timeouts = {}
 
 const renderMessageImages = (image_uuids) => {
 	return image_uuids.reverse().map(image_uuid => {
-		const $image = $(
+		const $image = $old(
 			`
 			p[img]
 				img[src=$1]
@@ -28,7 +28,7 @@ const renderMessage = (message) => {
 	
 	let $message_body = markdownToElements(message.body)
 
-	const $message = $(
+	const $message = $old(
 		`
 		message[own=$1]
 			message-header
@@ -50,13 +50,13 @@ const renderMessage = (message) => {
 		[
 			is_own_message ? "true" : "false",
 			message.profile_picture_uuid
-				? $(
+				? $old(
 					`
 					img[src=$1]
 					`,
 					["/image/" + message.profile_picture_uuid]
 				)
-				: $(
+				: $old(
 					`
 					icon[profile-picture]
 					`
@@ -64,7 +64,7 @@ const renderMessage = (message) => {
 			message.user_slug,
 			renderName(message.display_name, message.display_name_index),
 			message.user_verified
-				? $(
+				? $old(
 					`
 					icon[verified]
 					`
@@ -73,7 +73,7 @@ const renderMessage = (message) => {
 			time_ago,
 			is_own_message ? getMessageReadStatus(message) : "",
 			message.note
-				? $(
+				? $old(
 					`
 					info-wrapper
 						info
@@ -103,18 +103,18 @@ const renderMessages = (messages, conversation) => {
 		let scroll_distance_from_bottom = 0
 
 		// If we have already rendered messages once
-		if ($("messages")) {
+		if ($old("messages")) {
 
 			// We can calculate the distance from the bottom as:
 			scroll_distance_from_bottom =
-				$("messages").scrollHeight
-				- $("messages").scrollTop
-				- $("messages").clientHeight
+				$old("messages").scrollHeight
+				- $old("messages").scrollTop
+				- $old("messages").clientHeight
 		
 		// Else this is the first render
 		} else {
-			$("main-content-wrapper[active] main-content").appendChild(
-				$(
+			$old("main-content-wrapper[active] main-content").appendChild(
+				$old(
 					`
 					messages-container
 						messages
@@ -132,13 +132,13 @@ const renderMessages = (messages, conversation) => {
 			)
 
 			// Set up message sending
-			const $textarea = $("main-content-wrapper[active] textarea")
+			const $textarea = $old("main-content-wrapper[active] textarea")
 			const pngs = []
 			
 			const addMessageError = (error) => {
-				$("message-input-area error")?.remove()
-				$("message-input-area").prepend(
-					$(
+				$old("message-input-area error")?.remove()
+				$old("message-input-area").prepend(
+					$old(
 						`
 						error
 							$1
@@ -149,17 +149,17 @@ const renderMessages = (messages, conversation) => {
 			}
 
 			const previewPngs = () => {
-				$("message-input-area image-previews")?.remove()
+				$old("message-input-area image-previews")?.remove()
 				if (pngs.length) {
-					$("message-input-area").prepend(
-						$(
+					$old("message-input-area").prepend(
+						$old(
 							`
 							image-previews
 							`
 						)
 					)
 					pngs.forEach((png, i) => {
-						const $preview = $(
+						const $preview = $old(
 							`
 							preview
 								remove-icon
@@ -171,13 +171,13 @@ const renderMessages = (messages, conversation) => {
 							pngs.splice(i, 1)
 							previewPngs()
 						})
-						$("message-input-area image-previews").appendChild($preview)
+						$old("message-input-area image-previews").appendChild($preview)
 					})
 				}
 			}
 
-			$("message-input-area input[image]").on("change", () => {
-				Array.from($("message-input-area input[image]").files).forEach((file) => {
+			$old("message-input-area input[image]").on("change", () => {
+				Array.from($old("message-input-area input[image]").files).forEach((file) => {
 					const reader = new FileReader()
 					reader.onload = ($event) => {
 						imageToPng($event.target.result, (png) => {
@@ -198,8 +198,8 @@ const renderMessages = (messages, conversation) => {
 				stopTypingHeartbeats()
 				
 				if ((message_body || pngs.length) && conversation) {
-					$("message-input-area").prepend(
-						$(
+					$old("message-input-area").prepend(
+						$old(
 							`
 								info Validating...
 							`,
@@ -215,11 +215,11 @@ const renderMessages = (messages, conversation) => {
 					})
 						.then(response => response.json())
 						.then(data => {
-							$("message-input-area info")?.remove()
+							$old("message-input-area info")?.remove()
 							if (data.error) {
 								addMessageError(data.error)
 							} else {
-								$("message-input-area error")?.remove()
+								$old("message-input-area error")?.remove()
 								pngs.splice(0, pngs.length)
 								previewPngs()
 								// Refresh messages
@@ -227,14 +227,14 @@ const renderMessages = (messages, conversation) => {
 							}
 						})
 						.catch(error => {
-							$("message-input-area info")?.remove()
+							$old("message-input-area info")?.remove()
 							console.error("Error sending message:", error)
 							addMessageError("Network error sending message")
 						})
 				}
 			}
 
-			$("message-input-area button[submit]").on("click", send_message)
+			$old("message-input-area button[submit]").on("click", send_message)
 			$textarea.on("keydown", (e) => {
 				if (e.key === "Enter" && !e.shiftKey) {
 					e.preventDefault()
@@ -268,7 +268,7 @@ const renderMessages = (messages, conversation) => {
 			})
 
 			// Set up infinite scroll for loading older messages
-			const $messages = $("messages")
+			const $messages = $old("messages")
 			$messages.on("scroll", () => {
 				// Never do anything if already loading or rendering something
 				if (state.loading_path || state.rendering_messages) {
@@ -335,8 +335,8 @@ const renderMessages = (messages, conversation) => {
 		// END - first render of messages container
 
 		// Always ensure messages has back navigation to conversations (regardless of path history)
-		if (!$("main-content-wrapper[active] main-content tab-wrapper")) {
-			const $messages_tab_wrapper = $(
+		if (!$old("main-content-wrapper[active] main-content tab-wrapper")) {
+			const $messages_tab_wrapper = $old(
 				`
 				tab-wrapper[line-after]
 					tab-item
@@ -344,7 +344,7 @@ const renderMessages = (messages, conversation) => {
 						p Conversations
 				`
 			)
-			$("main-content-wrapper[active] main-content").prepend($messages_tab_wrapper)
+			$old("main-content-wrapper[active] main-content").prepend($messages_tab_wrapper)
 			$messages_tab_wrapper.$("tab-item").on("click", () => {
 				goToPath("/conversations")
 			})
@@ -353,11 +353,11 @@ const renderMessages = (messages, conversation) => {
 		// Add participant name to tab-wrapper (only if not already there)
 		if (conversation && conversation.other_user_name) {
 			const other_user_name = renderName(conversation.other_user_name, conversation.other_user_display_name_index)
-			const $existing_tab_wrapper = $("main-content-wrapper[active] main-content tab-wrapper")
+			const $existing_tab_wrapper = $old("main-content-wrapper[active] main-content tab-wrapper")
 			
 			// Only add if participant tab doesn't already exist
 			if ($existing_tab_wrapper && !$existing_tab_wrapper.$("tab-item[right]")) {
-				const $participant_tab = $(
+				const $participant_tab = $old(
 					`
 					tab-item[right]
 						p $1
@@ -373,8 +373,8 @@ const renderMessages = (messages, conversation) => {
 		const $messages = messages.map(renderMessage)
 		
 		if ($messages.length === 0) {
-			$("main-content-wrapper[active] messages").replaceChildren(
-				$(
+			$old("main-content-wrapper[active] messages").replaceChildren(
+				$old(
 					`
 					all-clear-wrapper
 						p Nothing to see here
@@ -382,18 +382,18 @@ const renderMessages = (messages, conversation) => {
 				)
 			)
 		} else {
-			$("main-content-wrapper[active] messages").replaceChildren(
+			$old("main-content-wrapper[active] messages").replaceChildren(
 				...$messages
 			)
 		}
 
 		// Restore our distance from bottom (even and ESPECIALLY, if it was 0)
-		$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight - scroll_distance_from_bottom
-		const $images = $("messages img")
+		$old("messages").scrollTop = $old("messages").scrollHeight - $old("messages").clientHeight - scroll_distance_from_bottom
+		const $images = $old("messages img")
 		if ($images) {
 			$images.forEach($img => {
 				$img.on("load", () => {
-					$("messages").scrollTop = $("messages").scrollHeight - $("messages").clientHeight  - scroll_distance_from_bottom
+					$old("messages").scrollTop = $old("messages").scrollHeight - $old("messages").clientHeight  - scroll_distance_from_bottom
 					state.rendering_messages--
 				})
 				state.rendering_messages++
@@ -422,7 +422,7 @@ const getMessageReadStatus = (message) => {
 
 const updateMessageReadStatus = () => {
 	// Update all messages from current user to show as read
-	const $ownMessages = $("main-content-wrapper[active] messages message[own='true']")
+	const $ownMessages = $old("main-content-wrapper[active] messages message[own='true']")
 	if ($ownMessages) {
 		$ownMessages.forEach($message => {
 			const $readStatus = $message.$("read-status span")
@@ -521,13 +521,13 @@ const updateTypingIndicator = (user_id, is_typing) => {
 // Function to update the typing indicator UI
 const updateTypingIndicatorUI = () => {
 	const typing_users = Object.keys(other_user_typing)
-	const $indicator = $("typing-indicator")
+	const $indicator = $old("typing-indicator")
 	
 	if (typing_users.length > 0 && state.cache[state.path]?.conversation) {
 		if (!$indicator) {
 			const other_user_name = state.cache[state.path].conversation.other_user_name
-			$("message-input-area").prepend(
-				$(
+			$old("message-input-area").prepend(
+				$old(
 					`
 					typing-indicator
 						span ${other_user_name} is typing...
@@ -536,7 +536,7 @@ const updateTypingIndicatorUI = () => {
 			)
 		}
 	} else {
-		$("typing-indicator")?.remove()
+		$old("typing-indicator")?.remove()
 	}
 }
 

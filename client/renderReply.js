@@ -20,7 +20,7 @@ const renderReply = (reply) => {
 		}, [])
 		if (trimmed) {
 			$reply_body.push(
-				$(
+				$old(
 					`
 					p ...
 					`,
@@ -29,7 +29,7 @@ const renderReply = (reply) => {
 		}
 	}
 
-	let $reply = $(
+	let $reply = $old(
 		`
 		reply[flex-column]
 			h3
@@ -47,20 +47,20 @@ const renderReply = (reply) => {
 		[
 			reply.user_slug,
 			reply.profile_picture_uuid
-				? $(
+				? $old(
 					`
 						img[src=$1]
 						`,
 					["/image/" + reply.profile_picture_uuid],
 				)
-				: $(
+				: $old(
 					`
 					icon[profile-picture]
 					`
 				),
 			renderName(reply.display_name, reply.display_name_index),
 			reply.user_verified
-				? $(
+				? $old(
 					`
 						icon[verified]
 						`
@@ -68,7 +68,7 @@ const renderReply = (reply) => {
 				: [],
 			$reply_body,
 			reply.note
-				? $(
+				? $old(
 					`
 						info-wrapper
 							info
@@ -78,7 +78,7 @@ const renderReply = (reply) => {
 					[note_title, note_body],
 				)
 				: [],
-			$(
+			$old(
 				`
 				reply-wrapper[detail-wrapper]
 					detail[favorites][favorited=$1]
@@ -91,12 +91,12 @@ const renderReply = (reply) => {
 				[
 					reply.favorited,
 					reply.favorited
-						? $(
+						? $old(
 							`
 							icon[favorited]
 							`
 						)
-						: $(
+						: $old(
 							`
 							icon[favorites]
 							`
@@ -131,7 +131,7 @@ const renderReply = (reply) => {
 	$reply.$("icon[more]").on("click", ($event) => {
 		$event.preventDefault()
 		$event.stopPropagation()
-		const $more_modal = $(
+		const $more_modal = $old(
 			`
 			modal-wrapper
 				modal[info]
@@ -175,7 +175,7 @@ const renderReply = (reply) => {
 				$event.preventDefault()
 				moreModalCancel()
 				modalConfirm(
-					$(
+					$old(
 						`
 						h2
 							icon[block]
@@ -194,7 +194,7 @@ const renderReply = (reply) => {
 			$event.preventDefault()
 			moreModalCancel()
 			modalConfirm(
-				$(
+				$old(
 					`
 					h2
 						icon[flag]
@@ -208,13 +208,13 @@ const renderReply = (reply) => {
 				},
 			)
 		})
-		$("modal-wrapper")?.remove()
-		$("body").appendChild($more_modal)
+		$old("modal-wrapper")?.remove()
+		$old("body").appendChild($more_modal)
 	})
 	if (reply.image_uuids) {
 		const image_uuids = reply.image_uuids.split(",").reverse()
 		for (const image_uuid of image_uuids) {
-			const $image = $(
+			const $image = $old(
 				`
 				p[img]
 					img[src=$1]

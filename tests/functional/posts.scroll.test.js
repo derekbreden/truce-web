@@ -36,13 +36,13 @@ const tests = {
 		const window = await setupTestEnvironment({
 			sql_statements_to_execute: statements,
 		})
-		const { $ } = window
+		const { $old } = window
 
 		// Verify initial posts
-		assertEquals("Post 10", $("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 10")
+		assertEquals("Post 10", $old("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 10")
 
 		// Mock scroll near bottom
-		const wrapper = $("main-content-wrapper[active]")
+		const wrapper = $old("main-content-wrapper[active]")
 		wrapper.scrollHeight = 2000
 		wrapper.clientHeight = 500
 		wrapper.scrollTop = 1100
@@ -52,7 +52,7 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify new post loaded
-		assertEquals("Post 30", $("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 30 after scroll")
+		assertEquals("Post 30", $old("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 30 after scroll")
 
 		// Scroll again to verify more posts DO load
 		wrapper.scrollHeight = 3000
@@ -60,14 +60,14 @@ const tests = {
 		wrapper.dispatchEvent(new window.Event("scroll"))
 		await new Promise(resolve => setTimeout(resolve, 0))
 		// Verify new post loaded
-		assertEquals("Post 50", $("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 50 after second scroll")
+		assertEquals("Post 50", $old("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should be Post 50 after second scroll")
 
 		// Scroll again to verify more posts DO NOT load
 		wrapper.scrollHeight = 3000
 		wrapper.scrollTop = 2500
 		wrapper.dispatchEvent(new window.Event("scroll"))
 		await new Promise(resolve => setTimeout(resolve, 0))
-		assertEquals("Post 50", $("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should still be Post 50 after no more posts")
+		assertEquals("Post 50", $old("main-content-2 posts post:last-child h2").textContent.trim(), "Last post should still be Post 50 after no more posts")
 
 	},
 }

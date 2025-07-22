@@ -7,55 +7,55 @@ const { assertEquals, runTests } = require("../testRunUtils.js")
 const tests = {
 	testFlow: async () => {
 		const window = await setupTestEnvironment()
-		const { $ } = window
+		const { $old } = window
 		
 		// Step A: Go to favorites page and check default cached favorite
-		$("hamburger").click()
-		$(`menu a[href="/favorites"]`).click()
+		$old("hamburger").click()
+		$old(`menu a[href="/favorites"]`).click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify the existing favorited post is "User B's Post"
 		assertEquals(
 			"User B's Post",
-			$("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
+			$old("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
 			"First favorite should be 'User B's Post' from default cache",
 		)
 		
 		// Step B: Go back to posts and favorite "User A's Post"
-		$("hamburger").click()
-		$(`menu a[href="/posts"]`).click()
+		$old("hamburger").click()
+		$old(`menu a[href="/posts"]`).click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		
 		// Find "User A's Post" (first post) and click its favorite button
 		assertEquals(
 			"User A's Post",
-			$("main-content-2 posts post:first-child h2").textContent.trim(),
+			$old("main-content-2 posts post:first-child h2").textContent.trim(),
 			"First post should be 'User A's Post'",
 		)
 		
 		// Click the favorite button on "User A's Post"
-		$("main-content-2 posts post:first-child detail[favorites]").click()
+		$old("main-content-2 posts post:first-child detail[favorites]").click()
 
 		// Verify the banner appears
 		assertEquals(
 			"Post added to your favorites",
-			$("alert-wrapper alert info").textContent.trim(),
+			$old("alert-wrapper alert info").textContent.trim(),
 			`Alert should say "Post added to your favorites"`,
 		)
 		await new Promise(resolve => setTimeout(resolve, 0))
 		// The banner is no longer present here after the resolve 0, this would crash now:
-		//   $("alert-wrapper alert info").textContent.trim()
+		//   $old("alert-wrapper alert info").textContent.trim()
 		
 		// Step C: Go back to favorites and verify new favorite appears first
-		$("hamburger").click()
-		$(`menu a[href="/favorites"]`).click()
+		$old("hamburger").click()
+		$old(`menu a[href="/favorites"]`).click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify "User A's Post" now appears first in favorites (getMoreRecent was triggered)
 		assertEquals(
 			"User A's Post",
-			$("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
+			$old("main-content-wrapper favorites favorite[post]:first-child post h2").textContent.trim(),
 			"Newly favorited 'User A's Post' should now appear first in favorites",
 		)
 	},

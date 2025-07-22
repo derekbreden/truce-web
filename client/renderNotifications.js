@@ -16,7 +16,7 @@ const renderNotification = (notification) => {
 		}
 		
 		// Message notification rendering
-		const $notification = $(
+		const $notification = $old(
 			`
 	    notification[line-after][unread=$1]
 	      first-column
@@ -62,7 +62,7 @@ const renderNotification = (notification) => {
 			/[^a-z\-]/gi,
 			"",
 		)
-		const $notification = $(
+		const $notification = $old(
 			`
 	    notification[line-after][unread=$1]
 	      column[flex-column]
@@ -83,7 +83,7 @@ const renderNotification = (notification) => {
 				reply_text,
 				short_title,
 				notification.note
-					? $(
+					? $old(
 						`
 	          info[tiny][$1]
 	            b $2
@@ -111,8 +111,8 @@ const renderNotifications = (notifications) => {
 	}
 	getUnreadCountUnseenCount()
 	if (!state.email) {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
         posts[notifications-header]
           post[line-after]
@@ -122,8 +122,8 @@ const renderNotifications = (notifications) => {
 			),
 		)
 	} else if (state.push_available || state.fcm_push_available) {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
         posts[notifications-header]
           post[line-after]
@@ -133,8 +133,8 @@ const renderNotifications = (notifications) => {
 			),
 		)
 	} else if (state.fcm_push_denied) {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
         posts[notifications-header]
           post[line-after]
@@ -144,8 +144,8 @@ const renderNotifications = (notifications) => {
 			),
 		)
 	} else {
-		$("main-content-wrapper[active] main-content").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content").replaceChildren(
+			$old(
 				`
         posts[notifications-header]
           post[line-after]
@@ -160,13 +160,13 @@ const renderNotifications = (notifications) => {
 	}
 	const unread_notifications = notifications.filter((n) => !n.read)
 	const read_notifications = notifications.filter((n) => n.read)
-	const $unread_header = $(
+	const $unread_header = $old(
 		`
     h3[unread-header] $1
     `,
 		[Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"],
 	)
-	const $read_header = $(
+	const $read_header = $old(
 		`
     h3 Read
     `,
@@ -174,7 +174,7 @@ const renderNotifications = (notifications) => {
 	let $unread_allclear = []
 	if (!Boolean(state.unread_count)) {
 		$unread_allclear = [
-			$(
+			$old(
 				`
         all-clear-wrapper
           p Nothing to see here
@@ -185,7 +185,7 @@ const renderNotifications = (notifications) => {
 	let $read_allclear = []
 	if (!read_notifications.length) {
 		$read_allclear = [
-			$(
+			$old(
 				`
       all-clear-wrapper
         p Nothing to see here
@@ -193,32 +193,32 @@ const renderNotifications = (notifications) => {
 			),
 		]
 	}
-	if (!$("main-content-wrapper[active] main-content notifications")) {
-		$("main-content-wrapper[active] main-content").appendChild(
-			$(
+	if (!$old("main-content-wrapper[active] main-content notifications")) {
+		$old("main-content-wrapper[active] main-content").appendChild(
+			$old(
 				`
         notifications[flex-column]
         `,
 			),
 		)
 	}
-	if (!$("main-content-wrapper[active] main-content-2 notifications")) {
-		$("main-content-wrapper[active] main-content-2").appendChild(
-			$(
+	if (!$old("main-content-wrapper[active] main-content-2 notifications")) {
+		$old("main-content-wrapper[active] main-content-2").appendChild(
+			$old(
 				`
         notifications[flex-column]
         `,
 			),
 		)
 	}
-	$("main-content-wrapper[active] main-content notifications").replaceChildren(
+	$old("main-content-wrapper[active] main-content notifications").replaceChildren(
 		...[$unread_header],
 		...$unread_allclear,
 		...unread_notifications
 			.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 			.map(renderNotification),
 	)
-	$(
+	$old(
 		"main-content-wrapper[active] main-content-2 notifications",
 	).replaceChildren(
 		...[$read_header],
@@ -256,7 +256,7 @@ const renderNotifications = (notifications) => {
 
 const renderMarkAllAsRead = () => {
 	if (state.path === "/notifications") {
-		const $mark_all_as_read = $(
+		const $mark_all_as_read = $old(
 			`
       mark-all-as-read-wrapper
         button[mark-all-as-read][small][alt][faint=$1] Mark all as read
@@ -296,11 +296,11 @@ const renderMarkAllAsRead = () => {
 			(state.push_active || state.fcm_push_active)
 			&& Boolean(state.unread_count)
 		) {
-			$("main-content-wrapper[active] main-content notifications").append(
+			$old("main-content-wrapper[active] main-content notifications").append(
 				$mark_all_as_read,
 			)
 		}
-		const $toggle_wrapper = $(
+		const $toggle_wrapper = $old(
 			`
       toggle-wrapper[disabled=$1][active=$2]
         toggle-text Turn on notifications
@@ -316,7 +316,7 @@ const renderMarkAllAsRead = () => {
 			$toggle_wrapper.on("click", () => {
 				if (state.push_active) {
 					state.push_active = false
-					$("toggle-wrapper").removeAttribute("active")
+					$old("toggle-wrapper").removeAttribute("active")
 					navigator.serviceWorker.ready
 						.then((registration) => {
 							return registration.pushManager.getSubscription()
@@ -344,7 +344,7 @@ const renderMarkAllAsRead = () => {
 				}
 				if (state.fcm_push_active) {
 					state.fcm_push_active = false
-					$("toggle-wrapper").removeAttribute("active")
+					$old("toggle-wrapper").removeAttribute("active")
 					fetch("/session", {
 						method: "POST",
 						body: JSON.stringify({
@@ -366,7 +366,7 @@ const renderMarkAllAsRead = () => {
 				if (state.fcm_push_available) {
 					state.fcm_push_active = true
 					getUnreadCountUnseenCount()
-					$("toggle-wrapper").setAttribute("active", "")
+					$old("toggle-wrapper").setAttribute("active", "")
 					if (state.fcm_token) {
 						fetch("/session", {
 							method: "POST",
@@ -390,7 +390,7 @@ const renderMarkAllAsRead = () => {
 					)
 				} else if (state.push_available) {
 					state.push_active = true
-					$("toggle-wrapper").setAttribute("active", "")
+					$old("toggle-wrapper").setAttribute("active", "")
 					navigator.serviceWorker.ready
 						.then(async (registration) => {
 							registration.pushManager.subscribe({
@@ -426,7 +426,7 @@ const renderMarkAllAsRead = () => {
 													} else {
 														alertError("Server error saving subscription")
 														state.push_active = false
-														$("toggle-wrapper").removeAttribute("active")
+														$old("toggle-wrapper").removeAttribute("active")
 														subscription.unsubscribe()
 													}
 												}
@@ -438,7 +438,7 @@ const renderMarkAllAsRead = () => {
 												} else {
 													modalError("Error enabling notifications")
 													state.push_active = false
-													$("toggle-wrapper").removeAttribute("active")
+													$old("toggle-wrapper").removeAttribute("active")
 													subscription.unsubscribe()
 												}
 											})
@@ -449,7 +449,7 @@ const renderMarkAllAsRead = () => {
 						.catch(() => {
 							modalError("Subscription error")
 							state.push_active = false
-							$("toggle-wrapper").removeAttribute("active")
+							$old("toggle-wrapper").removeAttribute("active")
 						})
 				} else {
 					if (state.fcm_push_denied) {
@@ -461,7 +461,7 @@ const renderMarkAllAsRead = () => {
 			})
 		}
 		if (state.push_available || state.fcm_push_available) {
-			$("posts[notifications-header] post").appendChild($toggle_wrapper)
+			$old("posts[notifications-header] post").appendChild($toggle_wrapper)
 			if (!state.email) {
 				$toggle_wrapper.setAttribute("disabled", "")
 			}
@@ -501,14 +501,14 @@ const getUnreadCountUnseenCount = () => {
 					)
 				}
 				if (Boolean(state.unread_count)) {
-					$("hamburger").setAttribute("unread", "")
-					$("footer a[notifications]").setAttribute("unread", "")
+					$old("hamburger").setAttribute("unread", "")
+					$old("footer a[notifications]").setAttribute("unread", "")
 				} else {
-					$("hamburger").removeAttribute("unread")
-					$("footer a[notifications]").removeAttribute("unread")
+					$old("hamburger").removeAttribute("unread")
+					$old("footer a[notifications]").removeAttribute("unread")
 				}
-				if ($("h3[unread-header]")) {
-					$("h3[unread-header]").textContent = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
+				if ($old("h3[unread-header]")) {
+					$old("h3[unread-header]").textContent = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
 				}
 				if (
 					state.unseen_count
@@ -597,6 +597,6 @@ if (
 	|| window.is_android
 	|| 1
 ) {
-	$("body").setAttribute("app", "")
+	$old("body").setAttribute("app", "")
 	state.is_app = true
 }

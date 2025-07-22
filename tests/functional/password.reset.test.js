@@ -14,33 +14,33 @@ const tests = {
 				global.test_email_sent = null // Clear any previous email
 			}
 		})
-		const { $ } = window
+		const { $old } = window
 		
 		// Phase 1: Request password reset
 		// Open hamburger menu to access login form
-		$("hamburger").click()
+		$old("hamburger").click()
 		
 		// Click the "password-help" link to open forgot password modal
-		$("menu sign-in password-help").click()
+		$old("menu sign-in password-help").click()
 		
 		// Verify forgot password modal is shown
 		assertEquals(
 			"Reset password",
-			$("modal[password-help] button[submit]").textContent,
+			$old("modal[password-help] button[submit]").textContent,
 			"Should show password reset modal",
 		)
 		
 		// Enter email for existing user
-		$("modal[password-help] input[type=email]").value = "existing@example.com"
+		$old("modal[password-help] input[type=email]").value = "existing@example.com"
 		
 		// Submit password reset request
-		$("modal[password-help] button[submit]").click()
+		$old("modal[password-help] button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify success message
 		assertEquals(
 			"An email was sent with password reset instructions.",
-			$("modal[info] info").textContent.trim(),
+			$old("modal[info] info").textContent.trim(),
 			"Should show email sent confirmation",
 		)
 		
@@ -68,7 +68,7 @@ const tests = {
 		const resetToken = resetUrlMatch[1]
 		
 		// Close the email sent modal
-		$("modal[info] button").click()
+		$old("modal[info] button").click()
 		
 		// Phase 2: Use the reset link to set new password
 		// Create a new window to simulate visiting the reset URL
@@ -79,7 +79,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:agreed", true)
 			}
 		})
-		const { $: $reset } = resetWindow
+		const { $old: $reset } = resetWindow
 		
 		// Verify password reset modal is shown
 		assertEquals(
@@ -113,7 +113,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:agreed", true)
 			}
 		})
-		const { $: $login } = loginWindow
+		const { $old: $login } = loginWindow
 		
 		// Open hamburger menu
 		$login("hamburger").click()

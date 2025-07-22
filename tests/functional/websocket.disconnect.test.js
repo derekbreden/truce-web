@@ -8,7 +8,7 @@ const tests = {
 	websocketDisconnectFlushTest: async () => {
 		// Phase 1: User A checks state
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		$a("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
@@ -26,7 +26,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Navigate to User A's post
 		$b("main-content-2 posts post:first-child").click()

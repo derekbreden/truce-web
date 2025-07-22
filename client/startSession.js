@@ -24,15 +24,15 @@ const startSession = (was_same_path) => {
 
 		// Restore scroll position if found
 		if (state.cache[state.path].scroll_top) {
-			$("main-content-wrapper[active]").scrollTop =
+			$old("main-content-wrapper[active]").scrollTop =
 				state.cache[state.path].scroll_top
 			delete state.cache[state.path].scroll_top
 		}
 
 		// Get more recent if available
 		if (was_same_path) {
-			if ($("main-content-wrapper[active]").scrollTop !== 0) {
-				$("main-content-wrapper[active]").scroll({
+			if ($old("main-content-wrapper[active]").scrollTop !== 0) {
+				$old("main-content-wrapper[active]").scroll({
 					top: 0,
 					behavior: "smooth",
 				})
@@ -87,7 +87,7 @@ const startSession = (was_same_path) => {
 			}
 			if (data.display_name) {
 				state.display_name = data.display_name
-				$("input[type=text][display-name]")?.forEach(
+				$old("input[type=text][display-name]")?.forEach(
 					($el) => ($el.value = state.display_name),
 				)
 			}
@@ -262,8 +262,8 @@ const getMoreRecent = () => {
 			}
 
 			// Track current scrollHeight
-			const scroll_height = $("main-content-wrapper[active]").scrollHeight
-			const scroll_top = $("main-content-wrapper[active]").scrollTop
+			const scroll_height = $old("main-content-wrapper[active]").scrollHeight
+			const scroll_top = $old("main-content-wrapper[active]").scrollTop
 
 			// Render notifications if appropriate
 			if (data.notifications?.length) {
@@ -362,9 +362,9 @@ const getMoreRecent = () => {
 
 				// If we are past the threshold, then maintain our position
 				if (scroll_top > min_threshold) {
-					$("main-content-wrapper[active]").scrollTop =
+					$old("main-content-wrapper[active]").scrollTop =
 						scroll_top
-						+ ($("main-content-wrapper[active]").scrollHeight - scroll_height)
+						+ ($old("main-content-wrapper[active]").scrollHeight - scroll_height)
 				}
 			}
 
@@ -442,7 +442,7 @@ const getMoreRecent = () => {
 			state.loading_path = false
 
 			// Emit rendered event
-			$("body").dispatchEvent(new CustomEvent("page-updated"))
+			$old("body").dispatchEvent(new CustomEvent("page-updated"))
 		})
 		.catch((error) => {
 			state.loading_path = false

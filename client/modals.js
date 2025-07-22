@@ -1,6 +1,6 @@
 // Confirm modal
 const modalConfirm = (message, callback) => {
-	const $modal = $(
+	const $modal = $old(
 		`
 		modal-wrapper
 			modal[confirm]
@@ -21,13 +21,13 @@ const modalConfirm = (message, callback) => {
 	})
 	$modal.$("button[cancel]").on("click", modalCancel)
 	$modal.$("modal-bg").on("click", modalCancel)
-	$("modal-wrapper")?.remove()
-	$("body").appendChild($modal)
+	$old("modal-wrapper")?.remove()
+	$old("body").appendChild($modal)
 }
 
 // Generic modal info
 const modalInfo = (message) => {
-	const $modal = $(
+	const $modal = $old(
 		`
 		modal-wrapper
 			modal[info]
@@ -42,13 +42,13 @@ const modalInfo = (message) => {
 	}
 	$modal.$("[close]").on("click", modalCancel)
 	$modal.$("modal-bg").on("click", modalCancel)
-	$("modal-wrapper")?.remove()
-	$("body").appendChild($modal)
+	$old("modal-wrapper")?.remove()
+	$old("body").appendChild($modal)
 }
 
 // Generic modal error
 const modalError = (message) => {
-	const $modal = $(
+	const $modal = $old(
 		`
 		modal-wrapper
 			modal[error]
@@ -63,14 +63,14 @@ const modalError = (message) => {
 	}
 	$modal.$("[close]").on("click", modalCancel)
 	$modal.$("modal-bg").on("click", modalCancel)
-	$("modal-wrapper")?.remove()
-	$("body").appendChild($modal)
+	$old("modal-wrapper")?.remove()
+	$old("body").appendChild($modal)
 }
 
 // Generic alert sliding down from top
 let alert_timeout = 0
 const alertInfo = (message) => {
-	const $alert = $(
+	const $alert = $old(
 		`
 			alert
 				info $1
@@ -78,29 +78,29 @@ const alertInfo = (message) => {
 		[message],
 	)
 	clearTimeout(alert_timeout)
-	if ($("alert-wrapper")) {
+	if ($old("alert-wrapper")) {
 		$alert.style.zIndex =
-			(Number($("alert-wrapper alert").length || 1) + 1) * -1
-		$("alert-wrapper").appendChild($alert)
+			(Number($old("alert-wrapper alert").length || 1) + 1) * -1
+		$old("alert-wrapper").appendChild($alert)
 	} else {
 		$alert.style.zIndex = -1
-		const $alert_wrapper = $(
+		const $alert_wrapper = $old(
 			`
 			alert-wrapper
 				$1
 			`,
 			[$alert],
 		)
-		$("body").appendChild($alert_wrapper)
+		$old("body").appendChild($alert_wrapper)
 	}
 	alert_timeout = setTimeout(() => {
-		$("alert-wrapper")?.remove()
+		$old("alert-wrapper")?.remove()
 	}, 5000)
 }
 
 // Generic alert error sliding down from top
 const alertError = (message) => {
-	const $alert = $(
+	const $alert = $old(
 		`
 			alert
 				error $1
@@ -108,22 +108,22 @@ const alertError = (message) => {
 		[message],
 	)
 	clearTimeout(alert_timeout)
-	if ($("alert-wrapper")) {
+	if ($old("alert-wrapper")) {
 		$alert.style.zIndex =
-			(Number($("alert-wrapper alert").length || 1) + 1) * -1
-		$("alert-wrapper").appendChild($alert)
+			(Number($old("alert-wrapper alert").length || 1) + 1) * -1
+		$old("alert-wrapper").appendChild($alert)
 	} else {
 		$alert.style.zIndex = -1
-		const $alert_wrapper = $(
+		const $alert_wrapper = $old(
 			`
 			alert-wrapper
 				$1
 			`,
 			[$alert],
 		)
-		$("body").appendChild($alert_wrapper)
+		$old("body").appendChild($alert_wrapper)
 	}
 	alert_timeout = setTimeout(() => {
-		$("alert-wrapper")?.remove()
+		$old("alert-wrapper")?.remove()
 	}, 5000)
 }

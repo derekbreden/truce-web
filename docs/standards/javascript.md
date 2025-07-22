@@ -6,7 +6,7 @@ Coding conventions for JavaScript development in this project.
 
 - **Functions**: `camelCase` for functions only
 - **Variables**: `snake_case` for all variables
-- **DOM variables**: Prefix with `$` like `const $button = $("button")`
+- **DOM variables**: Prefix with `$` like `const $button = $old("button")`
 - **Constants**: Use `const` for function declarations: `const func = () => {}`
 - **Global variables**: Explicitly declare in `index.html` initialization
 
@@ -37,19 +37,19 @@ Since all files share global scope:
 
 ```javascript
 // Prefix DOM variables with $ for clarity
-const $button = $("button")
-const $posts = $("posts post")
+const $button = $old("button")
+const $posts = $old("posts post")
 
 // Use descriptive names for cached elements
-const $main_content_wrapper = $("main-content-wrapper[active]")
-const $modal_background = $("modal-bg")
+const $main_content_wrapper = $old("main-content-wrapper[active]")
+const $modal_background = $old("modal-bg")
 ```
 
 ## Event Handling
 
 **Use body-level delegation for dynamic content:**
 ```javascript
-$("body").on("click", ($event) => {
+$old("body").on("click", ($event) => {
     if ($event.target.matches("button[favorite]")) {
         handleFavoriteClick($event.target)
     }
@@ -58,5 +58,5 @@ $("body").on("click", ($event) => {
 
 **Emit custom events for component communication:**
 ```javascript
-$("body").dispatchEvent(new CustomEvent("page-updated"))
+$old("body").dispatchEvent(new CustomEvent("page-updated"))
 ```

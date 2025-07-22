@@ -2,8 +2,8 @@ const renderTopics = (topics) => {
 	if (state.path !== "/topics") {
 		return
 	}
-	$("main-content-wrapper[active] main-content").replaceChildren(
-		$(
+	$old("main-content-wrapper[active] main-content").replaceChildren(
+		$old(
 			`
 			posts
 				post[line-after]
@@ -16,9 +16,9 @@ const renderTopics = (topics) => {
 			[],
 		),
 	)
-	$("main-content-wrapper[active] main-content topics").replaceChildren(
+	$old("main-content-wrapper[active] main-content topics").replaceChildren(
 		...topics.map((topic) =>
-			$(
+			$old(
 				`
 				topic[topic=$1]
 					icon[$1]
@@ -37,7 +37,7 @@ const renderTopics = (topics) => {
 			),
 		),
 	)
-	$("main-content topic").forEach(($topic) => {
+	$old("main-content topic").forEach(($topic) => {
 		$topic.on("click", () => {
 			goToPath("/topic/" + $topic.getAttribute("topic"))
 		})

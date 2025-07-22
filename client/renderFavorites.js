@@ -2,9 +2,9 @@ const renderFavorites = (favorites) => {
 	// Empty favorites?
 	if (state.path === "/favorites") {
 		if (favorites.length === 0) {
-			$("post[favorites]")?.remove()
-			$("main-content-wrapper[active] posts").prepend(
-				$(
+			$old("post[favorites]")?.remove()
+			$old("main-content-wrapper[active] posts").prepend(
+				$old(
 					`
 					post[line-after][favorites]
 						h2[favorites]
@@ -19,9 +19,9 @@ const renderFavorites = (favorites) => {
 				),
 			)
 		} else {
-			$("post[favorites]")?.remove()
-			$("main-content-wrapper[active] posts").prepend(
-				$(
+			$old("post[favorites]")?.remove()
+			$old("main-content-wrapper[active] posts").prepend(
+				$old(
 					`
 					post[line-after][favorites]
 						h2[favorites]
@@ -39,9 +39,9 @@ const renderFavorites = (favorites) => {
 	}
 
 	// Render favorites
-	if (!$("main-content-wrapper[active] main-content favorites")) {
-		$("main-content-wrapper[active] main-content").appendChild(
-			$(
+	if (!$old("main-content-wrapper[active] main-content favorites")) {
+		$old("main-content-wrapper[active] main-content").appendChild(
+			$old(
 				`
 				favorites[favorites=$1]
 				`,
@@ -49,9 +49,9 @@ const renderFavorites = (favorites) => {
 			),
 		)
 	}
-	if (!$("main-content-wrapper[active] main-content-2 favorites")) {
-		$("main-content-wrapper[active] main-content-2").appendChild(
-			$(
+	if (!$old("main-content-wrapper[active] main-content-2 favorites")) {
+		$old("main-content-wrapper[active] main-content-2").appendChild(
+			$old(
 				`
 				favorites[favorites=$1]
 				`,
@@ -111,7 +111,7 @@ const renderFavorites = (favorites) => {
 					$parent_reply.appendChild($reply)
 					$reply_wrapper = $parent_reply
 				}
-				const $favorite = $(
+				const $favorite = $old(
 					`
 						favorite[reply]
 							h2 $1
@@ -129,7 +129,7 @@ const renderFavorites = (favorites) => {
 				return $favorite
 			} else {
 				const $post = renderPost(favorite)
-				const $favorite = $(
+				const $favorite = $old(
 					`
 						favorite[post]
 							$1
@@ -143,29 +143,29 @@ const renderFavorites = (favorites) => {
 	if (window.innerWidth > 1000 && state.path === "/favorites") {
 		const $favorites_1 = $favorites.filter((x, i) => i % 2 === 0)
 		const $favorites_2 = $favorites.filter((x, i) => i % 2 === 1)
-		$("main-content-wrapper[active] main-content favorites")?.replaceChildren(
+		$old("main-content-wrapper[active] main-content favorites")?.replaceChildren(
 			...$favorites_1,
 		)
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 favorites",
 		)?.replaceChildren(...$favorites_2)
 	} else if (
 		state.path.startsWith("/user")
 		&& state.path.split("/")[3] === "replies"
 	) {
-		$("main-content-wrapper[active] main-content-2 favorites").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content-2 favorites").replaceChildren(
+			$old(
 				`
 				posts
 				`,
 			),
 		)
-		$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
+		$old("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 			...$favorites,
 		)
 		if ($favorites.length === 0) {
-			$("main-content-wrapper[active] main-content-2 posts").appendChild(
-				$(
+			$old("main-content-wrapper[active] main-content-2 posts").appendChild(
+				$old(
 					`
 					all-clear-wrapper
 						p Nothing to see here
@@ -174,12 +174,12 @@ const renderFavorites = (favorites) => {
 			)
 		}
 	} else {
-		$("main-content-wrapper[active] main-content favorites")?.replaceChildren(
+		$old("main-content-wrapper[active] main-content favorites")?.replaceChildren(
 			...$favorites,
 		)
 	}
 
-	$("favorites [href]")?.forEach(($a) => {
+	$old("favorites [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
 		if (new_path.startsWith("/")) {
 			$a.on("click", ($event) => {

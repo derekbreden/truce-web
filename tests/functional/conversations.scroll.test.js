@@ -57,23 +57,23 @@ const tests = {
 		const window = await setupTestEnvironment({
 			sql_statements_to_execute: statements,
 		})
-		const { $ } = window
+		const { $old } = window
 
 		// Navigate to conversations using footer link
-		$("footer a[href='/conversations']").click()
+		$old("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Count initial conversations loaded
-		const initial_conversation_count = $("conversations conversation").length
+		const initial_conversation_count = $old("conversations conversation").length
 		assertEquals(true, initial_conversation_count > 0, "Should have initial conversations loaded")
 		assertEquals(true, initial_conversation_count <= 50, "Should not load more than 50 conversations initially")
 
 		// Check that conversations are ordered by most recent activity
-		const first_conversation_preview = $("conversations conversation:first-child message-preview").textContent
+		const first_conversation_preview = $old("conversations conversation:first-child message-preview").textContent
 		assertEquals("Message 1 content", first_conversation_preview, "First conversation should have most recent message")
 
 		// Check unread count display
-		const unread_conversations = $("conversations conversation[unread=true]")
+		const unread_conversations = $old("conversations conversation[unread=true]")
 		// Note: unread_conversations might be a NodeList or null
 		if (unread_conversations && unread_conversations.length > 0) {
 			// Get the first unread conversation and check its unread count
@@ -85,7 +85,7 @@ const tests = {
 		}
 
 		// Mock scroll near bottom
-		const wrapper = $("main-content-wrapper[active]")
+		const wrapper = $old("main-content-wrapper[active]")
 		wrapper.scrollHeight = 2000
 		wrapper.clientHeight = 500
 		wrapper.scrollTop = 1100
@@ -95,11 +95,11 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify more conversations loaded
-		const after_scroll_count = $("conversations conversation").length
+		const after_scroll_count = $old("conversations conversation").length
 		assertEquals(true, after_scroll_count > initial_conversation_count, "Should load more conversations after scroll")
 
 		// Verify conversations maintain order after scroll
-		const last_conversation_preview = $("conversations conversation:last-child message-preview").textContent
+		const last_conversation_preview = $old("conversations conversation:last-child message-preview").textContent
 		assertEquals(true, last_conversation_preview.startsWith("Message"), "Last conversation should have older message")
 
 		// Scroll to the very bottom to test reaching the end
@@ -109,7 +109,7 @@ const tests = {
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Should have loaded all 55 conversations now
-		const final_count = $("conversations conversation").length
+		const final_count = $old("conversations conversation").length
 		assertEquals(55, final_count, "Should have loaded all 55 conversations")
 
 		// Try scrolling again - should not load more
@@ -118,7 +118,7 @@ const tests = {
 		wrapper.dispatchEvent(new window.Event("scroll"))
 		await new Promise(resolve => setTimeout(resolve, 0))
 
-		assertEquals(55, $("conversations conversation").length, "Should not load more conversations after reaching the end")
+		assertEquals(55, $old("conversations conversation").length, "Should not load more conversations after reaching the end")
 	},
 }
 

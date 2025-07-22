@@ -52,7 +52,7 @@ Node.js social media platform with unique client-side architecture:
 
 ### Flint.js DOM Library
 Custom DOM manipulation library:
-	jQuery-like `$()` selector function
+	jQuery-like `$old()` selector function
 	Indentation-based template syntax with `$1`, `$2` placeholders
 	**Critical**: Returns single elements or NodeLists with `.length`
 
@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
 	**Arrow functions**: Use `const func = () => {}` not `function func() {}`
 	**Quotes**: Double quotes `"string"` not single quotes
 	**Semicolons**: Omit semicolons
-	**DOM variables**: Prefix with `$` like `const $button = $("button")`
+	**DOM variables**: Prefix with `$` like `const $button = $old("button")`
 	**Array methods**: Use `.includes()` instead of `.indexOf() === -1`
 	**Path extraction**: Use `path.split("/")[index]` consistently
 	**Casting**: Use `Number()` not `parseInt()`
@@ -106,17 +106,17 @@ If your test would fail anyway from more specific checks later on, your assertio
 
 ```javascript
 // ❌ WRONG: $element.click() would fail anyway
-const $element = $("selector")
+const $element = $old("selector")
 assertEquals(true, Boolean($element), "Element should exist")
 if ($element) $element.click()
 
-// ❌ WRONG: $("profile-edit-button").click() would fail anyway
-$("nav-link").click()
+// ❌ WRONG: $old("profile-edit-button").click() would fail anyway
+$old("nav-link").click()
 assertEquals("/user/profile", state.path, "Should be on profile") // NOISE
-$("profile-edit-button").click() // This tells you navigation failed anyway
+$old("profile-edit-button").click() // This tells you navigation failed anyway
 
 // ✅ CORRECT: Check exact text (not just existence) of an element
-assertEquals("text", $("selector").textContent.trim(), "Text should match")
+assertEquals("text", $old("selector").textContent.trim(), "Text should match")
 ```
 
 ### Test Pattern
@@ -135,13 +135,13 @@ const tests = {
 		// By default, testSetupHelpers.js starts on /posts with 2 posts
 
 		// The first listed (by create_date) default post is the user's own post
-		$("main-content-2 posts post:first-child icon[more]").click()
-		assertEquals(false, Boolean($("modal action[block]")), "Own post should not show block action")
-		$("modal-bg").click()
+		$old("main-content-2 posts post:first-child icon[more]").click()
+		assertEquals(false, Boolean($old("modal action[block]")), "Own post should not show block action")
+		$old("modal-bg").click()
 
 		// The second listed (by create_date) default post is another user's post
-		$("main-content-2 posts post:nth-child(2) icon[more]").click()
-		assertEquals("Block user", $("action[block] p").textContent, "Other user's post should show Block action")
+		$old("main-content-2 posts post:nth-child(2) icon[more]").click()
+		assertEquals("Block user", $old("action[block] p").textContent, "Other user's post should show Block action")
 	},
 }
 
@@ -149,7 +149,7 @@ runTests(path.basename(__filename), Object.values(tests))
 ```
 
 ### Key Testing Gotchas
-**Target elements**: MUST use specific CSS selectors like `$("post posts:nth-child(2) p:nth-child(0) span")` to get exactly one element.
+**Target elements**: MUST use specific CSS selectors like `$old("post posts:nth-child(2) p:nth-child(0) span")` to get exactly one element.
 **Use DOM only**: Verify outcomes through user-visible UI changes, not internal state inspection. Mock 3rd party libraries and services, never mock our own code. Exercise our code.
 
 ## Debugging Philosophy
@@ -172,21 +172,21 @@ When encountering issues identifying the right selector for a single element, yo
 ### DOM Selector Debugging Examples
 ```javascript
 // ✅ CORRECT: Debug hierarchy to find where nth-child is needed
-console.log($("posts").length)           // Maybe 2 - multiple posts containers
-console.log($("posts post").length)      // Maybe 6 - multiple posts total
-console.log($("posts post author").length) // Maybe 6 - one author per post
+console.log($old("posts").length)           // Maybe 2 - multiple posts containers
+console.log($old("posts post").length)      // Maybe 6 - multiple posts total
+console.log($old("posts post author").length) // Maybe 6 - one author per post
 
 // Target specific element by finding the right level:
 // Want author of 2nd post in 1st posts container
-console.log($("posts:nth-child(1) post").length)        // How many posts in first container?
-console.log($("posts:nth-child(1) post:nth-child(2)").length) // Does 2nd post exist?
-$("posts:nth-child(1) post:nth-child(2) author").click() // Click author of 2nd post
+console.log($old("posts:nth-child(1) post").length)        // How many posts in first container?
+console.log($old("posts:nth-child(1) post:nth-child(2)").length) // Does 2nd post exist?
+$old("posts:nth-child(1) post:nth-child(2) author").click() // Click author of 2nd post
 
 // ❌ WRONG: Adding nth-child at wrong level
-$("posts post author:nth-child(1)").click() // author is likely unique in its parent
+$old("posts post author:nth-child(1)").click() // author is likely unique in its parent
 
 // ✅ CORRECT: nth-child where the multiplicity actually occurs
-$("posts post:nth-child(2) author").click() // post is where disambiguation needed
+$old("posts post:nth-child(2) author").click() // post is where disambiguation needed
 ```
 
 ## DRY vs Readability

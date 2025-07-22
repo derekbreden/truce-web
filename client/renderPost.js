@@ -35,7 +35,7 @@ const renderPost = (post) => {
 			}
 		}
 	}
-	const $post = $(
+	const $post = $old(
 		`
 		post[line-after]
 			h2
@@ -49,7 +49,7 @@ const renderPost = (post) => {
 		`,
 		[
 			post.title,
-			$(
+			$old(
 				`
 				author-topics
 					author[slug=$1]
@@ -66,20 +66,20 @@ const renderPost = (post) => {
 				[
 					post.user_slug,
 					post.profile_picture_uuid
-						? $(
+						? $old(
 							`
 								img[src=$1]
 								`,
 							["/image/" + post.profile_picture_uuid],
 						)
-						: $(
+						: $old(
 							`
 							icon[profile-picture]
 							`
 						),
 					renderName(post.display_name, post.display_name_index),
 					post.user_verified
-						? $(
+						? $old(
 							`
 								icon[verified][muted]
 								`
@@ -89,7 +89,7 @@ const renderPost = (post) => {
 						.split(",")
 						.filter((x) => x)
 						.map((topic) =>
-							$(
+							$old(
 								`
 								topic[topic=$1]
 									icon[$1]
@@ -104,7 +104,7 @@ const renderPost = (post) => {
 				],
 			),
 			post.note
-				? $(
+				? $old(
 					`
 						info-wrapper
 							info
@@ -116,7 +116,7 @@ const renderPost = (post) => {
 				: [],
 			$post_body,
 			post.poll_1
-				? $(
+				? $old(
 					`
 					poll-wrapper
 						poll-vote-wrapper
@@ -172,7 +172,7 @@ const renderPost = (post) => {
 					[post.poll_1, post.poll_2, post.poll_3, post.poll_4],
 				)
 				: [],
-			$(
+			$old(
 				`
 				post-details[detail-wrapper]
 					detail[favorites][favorited=$1]
@@ -187,24 +187,24 @@ const renderPost = (post) => {
 				[
 					post.favorited,
 					post.favorited
-						? $(
+						? $old(
 							`
 							icon[favorited]
 							`
 						)
-						: $(
+						: $old(
 							`
 							icon[favorites]
 							`
 						),
 					post.favorite_count,
 					post.replyed
-						? $(
+						? $old(
 							`
 							icon[replyed]
 							`
 						)
-						: $(
+						: $old(
 							`
 							icon[reply]
 							`
@@ -253,7 +253,7 @@ const renderPost = (post) => {
 		updatePollDisplay("estimated", estimated_percentages)
 		const savePollChoice = (poll_choice) => {
 			$post.$("poll-vote-wrapper").replaceWith(
-				$(
+				$old(
 					`
 					p
 						info[small] Loading results...
@@ -325,7 +325,7 @@ const renderPost = (post) => {
 	$post.$("icon[more]").on("click", ($event) => {
 		$event.preventDefault()
 		$event.stopPropagation()
-		const $more_modal = $(
+		const $more_modal = $old(
 			`
 			modal-wrapper
 				modal[info]
@@ -372,7 +372,7 @@ const renderPost = (post) => {
 				$event.preventDefault()
 				moreModalCancel()
 				modalConfirm(
-					$(
+					$old(
 						`
 						h2
 							icon[block]
@@ -410,7 +410,7 @@ const renderPost = (post) => {
 			$event.preventDefault()
 			moreModalCancel()
 			modalConfirm(
-				$(
+				$old(
 					`
 					h2
 						icon[flag]
@@ -424,13 +424,13 @@ const renderPost = (post) => {
 				},
 			)
 		})
-		$("modal-wrapper")?.remove()
-		$("body").appendChild($more_modal)
+		$old("modal-wrapper")?.remove()
+		$old("body").appendChild($more_modal)
 	})
 	if (post.image_uuids) {
 		const image_uuids = post.image_uuids.split(",").reverse()
 		for (const image_uuid of image_uuids) {
-			const $image = $(
+			const $image = $old(
 				`
 				p[img][total-images=$1]
 					img[src=$2]

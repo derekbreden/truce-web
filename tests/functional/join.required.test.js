@@ -13,33 +13,33 @@ const tests = {
 				window.localStorage.removeItem("trucev1:last_root_path")
 			}
 		})
-		const { $ } = window
+		const { $old } = window
 
-		$("footer a[href='/posts']").click()
+		$old("footer a[href='/posts']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals("Please tap \"Join the Discussion\" to agree to these terms.", 
-					 $("modal-wrapper modal[info] info").textContent.trim(), 
+					 $old("modal-wrapper modal[info] info").textContent.trim(), 
 					 "Should show modal with expected text")
 
-		$("modal-wrapper modal-bg").click()
+		$old("modal-wrapper modal-bg").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 
-		$("hamburger").click()
+		$old("hamburger").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals("Please tap \"Join the Discussion\" to agree to these terms.", 
-					 $("modal-wrapper modal[info] info").textContent.trim(), 
+					 $old("modal-wrapper modal[info] info").textContent.trim(), 
 					 "Should show modal again when trying to open menu")
 
-		$("modal-wrapper modal-bg").click()
+		$old("modal-wrapper modal-bg").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
-		$("a[big][href=\"/posts\"]").click()
+		$old("a[big][href=\"/posts\"]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 
-		assertEquals("User A's Post", $("post:nth-child(1) h2").textContent.trim(), "Should see first post title")
-		assertEquals("User B's Post", $("post:nth-child(2) h2").textContent.trim(), "Should see second post title")
+		assertEquals("User A's Post", $old("post:nth-child(1) h2").textContent.trim(), "Should see first post title")
+		assertEquals("User B's Post", $old("post:nth-child(2) h2").textContent.trim(), "Should see second post title")
 
 		assertEquals("true", window.localStorage.getItem("trucev1:agreed"), "Should have agreed flag set")
 	}

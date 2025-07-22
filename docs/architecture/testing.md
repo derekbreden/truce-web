@@ -68,8 +68,8 @@ await new Promise(resolve => setTimeout(resolve, 0))
 ### DOM-First Verification
 ```javascript
 // Assert against user-visible UI state
-assertEquals("Read", $("message read-status").textContent)
-assertEquals(true, Boolean($("typing-indicator")))
+assertEquals("Read", $old("message read-status").textContent)
+assertEquals(true, Boolean($old("typing-indicator")))
 ```
 
 ## Visual Debugging

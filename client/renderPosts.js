@@ -13,13 +13,13 @@ const renderPosts = (posts, topic, user) => {
 	}
 
 	beforeDomUpdate()
-	if (!$("main-content-wrapper[active] posts")) {
+	if (!$old("main-content-wrapper[active] posts")) {
 		const target =
 			state.path === "/posts" || state.path === "/posts/all"
 				? "main-content-wrapper[active] main-content-2"
 				: "main-content-wrapper[active] main-content"
-		$(target).appendChild(
-			$(
+		$old(target).appendChild(
+			$old(
 				`
 				posts
 				`,
@@ -34,22 +34,22 @@ const renderPosts = (posts, topic, user) => {
 		if (window.innerWidth > 1000 && state.path.startsWith("/topic/")) {
 			const $posts_1 = $posts.filter((x, i) => i % 2 === 0)
 			const $posts_2 = $posts.filter((x, i) => i % 2 === 1)
-			$("main-content-wrapper[active] main-content posts")?.replaceChildren(
+			$old("main-content-wrapper[active] main-content posts")?.replaceChildren(
 				...$posts_1,
 			)
-			$("main-content-wrapper[active] main-content-2").replaceChildren(
-				$(
+			$old("main-content-wrapper[active] main-content-2").replaceChildren(
+				$old(
 					`
 					posts
 					`,
 				),
 			)
-			$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
+			$old("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 				...$posts_2,
 			)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] main-content posts").appendChild(
-					$(
+				$old("main-content-wrapper[active] main-content posts").appendChild(
+					$old(
 						`
 						all-clear-wrapper
 							p Nothing to see here
@@ -58,19 +58,19 @@ const renderPosts = (posts, topic, user) => {
 				)
 			}
 		} else if (state.path.startsWith("/user/")) {
-			$("main-content-wrapper[active] main-content-2").replaceChildren(
-				$(
+			$old("main-content-wrapper[active] main-content-2").replaceChildren(
+				$old(
 					`
 					posts
 					`,
 				),
 			)
-			$("main-content-wrapper[active] main-content-2 posts").replaceChildren(
+			$old("main-content-wrapper[active] main-content-2 posts").replaceChildren(
 				...$posts,
 			)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] main-content-2 posts").appendChild(
-					$(
+				$old("main-content-wrapper[active] main-content-2 posts").appendChild(
+					$old(
 						`
 						all-clear-wrapper
 							p Nothing to see here
@@ -79,10 +79,10 @@ const renderPosts = (posts, topic, user) => {
 				)
 			}
 		} else {
-			$("main-content-wrapper[active] posts").replaceChildren(...$posts)
+			$old("main-content-wrapper[active] posts").replaceChildren(...$posts)
 			if ($posts.length === 0) {
-				$("main-content-wrapper[active] posts").appendChild(
-					$(
+				$old("main-content-wrapper[active] posts").appendChild(
+					$old(
 						`
 						all-clear-wrapper
 							p Nothing to see here
@@ -102,9 +102,9 @@ const renderPosts = (posts, topic, user) => {
 
 	// User
 	if (state.path.startsWith("/user/")) {
-		$("post[user]")?.remove()
-		$("main-content-wrapper[active] main-content posts").prepend(
-			$(
+		$old("post[user]")?.remove()
+		$old("main-content-wrapper[active] main-content posts").prepend(
+			$old(
 				`
 					post[line-after][user]
 						h2[user]
@@ -120,21 +120,21 @@ const renderPosts = (posts, topic, user) => {
 				[
 					renderName(user.display_name, user.display_name_index),
 					user.user_verified
-						? $(
+						? $old(
 							`
 								icon[verified]
 								`
 						)
 						: [],
 					user.user_id === state.user_id
-						? $(
+						? $old(
 							`
 								button[edit][small][href=/settings]
 									icon[settings]
 									span Edit
 								`
 						)
-						: state.user_id ? $(
+						: state.user_id ? $old(
 							`
 								user-actions
 									button[alt][message][small][userid=$1]
@@ -145,14 +145,14 @@ const renderPosts = (posts, topic, user) => {
 							[
 								user.user_id,
 								user.subscribed
-									? $(
+									? $old(
 										`
 												button[subscribe][small]
 													icon[subscribe]
 													span Unsubscribe
 												`
 									)
-									: $(
+									: $old(
 										`
 												button[subscribe][small][alt]
 													icon[subscribe]
@@ -161,14 +161,14 @@ const renderPosts = (posts, topic, user) => {
 									),
 							]
 						) : user.subscribed
-							? $(
+							? $old(
 								`
 									button[subscribe][small]
 										icon[subscribe]
 										span Unsubscribe
 									`
 							)
-							: $(
+							: $old(
 								`
 									button[subscribe][small][alt]
 										icon[subscribe]
@@ -176,19 +176,19 @@ const renderPosts = (posts, topic, user) => {
 									`
 							),
 					user.profile_picture_uuid
-						? $(
+						? $old(
 							`
 								img[src=$1]
 								`,
 							["/image/" + user.profile_picture_uuid],
 						)
-						: $(
+						: $old(
 							`
 							icon[profile-picture]
 							`
 						),
 					user.user_id === state.user_id
-						? $(
+						? $old(
 							`
 								input[image][type=file][accept=image/*]
 								`,
@@ -197,17 +197,17 @@ const renderPosts = (posts, topic, user) => {
 				],
 			),
 		)
-		bindSubscribeUser($("post[user] button[subscribe]"), user)
-		$("post[user] button[message]")?.on("click", ($event) => {
+		bindSubscribeUser($old("post[user] button[subscribe]"), user)
+		$old("post[user] button[message]")?.on("click", ($event) => {
 			$event.preventDefault()
-			const user_id = Number($("post[user] button[message]").getAttribute("userid"))
+			const user_id = Number($old("post[user] button[message]").getAttribute("userid"))
 			createConversationWithUser(user_id)
 		})
-		$("button[edit][small]")?.on("click", ($event) => {
+		$old("button[edit][small]")?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath("/settings")
 		})
-		$("main-content-wrapper[active] [profile-picture] input[image]")?.on(
+		$old("main-content-wrapper[active] [profile-picture] input[image]")?.on(
 			"change",
 			editProfilePicture,
 		)
@@ -215,10 +215,10 @@ const renderPosts = (posts, topic, user) => {
 
 	// Topic
 	if (state.path.startsWith("/topic/")) {
-		$("post[topic]")?.remove()
+		$old("post[topic]")?.remove()
 		if (posts.length === 0) {
-			$("main-content-wrapper[active] main-content posts").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content posts").prepend(
+				$old(
 					`
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
@@ -237,8 +237,8 @@ const renderPosts = (posts, topic, user) => {
 				),
 			)
 		} else {
-			$("main-content-wrapper[active] main-content posts").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content posts").prepend(
+				$old(
 					`
 					topics[topics-list][big][line-after]
 						topic[topic=$1]
@@ -262,8 +262,8 @@ const renderPosts = (posts, topic, user) => {
 
 	if (state.path.startsWith("/user")) {
 		if (state.path.split("/")[3] === "subscribers") {
-			$("main-content-wrapper[active] main-content-2").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content-2").prepend(
+				$old(
 					`
 					tab-wrapper[line-after]
 						tab-item[posts]
@@ -279,8 +279,8 @@ const renderPosts = (posts, topic, user) => {
 				),
 			)
 		} else if (state.path.split("/")[3] === "subscribed_to_users") {
-			$("main-content-wrapper[active] main-content-2").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content-2").prepend(
+				$old(
 					`
 					tab-wrapper[line-after]
 						tab-item[posts]
@@ -296,8 +296,8 @@ const renderPosts = (posts, topic, user) => {
 				),
 			)
 		} else if (state.path.split("/")[3] === "replies") {
-			$("main-content-wrapper[active] main-content-2").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content-2").prepend(
+				$old(
 					`
 					tab-wrapper[line-after]
 						tab-item[posts]
@@ -313,8 +313,8 @@ const renderPosts = (posts, topic, user) => {
 				),
 			)
 		} else {
-			$("main-content-wrapper[active] main-content-2").prepend(
-				$(
+			$old("main-content-wrapper[active] main-content-2").prepend(
+				$old(
 					`
 					tab-wrapper[line-after]
 						tab-item[active]
@@ -331,25 +331,25 @@ const renderPosts = (posts, topic, user) => {
 			)
 		}
 		const this_user_slug = state.path.split("/")[2]
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 tab-wrapper [posts]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}`)
 		})
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 tab-wrapper [replies]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}/replies`)
 		})
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 tab-wrapper [subscribers]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
 			goToPath(`/user/${this_user_slug}/subscribers`)
 		})
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 tab-wrapper [subscribed-to-users]",
 		)?.on("click", ($event) => {
 			$event.preventDefault()
@@ -359,8 +359,8 @@ const renderPosts = (posts, topic, user) => {
 
 	// Subscribed or all posts
 	if (state.path === "/posts" && state.subscribed_to_users) {
-		$("main-content-wrapper[active] main-content-2 posts").prepend(
-			$(
+		$old("main-content-wrapper[active] main-content-2 posts").prepend(
+			$old(
 				`
 				tab-wrapper[line-after]
 					tab-item[active]
@@ -372,7 +372,7 @@ const renderPosts = (posts, topic, user) => {
 				[],
 			),
 		)
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item:not([active])",
 		).on("click", ($event) => {
 			$event.preventDefault()
@@ -384,8 +384,8 @@ const renderPosts = (posts, topic, user) => {
 		})
 	}
 	if (state.path === "/posts/all" && state.subscribed_to_users) {
-		$("main-content-wrapper[active] main-content-2 posts").prepend(
-			$(
+		$old("main-content-wrapper[active] main-content-2 posts").prepend(
+			$old(
 				`
 				tab-wrapper[line-after]
 					tab-item
@@ -397,7 +397,7 @@ const renderPosts = (posts, topic, user) => {
 				[],
 			),
 		)
-		$(
+		$old(
 			"main-content-wrapper[active] main-content-2 posts tab-wrapper tab-item:not([active])",
 		).on("click", ($event) => {
 			$event.preventDefault()
@@ -410,7 +410,7 @@ const renderPosts = (posts, topic, user) => {
 	}
 
 	afterDomUpdate()
-	$("posts [href]")?.forEach(($a) => {
+	$old("posts [href]")?.forEach(($a) => {
 		const new_path = $a.getAttribute("href")
 		if (new_path.startsWith("/")) {
 			$a.on("click", ($event) => {

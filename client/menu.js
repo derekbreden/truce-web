@@ -3,7 +3,7 @@ const showMenu = () => {
 		modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
 		return
 	}
-	const $menu = $(
+	const $menu = $old(
 		`
 		menu-wrapper[full-width]
 			modal-bg[full-width]
@@ -43,7 +43,7 @@ const showMenu = () => {
 		})
 	})
 	if (state.user_id) {
-		const $settings = $(
+		const $settings = $old(
 			`
 				a[href=/settings]
 					icon[settings]
@@ -58,7 +58,7 @@ const showMenu = () => {
 		$menu.$("links").appendChild($settings)
 	}
 	if (state.email) {
-		const $signed_in = $(
+		const $signed_in = $old(
 			`
 			signed-in
 				button[sign-out] Log out
@@ -100,7 +100,7 @@ const showMenu = () => {
 		})
 		$menu.$("menu").appendChild($signed_in)
 	} else {
-		const $sign_in = $(
+		const $sign_in = $old(
 			`
 			sign-in
 				input[type=email][placeholder=Email][autocomplete=email][maxlength=255]
@@ -118,7 +118,7 @@ const showMenu = () => {
 		$sign_in.$("[cancel]").on("click", menuCancel)
 		const signInError = (error) => {
 			$sign_in.appendChild(
-				$(
+				$old(
 					`
 					error
 						$1
@@ -156,7 +156,7 @@ const showMenu = () => {
 				return
 			}
 			$sign_in.appendChild(
-				$(
+				$old(
 					`
 				info Validating...
 				`,
@@ -208,7 +208,7 @@ const showMenu = () => {
 		$menu.$("menu").appendChild($sign_in)
 	}
 	$menu.$("menu").appendChild(
-		$(
+		$old(
 			`
 			p[notice][center]
 				span Email us at
@@ -217,25 +217,25 @@ const showMenu = () => {
 			`,
 		),
 	)
-	$("modal-bg")?.parentElement?.remove()
-	$("body").appendChild($menu)
+	$old("modal-bg")?.parentElement?.remove()
+	$old("body").appendChild($menu)
 }
-$("header").on("click", () => {
+$old("header").on("click", () => {
 	goToPath(state.path)
 })
-$("hamburger").forEach(($el) => {
+$old("hamburger").forEach(($el) => {
 	$el.on("click", ($event) => {
 		$event.stopPropagation()
-		if ($("menu-wrapper")) {
-			$("menu-wrapper").remove()
+		if ($old("menu-wrapper")) {
+			$old("menu-wrapper").remove()
 		} else {
 			showMenu()
 		}
 	})
 })
-$("[href]").forEach(($el) => {
+$old("[href]").forEach(($el) => {
 	$el.on("click", ($event) => {
-		$("menu-wrapper")?.remove()
+		$old("menu-wrapper")?.remove()
 		$event.preventDefault()
 		goToPath($el.getAttribute("href"))
 	})

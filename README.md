@@ -7,7 +7,7 @@ This README documents the coding conventions and patterns used in the Truce.net 
 ### Client-Side File Organization
 All client-side JavaScript files are included in `index.html` using server-side includes:
 ```html
-// <!--#include file="client/flint.js" -->
+// <!--#include file="client/flint.old.js" -->
 // <!--#include file="client/debug.js" -->
 // <!--#include file="client/markdownToElements.js" -->
 ```
@@ -74,17 +74,17 @@ Make sure you have run `npm install` before running tests.
 Prefix all Flint.js DOM element variables with `$`:
 ```javascript
 // ✅ Correct
-const $button = $("button[submit]")
-const $modal = $("modal-wrapper")
+const $button = $old("button[submit]")
+const $modal = $old("modal-wrapper")
 
 // ❌ Avoid
-const button = $("button[submit]")
+const button = $old("button[submit]")
 ```
 
 ### Element Selection and Events
 ```javascript
 // Single element
-const $header = $("header")
+const $header = $old("header")
 
 // Nested selection
 const $submitButton = $modal.$("button[submit]")
@@ -100,7 +100,7 @@ $button.on("click", ($event) => {
 Flint.js uses indentation-based templates with `$1`, `$2` placeholders:
 
 ```javascript
-const $post = $(
+const $post = $old(
 	`
 	post
 		h2 $1
@@ -113,7 +113,7 @@ const $post = $(
 
 ### Attributes
 ```javascript
-const $input = $(
+const $input = $old(
 	`
 	input[type=text][placeholder=$1][maxlength=50]
 	`,
@@ -179,7 +179,7 @@ const posts = await req.client.query(
 ### Render Functions
 ```javascript
 const renderPost = (post) => {
-	const $post = $(
+	const $post = $old(
 		`
 		post
 			h2 $1
@@ -231,7 +231,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 ### Link Handling
 ```javascript
-$("[href]").forEach(($el) => {
+$old("[href]").forEach(($el) => {
 	$el.on("click", ($event) => {
 		const new_path = $el.getAttribute("href")
 		if (new_path.startsWith("/")) {

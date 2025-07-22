@@ -6,7 +6,7 @@ const setupTestEnvironment = async (options) => {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
-	options.constsToExpose = [...options.constsToExpose, "state", "$"]
+	options.constsToExpose = [...options.constsToExpose, "state", "$old"]
 	options.localStorage = options.localStorage || {}
 	options.setup_id = options.setup_id || require("crypto").randomUUID()
 	options.url = options.url || "http://localhost"
@@ -470,7 +470,7 @@ const setupTestEnvironment = async (options) => {
 			window.originalSetTimeout = window.setTimeout
 			window.setTimeout = (fn) => {
 				// Special case with banners to leave them for a moment only
-				if (fn.toString().includes(`$("alert-wrapper")?.remove()`)) {
+				if (fn.toString().includes(`$old("alert-wrapper")?.remove()`)) {
 					window.originalSetTimeout(fn, 0)
 
 				// Special case for stop typing timeout

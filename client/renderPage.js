@@ -9,7 +9,7 @@ const renderPage = (data) => {
 	}
 
 	// Remove loading indicator
-	$("main-content-wrapper[active] posts-loading")?.remove()
+	$old("main-content-wrapper[active] posts-loading")?.remove()
 
 	// Render Users
 	renderUsers(data.users)
@@ -45,5 +45,5 @@ const renderPage = (data) => {
 	renderMarkAllAsRead()
 
 	// Emit rendered event
-	$("body").dispatchEvent(new CustomEvent("page-rendered"))
+	$old("body").dispatchEvent(new CustomEvent("page-rendered"))
 }

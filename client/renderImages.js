@@ -1,6 +1,6 @@
 const renderImages = () => {
 	if (state.path === "/image") {
-		const $image_prompt = $(
+		const $image_prompt = $old(
 			`
 		image-prompt
 			textarea[prompt][rows=10]
@@ -15,7 +15,7 @@ const renderImages = () => {
 		$image_prompt.$("[submit]").on("click", () => {
 			$image_prompt.$("textarea").setAttribute("disabled", "")
 			$image_prompt.appendChild(
-				$(
+				$old(
 					`
 				info Generating...
 				`,
@@ -34,9 +34,9 @@ const renderImages = () => {
 					$image_prompt.$("info")?.remove()
 					$image_prompt.$("textarea").removeAttribute("disabled")
 					if (data.image) {
-						$("posts img")?.remove()
-						$("posts").appendChild(
-							$(
+						$old("posts img")?.remove()
+						$old("posts").appendChild(
+							$old(
 								`
 								img[src=$1]
 								`,
@@ -44,9 +44,9 @@ const renderImages = () => {
 							),
 						)
 					} else if (data.mp3) {
-						$("posts audio")?.remove()
-						$("posts").appendChild(
-							$(
+						$old("posts audio")?.remove()
+						$old("posts").appendChild(
+							$old(
 								`
 								audio[controls][src=$1][autoplay]
 								`,
@@ -61,6 +61,6 @@ const renderImages = () => {
 					console.error("Image processing error:", error)
 				})
 		})
-		$("posts").appendChild($image_prompt)
+		$old("posts").appendChild($image_prompt)
 	}
 }

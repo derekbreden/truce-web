@@ -8,7 +8,7 @@ const tests = {
 	testFlow: async () => {
 		// Phase 1: User A navigates to conversations list
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		$a("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
@@ -19,7 +19,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		$b("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))

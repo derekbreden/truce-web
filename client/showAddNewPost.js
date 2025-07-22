@@ -20,7 +20,7 @@ const showAddNewPost = (post) => {
 e.g. ${post_prompts[post_prompts_index]}`
 	}
 
-	const $add_new = $(
+	const $add_new = $old(
 		`
 		add-new[post]
 			input[title][placeholder=Title][maxlength=140][value=$2]
@@ -50,7 +50,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 				$add_new.$("[body]").setAttribute("placeholder", "Question")
 				$add_new.$("[body]").setAttribute("rows", "3")
 				$add_new.$("[body]").after(
-					$(
+					$old(
 						`
 						poll-input-wrapper
 							poll-text
@@ -68,7 +68,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 					const choice_number = $add_new.querySelectorAll(
 						"poll-input-wrapper poll-text",
 					).length
-					const $new_choice = $(
+					const $new_choice = $old(
 						`
 						poll-text
 							input[$1][placeholder=$2][maxlength=50]
@@ -123,7 +123,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 
 	const addPostError = (error) => {
 		$add_new.appendChild(
-			$(
+			$old(
 				`
 				error
 					$1
@@ -153,7 +153,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 					pngs.push(png)
 					if (pngs.length > 4) {
 						pngs.splice(4, pngs.length - 4)
-						if (!$("modal[error]")) {
+						if (!$old("modal[error]")) {
 							modalError("Each post is limited to 4 images")
 						}
 					}
@@ -171,7 +171,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 				.$("title-wrapper")
 				.after(document.createElement("image-previews"))
 			pngs.forEach((png, i) => {
-				const $preview = $(
+				const $preview = $old(
 					`
 					preview
 						remove-icon
@@ -230,7 +230,7 @@ e.g. ${post_prompts[post_prompts_index]}`
 			return
 		}
 		$add_new.appendChild(
-			$(
+			$old(
 				`
 					info Validating...
 				`,

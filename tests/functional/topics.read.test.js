@@ -7,21 +7,21 @@ const { assertEquals, runTests } = require("../testRunUtils.js")
 const tests = {
 	testFlow: async () => {
 		const window = await setupTestEnvironment()
-		const { $ } = window
+		const { $old } = window
 		
 		// Navigate to the topics page
-		$(`footer [href="/topics"]`).click()
+		$old(`footer [href="/topics"]`).click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 
 		// Verify the default topics returned in testSetupHelpers.js are shown in the DOM
 		assertEquals(
 			"Religion",
-			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname name").textContent,
+			$old("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname name").textContent,
 			`First topic name should be "Religion"`,
 		)
 		assertEquals(
 			"2",
-			$("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname count").textContent,
+			$old("main-content-wrapper topics topic:nth-child(1) topicname-subtitle topicname count").textContent,
 			`First topic post count should be "2"`,
 		)
 	},

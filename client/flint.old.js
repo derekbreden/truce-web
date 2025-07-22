@@ -1,20 +1,20 @@
 /*
 	Flint provides an interface for selecting or creating elements.
 	1) Selecting:
-		const $title = $("h1")
+		const $title = $old("h1")
 		$title.textContent = "New Title"
 	2) Creating:
-		const $listItem = $(`
+		const $listItem = $old(`
 			li[class=$1] $2
 		`, ["red", "Red Item"])
-		$("ul").appendChild($listItem)
+		$old("ul").appendChild($listItem)
 */
 
-const $ = (selector_or_flint, flint_args_or_element) => {
+const $old = (selector_or_flint, flint_args_or_element) => {
 	const addHelpers = (element, $all) => {
 		element.on = element.addEventListener.bind(element)
 		element.forEach = (f) => $all.forEach(f)
-		element.$ = (selector) => $(selector, element)
+		element.$ = (selector) => $old(selector, element)
 		element.length = $all ? $all.length : 1
 	}
 

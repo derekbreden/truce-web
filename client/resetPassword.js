@@ -1,6 +1,6 @@
 // Forgot Password
 const showForgotPassword = () => {
-	const $modal = $(
+	const $modal = $old(
 		`
 		modal-bg[full-width]
 		modal[password-help]
@@ -16,7 +16,7 @@ const showForgotPassword = () => {
 	$modal.$("modal-bg").on("click", modalCancel)
 	const passwordError = (message) => {
 		$modal.$("[password-help]").appendChild(
-			$(
+			$old(
 				`
 				error $1
 				`,
@@ -40,7 +40,7 @@ const showForgotPassword = () => {
 			return
 		}
 		$modal.$("[password-help]").appendChild(
-			$(
+			$old(
 				`
 				info Validating...
 				`,
@@ -73,12 +73,12 @@ const showForgotPassword = () => {
 				passwordError("Network error")
 			})
 	})
-	$("body").appendChild($modal)
+	$old("body").appendChild($modal)
 }
 
 // Resetting Password
 const showResetPassword = () => {
-	const $modal = $(
+	const $modal = $old(
 		`
 		modal-bg[full-width]
 		modal[password-reset]
@@ -95,7 +95,7 @@ const showResetPassword = () => {
 	$modal.$("modal-bg").on("click", modalCancel)
 	const passwordError = (message) => {
 		$modal.$("[password-reset]").appendChild(
-			$(
+			$old(
 				`
 				error $1
 				`,
@@ -119,7 +119,7 @@ const showResetPassword = () => {
 			return
 		}
 		$modal.$("[password-reset]").appendChild(
-			$(
+			$old(
 				`
 				info Validating...
 				`,
@@ -153,5 +153,5 @@ const showResetPassword = () => {
 				passwordError("Network error")
 			})
 	})
-	$("body").appendChild($modal)
+	$old("body").appendChild($modal)
 }

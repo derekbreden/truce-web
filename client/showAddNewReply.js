@@ -1,5 +1,5 @@
 const showAddNewReplyButton = (root_index) => {
-	const $add_new_button = $(
+	const $add_new_button = $old(
 		`
     p[add-new-reply]
       button[alt] Reply to post
@@ -13,7 +13,7 @@ const showAddNewReplyButton = (root_index) => {
 	return $add_new_button
 }
 const showAddNewReply = (reply, parent_reply, root_index) => {
-	const $add_new = $(
+	const $add_new = $old(
 		`
     add-new[reply]
       input[display-name][placeholder=Your name][maxlength=50][value=$1]
@@ -52,7 +52,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 	}
 	const addReplyError = (error) => {
 		$add_new.appendChild(
-			$(
+			$old(
 				`
         error $1
         `,
@@ -94,7 +94,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 				.$("title-wrapper")
 				.after(document.createElement("image-previews"))
 			pngs.forEach((png, i) => {
-				const $preview = $(
+				const $preview = $old(
 					`
           preview
             remove-icon
@@ -123,7 +123,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 	const hideDisplayNameInput = () => {
 		const $display_name = $add_new.$("[display-name]")
 		if (state.display_name && $display_name) {
-			const $display_name_wrapper = $(
+			const $display_name_wrapper = $old(
 				`
         display-name-wrapper
           b
@@ -134,13 +134,13 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
         `,
 				[
 					state.profile_picture_uuid
-						? $(
+						? $old(
 							`
                 img[src=$1]
                 `,
 							["/image/" + state.profile_picture_uuid],
 						)
-						: $(
+						: $old(
 							`
                 icon[profile-picture]
                 `
@@ -167,7 +167,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 			return
 		}
 		$add_new.appendChild(
-			$(
+			$old(
 				`
           info Validating...
         `,
@@ -216,7 +216,7 @@ const showAddNewReply = (reply, parent_reply, root_index) => {
 			return
 		}
 		$add_new.appendChild(
-			$(
+			$old(
 				`
           info Validating...
         `,

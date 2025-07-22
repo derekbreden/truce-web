@@ -1,6 +1,6 @@
 const renderBack = () => {
 	// Always remove previous wrapper
-	$("main-content-wrapper[active] main-content tab-wrapper")?.remove()
+	$old("main-content-wrapper[active] main-content tab-wrapper")?.remove()
 
 	// Sometimes add new wrapper
 	if (
@@ -16,7 +16,7 @@ const renderBack = () => {
 		if (state.path.split("/")[3]) {
 			previous_path = state.path_history[state.path_history.length - 2]
 		}
-		const $back_forward = $(
+		const $back_forward = $old(
 			`
 			tab-wrapper[line-after]
 				tab-item
@@ -47,7 +47,7 @@ const renderBack = () => {
 												: "Back",
 			],
 		)
-		$("main-content-wrapper[active] main-content").prepend($back_forward)
+		$old("main-content-wrapper[active] main-content").prepend($back_forward)
 		$back_forward.$("tab-item").on("click", () => {
 			state.path_index--
 			state.path_index--

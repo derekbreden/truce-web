@@ -62,7 +62,7 @@ const markdownToElements = (text) => {
 				li_contents.forEach((li_content) => {
 					li_content = li_content.trim()
 					$ul.appendChild(
-						$(
+						$old(
 							`
 							li $1
 							`,
@@ -80,7 +80,7 @@ const markdownToElements = (text) => {
 				const $ol = document.createElement("ol")
 				li_contents.forEach((li_content) => {
 					$ol.appendChild(
-						$(
+						$old(
 							`
 							li $1
 							`,
@@ -93,7 +93,7 @@ const markdownToElements = (text) => {
 		}
 
 		if (p_content.startsWith("/mp3/")) {
-			return $(
+			return $old(
 				`
 				audio[controls][src=$1]
 				`,
@@ -129,7 +129,7 @@ const markdownToElements = (text) => {
 		parseElements(imgRegex, (match_result) => {
 			const alt_text = match_result[1]
 			const src_text = match_result[2]
-			return $(
+			return $old(
 				`
 				img[alt=$1][src=$2]
 				`,
@@ -142,7 +142,7 @@ const markdownToElements = (text) => {
 			const link_text = match_result[1]
 			const href_text = match_result[2]
 			const big = match_result[0] === original
-			return $(
+			return $old(
 				`
 				a[href=$1][big=$2] $3
 				`,
@@ -157,7 +157,7 @@ const markdownToElements = (text) => {
 			const text_before_insert = original.slice(current_offset_in_original, insert[0])
 			if (text_before_insert.length > 0) {
 				p_element.appendChild(
-					$(
+					$old(
 						`
 					span $1
 					`,
@@ -172,7 +172,7 @@ const markdownToElements = (text) => {
 		const remaining_text = original.slice(current_offset_in_original)
 		if (remaining_text.length > 0) {
 			p_element.appendChild(
-				$(
+				$old(
 					`
 				span $1
 				`,

@@ -66,7 +66,7 @@ if (state.path.startsWith("/topic/")) {
 }
 
 const dot_index = Math.max(path_sequence.indexOf(new_path_parsed) - 1, 0)
-$("footer dot").setAttribute("index", dot_index)
+$old("footer dot").setAttribute("index", dot_index)
 
 // Update page contents when the user hits the back button
 window.addEventListener("popstate", () => {

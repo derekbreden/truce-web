@@ -1,5 +1,5 @@
 const css_rules = []
-$("icons icon").forEach(($icon) => {
+$old("icons icon").forEach(($icon) => {
 	const icon_name = $icon.getAttributeNames()
 	const svg = $icon.$("svg")
 	const svg_content = svg.outerHTML
@@ -14,7 +14,7 @@ $("icons icon").forEach(($icon) => {
 	css_rules.push(css_rule)
 	$icon.setAttribute("excluded", "")
 })
-const $style = $(`
+const $style = $old(`
 	style`)
 $style.appendChild(document.createTextNode(css_rules.join("\n")))
 document.head.appendChild($style)

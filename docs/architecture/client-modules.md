@@ -19,7 +19,7 @@ This project uses a unique client-side architecture that differs from standard J
 ### File Structure
 ```
 client/
-├── flint.js              # Global $ function (selector + template engine)
+├── flint.old.js          # Global $old function (selector + template engine)
 ├── startSession.js       # Session initialization and fetch wrapper
 ├── goToPath.js          # Client-side routing and navigation
 ├── renderPage.js        # Main UI orchestration function
@@ -69,17 +69,17 @@ client/
 
 ## Flint.js Integration
 
-The global `$()` function from Flint.js provides two modes:
+The global `$old()` function from Flint.js provides two modes:
 
 **Selector Mode** (jQuery-like element selection):
 ```javascript
-const $button = $("button")
-const $posts = $("posts post")
+const $button = $old("button")
+const $posts = $old("posts post")
 ```
 
 **Template Mode** (indentation-based element creation):
 ```javascript
-const $modal = $(
+const $modal = $old(
   `
   modal-wrapper
     modal[confirm]

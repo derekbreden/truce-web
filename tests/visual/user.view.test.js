@@ -41,9 +41,9 @@ const tests = {
 				global._s3_mock_storage[test_image_uuid + ".png"] = valid_png_base64
 			}
 		})
-		const { $ } = window
+		const { $old } = window
 
-		$("posts post:nth-child(1) author").click()
+		$old("posts post:nth-child(1) author").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 	},
 }

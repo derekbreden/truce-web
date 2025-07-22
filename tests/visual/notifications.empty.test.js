@@ -21,9 +21,9 @@ const tests = {
 		const window = await setupTestEnvironment({
 			sql_statements_to_execute: statements,
 		})
-		const { $ } = window
+		const { $old } = window
 		
-		$("footer a[href='/notifications']").click()
+		$old("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 	},
 }

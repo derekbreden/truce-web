@@ -1,6 +1,6 @@
 const renderForward = (parent_post) => {
 	if (parent_post) {
-		const $forward = $(
+		const $forward = $old(
 			`
 			tab-item[right]
 				p $1
@@ -8,19 +8,19 @@ const renderForward = (parent_post) => {
 			`,
 			[parent_post.title],
 		)
-		if (!$("main-content-wrapper[active] tab-wrapper")) {
-			$("main-content-wrapper[active] main-content").prepend(
-				$(
+		if (!$old("main-content-wrapper[active] tab-wrapper")) {
+			$old("main-content-wrapper[active] main-content").prepend(
+				$old(
 					`
 					tab-wrapper[line-after]
 					`,
 				),
 			)
 		}
-		$("main-content-wrapper[active] tab-wrapper")
+		$old("main-content-wrapper[active] tab-wrapper")
 			.$("tab-item[right]")
 			?.remove()
-		$("main-content-wrapper[active] tab-wrapper").appendChild($forward)
+		$old("main-content-wrapper[active] tab-wrapper").appendChild($forward)
 		$forward.on("click", () => {
 			let new_path = `/post/${parent_post.slug}`
 			if (parent_post.slug === "Home") {

@@ -54,9 +54,9 @@ const tests = {
 				global._s3_mock_storage[test_image_uuid + ".png"] = valid_png_base64
 			}
 		})
-		const { $ } = window
+		const { $old } = window
 		
-		$("footer a[href='/conversations']").click()
+		$old("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 	},
 }

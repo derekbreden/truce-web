@@ -65,12 +65,12 @@ const toggleFavorite = async (post_or_reply) => {
 	const $favoritesIcon = $element.$(":scope > [detail-wrapper] detail[favorites] icon")
 	$favoritesIcon.replaceWith(
 		post_or_reply.favorited
-			? $(
+			? $old(
 				`
 				icon[favorited]
 				`
 			)
-			: $(
+			: $old(
 				`
 				icon[favorites]
 				`

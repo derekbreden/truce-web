@@ -45,55 +45,55 @@ const tests = {
 		const window = await setupTestEnvironment({
 			sql_statements_to_execute: conversationData,
 		})
-		const { $ } = window
+		const { $old } = window
 		
 		// Navigate to conversations
-		$("footer a[href='/conversations']").click()
+		$old("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify we can see the conversation with User B in the list
 		assertEquals(
 			"User B",
-			$("main-content-wrapper[active] conversations conversation:nth-child(1) conversation-header name span").textContent,
+			$old("main-content-wrapper[active] conversations conversation:nth-child(1) conversation-header name span").textContent,
 			"Should see conversation with User B in list",
 		)
 		
 		// Verify the preview shows the latest message
 		assertEquals(
 			"That is wonderful to hear! What have you been up to lately?",
-			$("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").textContent,
+			$old("main-content-wrapper[active] conversations conversation:nth-child(1) message-preview").textContent,
 			"Should show latest message in preview",
 		)
 		
 		// Click on the conversation to open it
-		$("main-content-wrapper[active] conversations conversation:nth-child(1)").click()
+		$old("main-content-wrapper[active] conversations conversation:nth-child(1)").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify we can see all messages in the conversation
 		assertEquals(
 			3,
-			$("main-content-wrapper[active] messages message").length,
+			$old("main-content-wrapper[active] messages message").length,
 			"Should display all 3 messages in the conversation",
 		)
 		
 		// Verify the first message content
 		assertEquals(
 			"Hello User A! How are you doing?",
-			$("main-content-wrapper[active] messages message:nth-child(1) message-content p span").textContent,
+			$old("main-content-wrapper[active] messages message:nth-child(1) message-content p span").textContent,
 			"First message should show correct content",
 		)
 		
 		// Verify the second message content  
 		assertEquals(
 			"Hi User B! I am doing great, thanks for asking.",
-			$("main-content-wrapper[active] messages message:nth-child(2) message-content p span").textContent,
+			$old("main-content-wrapper[active] messages message:nth-child(2) message-content p span").textContent,
 			"Second message should show correct content",
 		)
 		
 		// Verify the third message content
 		assertEquals(
 			"That is wonderful to hear! What have you been up to lately?",
-			$("main-content-wrapper[active] messages message:nth-child(3) message-content p span").textContent,
+			$old("main-content-wrapper[active] messages message:nth-child(3) message-content p span").textContent,
 			"Third message should show correct content",
 		)
 	},

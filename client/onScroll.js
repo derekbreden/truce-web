@@ -1,5 +1,5 @@
 const bindScrollEvent = () => {
-	$("main-content-wrapper[active]")?.on("scroll", () => {
+	$old("main-content-wrapper[active]")?.on("scroll", () => {
 		// Never do anything if already loading something
 		if (state.loading_path) {
 			return
@@ -20,11 +20,11 @@ const bindScrollEvent = () => {
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight
-				- $("main-content-wrapper[active]").clientHeight * 3
+				$old("main-content-wrapper[active]").scrollHeight
+				- $old("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
-			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+			if ($old("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
 				const max_post_create_date = state.cache[state.path].posts.reduce(
 					(min, post) => {
@@ -112,11 +112,11 @@ const bindScrollEvent = () => {
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight
-				- $("main-content-wrapper[active]").clientHeight * 3
+				$old("main-content-wrapper[active]").scrollHeight
+				- $old("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
-			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+			if ($old("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
 				const max_reply_create_date = state.cache[state.path].replies.reduce(
 					(min, reply) => {
@@ -167,11 +167,11 @@ const bindScrollEvent = () => {
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight
-				- $("main-content-wrapper[active]").clientHeight * 3
+				$old("main-content-wrapper[active]").scrollHeight
+				- $old("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
-			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+			if ($old("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
 				const max_notification_unread_create_date = state.cache[
 					"/notifications"
@@ -241,11 +241,11 @@ const bindScrollEvent = () => {
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
-				$("main-content-wrapper[active]").scrollHeight
-				- $("main-content-wrapper[active]").clientHeight * 3
+				$old("main-content-wrapper[active]").scrollHeight
+				- $old("main-content-wrapper[active]").clientHeight * 3
 
 			// When we pass the threshold
-			if ($("main-content-wrapper[active]").scrollTop > threshold) {
+			if ($old("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
 				const max_conversation_create_date = state.cache["/conversations"].conversations.reduce(
 					(min, conversation) => {

@@ -16,7 +16,7 @@ const renderConversation = (conversation) => {
 
 	const unread_count = Number(conversation.unread_count)
 
-	const $conversation = $(
+	const $conversation = $old(
 		`
 		conversation[unread=$1]
 			conversation-info
@@ -37,20 +37,20 @@ const renderConversation = (conversation) => {
 			unread_count > 0,
 			conversation.other_user_slug,
 			conversation.other_user_picture
-				? $(
+				? $old(
 					`
 					img[src=$1]
 					`,
 					["/image/" + conversation.other_user_picture]
 				)
-				: $(
+				: $old(
 					`
 					icon[profile-picture]
 					`
 				),
 			renderName(conversation.other_user_name, conversation.other_user_display_name_index),
 			conversation.other_user_verified
-				? $(
+				? $old(
 					`
 					icon[verified]
 					`
@@ -58,7 +58,7 @@ const renderConversation = (conversation) => {
 				: [],
 			time_ago,
 			short_body,
-			unread_count > 0 ? $(
+			unread_count > 0 ? $old(
 				`
 				unread-count $1
 				`,
@@ -71,7 +71,7 @@ const renderConversation = (conversation) => {
 	if (conversation.last_message_image_uuids) {
 		const image_uuids = conversation.last_message_image_uuids.split(",").filter(uuid => uuid).reverse()
 		for (const image_uuid of image_uuids) {
-			const $image = $(
+			const $image = $old(
 				`
 				p[img][total-images=$1]
 					img[src=$2]
@@ -94,9 +94,9 @@ const renderConversations = (conversations) => {
 	const skip_conversations = state.path !== "/conversations"
 
 	beforeDomUpdate()
-	if (!$("main-content-wrapper[active] conversations")) {
-		$("main-content-wrapper[active] main-content").appendChild(
-			$(
+	if (!$old("main-content-wrapper[active] conversations")) {
+		$old("main-content-wrapper[active] main-content").appendChild(
+			$old(
 				`
 				conversations
 				`
@@ -108,9 +108,9 @@ const renderConversations = (conversations) => {
 		const $conversations = conversations.map(renderConversation)
 		
 		if ($conversations.length === 0) {
-			$("post[conversations-empty]")?.remove()
-			$("main-content-wrapper[active] main-content conversations").appendChild(
-				$(
+			$old("post[conversations-empty]")?.remove()
+			$old("main-content-wrapper[active] main-content conversations").appendChild(
+				$old(
 					`
 					post[line-after][conversations-empty]
 						h2[conversations-empty]
@@ -125,8 +125,8 @@ const renderConversations = (conversations) => {
 				)
 			)
 		} else {
-			$("post[conversations-empty]")?.remove()
-			$("main-content-wrapper[active] main-content conversations").replaceChildren(
+			$old("post[conversations-empty]")?.remove()
+			$old("main-content-wrapper[active] main-content conversations").replaceChildren(
 				...$conversations
 			)
 		}

@@ -9,7 +9,7 @@ const tests = {
 	testFlow: async () => {
 		// Phase 1: User A checks notifications
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		$a("footer a[href='/notifications']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
@@ -38,7 +38,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Click on User A's profile link directly from posts list
 		// User A's post is the first post in the list

@@ -12,7 +12,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Navigate to User A's profile and send message
 		$b("posts post:nth-child(1) author").click()
@@ -33,7 +33,7 @@ const tests = {
 		
 		// Phase 3: Now create User A window and navigate to read the message
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		$a("footer a[href='/conversations']").click()
 		await new Promise(resolve => setTimeout(resolve, 0))

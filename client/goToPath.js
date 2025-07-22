@@ -26,7 +26,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 
 		// Always track scroll position on cached paths
 		if (state.cache[state.path]) {
-			state.cache[state.path].scroll_top = $(
+			state.cache[state.path].scroll_top = $old(
 				"main-content-wrapper[active]",
 			).scrollTop
 		}
@@ -87,7 +87,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 		// Dot indicating main page on most recently
 		if (next_sequence !== -1 && !sequence_is_user) {
 			let dot_index = Math.max(next_sequence - 1, 0)
-			$("footer dot").setAttribute("index", dot_index)
+			$old("footer dot").setAttribute("index", dot_index)
 		}
 
 		// Set the new path

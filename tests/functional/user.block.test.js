@@ -12,7 +12,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Verify User B can see User A's post initially
 		assertEquals(
@@ -60,7 +60,7 @@ const tests = {
 		
 		// Phase 4: User A creates new content - verify User B doesn't see it
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		// User A should start on /posts by default with add-new form available
 		

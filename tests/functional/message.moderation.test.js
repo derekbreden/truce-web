@@ -20,7 +20,7 @@ const tests = {
 				})
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Navigate to User A's profile and start conversation
 		$b("posts post:nth-child(1) author").click()
@@ -64,7 +64,7 @@ const tests = {
 				})
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Navigate to User A's profile and start conversation
 		$b("posts post:nth-child(1) author").click()

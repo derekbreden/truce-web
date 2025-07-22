@@ -1,7 +1,7 @@
 const renderUsers = (users) => {
 	if (users) {
-		$("main-content-wrapper[active] main-content-2").replaceChildren(
-			$(
+		$old("main-content-wrapper[active] main-content-2").replaceChildren(
+			$old(
 				`
 				users
 					${state.path === "/settings" ? `h2 Subscribed to:` : ""}
@@ -9,7 +9,7 @@ const renderUsers = (users) => {
 				`,
 				[
 					users.map((user) =>
-						$(
+						$old(
 							`
 							user[line-after]
 								author-name[slug=$1]
@@ -24,20 +24,20 @@ const renderUsers = (users) => {
 							[
 								user.user_slug,
 								user.profile_picture_uuid
-									? $(
+									? $old(
 										`
 											img[src=$1]
 											`,
 										["/image/" + user.profile_picture_uuid],
 									)
-									: $(
+									: $old(
 										`
 											icon[profile-picture]
 											`
 									),
 								renderName(user.display_name, user.display_name_index),
 								user.user_verified
-									? $(
+									? $old(
 										`
 											icon[verified]
 											`
@@ -45,7 +45,7 @@ const renderUsers = (users) => {
 									: [],
 								state.user_id && Number(state.user_id) !== Number(user.user_id) ? (
 									user.subscribed
-										? $(
+										? $old(
 											`
 												button[subscribe][small][userid=$1]
 													icon[subscribe]
@@ -55,7 +55,7 @@ const renderUsers = (users) => {
 												user.user_id,
 											],
 										)
-										: $(
+										: $old(
 											`
 												button[subscribe][small][alt][userid=$1]
 													icon[subscribe]
@@ -73,8 +73,8 @@ const renderUsers = (users) => {
 			),
 		)
 		if (users.length === 0) {
-			$("main-content-wrapper[active] main-content-2 users").appendChild(
-				$(
+			$old("main-content-wrapper[active] main-content-2 users").appendChild(
+				$old(
 					`
 					all-clear-wrapper
 						p Nothing to see here
@@ -82,7 +82,7 @@ const renderUsers = (users) => {
 				),
 			)
 		}
-		$("main-content-wrapper[active] main-content-2 author-name")?.forEach(
+		$old("main-content-wrapper[active] main-content-2 author-name")?.forEach(
 			($author) => {
 				$author.on("click", ($event) => {
 					$event.preventDefault()
@@ -90,7 +90,7 @@ const renderUsers = (users) => {
 				})
 			},
 		)
-		$("main-content-wrapper[active] main-content-2 button[subscribe]")?.forEach(
+		$old("main-content-wrapper[active] main-content-2 button[subscribe]")?.forEach(
 			($button) => {
 				const user_id = $button.getAttribute("userid")
 				const user = users.find((user) => Number(user.user_id) === Number(user_id))

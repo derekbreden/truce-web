@@ -8,7 +8,7 @@ const tests = {
 	testConversationProfilePictures: async () => {
 		// User A starts a conversation with User B
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		// Navigate to User B's profile to start a conversation
 		$a("main-content-wrapper[active] posts post:nth-child(2) author").click()
@@ -65,7 +65,7 @@ const tests = {
 	testConversationWithVerifiedUser: async () => {
 		// User B sends a message to User A, then we check from User A's perspective
 		const window_user_a = await setupTestEnvironment()
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		
 		// User B has an email address (verified) and will send a message to User A
 		const window_user_b = await setupTestEnvironment({
@@ -73,7 +73,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 		
 		// Navigate User B to User A's profile
 		$b("main-content-wrapper[active] posts post:nth-child(1) author").click()

@@ -1,5 +1,5 @@
 const editProfilePicture = () => {
-	Array.from($("[profile-picture] input[image]").files).forEach((file) => {
+	Array.from($old("[profile-picture] input[image]").files).forEach((file) => {
 		const reader = new FileReader()
 		reader.onload = ($event) => {
 			imageToPng(
@@ -12,7 +12,7 @@ const editProfilePicture = () => {
 						? $imagePreviewContainerById.childNodes[0]
 						: null
 
-					const $image = $(
+					const $image = $old(
 						`
 							img[src=$1]
 							`,

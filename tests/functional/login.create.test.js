@@ -13,7 +13,7 @@ const tests = {
 				window.localStorage.setItem("trucev1:agreed", true)
 			}
 		})
-		const { $ } = window
+		const { $old } = window
 		
 		// Verify user starts logged out (no email in state)
 		assertEquals(
@@ -23,33 +23,33 @@ const tests = {
 		)
 		
 		// Open hamburger menu to access login form
-		$("hamburger").click()
+		$old("hamburger").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify login form is shown instead of logged-in content
 		assertEquals(
 			"Sign up / Sign in",
-			$("menu sign-in button[submit]").textContent,
+			$old("menu sign-in button[submit]").textContent,
 			"Should show sign up / sign in button for logged out user",
 		)
 		
 		// Fill in new account credentials
-		$("menu sign-in input[type=email]").value = "newuser@example.com"
-		$("menu sign-in input[type=password]").value = "testpassword123"
+		$old("menu sign-in input[type=email]").value = "newuser@example.com"
+		$old("menu sign-in input[type=password]").value = "testpassword123"
 		
 		// Submit the form to create account
-		$("menu sign-in button[submit]").click()
+		$old("menu sign-in button[submit]").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify account creation success message
 		assertEquals(
 			"You have created a new account",
-			$("modal[info] info").textContent.trim(),
+			$old("modal[info] info").textContent.trim(),
 			"Should show account creation success message",
 		)
 		
 		// Close the modal
-		$("modal[info] button").click()
+		$old("modal[info] button").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		// Verify user is now logged in
@@ -67,12 +67,12 @@ const tests = {
 		)
 		
 		// Verify menu now shows logged-in state
-		$("hamburger").click()
+		$old("hamburger").click()
 		await new Promise(resolve => setTimeout(resolve, 0))
 		
 		assertEquals(
 			"Log out",
-			$("menu signed-in button[sign-out]").textContent,
+			$old("menu signed-in button[sign-out]").textContent,
 			"Should show log out button for logged in user",
 		)
 	},

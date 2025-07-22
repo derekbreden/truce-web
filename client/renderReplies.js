@@ -62,7 +62,7 @@ const renderReplies = (replies) => {
 			const $original_parent = $last_reply.parentElement
 
 			// Collapse button
-			const $collapse_button = $(
+			const $collapse_button = $old(
 				`
 				expand-wrapper
 					icon[collapse]
@@ -98,7 +98,7 @@ const renderReplies = (replies) => {
 			})
 
 			// Expand button
-			const $expand_button = $(
+			const $expand_button = $old(
 				`
 				expand-wrapper
 					icon[expand]
@@ -142,8 +142,8 @@ const renderReplies = (replies) => {
 				// When they click down, keep scroll on the last reply
 				if ($event.target?.hasAttribute("expand-down")) {
 					const final_rect = $last_reply.getBoundingClientRect()
-					$("main-content-wrapper[active]").scrollTop =
-						$("main-content-wrapper[active]").scrollTop
+					$old("main-content-wrapper[active]").scrollTop =
+						$old("main-content-wrapper[active]").scrollTop
 						+ (final_rect.y - original_rect.y)
 				}
 			})
@@ -160,27 +160,27 @@ const renderReplies = (replies) => {
 	// Add each thread to the DOM
 	beforeDomUpdate()
 	const showReplyList = state.path.startsWith("/post/")
-	if (!$("main-content-wrapper[active] replies")) {
+	if (!$old("main-content-wrapper[active] replies")) {
 		const target =
 			state.path.startsWith("/reply/")
 				? "main-content-wrapper[active] main-content"
 				: "main-content-wrapper[active] main-content-2"
-		$(target).appendChild(
-			$(
+		$old(target).appendChild(
+			$old(
 				`
 				replies[flex-column]
 				`,
 			),
 		)
 	}
-	$("main-content-wrapper[active] replies").replaceChildren(
+	$old("main-content-wrapper[active] replies").replaceChildren(
 		...[
 			...(showReplyList
 				? [
 					state.active_add_new_reply?.is_root_1
 						? state.active_add_new_reply
 						: showAddNewReplyButton("1"),
-					$(
+					$old(
 						`
 							expand-wrapper[above-replies]
 								p $1
@@ -218,11 +218,11 @@ const renderReplies = (replies) => {
 			.after(state.active_add_new_reply)
 	}
 	if (state.path === "/" || state.path === "/privacy") {
-		$("reply-wrapper")?.forEach(
+		$old("reply-wrapper")?.forEach(
 			($reply_wrapper) => ($reply_wrapper.style.display = "none"),
 		)
-		$("p[add-new-reply]")?.remove()
-		$("expand-wrapper[above-replies]")?.remove()
+		$old("p[add-new-reply]")?.remove()
+		$old("expand-wrapper[above-replies]")?.remove()
 	}
 	afterDomUpdate()
 
@@ -247,8 +247,8 @@ const renderReplies = (replies) => {
 
 	// Only render a single reply thread as a thread
 	if (state.path.startsWith("/reply")) {
-		$("main-content-wrapper[active] replies").setAttribute("thread", "")
+		$old("main-content-wrapper[active] replies").setAttribute("thread", "")
 	} else {
-		$("main-content-wrapper[active] replies").removeAttribute("thread")
+		$old("main-content-wrapper[active] replies").removeAttribute("thread")
 	}
 }

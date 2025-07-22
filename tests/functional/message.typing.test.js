@@ -18,14 +18,14 @@ const tests = {
 		const window_user_a = await setupTestEnvironment({
 			sql_statements_to_execute: statements,
 		})
-		const { $: $a } = window_user_a
+		const { $old: $a } = window_user_a
 		const window_user_b = await setupTestEnvironment({
 			sql_statements_to_execute: [], // Already created
 			beforeParse: (window) => {
 				window.localStorage.setItem("trucev1:session_uuid", "user-b-session-456")
 			}
 		})
-		const { $: $b } = window_user_b
+		const { $old: $b } = window_user_b
 
 		// Navigate to conversation
 		$a("footer a[href='/conversations']").click()

@@ -1,7 +1,7 @@
 const bindImageClick = ($image, image_uuid) => {
 	$image.$("img").on("click", ($event) => {
 		$event.stopPropagation()
-		const $modal = $(
+		const $modal = $old(
 			`
 			modal[image]
 				p[img]
@@ -56,6 +56,6 @@ const bindImageClick = ($image, image_uuid) => {
 		}
 		$modal.$("[close]").on("click", modalCancel)
 		$modal.$("modal-bg").on("click", modalCancel)
-		$("body").appendChild($modal)
+		$old("body").appendChild($modal)
 	})
 }
