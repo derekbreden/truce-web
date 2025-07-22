@@ -1,3 +1,53 @@
+// Reactive attribute management for static elements
+let reactive_attributes_initialized = false
+
+const initializeReactiveAttributes = () => {
+	if (reactive_attributes_initialized) return
+	reactive_attributes_initialized = true
+	
+	// Set up reactive tracking for hamburger unread attribute
+	const updateHamburger = () => {
+		const $hamburger = $old("hamburger")
+		if ($hamburger) {
+			if (Boolean(_.unread_count)) {
+				$hamburger.setAttribute("unread", "")
+			} else {
+				$hamburger.removeAttribute("unread")
+			}
+		}
+	}
+	
+	// Set up reactive tracking for footer notifications unread attribute
+	const updateFooterNotifications = () => {
+		const $footer_notifications = $old("footer a[notifications]")
+		if ($footer_notifications) {
+			if (Boolean(_.unread_count)) {
+				$footer_notifications.setAttribute("unread", "")
+			} else {
+				$footer_notifications.removeAttribute("unread")
+			}
+		}
+	}
+	
+	// Create reactive functions that track _.unread_count
+	const $reactive_hamburger = _(`$1`, [() => {
+		updateHamburger()
+		return ""
+	}])
+	const $reactive_footer = _(`$1`, [() => {
+		updateFooterNotifications()
+		return ""
+	}])
+	
+	// Execute initially to set correct state
+	updateHamburger()
+	updateFooterNotifications()
+}
+
+const updateReactiveAttributes = () => {
+	initializeReactiveAttributes()
+}
+
 const renderNotification = (notification) => {
 	const short_body =
 		notification.body.length > 50
@@ -158,74 +208,58 @@ const renderNotifications = (notifications) => {
 			),
 		)
 	}
-	const unread_notifications = notifications.filter((n) => !n.read)
-	const read_notifications = notifications.filter((n) => n.read)
-	const $unread_header = _(`
-    h3[unread-header] $1
-    `, [
-		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread"
+	// Create reactive notifications sections
+	const $unread_notifications_section = _(`
+		notifications[flex-column]
+			h3[unread-header] $1
+			$2
+			$3
+	`, [
+		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
+		() => !Boolean(_.unread_count) ? [_(`
+			all-clear-wrapper
+				p Nothing to see here
+		`)] : [],
+		() => {
+			const unread_notifications = notifications.filter((n) => !n.read)
+			return unread_notifications
+				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+				.map(renderNotification)
+		}
 	])
-	const $read_header = $old(
-		`
-    h3 Read
-    `,
-	)
-	let $unread_allclear = []
-	if (!Boolean(_.unread_count)) {
-		$unread_allclear = [
-			$old(
-				`
-        all-clear-wrapper
-          p Nothing to see here
-        `,
-			),
-		]
-	}
-	let $read_allclear = []
-	if (!read_notifications.length) {
-		$read_allclear = [
-			$old(
-				`
-      all-clear-wrapper
-        p Nothing to see here
-      `,
-			),
-		]
-	}
-	if (!$old("main-content-wrapper[active] main-content notifications")) {
-		$old("main-content-wrapper[active] main-content").appendChild(
-			$old(
-				`
-        notifications[flex-column]
-        `,
-			),
-		)
-	}
-	if (!$old("main-content-wrapper[active] main-content-2 notifications")) {
-		$old("main-content-wrapper[active] main-content-2").appendChild(
-			$old(
-				`
-        notifications[flex-column]
-        `,
-			),
-		)
-	}
-	$old("main-content-wrapper[active] main-content notifications").replaceChildren(
-		...[$unread_header],
-		...$unread_allclear,
-		...unread_notifications
-			.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-			.map(renderNotification),
-	)
-	$old(
-		"main-content-wrapper[active] main-content-2 notifications",
-	).replaceChildren(
-		...[$read_header],
-		...$read_allclear,
-		...read_notifications
-			.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-			.map(renderNotification),
-	)
+	
+	const $read_notifications_section = _(`
+		notifications[flex-column]
+			h3 Read
+			$1
+			$2
+	`, [
+		() => {
+			const read_notifications = notifications.filter((n) => n.read)
+			return !read_notifications.length ? [_(`
+				all-clear-wrapper
+					p Nothing to see here
+			`)] : []
+		},
+		() => {
+			const read_notifications = notifications.filter((n) => n.read)
+			return read_notifications
+				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+				.map(renderNotification)
+		}
+	])
+
+	// Replace existing notifications sections with reactive ones
+	const $main_content = $old("main-content-wrapper[active] main-content")
+	const $main_content_2 = $old("main-content-wrapper[active] main-content-2")
+	
+	// Remove old notifications if they exist
+	$old("main-content-wrapper[active] main-content notifications")?.remove()
+	$old("main-content-wrapper[active] main-content-2 notifications")?.remove()
+	
+	// Append new reactive sections
+	$main_content.appendChild($unread_notifications_section)
+	$main_content_2.appendChild($read_notifications_section)
 
 	// On notifications render, mark all as seen
 	if (state.unseen_count && notifications.length) {
@@ -255,12 +289,12 @@ const renderNotifications = (notifications) => {
 
 const renderMarkAllAsRead = () => {
 	if (state.path === "/notifications") {
-		const $mark_all_as_read = $old(
+		const $mark_all_as_read = _(
 			`
       mark-all-as-read-wrapper
         button[mark-all-as-read][small][alt][faint=$1] Mark all as read
       `,
-			[!Boolean(_.unread_count)],
+			[() => !Boolean(_.unread_count)],
 		)
 		$mark_all_as_read.on("click", () => {
 			$mark_all_as_read.$("button").setAttribute("alt", "")
@@ -499,13 +533,8 @@ const getUnreadCountUnseenCount = () => {
 						}),
 					)
 				}
-				if (Boolean(_.unread_count)) {
-					$old("hamburger").setAttribute("unread", "")
-					$old("footer a[notifications]").setAttribute("unread", "")
-				} else {
-					$old("hamburger").removeAttribute("unread")
-					$old("footer a[notifications]").removeAttribute("unread")
-				}
+				// Reactive attribute management for static elements
+				updateReactiveAttributes()
 				// Notification header now reactive - no manual update needed
 				if (
 					state.unseen_count

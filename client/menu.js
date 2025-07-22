@@ -3,7 +3,7 @@ const showMenu = () => {
 		modalInfo(`Please tap "Join the Discussion" to agree to these terms.`)
 		return
 	}
-	const $menu = $old(
+	const $menu = _(
 		`
 		menu-wrapper[full-width]
 			modal-bg[full-width]
@@ -28,7 +28,7 @@ const showMenu = () => {
 						icon[notifications]
 						p Alerts
 		`,
-		[Boolean(state.unread_messages_count), Boolean(_.unread_count)],
+		[Boolean(state.unread_messages_count), () => Boolean(_.unread_count)],
 	)
 	const menuCancel = () => {
 		$menu.remove()
