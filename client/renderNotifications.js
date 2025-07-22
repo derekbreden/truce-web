@@ -403,10 +403,17 @@ const renderNotifications = (notifications) => {
 	}
 	getUnreadCountUnseenCount()
 	
+	// Store notifications in cache for reactive access
+	if (!state.cache["/notifications"]) {
+		state.cache["/notifications"] = {}
+	}
+	state.cache["/notifications"].notifications = notifications
+	
 	// Create reactive header
 	const $header = createNotificationsHeader()
 	$old("main-content-wrapper[active] main-content").replaceChildren($header)
-	// Create reactive notifications sections
+	
+	// Create reactive notifications sections using cached data
 	const $unread_notifications_section = _(`
 		notifications[flex-column]
 			h3[unread-header] $1
@@ -419,7 +426,8 @@ const renderNotifications = (notifications) => {
 				p Nothing to see here
 		`)] : [],
 		() => {
-			const unread_notifications = notifications.filter((n) => !n.read)
+			const current_notifications = state.cache["/notifications"]?.notifications || []
+			const unread_notifications = current_notifications.filter((n) => !n.read)
 			return unread_notifications
 				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 				.map(renderNotification)
@@ -433,21 +441,23 @@ const renderNotifications = (notifications) => {
 			$2
 	`, [
 		() => {
-			const read_notifications = notifications.filter((n) => n.read)
+			const current_notifications = state.cache["/notifications"]?.notifications || []
+			const read_notifications = current_notifications.filter((n) => n.read)
 			return !read_notifications.length ? [_(`
 				all-clear-wrapper
 					p Nothing to see here
 			`)] : []
 		},
 		() => {
-			const read_notifications = notifications.filter((n) => n.read)
+			const current_notifications = state.cache["/notifications"]?.notifications || []
+			const read_notifications = current_notifications.filter((n) => n.read)
 			return read_notifications
 				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 				.map(renderNotification)
 		}
 	])
 
-	// Replace existing notifications sections with reactive ones
+	// Replace existing notification sections with reactive ones
 	const $main_content = $old("main-content-wrapper[active] main-content")
 	const $main_content_2 = $old("main-content-wrapper[active] main-content-2")
 	
@@ -459,7 +469,7 @@ const renderNotifications = (notifications) => {
 	$main_content.appendChild($unread_notifications_section)
 	$main_content_2.appendChild($read_notifications_section)
 
-	// On notifications render, mark all as seen
+	// Reactive mark all as seen (runs once per render)
 	if (state.unseen_count && notifications.length) {
 		fetch("/session", {
 			method: "POST",
