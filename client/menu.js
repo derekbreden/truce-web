@@ -28,7 +28,7 @@ const showMenu = () => {
 						icon[notifications]
 						p Alerts
 		`,
-		[Boolean(state.unread_messages_count), Boolean(state.unread_count)],
+		[Boolean(state.unread_messages_count), Boolean(_.unread_count)],
 	)
 	const menuCancel = () => {
 		$menu.remove()

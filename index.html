@@ -66,12 +66,12 @@
       reset_token_uuid: "",
       cache: {},
       loading_path: false,
-      unread_count: 0,
       unseen_count: 0,
       window_recently_focused: false,
       window_recently_loaded: false,
       version: 1,
     }
+
     if (window.webkit) {
       state.version = Number(
         (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 2,
@@ -98,6 +98,7 @@
 
     // Libraries
     // <!--#include file="client/flint.old.js" -->
+    // <!--#include file="client/flint.js" -->
     // <!--#include file="client/markdownToElements.js" -->
     // <!--#include file="client/imageToPng.js" -->
 
@@ -149,6 +150,10 @@
     // <!--#include file="client/startSession.js" -->
 
     loadingPage(true, true)
+
+    // Initialize reactive state after libraries are loaded
+    _.unread_count = 0
+    
     startSession()
 
     // Create WebSocket connection.

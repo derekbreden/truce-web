@@ -160,19 +160,18 @@ const renderNotifications = (notifications) => {
 	}
 	const unread_notifications = notifications.filter((n) => !n.read)
 	const read_notifications = notifications.filter((n) => n.read)
-	const $unread_header = $old(
-		`
+	const $unread_header = _(`
     h3[unread-header] $1
-    `,
-		[Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"],
-	)
+    `, [
+		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread"
+	])
 	const $read_header = $old(
 		`
     h3 Read
     `,
 	)
 	let $unread_allclear = []
-	if (!Boolean(state.unread_count)) {
+	if (!Boolean(_.unread_count)) {
 		$unread_allclear = [
 			$old(
 				`
@@ -261,7 +260,7 @@ const renderMarkAllAsRead = () => {
       mark-all-as-read-wrapper
         button[mark-all-as-read][small][alt][faint=$1] Mark all as read
       `,
-			[!Boolean(state.unread_count)],
+			[!Boolean(_.unread_count)],
 		)
 		$mark_all_as_read.on("click", () => {
 			$mark_all_as_read.$("button").setAttribute("alt", "")
@@ -278,7 +277,7 @@ const renderMarkAllAsRead = () => {
 						alertError("Server error")
 						console.error(data)
 					} else {
-						state.unread_count = 0
+						_.unread_count = 0
 						state.cache["/notifications"].notifications = state.cache[
 							"/notifications"
 						].notifications.filter((n) => n.read)
@@ -294,7 +293,7 @@ const renderMarkAllAsRead = () => {
 		})
 		if (
 			(state.push_active || state.fcm_push_active)
-			&& Boolean(state.unread_count)
+			&& Boolean(_.unread_count)
 		) {
 			$old("main-content-wrapper[active] main-content notifications").append(
 				$mark_all_as_read,
@@ -482,10 +481,10 @@ const getUnreadCountUnseenCount = () => {
 				alertError("Server error")
 				console.error(data)
 			} else {
-				state.unread_count = Number(data.unread_count)
+				_.unread_count = Number(data.unread_count)
 				state.unseen_count = Number(data.unseen_count)
 				if (navigator.setAppBadge) {
-					navigator.setAppBadge(state.push_active ? state.unread_count : 0)
+					navigator.setAppBadge(state.push_active ? _.unread_count : 0)
 				}
 
 				if (
@@ -496,20 +495,18 @@ const getUnreadCountUnseenCount = () => {
 				) {
 					window.webkit.messageHandlers["set-badge"].postMessage(
 						JSON.stringify({
-							badge: state.unread_count,
+							badge: _.unread_count,
 						}),
 					)
 				}
-				if (Boolean(state.unread_count)) {
+				if (Boolean(_.unread_count)) {
 					$old("hamburger").setAttribute("unread", "")
 					$old("footer a[notifications]").setAttribute("unread", "")
 				} else {
 					$old("hamburger").removeAttribute("unread")
 					$old("footer a[notifications]").removeAttribute("unread")
 				}
-				if ($old("h3[unread-header]")) {
-					$old("h3[unread-header]").textContent = Boolean(state.unread_count) ? `Unread (${state.unread_count})` : "Unread"
-				}
+				// Notification header now reactive - no manual update needed
 				if (
 					state.unseen_count
 					&& (state.window_recently_focused || state.window_recently_loaded)

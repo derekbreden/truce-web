@@ -6,7 +6,7 @@ const setupTestEnvironment = async (options) => {
 	// Default Options
 	options = options || {}
 	options.constsToExpose = options.constsToExpose || []
-	options.constsToExpose = [...options.constsToExpose, "state", "$old"]
+	options.constsToExpose = [...options.constsToExpose, "state", "$old", "$", "_"]
 	options.localStorage = options.localStorage || {}
 	options.setup_id = options.setup_id || require("crypto").randomUUID()
 	options.url = options.url || "http://localhost"
