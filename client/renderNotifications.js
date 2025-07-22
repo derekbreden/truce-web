@@ -155,196 +155,9 @@ const renderNotification = (notification) => {
 	}
 }
 
-const renderNotifications = (notifications) => {
-	if (state.path !== "/notifications") {
-		return
-	}
-	getUnreadCountUnseenCount()
-	if (!state.email) {
-		$old("main-content-wrapper[active] main-content").replaceChildren(
-			$old(
-				`
-        posts[notifications-header]
-          post[line-after]
-            h2 Alerts
-            p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.
-        `,
-			),
-		)
-	} else if (state.push_available || state.fcm_push_available) {
-		$old("main-content-wrapper[active] main-content").replaceChildren(
-			$old(
-				`
-        posts[notifications-header]
-          post[line-after]
-            h2 Alerts
-            p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a post or reply you have posted.
-        `,
-			),
-		)
-	} else if (state.fcm_push_denied) {
-		$old("main-content-wrapper[active] main-content").replaceChildren(
-			$old(
-				`
-        posts[notifications-header]
-          post[line-after]
-            h2 Alerts
-            p You must enable notifications for this app in settings
-        `,
-			),
-		)
-	} else {
-		$old("main-content-wrapper[active] main-content").replaceChildren(
-			$old(
-				`
-        posts[notifications-header]
-          post[line-after]
-            h2 Alerts
-            p[add-to-home]
-              span To enable alerts, tap the
-              icon[share][inline]
-              span icon on your browser and then tap "Add to Home Screen".
-        `,
-			),
-		)
-	}
-	// Create reactive notifications sections
-	const $unread_notifications_section = _(`
-		notifications[flex-column]
-			h3[unread-header] $1
-			$2
-			$3
-	`, [
-		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
-		() => !Boolean(_.unread_count) ? [_(`
-			all-clear-wrapper
-				p Nothing to see here
-		`)] : [],
-		() => {
-			const unread_notifications = notifications.filter((n) => !n.read)
-			return unread_notifications
-				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-				.map(renderNotification)
-		}
-	])
-	
-	const $read_notifications_section = _(`
-		notifications[flex-column]
-			h3 Read
-			$1
-			$2
-	`, [
-		() => {
-			const read_notifications = notifications.filter((n) => n.read)
-			return !read_notifications.length ? [_(`
-				all-clear-wrapper
-					p Nothing to see here
-			`)] : []
-		},
-		() => {
-			const read_notifications = notifications.filter((n) => n.read)
-			return read_notifications
-				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-				.map(renderNotification)
-		}
-	])
-
-	// Replace existing notifications sections with reactive ones
-	const $main_content = $old("main-content-wrapper[active] main-content")
-	const $main_content_2 = $old("main-content-wrapper[active] main-content-2")
-	
-	// Remove old notifications if they exist
-	$old("main-content-wrapper[active] main-content notifications")?.remove()
-	$old("main-content-wrapper[active] main-content-2 notifications")?.remove()
-	
-	// Append new reactive sections
-	$main_content.appendChild($unread_notifications_section)
-	$main_content_2.appendChild($read_notifications_section)
-
-	// On notifications render, mark all as seen
-	if (state.unseen_count && notifications.length) {
-		fetch("/session", {
-			method: "POST",
-			body: JSON.stringify({
-				mark_all_as_seen: true,
-			}),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (!data || !data.success) {
-					alertError("Server error")
-					console.error(data)
-				} else {
-					state.unseen_count = 0
-					getUnreadCountUnseenCount()
-				}
-			})
-			.catch((error) => {
-				state.most_recent_error = error
-				alertError("Network error")
-				console.error(error)
-			})
-	}
-}
-
-const renderMarkAllAsRead = () => {
-	if (state.path === "/notifications") {
-		const $mark_all_as_read = _(
-			`
-      mark-all-as-read-wrapper
-        button[mark-all-as-read][small][alt][faint=$1] Mark all as read
-      `,
-			[() => !Boolean(_.unread_count)],
-		)
-		$mark_all_as_read.on("click", () => {
-			$mark_all_as_read.$("button").setAttribute("alt", "")
-			$mark_all_as_read.$("button").setAttribute("faint", "")
-			fetch("/session", {
-				method: "POST",
-				body: JSON.stringify({
-					mark_all_as_read: true,
-				}),
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					if (!data || !data.success) {
-						alertError("Server error")
-						console.error(data)
-					} else {
-						_.unread_count = 0
-						state.cache["/notifications"].notifications = state.cache[
-							"/notifications"
-						].notifications.filter((n) => n.read)
-						renderNotifications(state.cache["/notifications"].notifications)
-						getMoreRecent()
-						getUnreadCountUnseenCount()
-					}
-				})
-				.catch((error) => {
-					alertError("Network error")
-					console.error(error)
-				})
-		})
-		if (
-			(state.push_active || state.fcm_push_active)
-			&& Boolean(_.unread_count)
-		) {
-			$old("main-content-wrapper[active] main-content notifications").append(
-				$mark_all_as_read,
-			)
-		}
-		const $toggle_wrapper = $old(
-			`
-      toggle-wrapper[disabled=$1][active=$2]
-        toggle-text Turn on notifications
-        toggle-button
-          toggle-circle
-      `,
-			[
-				!state.push_available && !state.fcm_push_available,
-				state.push_active || state.fcm_push_active,
-			],
-		)
+// Helper function to create reactive notifications header with toggle
+const createNotificationsHeader = () => {
+	const createToggleHandler = ($toggle_wrapper) => {
 		if (state.email) {
 			$toggle_wrapper.on("click", () => {
 				if (state.push_active) {
@@ -475,31 +288,208 @@ const renderMarkAllAsRead = () => {
 													subscription.unsubscribe()
 												}
 											})
-									})
-							}
-							setTimeout(check_for_success, 1000)
-						})
-						.catch(() => {
-							modalError("Subscription error")
-							state.push_active = false
-							$old("toggle-wrapper").removeAttribute("active")
-						})
+								})
+						}
+						setTimeout(check_for_success, 1000)
+					})
+					.catch(() => {
+						modalError("Subscription error")
+						state.push_active = false
+						$old("toggle-wrapper").removeAttribute("active")
+					})
+			} else {
+				if (state.fcm_push_denied) {
+					modalError(`You must enable notifications in settings.`)
 				} else {
-					if (state.fcm_push_denied) {
-						modalError(`You must enable notifications in settings.`)
-					} else {
-						modalError(`You must "Add to Home Screen" to enable notifications.`)
-					}
+					modalError(`You must "Add to Home Screen" to enable notifications.`)
 				}
-			})
-		}
-		if (state.push_available || state.fcm_push_available) {
-			$old("posts[notifications-header] post").appendChild($toggle_wrapper)
-			if (!state.email) {
-				$toggle_wrapper.setAttribute("disabled", "")
 			}
+		})
 		}
 	}
+	
+	return _(`
+		posts[notifications-header]
+			post[line-after]
+				h2 Alerts
+				$1
+				$2
+				$3
+	`, [
+		() => {
+			if (!state.email) {
+				return _(`p To enable push notification alerts, please sign in or sign up, using the menu in the top right hand corner.`)
+			} else if (state.push_available || state.fcm_push_available) {
+				return _(`p When you "Turn on notifications", you will get a push notification alert anytime someone responds to a post or reply you have posted.`)
+			} else if (state.fcm_push_denied) {
+				return _(`p You must enable notifications for this app in settings`)
+			} else {
+				return _(`
+					p[add-to-home]
+						span To enable alerts, tap the
+						icon[share][inline]
+						span icon on your browser and then tap "Add to Home Screen".
+				`)
+			}
+		},
+		(afterRender) => {
+			// Mark all as read button - only show when conditions are met
+			if ((state.push_active || state.fcm_push_active) && Boolean(_.unread_count)) {
+				const $mark_all_as_read = _(`
+					mark-all-as-read-wrapper
+						button[mark-all-as-read][small][alt][faint=$1] Mark all as read
+				`, [() => !Boolean(_.unread_count)])
+				
+				$mark_all_as_read.on("click", () => {
+					$mark_all_as_read.$("button").setAttribute("alt", "")
+					$mark_all_as_read.$("button").setAttribute("faint", "")
+					fetch("/session", {
+						method: "POST",
+						body: JSON.stringify({
+							mark_all_as_read: true,
+						}),
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (!data || !data.success) {
+								alertError("Server error")
+								console.error(data)
+							} else {
+								_.unread_count = 0
+								state.cache["/notifications"].notifications = state.cache[
+									"/notifications"
+								].notifications.filter((n) => n.read)
+								getMoreRecent()
+								getUnreadCountUnseenCount()
+							}
+						})
+						.catch((error) => {
+							alertError("Network error")
+							console.error(error)
+						})
+				})
+				return $mark_all_as_read
+			}
+			return document.createComment("no-mark-all-as-read")
+		},
+		(afterRender) => {
+			// Toggle wrapper - only show when push available
+			if (state.push_available || state.fcm_push_available) {
+				const $toggle_wrapper = _(`
+					toggle-wrapper[disabled=$1][active=$2]
+						toggle-text Turn on notifications
+						toggle-button
+							toggle-circle
+				`, [
+					!state.push_available && !state.fcm_push_available,
+					state.push_active || state.fcm_push_active,
+				])
+				
+				createToggleHandler($toggle_wrapper)
+				
+				if (!state.email) {
+					$toggle_wrapper.setAttribute("disabled", "")
+				}
+				return $toggle_wrapper
+			}
+			return document.createComment("no-toggle")
+		}
+	])
+}
+
+const renderNotifications = (notifications) => {
+	if (state.path !== "/notifications") {
+		return
+	}
+	getUnreadCountUnseenCount()
+	
+	// Create reactive header
+	const $header = createNotificationsHeader()
+	$old("main-content-wrapper[active] main-content").replaceChildren($header)
+	// Create reactive notifications sections
+	const $unread_notifications_section = _(`
+		notifications[flex-column]
+			h3[unread-header] $1
+			$2
+			$3
+	`, [
+		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
+		() => !Boolean(_.unread_count) ? [_(`
+			all-clear-wrapper
+				p Nothing to see here
+		`)] : [],
+		() => {
+			const unread_notifications = notifications.filter((n) => !n.read)
+			return unread_notifications
+				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+				.map(renderNotification)
+		}
+	])
+	
+	const $read_notifications_section = _(`
+		notifications[flex-column]
+			h3 Read
+			$1
+			$2
+	`, [
+		() => {
+			const read_notifications = notifications.filter((n) => n.read)
+			return !read_notifications.length ? [_(`
+				all-clear-wrapper
+					p Nothing to see here
+			`)] : []
+		},
+		() => {
+			const read_notifications = notifications.filter((n) => n.read)
+			return read_notifications
+				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+				.map(renderNotification)
+		}
+	])
+
+	// Replace existing notifications sections with reactive ones
+	const $main_content = $old("main-content-wrapper[active] main-content")
+	const $main_content_2 = $old("main-content-wrapper[active] main-content-2")
+	
+	// Remove old notifications if they exist
+	$old("main-content-wrapper[active] main-content notifications")?.remove()
+	$old("main-content-wrapper[active] main-content-2 notifications")?.remove()
+	
+	// Append new reactive sections
+	$main_content.appendChild($unread_notifications_section)
+	$main_content_2.appendChild($read_notifications_section)
+
+	// On notifications render, mark all as seen
+	if (state.unseen_count && notifications.length) {
+		fetch("/session", {
+			method: "POST",
+			body: JSON.stringify({
+				mark_all_as_seen: true,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (!data || !data.success) {
+					alertError("Server error")
+					console.error(data)
+				} else {
+					state.unseen_count = 0
+					getUnreadCountUnseenCount()
+				}
+			})
+			.catch((error) => {
+				state.most_recent_error = error
+				alertError("Network error")
+				console.error(error)
+			})
+	}
+}
+
+// renderMarkAllAsRead is now integrated into createNotificationsHeader
+// This function is no longer needed as the mark all as read button and toggle
+// are now part of the reactive header template
+const renderMarkAllAsRead = () => {
+	// This function is deprecated - functionality moved to createNotificationsHeader
 }
 
 const getUnreadCountUnseenCount = () => {
