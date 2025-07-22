@@ -549,20 +549,20 @@ const setupTestEnvironment = async (options) => {
 	global._test_window = global._test_window || []
 	global._test_window.push(window)
 
-	// Add state.ws._messageHandlers support
-	if (window.state && window.state.ws) {
+	// Add window.ws._messageHandlers support
+	if (window.state && window.ws) {
 		// The mock WebSocket already has _messageHandlers from addEventListener calls
 		// Just add the triggerMessage method
-		window.state.ws.triggerMessage = (message) => {
+		window.ws.triggerMessage = (message) => {
 			const event = { data: message }
-			window.state.ws._messageHandlers?.forEach(handler => handler(event))
+			window.ws._messageHandlers?.forEach(handler => handler(event))
 		}
 		
 		// Also ensure _handlers.message calls all _messageHandlers
-		const originalMessageHandler = window.state.ws._handlers.message
-		window.state.ws._handlers.message = function(event) {
+		const originalMessageHandler = window.ws._handlers.message
+		window.ws._handlers.message = function(event) {
 			// Call all addEventListener handlers
-			window.state.ws._messageHandlers?.forEach(handler => handler(event))
+			window.ws._messageHandlers?.forEach(handler => handler(event))
 			// The original handler is already included in _messageHandlers, so don't call it again
 		}
 	}

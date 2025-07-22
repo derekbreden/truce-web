@@ -89,11 +89,11 @@ if (message.session_uuid) {
 ```javascript
 const reconnectWs = () => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-    state.ws = new WebSocket(`${protocol}//${window.location.host}`)
+    window.ws = new WebSocket(`${protocol}//${window.location.host}`)
     
-    state.ws.addEventListener("open", () => {
+    window.ws.addEventListener("open", () => {
         // Send current path for context-aware updates
-        state.ws.send(JSON.stringify({ 
+        window.ws.send(JSON.stringify({ 
             path: state.path,
             session_uuid: state.session_uuid  // Optional
         }))

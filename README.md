@@ -247,7 +247,7 @@ $old("[href]").forEach(($el) => {
 ### WebSocket Pattern
 ```javascript
 // Client listens for updates
-state.ws.addEventListener("message", (event) => {
+window.ws.addEventListener("message", (event) => {
 	if (event?.data === "UPDATE") {
 		getMoreRecent()
 	}

@@ -34,8 +34,8 @@ const tests = {
 		
 		// Disconenct User A when instant alert received
 		const mock_ws = global._ws_connection_handlers[window_user_a._setup_id].mock_ws
-		const original_message_handler = window_user_a.state.ws._messageHandlers[0]
-		window_user_a.state.ws._messageHandlers[0] = function(data) {
+		const original_message_handler = window_user_a.window.ws._messageHandlers[0]
+		window_user_a.window.ws._messageHandlers[0] = function(data) {
 			const message_str = data.data
 			if (message_str.includes("INSTANT_ALERT")) {
 				mock_ws._handlers.close()

@@ -5,8 +5,8 @@ let self_typing_inactivity_timeout = null
 
 // Function to send typing heartbeat
 const sendTypingHeartbeat = (conversation_id) => {
-	if (state.ws && state.ws.readyState === 1) { // WebSocket.OPEN is 1
-		state.ws.send(JSON.stringify({
+	if (window.ws && window.ws.readyState === 1) { // WebSocket.OPEN is 1
+		window.ws.send(JSON.stringify({
 			type: "TYPING_HEARTBEAT",
 			conversation_id: conversation_id,
 			session_uuid: state.session_uuid,
@@ -48,8 +48,8 @@ const stopTypingHeartbeats = () => {
 
 const reconnectWs = () => {
 	const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-	state.ws = new WebSocket(`${protocol}//${window.location.host}`)
-	state.ws.addEventListener("message", (event) => {
+	window.ws = new WebSocket(`${protocol}//${window.location.host}`)
+	window.ws.addEventListener("message", (event) => {
 		if (event.data === "UPDATE") {
 			getMoreRecent()
 		} else {
@@ -63,14 +63,14 @@ const reconnectWs = () => {
 			}
 		}
 	})
-	state.ws.addEventListener("open", () => {
-		state.ws.send(JSON.stringify({ 
+	window.ws.addEventListener("open", () => {
+		window.ws.send(JSON.stringify({ 
 			path: state.path,
 			session_uuid: state.session_uuid,
 		}))
 	})
-	state.ws.addEventListener("close", (event) => {
-		state.ws.close()
+	window.ws.addEventListener("close", (event) => {
+		window.ws.close()
 		setTimeout(reconnectWs, 10000)
 	})
 }
@@ -78,8 +78,8 @@ reconnectWs()
 
 // Update WebSocket when path changes
 const updateWebSocketPath = (new_path) => {
-	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-		state.ws.send(JSON.stringify({ 
+	if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+		window.ws.send(JSON.stringify({ 
 			path: new_path,
 			session_uuid: state.session_uuid,
 		}))
@@ -96,8 +96,8 @@ const handleInstantAlert = (data) => {
 	}
 	
 	// Send acknowledgment back to server if notification IDs are provided
-	if ((data.reply_notification_id || data.message_notification_id) && state.ws && state.ws.readyState === WebSocket.OPEN) {
-		state.ws.send(JSON.stringify({
+	if ((data.reply_notification_id || data.message_notification_id) && window.ws && window.ws.readyState === WebSocket.OPEN) {
+		window.ws.send(JSON.stringify({
 			type: "INSTANT_ALERT_ACK",
 			reply_notification_id: data.reply_notification_id,
 			message_notification_id: data.message_notification_id,
@@ -131,8 +131,8 @@ const handleMessageReadReceipt = (data) => {
 
 // Send session_uuid
 const sendSessionUuidToWebSocket = () => {
-	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-		state.ws.send(JSON.stringify({
+	if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+		window.ws.send(JSON.stringify({
 			session_uuid: state.session_uuid,
 		}))
 	}

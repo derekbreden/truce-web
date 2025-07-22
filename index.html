@@ -43,41 +43,48 @@
       window.is_android = true
     }
 
+    // Libraries
+    // <!--#include file="client/flint.old.js" -->
+    // <!--#include file="client/flint.js" -->
+    // <!--#include file="client/markdownToElements.js" -->
+    // <!--#include file="client/imageToPng.js" -->
+
     // Global state
-    const state = {
-      path: "/",
-      path_history: [],
-      path_index: 0,
-      display_name: "",
-      profile_picture_uuid: "",
-      email: "",
-      session_uuid: localStorage.getItem(
-        `${window.local_storage_key}:session_uuid`,
-      ) || "",
-      expanded_reply_ids: localStorage.getItem(
-        `${window.local_storage_key}:expanded_reply_ids`,
+    state = _
+    _.path = "/"
+    _.path_history = []
+    _.path_index = 0
+    _.display_name = ""
+    _.profile_picture_uuid = ""
+    _.email = ""
+    _.session_uuid = localStorage.getItem(
+      `${window.local_storage_key}:session_uuid`,
+    ) || ""
+    _.expanded_reply_ids = localStorage.getItem(
+      `${window.local_storage_key}:expanded_reply_ids`,
       )
         ? JSON.parse(
             localStorage.getItem(
               `${window.local_storage_key}:expanded_reply_ids`,
             ),
           )
-        : [],
-      reset_token_uuid: "",
-      cache: {},
-      loading_path: false,
-      unseen_count: 0,
-      window_recently_focused: false,
-      window_recently_loaded: false,
-      version: 1,
-    }
+        : []
+    _.reset_token_uuid = ""
+    _.cache = {}
+    _.loading_path = false
+    _.unseen_count = 0
+    _.window_recently_focused = false
+    _.window_recently_loaded = false
+    _.version = 1
+    _.unread_count = 0
+    _.display_name = ""
 
     if (window.webkit) {
-      state.version = Number(
+      _.version = Number(
         (navigator.userAgent.match(/Truce\.([^ ]*)/) ?? [])[1] || 2,
       )
     } else {
-      state.version = 2
+      _.version = 2
     }
 
     // Global elements
@@ -95,12 +102,6 @@
       "What have you observed?",
       "Do you have any unmet needs?",
     ]
-
-    // Libraries
-    // <!--#include file="client/flint.old.js" -->
-    // <!--#include file="client/flint.js" -->
-    // <!--#include file="client/markdownToElements.js" -->
-    // <!--#include file="client/imageToPng.js" -->
 
     // Navigation
     // <!--#include file="client/menu.js" -->
@@ -150,9 +151,6 @@
     // <!--#include file="client/startSession.js" -->
 
     loadingPage(true, true)
-
-    // Initialize reactive state after libraries are loaded
-    _.unread_count = 0
     
     startSession()
 
