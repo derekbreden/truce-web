@@ -220,22 +220,7 @@ const showMenu = () => {
 	$old("modal-bg")?.parentElement?.remove()
 	$old("body").appendChild($menu)
 }
-const $header_for_menu = $old("header")
-$header_for_menu.on("click", () => {
-	goToPath(state.path)
-})
-
-const $hamburgers = $old("hamburger")
-$hamburgers.forEach(($el) => {
-	$el.on("click", ($event) => {
-		$event.stopPropagation()
-		if ($old("menu-wrapper")) {
-			$old("menu-wrapper").remove()
-		} else {
-			showMenu()
-		}
-	})
-})
+// Header and hamburger event binding moved to reactive architecture in renderHeaderFooter.js
 $old("[href]").forEach(($el) => {
 	$el.on("click", ($event) => {
 		$old("menu-wrapper")?.remove()

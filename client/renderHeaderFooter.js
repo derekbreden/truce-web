@@ -9,6 +9,9 @@ const initializeReactiveApp = () => {
 	
 	$old("body").prepend($reactive_header)
 	$old("body").appendChild($reactive_footer)
+	
+	// Bind events to the reactive elements immediately after creation
+	bindReactiveEvents($reactive_header, $reactive_footer)
 }
 
 const renderHeader = () => {
@@ -73,4 +76,25 @@ const renderFooter = () => {
 	)
 	
 	return $footer
+}
+
+// Bind events to reactive header/footer elements (replaces imperative binding from menu.js)
+const bindReactiveEvents = ($header, $footer) => {
+	// Header click handler (from menu.js:223-229)
+	$header.on("click", () => {
+		goToPath(state.path)
+	})
+	
+	// Hamburger click handler (from menu.js:231-247)
+	const $hamburger = $header.$("hamburger")
+	if ($hamburger) {
+		$hamburger.on("click", ($event) => {
+			$event.stopPropagation()
+			if ($old("menu-wrapper")) {
+				$old("menu-wrapper").remove()
+			} else {  
+				showMenu()
+			}
+		})
+	}
 }
