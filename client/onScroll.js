@@ -162,8 +162,8 @@ const bindScrollEvent = () => {
 		// Notifications load older
 		if (
 			state.path === "/notifications"
-			&& state.cache["/notifications"]
-			&& !state.cache["/notifications"].finished
+			&& _.notifications
+			&& !_.notifications_finished
 		) {
 			// A threshold based on how much is left to scroll
 			const threshold =
@@ -210,18 +210,14 @@ const bindScrollEvent = () => {
 					.then((data) => {
 						// Stop when we reach the end (no more results returned)
 						if (data.notifications && !data.notifications.length) {
-							state.cache["/notifications"].finished = true
+							_.notifications_finished = true
 						}
 
 						// Append what we found to the existing cache
-						state.cache["/notifications"].notifications.push(
+						_.notifications.push(
 							...data.notifications,
 						)
 
-						// And re-render if any results added
-						if (data.notifications.length) {
-							renderNotifications(state.cache["/notifications"].notifications)
-						}
 						state.loading_path = false
 					})
 					.catch((error) => {

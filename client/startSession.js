@@ -155,7 +155,7 @@ const getMoreRecent = () => {
 		}
 	}, "")
 	
-	const client_max_notification_unread_date = current_cache.notifications.reduce((max, notification) => {
+	const client_max_notification_unread_date = _.notifications.reduce((max, notification) => {
 		if (!notification.read) {
 			return max > notification.create_date ? max : notification.create_date
 		} else {
@@ -163,7 +163,7 @@ const getMoreRecent = () => {
 		}
 	}, "")
 	
-	const client_max_notification_read_date = current_cache.notifications.reduce((max, notification) => {
+	const client_max_notification_read_date = _.notifications.reduce((max, notification) => {
 		if (notification.read) {
 			return max > notification.create_date ? max : notification.create_date
 		} else {
@@ -269,11 +269,11 @@ const getMoreRecent = () => {
 			if (data.notifications?.length) {
 				// Remove only notifications that match both ID and type
 				const new_notifications = data.notifications.map((n) => ({ id: n.notification_id, type: n.notification_type }))
-				current_cache.notifications = current_cache.notifications.filter(
+				_.notifications = _.notifications.filter(
 					(n) => !new_notifications.some(newN => newN.id === n.notification_id && newN.type === n.notification_type),
 				)
-				current_cache.notifications.unshift(...data.notifications)
-				renderNotifications(current_cache.notifications)
+				_.notifications.unshift(...data.notifications)
+				getUnreadCountUnseenCount()
 			}
 
 			// Render favorites if appropriate

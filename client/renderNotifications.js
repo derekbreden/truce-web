@@ -370,7 +370,7 @@ const createNotificationsHeader = () => {
 				})
 				return $mark_all_as_read
 			}
-			return document.createComment("no-mark-all-as-read")
+			return []
 		},
 		(afterRender) => {
 			// Toggle wrapper - only show when push available
@@ -395,11 +395,6 @@ const createNotificationsHeader = () => {
 			return document.createComment("no-toggle")
 		}
 	])
-}
-
-// Update notifications data at top level for reactive access
-const updateNotificationsData = (notifications) => {
-	_.notifications = notifications
 }
 
 // Create reactive template for main-content (header + unread notifications)
@@ -458,7 +453,7 @@ const createNotificationsMainContent = () => {
 				]
 			}
 			
-			return document.createComment("notifications-main-content-placeholder")
+			return []
 		}
 	])
 }
@@ -491,19 +486,9 @@ const createNotificationsMainContent2 = () => {
 				])
 			}
 			
-			return document.createComment("notifications-main-content-2-placeholder")
+			return []
 		}
 	])
-}
-
-// Just update data - reactive templates will handle rendering
-const renderNotifications = (notifications) => {
-	updateNotificationsData(notifications)
-	
-	// Update counts when notifications data arrives (not in reactive function)
-	if (state.path === "/notifications") {
-		getUnreadCountUnseenCount()
-	}
 }
 
 // renderMarkAllAsRead is now integrated into createNotificationsHeader

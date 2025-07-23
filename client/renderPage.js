@@ -23,8 +23,8 @@ const renderPage = (data) => {
 	// Render Favorites
 	renderFavorites(data.favorites)
 
-	// Render Notifications
-	renderNotifications(data.notifications)
+	// Reactive Update Notifications
+	_.notifications = data.notifications
 
 	// Render Conversations
 	renderConversations(data.conversations)
