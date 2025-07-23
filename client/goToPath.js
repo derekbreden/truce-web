@@ -84,12 +84,7 @@ const goToPath = (new_path, skip_state, clicked_back) => {
 			}
 		}
 
-		// Dot indicating main page on most recently
-		if (next_sequence !== -1 && !sequence_is_user) {
-			let dot_index = Math.max(next_sequence - 1, 0)
-			const $footer_dot_goto = $old("footer dot")
-			$footer_dot_goto.setAttribute("index", dot_index)
-		}
+		// Footer dot positioning now handled reactively by renderHeaderFooter.js
 
 		// Set the new path
 		state.path = new_path

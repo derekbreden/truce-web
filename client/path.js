@@ -59,15 +59,7 @@ if (state.path === "/") {
 	}
 }
 
-// New path for /topic/ is same as /topics
-let new_path_parsed = state.path
-if (state.path.startsWith("/topic/")) {
-	new_path_parsed = "/topics"
-}
-
-const dot_index = Math.max(path_sequence.indexOf(new_path_parsed) - 1, 0)
-const $footer_dot = $old("footer dot")
-$footer_dot.setAttribute("index", dot_index)
+// Footer dot positioning now handled reactively by renderHeaderFooter.js
 
 // Update page contents when the user hits the back button
 window.addEventListener("popstate", () => {
