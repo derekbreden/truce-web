@@ -397,79 +397,22 @@ const createNotificationsHeader = () => {
 	])
 }
 
-const renderNotifications = (notifications) => {
-	if (state.path !== "/notifications") {
-		return
-	}
-	getUnreadCountUnseenCount()
-	
+// Update notifications data in cache when new data arrives
+const updateNotificationsData = (notifications) => {
 	// Store notifications in cache for reactive access
 	if (!state.cache["/notifications"]) {
 		state.cache["/notifications"] = {}
 	}
 	state.cache["/notifications"].notifications = notifications
-	
-	// Create reactive header
-	const $header = createNotificationsHeader()
-	$old("main-content-wrapper[active] main-content").replaceChildren($header)
-	
-	// Create reactive notifications sections using cached data
-	const $unread_notifications_section = _(`
-		notifications[flex-column]
-			h3[unread-header] $1
-			$2
-			$3
-	`, [
-		() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
-		() => !Boolean(_.unread_count) ? [_(`
-			all-clear-wrapper
-				p Nothing to see here
-		`)] : [],
-		() => {
-			const current_notifications = state.cache["/notifications"]?.notifications || []
-			const unread_notifications = current_notifications.filter((n) => !n.read)
-			return unread_notifications
-				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-				.map(renderNotification)
-		}
-	])
-	
-	const $read_notifications_section = _(`
-		notifications[flex-column]
-			h3 Read
-			$1
-			$2
-	`, [
-		() => {
-			const current_notifications = state.cache["/notifications"]?.notifications || []
-			const read_notifications = current_notifications.filter((n) => n.read)
-			return !read_notifications.length ? [_(`
-				all-clear-wrapper
-					p Nothing to see here
-			`)] : []
-		},
-		() => {
-			const current_notifications = state.cache["/notifications"]?.notifications || []
-			const read_notifications = current_notifications.filter((n) => n.read)
-			return read_notifications
-				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-				.map(renderNotification)
-		}
-	])
+}
 
-	// Replace existing notification sections with reactive ones
-	const $main_content = $old("main-content-wrapper[active] main-content")
-	const $main_content_2 = $old("main-content-wrapper[active] main-content-2")
+// Create reactive template for main-content (header + unread notifications)
+const createNotificationsMainContent = () => {
+	// Update counts when notifications page is shown
+	getUnreadCountUnseenCount()
 	
-	// Remove old notifications if they exist
-	$old("main-content-wrapper[active] main-content notifications")?.remove()
-	$old("main-content-wrapper[active] main-content-2 notifications")?.remove()
-	
-	// Append new reactive sections
-	$main_content.appendChild($unread_notifications_section)
-	$main_content_2.appendChild($read_notifications_section)
-
-	// Reactive mark all as seen (runs once per render)
+	// Mark all as seen side effect
+	const notifications = state.cache["/notifications"]?.notifications || []
 	if (state.unseen_count && notifications.length) {
 		fetch("/session", {
 			method: "POST",
@@ -493,6 +436,74 @@ const renderNotifications = (notifications) => {
 				console.error(error)
 			})
 	}
+	
+	return _(`$1
+		$2`, [
+		createNotificationsHeader(),
+		_(`
+			notifications[flex-column]
+				h3[unread-header] $1
+				$2
+				$3
+		`, [
+			() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
+			() => !Boolean(_.unread_count) ? [_(`
+				all-clear-wrapper
+					p Nothing to see here
+			`)] : [],
+			() => {
+				const current_notifications = state.cache["/notifications"]?.notifications || []
+				const unread_notifications = current_notifications.filter((n) => !n.read)
+				return unread_notifications
+					.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+					.map(renderNotification)
+			}
+		])
+	])
+}
+
+// Create reactive template for main-content-2 (read notifications)
+const createNotificationsMainContent2 = () => {
+	return _(`
+		notifications[flex-column]
+			h3 Read
+			$1
+			$2
+	`, [
+		() => {
+			const current_notifications = state.cache["/notifications"]?.notifications || []
+			const read_notifications = current_notifications.filter((n) => n.read)
+			return !read_notifications.length ? [_(`
+				all-clear-wrapper
+					p Nothing to see here
+			`)] : []
+		},
+		() => {
+			const current_notifications = state.cache["/notifications"]?.notifications || []
+			const read_notifications = current_notifications.filter((n) => n.read)
+			return read_notifications
+				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+				.map(renderNotification)
+		}
+	])
+}
+
+// Legacy function that updates data and sets up reactive rendering
+const renderNotifications = (notifications) => {
+	if (state.path !== "/notifications") {
+		return
+	}
+	
+	updateNotificationsData(notifications)
+	
+	// Replace children of main-content and main-content-2 with reactive templates
+	$old("main-content-wrapper[active] main-content").replaceChildren(
+		createNotificationsMainContent()
+	)
+	
+	$old("main-content-wrapper[active] main-content-2").replaceChildren(
+		createNotificationsMainContent2()
+	)
 }
 
 // renderMarkAllAsRead is now integrated into createNotificationsHeader
