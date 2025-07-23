@@ -397,13 +397,9 @@ const createNotificationsHeader = () => {
 	])
 }
 
-// Update notifications data in cache when new data arrives
+// Update notifications data at top level for reactive access
 const updateNotificationsData = (notifications) => {
-	// Store notifications in cache for reactive access
-	if (!state.cache["/notifications"]) {
-		state.cache["/notifications"] = {}
-	}
-	state.cache["/notifications"].notifications = notifications
+	_.notifications = notifications
 }
 
 // Create reactive template for main-content (header + unread notifications)
@@ -412,7 +408,7 @@ const createNotificationsMainContent = () => {
 	getUnreadCountUnseenCount()
 	
 	// Mark all as seen side effect
-	const notifications = state.cache["/notifications"]?.notifications || []
+	const notifications = _.notifications || []
 	if (state.unseen_count && notifications.length) {
 		fetch("/session", {
 			method: "POST",
@@ -452,8 +448,7 @@ const createNotificationsMainContent = () => {
 					p Nothing to see here
 			`)] : [],
 			() => {
-				const current_notifications = state.cache["/notifications"]?.notifications || []
-				const unread_notifications = current_notifications.filter((n) => !n.read)
+				const unread_notifications = (_.notifications || []).filter((n) => !n.read)
 				return unread_notifications
 					.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 					.map(renderNotification)
@@ -471,16 +466,14 @@ const createNotificationsMainContent2 = () => {
 			$2
 	`, [
 		() => {
-			const current_notifications = state.cache["/notifications"]?.notifications || []
-			const read_notifications = current_notifications.filter((n) => n.read)
+			const read_notifications = (_.notifications || []).filter((n) => n.read)
 			return !read_notifications.length ? [_(`
 				all-clear-wrapper
 					p Nothing to see here
 			`)] : []
 		},
 		() => {
-			const current_notifications = state.cache["/notifications"]?.notifications || []
-			const read_notifications = current_notifications.filter((n) => n.read)
+			const read_notifications = (_.notifications || []).filter((n) => n.read)
 			return read_notifications
 				.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
 				.map(renderNotification)
