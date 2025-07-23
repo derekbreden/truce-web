@@ -66,7 +66,7 @@ const renderNotification = (notification) => {
 		}
 		
 		// Message notification rendering
-		const $notification = $old(
+		const $notification = _(
 			`
 	    notification[line-after][unread=$1]
 	      first-column
@@ -112,7 +112,7 @@ const renderNotification = (notification) => {
 			/[^a-z\-]/gi,
 			"",
 		)
-		const $notification = $old(
+		const $notification = _(
 			`
 	    notification[line-after][unread=$1]
 	      column[flex-column]
@@ -133,7 +133,7 @@ const renderNotification = (notification) => {
 				reply_text,
 				short_title,
 				notification.note
-					? $old(
+					? _(
 						`
 	          info[tiny][$1]
 	            b $2
