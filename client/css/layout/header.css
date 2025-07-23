@@ -51,6 +51,14 @@ header svg {
   left: calc(50% - 21.5px);
 }
 
+header icon[logo] {
+  position: absolute;
+  z-index: 1;
+  height: 43px;
+  width: 43px;
+  left: calc(50% - 21.5px);
+}
+
 /* ================================
    HAMBURGER MENU
    ================================ */
@@ -64,6 +72,12 @@ hamburger {
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
+}
+
+hamburger icon[hamburger] {
+  height: 43px;
+  width: 43px;
+  margin: auto;
 }
 
 /* ================================

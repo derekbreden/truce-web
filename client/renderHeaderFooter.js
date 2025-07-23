@@ -16,7 +16,9 @@ const renderHeader = () => {
 		`
 		header[full-width]
 			h1[ellipsis] Truce.
+			icon[logo]
 			hamburger[unread=$1]
+				icon[hamburger]
 		`,
 		[
 			() => Boolean(_.unread_count)
