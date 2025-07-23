@@ -20,8 +20,8 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 			[
 				Boolean(skip_state), 
 				Boolean(clicked_back),
-				createNotificationsMainContent(),
-				createNotificationsMainContent2()
+				renderNotifications(),
+				renderNotifications2()
 			],
 		),
 	)

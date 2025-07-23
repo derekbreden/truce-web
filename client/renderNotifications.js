@@ -398,97 +398,91 @@ const createNotificationsHeader = () => {
 }
 
 // Create reactive template for main-content (header + unread notifications)
-const createNotificationsMainContent = () => {
-	return _(`$1`, [
-		(afterRender) => {
-			if (_.path === "/notifications") {
-				// Mark all as seen side effect
-				const notifications = _.notifications || []
-				if (state.unseen_count && notifications.length) {
-					afterRender(() => {
-						fetch("/session", {
-							method: "POST",
-							body: JSON.stringify({
-								mark_all_as_seen: true,
-							}),
-						})
-							.then((response) => response.json())
-							.then((data) => {
-								if (!data || !data.success) {
-									alertError("Server error")
-									console.error(data)
-								} else {
-									state.unseen_count = 0
-									getUnreadCountUnseenCount()
-								}
-							})
-							.catch((error) => {
-								state.most_recent_error = error
-								alertError("Network error")
-								console.error(error)
-							})
-					})
-				}
-				
-				return [
-					createNotificationsHeader(),
-					_(`
-						notifications[flex-column]
-							h3[unread-header] $1
-							$2
-							$3
-					`, [
-						() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
-						() => !Boolean(_.unread_count) ? [_(`
-							all-clear-wrapper
-								p Nothing to see here
-						`)] : [],
-						() => {
-							const unread_notifications = (_.notifications || []).filter((n) => !n.read)
-							return unread_notifications
-								.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-								.map(renderNotification)
+const renderNotifications = () => {
+	console.warn("renderNotifications() called, _.path:", _.path)
+	if (_.path === "/notifications") {
+		console.warn("renderNotifications: generating content for notifications page")
+		// Mark all as seen side effect
+		const notifications = _.notifications || []
+		if (state.unseen_count && notifications.length) {
+			afterRender(() => {
+				fetch("/session", {
+					method: "POST",
+					body: JSON.stringify({
+						mark_all_as_seen: true,
+					}),
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						if (!data || !data.success) {
+							alertError("Server error")
+							console.error(data)
+						} else {
+							state.unseen_count = 0
+							getUnreadCountUnseenCount()
 						}
-					])
-				]
-			}
-			
-			return []
+					})
+					.catch((error) => {
+						state.most_recent_error = error
+						alertError("Network error")
+						console.error(error)
+					})
+			})
 		}
-	])
+		
+		return [
+			createNotificationsHeader(),
+			_(`
+				notifications[flex-column]
+					h3[unread-header] $1
+					$2
+					$3
+			`, [
+				() => _.unread_count > 0 ? `Unread (${_.unread_count})` : "Unread",
+				() => !Boolean(_.unread_count) ? [_(`
+					all-clear-wrapper
+						p Nothing to see here
+				`)] : [],
+				() => {
+					const unread_notifications = (_.notifications || []).filter((n) => !n.read)
+					return unread_notifications
+						.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+						.map(renderNotification)
+				}
+			])
+		]
+	}
+	
+	return []
 }
 
 // Create reactive template for main-content-2 (read notifications)
-const createNotificationsMainContent2 = () => {
-	return _(`$1`, [
-		() => {
-			if (_.path === "/notifications") {
-				
-				return _(`
-					notifications[flex-column]
-						h3 Read
-						$1
-						$2
-				`, [
-					() => {
-						const read_notifications = (_.notifications || []).filter((n) => n.read)
-						return !read_notifications.length ? [_(`
-							all-clear-wrapper
-								p Nothing to see here
-						`)] : []
-					},
-					() => {
-						const read_notifications = (_.notifications || []).filter((n) => n.read)
-						return read_notifications
-							.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
-							.map(renderNotification)
-					}
-				])
+const renderNotifications2 = () => {
+	if (_.path === "/notifications") {
+		
+		return _(`
+			notifications[flex-column]
+				h3 Read
+				$1
+				$2
+		`, [
+			() => {
+				const read_notifications = (_.notifications || []).filter((n) => n.read)
+				return !read_notifications.length ? [_(`
+					all-clear-wrapper
+						p Nothing to see here
+				`)] : []
+			},
+			() => {
+				const read_notifications = (_.notifications || []).filter((n) => n.read)
+				return read_notifications
+					.sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+					.map(renderNotification)
 			}
-			
-			return []
-		}
-	])
+		])
+	}
+	
+	return []
 }
 
 // renderMarkAllAsRead is now integrated into createNotificationsHeader
