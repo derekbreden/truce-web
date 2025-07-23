@@ -162,7 +162,6 @@ const createNotificationsHeader = () => {
 			$toggle_wrapper.on("click", () => {
 				if (state.push_active) {
 					state.push_active = false
-					$old("toggle-wrapper").removeAttribute("active")
 					navigator.serviceWorker.ready
 						.then((registration) => {
 							return registration.pushManager.getSubscription()
@@ -190,7 +189,6 @@ const createNotificationsHeader = () => {
 				}
 				if (state.fcm_push_active) {
 					state.fcm_push_active = false
-					$old("toggle-wrapper").removeAttribute("active")
 					fetch("/session", {
 						method: "POST",
 						body: JSON.stringify({
@@ -212,7 +210,6 @@ const createNotificationsHeader = () => {
 				if (state.fcm_push_available) {
 					state.fcm_push_active = true
 					getUnreadCountUnseenCount()
-					$old("toggle-wrapper").setAttribute("active", "")
 					if (state.fcm_token) {
 						fetch("/session", {
 							method: "POST",
@@ -236,7 +233,6 @@ const createNotificationsHeader = () => {
 					)
 				} else if (state.push_available) {
 					state.push_active = true
-					$old("toggle-wrapper").setAttribute("active", "")
 					navigator.serviceWorker.ready
 						.then(async (registration) => {
 							registration.pushManager.subscribe({
@@ -272,7 +268,6 @@ const createNotificationsHeader = () => {
 													} else {
 														alertError("Server error saving subscription")
 														state.push_active = false
-														$old("toggle-wrapper").removeAttribute("active")
 														subscription.unsubscribe()
 													}
 												}
@@ -284,7 +279,6 @@ const createNotificationsHeader = () => {
 												} else {
 													modalError("Error enabling notifications")
 													state.push_active = false
-													$old("toggle-wrapper").removeAttribute("active")
 													subscription.unsubscribe()
 												}
 											})
@@ -295,7 +289,6 @@ const createNotificationsHeader = () => {
 					.catch(() => {
 						modalError("Subscription error")
 						state.push_active = false
-						$old("toggle-wrapper").removeAttribute("active")
 					})
 			} else {
 				if (state.fcm_push_denied) {
