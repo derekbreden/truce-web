@@ -173,9 +173,7 @@ const bindScrollEvent = () => {
 			// When we pass the threshold
 			if ($old("main-content-wrapper[active]").scrollTop > threshold) {
 				// Find the oldest (min) create_date of what we have so far
-				const max_notification_unread_create_date = state.cache[
-					"/notifications"
-				].notifications.reduce((min, notification) => {
+				const max_notification_unread_create_date = _.notifications.reduce((min, notification) => {
 					if (!notification.read) {
 						return min < notification.create_date
 							? min
@@ -184,9 +182,7 @@ const bindScrollEvent = () => {
 						return min
 					}
 				}, new Date().toISOString())
-				const max_notification_read_create_date = state.cache[
-					"/notifications"
-				].notifications.reduce((min, notification) => {
+				const max_notification_read_create_date = _.notifications.reduce((min, notification) => {
 					if (notification.read) {
 						return min < notification.create_date
 							? min

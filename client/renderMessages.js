@@ -465,8 +465,8 @@ const markMessagesAsRead = (messages) => {
 		.then(response => response.json())
 		.then(data => {
 			if (data.success) {
-			// Update notifications cache to mark message notifications as read
-				const notifications = state.cache["/notifications"]?.notifications
+			// Update notifications to mark message notifications as read
+				const notifications = _.notifications
 				if (notifications) {
 					notifications.forEach(notification => {
 						if (notification_ids.includes(notification.notification_id) && notification.notification_type === "message") {

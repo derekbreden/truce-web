@@ -356,9 +356,7 @@ const createNotificationsHeader = () => {
 								console.error(data)
 							} else {
 								_.unread_count = 0
-								state.cache["/notifications"].notifications = state.cache[
-									"/notifications"
-								].notifications.filter((n) => n.read)
+								_.notifications = _.notifications.filter((n) => n.read)
 								getMoreRecent()
 								getUnreadCountUnseenCount()
 							}
@@ -399,9 +397,7 @@ const createNotificationsHeader = () => {
 
 // Create reactive template for main-content (header + unread notifications)
 const renderNotifications = () => {
-	console.warn("renderNotifications() called, _.path:", _.path)
 	if (_.path === "/notifications") {
-		console.warn("renderNotifications: generating content for notifications page")
 		// Mark all as seen side effect
 		const notifications = _.notifications || []
 		if (state.unseen_count && notifications.length) {
@@ -572,8 +568,8 @@ const markAsRead = (notification_id, notification_type) => {
 				alertError("Server error")
 				console.error(data)
 			} else {
-				// Update cache for this item
-				const notification = state.cache["/notifications"]?.notifications?.find(
+				// Update notification for this item
+				const notification = _.notifications?.find(
 					(n) => n.notification_id === notification_id && n.notification_type === notification_type,
 				)
 				if (notification) {
