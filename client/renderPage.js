@@ -8,9 +8,6 @@ const renderPage = (data) => {
 		state.path_history.push(state.path)
 	}
 
-	// Remove loading indicator
-	$old("main-content-wrapper[active] posts-loading")?.remove()
-
 	// Render Users
 	renderUsers(data.users)
 

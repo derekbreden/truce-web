@@ -8,7 +8,7 @@ We successfully implemented the first instance of **functions passed as placehol
 
 **The Key Innovation in `client/loadingPage.js`:**
 ```javascript
-$old("body").appendChild(
+$("body").appendChild(
 	_(  // ← PARENT uses _() reactive template
 		`
 		main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
@@ -84,7 +84,7 @@ $old("body").appendChild(
 
 ### Critical Understanding for Next Instance
 
-**The core insight:** The breakthrough was NOT about individual templates using `_()`. It was about making PARENT containers reactive so that child functions could be passed as placeholders and become automatically reactive.
+**The core insight:** The breakthrough was NOT about individual templates using `_()`. It was about making PARENT containers use `_()` so that child functions could be passed as placeholders and become reactive. The parent `_()` IS NOT reactive. The children passed as functions to placeholders ARE reactive.
 
 **This is fundamentally different from:**
 - Individual elements using reactive templates
@@ -103,12 +103,9 @@ $old("body").appendChild(
 - `../flint.js/examples/todo-mvc/` - A small clean example of how flint.js SHOULD be used.
 
 **The successful implementation:**
-- `client/loadingPage.js` - Parent reactive template
+- `client/loadingPage.js` - Parent template (NOT reactive)
 - `client/renderNotifications.js` - Functions that become reactive via placeholders
 
 **Current imperative patterns:**
 - `client/renderPage.js` - Manual function calls and DOM manipulation
 - Other `client/render*.js` files - Manual DOM approaches
-
-**For comparison:**
-- `client/menu.js` - Individual reactive templates (NOT the same pattern)

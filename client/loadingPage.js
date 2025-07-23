@@ -8,7 +8,7 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$old("main-content-wrapper[active]").setAttribute("inactive", "")
 		$old("main-content-wrapper[active]").removeAttribute("active")
 	}
-	$old("body").appendChild(
+	$("body").appendChild(
 		_(
 			`
 			main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
@@ -29,19 +29,6 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 	setTimeout(() => {
 		$old("main-content-wrapper[inactive]")?.remove()
 	}, 250)
-	// $old("[add-new-reply]")?.remove()
-	if (!first_render) {
-		$old("main-content-wrapper[active] main-content").appendChild(
-			$old(
-				`
-				posts-loading
-					h2
-					p
-					p
-				`,
-			),
-		)
-	}
 	if (state.path === "/posts" || state.path === "/posts/all") {
 		if (!state.active_add_new_post?.is_root) {
 			$old(
