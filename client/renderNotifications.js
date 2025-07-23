@@ -1,52 +1,4 @@
-// Reactive attribute management for static elements
-let reactive_attributes_initialized = false
-
-const initializeReactiveAttributes = () => {
-	if (reactive_attributes_initialized) return
-	reactive_attributes_initialized = true
-	
-	// Set up reactive tracking for hamburger unread attribute
-	const updateHamburger = () => {
-		const $hamburger = $old("hamburger")
-		if ($hamburger) {
-			if (Boolean(_.unread_count)) {
-				$hamburger.setAttribute("unread", "")
-			} else {
-				$hamburger.removeAttribute("unread")
-			}
-		}
-	}
-	
-	// Set up reactive tracking for footer notifications unread attribute
-	const updateFooterNotifications = () => {
-		const $footer_notifications = $old("footer a[notifications]")
-		if ($footer_notifications) {
-			if (Boolean(_.unread_count)) {
-				$footer_notifications.setAttribute("unread", "")
-			} else {
-				$footer_notifications.removeAttribute("unread")
-			}
-		}
-	}
-	
-	// Create reactive functions that track _.unread_count
-	const $reactive_hamburger = _(`$1`, [() => {
-		updateHamburger()
-		return ""
-	}])
-	const $reactive_footer = _(`$1`, [() => {
-		updateFooterNotifications()
-		return ""
-	}])
-	
-	// Execute initially to set correct state
-	updateHamburger()
-	updateFooterNotifications()
-}
-
-const updateReactiveAttributes = () => {
-	initializeReactiveAttributes()
-}
+// Imperative attribute hacks removed - header/footer now fully reactive via renderHeaderFooter.js
 
 const renderNotification = (notification) => {
 	const short_body =
@@ -512,9 +464,7 @@ const getUnreadCountUnseenCount = () => {
 						}),
 					)
 				}
-				// Reactive attribute management for static elements
-				updateReactiveAttributes()
-				// Notification header now reactive - no manual update needed
+				// Header/footer now automatically reactive - no manual updates needed
 				if (
 					state.unseen_count
 					&& (state.window_recently_focused || state.window_recently_loaded)

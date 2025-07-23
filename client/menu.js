@@ -220,10 +220,13 @@ const showMenu = () => {
 	$old("modal-bg")?.parentElement?.remove()
 	$old("body").appendChild($menu)
 }
-$old("header").on("click", () => {
+const $header_for_menu = $old("header")
+$header_for_menu.on("click", () => {
 	goToPath(state.path)
 })
-$old("hamburger").forEach(($el) => {
+
+const $hamburgers = $old("hamburger")
+$hamburgers.forEach(($el) => {
 	$el.on("click", ($event) => {
 		$event.stopPropagation()
 		if ($old("menu-wrapper")) {

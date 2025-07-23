@@ -103,7 +103,9 @@
       "Do you have any unmet needs?",
     ]
 
-    // Navigation
+    // Navigation  
+    // <!--#include file="client/renderHeaderFooter.js" -->
+    initializeReactiveApp()
     // <!--#include file="client/menu.js" -->
     // <!--#include file="client/resetPassword.js" -->
     // <!--#include file="client/modals.js" -->
@@ -121,6 +123,7 @@
     // <!--#include file="client/renderReplies.js" -->
     // <!--#include file="client/renderFavorites.js" -->
     // <!--#include file="client/renderNotifications.js" -->
+    // renderHeaderFooter.js moved earlier before menu.js
     // <!--#include file="client/renderImages.js" -->
     // <!--#include file="client/renderBack.js" -->
     // <!--#include file="client/renderForward.js" -->
@@ -150,6 +153,8 @@
     // Init
     // <!--#include file="client/startSession.js" -->
 
+    // Reactive header/footer already initialized earlier
+    
     loadingPage(true, true)
     
     startSession()
