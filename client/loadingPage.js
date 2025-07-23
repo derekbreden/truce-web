@@ -9,13 +9,20 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 		$old("main-content-wrapper[active]").removeAttribute("active")
 	}
 	$old("body").appendChild(
-		$old(
+		_(
 			`
 			main-content-wrapper[active][full-width][skip-state=$1][clicked-back=$2]
 				main-content
+					$3
 				main-content-2
+					$4
 			`,
-			[Boolean(skip_state), Boolean(clicked_back)],
+			[
+				Boolean(skip_state), 
+				Boolean(clicked_back),
+				createNotificationsMainContent(),
+				createNotificationsMainContent2()
+			],
 		),
 	)
 	bindScrollEvent()
