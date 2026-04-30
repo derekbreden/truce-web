@@ -199,6 +199,10 @@ const loadingPage = (first_render, skip_state, clicked_back) => {
 						p We take measures to protect your information from unauthorized access or disclosure.
 						p[bold] No Third-Party Services
 						p We do not use any third-party services or analytics.
+						p[bold] Child Safety Standards
+						p This application is not intended for use by children under 13 years of age. We do not knowingly collect personal information from children under 13. If we become aware that a child under 13 has provided us with personal information, we will delete such information from our systems.
+						p Users can report child safety concerns by contacting us at derek@truce.net.
+						p We comply with applicable child protection laws and regulations.
 						p[bold] Policy Changes
 						p We may update this policy from time to time. Changes will be effective immediately upon posting.
 						p[bold] Contact
