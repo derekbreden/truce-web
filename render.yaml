@@ -1,0 +1,44 @@
+databases:
+  - name: truce-db
+    plan: basic-256mb
+    postgresMajorVersion: "16"
+    region: virginia
+
+services:
+  - type: web
+    name: truce-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard
+    region: virginia
+    branch: main
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # Auto-injected internal connection string from the managed database above.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: truce-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      # Secrets — set in the Render dashboard (Blueprint prompts for these).
+      # Values are the same keys as the local .env file.
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: FIREBASE_CREDENTIAL
+        sync: false
+      - key: ROOT_EMAIL
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

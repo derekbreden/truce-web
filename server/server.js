@@ -104,7 +104,7 @@ module.exports = {
 	},
 	async init() {
 		const hostname = "0.0.0.0"
-		const port = 3000
+		const port = Number(process.env.PORT) || 3000
 
 		this.resources = []
 		this.resources = await fs.readdir("resources")
